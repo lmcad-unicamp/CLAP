@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>CLAP Manager</h1>
+
+<script>
+
+
+</script>
+
+<div class="container">
+        <h2>Actions</h2>
+        <form method = 'post' action= "{{ url_for('index') }}">
+                <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Template name" aria-label="Template Name" aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button">Create Cluster</button>
+                        </div>
+                </div>
+        </form>
+</div>
+
+
+<br>
+
+<div class="container">
+        <h2>Nodes</h2>
+
+<div class="panel-group">
+<div class="panel panel-default">
+        <form method = 'post' action= "{{ url_for('index') }}">
+                {% for node in nodes %}
+                 <ul class="list-group">
+                                <li class="list-group-item">
+                                        <div class="container">
+
+                                        </div>
+                                </li>
+                        </ul>
+
+                {% endfor %}
+        </form>
+</div>
+</div>
+</div>
+
+{% endblock %}
+
+<div class="row">
+                                                        <div class="col-sm">
+                                                                <h5><b>{{ node.node_id }}</b></h5>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                                <h6><b>IP:</b> {{ node.ip }}</h6>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                                <h6><b>Provider:</b> {{ node.provider_id }}</h6>
+                                                        </div>
+                                                         <div class="col-sm">
+                                                                <h6><b>Login:</b> {{ node.login_id }}</h6>
+                                                        </div>
+                                                         <div class="col-sm">
+                                                                <h6><b>Flavor:</b> {{ node.instance_type }}</h6>
+                                                        </div>
+                                                         <div class="col-sm">
+                                                                 {% if node.groups|length %}
+                                                                         <h6><b>Groups:</b>
+                                                                         {% for key, value in node.groups.items() %}
+                                                                          {{ key }}
+                                                                         {% endfor %}
+                                                                         </h6>
+                                                                 {% endif %}
+                                                        </div>
+
+                                                        <div class="col-sm">
+                                                                <div class="row">
+                                                                        <div class="btn-group">
+                                                                                <button type="submit" class="btn btn-outline-primary" name="action" value="node execute {{ node.node_id }}">
+                                                                                        Execute
+                                                                                </button>
+                                                                                <button type="submit" class="btn btn-outline-primary" name="action" value="node playbook {{ node.node_id }}">
+                                                                                        Playbook
+                                                                                </button>
+                                                                                <button type="submit" class="btn btn-outline-primary" name="action" value="node alive {{ node.node_id }}">
+                                                                                        Alive
+                                                                                </button>
+                                                                                <button type="submit" class="btn btn-outline-primary" name="action" value="node show {{ node.node_id }}">
+                                                                                        Show
+                                                                                </button>
+
+                                                                                <button type="submit" class="btn btn-outline-danger" name="action" value="node stop {{ node.node_id }}">
+                                                                                        Stop
+                                                                                </button>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                 </div>

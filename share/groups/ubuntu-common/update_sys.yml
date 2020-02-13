@@ -1,0 +1,36 @@
+---
+- name: Update system
+  hosts: all
+  gather_facts: true
+
+  tasks:
+  - name: Ensure extra repositories are present (Ubuntu)
+    apt_repository:
+      repo: "deb http://archive.ubuntu.com/ubuntu {{ansible_distribution_release}} universe multiverse"
+      state: present
+      mode: '0444'
+    
+  - name: Ensure the APT package cache is updated
+    apt:
+      update_cache: yes
+  
+  - name: Install `pip` module dependencies
+    apt:
+      name:
+        # Python 2
+        - python-pip
+        - python-pip-whl
+        - python-setuptools
+        - python-virtualenv
+        - virtualenv
+        # Python 3
+        - python3-pip
+        - python3-virtualenv
+        - python3-setuptools
+    
+  - name: Upgrade all installed packages to latest version
+    apt:
+      upgrade: safe
+      update_cache: yes
+
+- import_playbook: ../finish.yml

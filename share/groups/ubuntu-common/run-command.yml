@@ -1,0 +1,8 @@
+- hosts: all
+  gather_facts: false
+  tasks:
+  - name: Run a command in remote host
+    become: no
+    shell: "{{ cmd }}"
+
+- import_playbook: ../finish.yml

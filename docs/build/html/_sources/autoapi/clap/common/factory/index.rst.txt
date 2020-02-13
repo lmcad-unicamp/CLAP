@@ -1,0 +1,42 @@
+:mod:`clap.common.factory`
+==========================
+
+.. py:module:: clap.common.factory
+
+
+Module Contents
+---------------
+
+.. py:class:: PlatformFactory
+
+   .. attribute:: __multi_instance_api__
+      
+
+      
+
+   .. attribute:: __module_iface__
+      
+
+      
+
+   .. method:: get_module_interface()
+      :staticmethod:
+
+
+      Get the default ModuleInterface used to pick clap modules
+
+      :return: The modules interface
+      :rtype: ModuleInterface
+
+
+   .. method:: get_instance_api()
+      :staticmethod:
+
+
+      Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers
+
+      :return: The MultiInstanceAPI object to manipulate cluster, nodes and modules
+      :rtype: MultiInstanceAPI
+
+
+

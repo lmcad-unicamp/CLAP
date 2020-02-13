@@ -1,0 +1,18 @@
+:mod:`clap.modules.example.module`
+==================================
+
+.. py:module:: clap.modules.example.module
+
+
+Module Contents
+---------------
+
+.. function:: __validate_playbook(playbook_path: str) -> str
+
+
+.. function:: print_hello(name='null')
+
+
+.. function:: execute_hello(node_ids: List[str], message='null')
+
+

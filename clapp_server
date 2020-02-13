@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+os.environ['CLAP'] = os.getcwd()
+
+from app.server2.app import app
+app.run(debug=True)

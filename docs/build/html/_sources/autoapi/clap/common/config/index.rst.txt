@@ -1,0 +1,83 @@
+:mod:`clap.common.config`
+=========================
+
+.. py:module:: clap.common.config
+
+
+Module Contents
+---------------
+
+.. py:class:: Defaults
+
+   .. attribute:: log_level
+      
+
+      
+
+   .. attribute:: app_name
+      :annotation: = clap
+
+      
+
+   .. attribute:: private_path
+      
+
+      
+
+   .. attribute:: storage_path
+      
+
+      
+
+   .. attribute:: elasticluster_storage_path
+      
+
+      
+
+   .. attribute:: drivers_path
+      
+
+      
+
+   .. attribute:: modules_path
+      
+
+      
+
+   .. attribute:: share_playbooks
+      
+
+      
+
+   .. attribute:: templates_path
+      
+
+      
+
+
+.. py:class:: PlatformDefaults
+
+   Default configurations for all platform operations.
+   Changing these variables will alter all platform operations
+
+   .. attribute:: REPOSITORY_TYPE
+      :annotation: = tinydb
+
+      
+
+   .. attribute:: VALIDATOR
+      :annotation: = schema
+
+      
+
+   .. attribute:: DRIVER_ID
+      :annotation: = elasticluster
+
+      
+
+   .. attribute:: PLATFORM_REPOSITORY
+      
+
+      
+
+

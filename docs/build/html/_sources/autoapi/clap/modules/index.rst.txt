@@ -1,0 +1,16 @@
+:mod:`clap.modules`
+===================
+
+.. py:module:: clap.modules
+
+
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   example/index.rst
+   spits/index.rst
+
+

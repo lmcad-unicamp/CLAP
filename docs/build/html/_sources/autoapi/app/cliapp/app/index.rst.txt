@@ -1,0 +1,12 @@
+:mod:`app.cliapp.app`
+=====================
+
+.. py:module:: app.cliapp.app
+
+
+Module Contents
+---------------
+
+.. function:: main(arguments: List[str])
+
+

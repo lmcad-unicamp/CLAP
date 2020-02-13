@@ -1,0 +1,774 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>clap.common.cluster_driver &mdash; CLoud Application Platform 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.cluster_driver</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../../_sources/autoapi/clap/common/cluster_driver/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-clap.common.cluster_driver">
+<span id="clap-common-cluster-driver"></span><h1><a class="reference internal" href="#module-clap.common.cluster_driver" title="clap.common.cluster_driver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.cluster_driver</span></code></a><a class="headerlink" href="#module-clap.common.cluster_driver" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver">
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.cluster_driver.</code><code class="sig-name descname">AbstractClusterDriver</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class for implementing a cloud driver. The driver is responsible for managing clusters and nodes
+and performing operations in the nodes. Also, the driver may manage its own objects (in its own repository)
+which may refer to its cluster and nodes.</p>
+<dl class="attribute">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.__driver_id__">
+<code class="sig-name descname">__driver_id__</code><em class="property"> = DriverID</em><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.__driver_id__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.__driver_name__">
+<code class="sig-name descname">__driver_name__</code><em class="property"> = Cluster Driver</em><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.__driver_name__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.__driver_version__">
+<code class="sig-name descname">__driver_version__</code><em class="property"> = 0.1.0</em><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.__driver_version__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.id">
+<code class="sig-name descname">id</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the driver ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Driver’s ID</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.name">
+<code class="sig-name descname">name</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the symbolic name of the driver</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Driver’s name</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.version">
+<code class="sig-name descname">version</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the version of the driver</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Driver’s version</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.__repr__">
+<code class="sig-name descname">__repr__</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Representative driver object string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Driver string</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.__str__">
+<code class="sig-name descname">__str__</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.get_all_clusters">
+<em class="property">abstract </em><code class="sig-name descname">get_all_clusters</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.get_all_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all clusters in the driver’s cluster repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of cluster names</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.exist_cluster">
+<em class="property">abstract </em><code class="sig-name descname">exist_cluster</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_name: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.exist_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a cluster exists in the driver’s cluster repository, given its name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster to query</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if cluster exists, false otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.create_cluster">
+<em class="property">abstract </em><code class="sig-name descname">create_cluster</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_name: str</em>, <em class="sig-param">config_path: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.create_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new cluster based on a given cluster template</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster to be created</p></li>
+<li><p><strong>config_path</strong> (<em>str</em>) – Path to the cluster’s configuration file</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The return type depends on the driver implementation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.remove_cluster">
+<em class="property">abstract </em><code class="sig-name descname">remove_cluster</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_name: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.remove_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an instantiated cluster, given its name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster to be removed</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the cluster was successfully removed and False otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.stop_cluster">
+<em class="property">abstract </em><code class="sig-name descname">stop_cluster</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_name: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.stop_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop an instantiated cluster, given its name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster to be stopped</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.get_nodes_from_cluster">
+<em class="property">abstract </em><code class="sig-name descname">get_nodes_from_cluster</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_name: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.get_nodes_from_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the nodes in the cluster, given its name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster to get the nodes</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of the node names</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.get_cluster_of_node">
+<em class="property">abstract </em><code class="sig-name descname">get_cluster_of_node</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">node_name: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.get_cluster_of_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the cluster belonging to a node</p>
+<p>:param node_name Name of the node to be found in a cluster
+:type node_name: str
+:return: The cluster name
+:rtype: str</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.start_nodes">
+<em class="property">abstract </em><code class="sig-name descname">start_nodes</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_name: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.start_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts (instantiates) nodes in an instantiated cluster, given its name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster to start (instantiate) nodes</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of the created nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.stop_nodes">
+<em class="property">abstract </em><code class="sig-name descname">stop_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, cluster_name: str, nodes: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.stop_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the nodes of an instantiated cluster</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster containing the nodes</p></li>
+<li><p><strong>nodes</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Name of the cluster nodes to be stopped</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.pause_nodes">
+<em class="property">abstract </em><code class="sig-name descname">pause_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, cluster_name: str, nodes: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.pause_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pause the nodes of an instantiated cluster</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster containing the nodes</p></li>
+<li><p><strong>nodes</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Name of the cluster nodes to be paused</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.resume_nodes">
+<em class="property">abstract </em><code class="sig-name descname">resume_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, cluster_name: str, nodes: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.resume_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resume nodes of an instantiated cluster</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster containing the nodes</p></li>
+<li><p><strong>nodes</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Name of the cluster nodes to resume</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.check_node_alive">
+<em class="property">abstract </em><code class="sig-name descname">check_node_alive</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_name: str</em>, <em class="sig-param">node_name: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.check_node_alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a node of a cluster is reachable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster containing the node</p></li>
+<li><p><strong>node_name</strong> (<em>str</em>) – Name of the node in the cluster to check</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the node is reachable and False otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.get_default_node_ip">
+<em class="property">abstract </em><code class="sig-name descname">get_default_node_ip</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_name: str</em>, <em class="sig-param">node_name: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.get_default_node_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the IP used to connect to the node of a cluster</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster containing the node</p></li>
+<li><p><strong>node_name</strong> (<em>str</em>) – Name of the node to get the connection IP</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The connection IP</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.update_node_ips">
+<em class="property">abstract </em><code class="sig-name descname">update_node_ips</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_name: str</em>, <em class="sig-param">node_name: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.update_node_ips" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the node connection IP</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster containing the node</p></li>
+<li><p><strong>node_name</strong> (<em>str</em>) – Name of the node to update the connection IP</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.get_connection_to_node">
+<em class="property">abstract </em><code class="sig-name descname">get_connection_to_node</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_name: str</em>, <em class="sig-param">node_name: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.get_connection_to_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an SSH client connected to the node. It is used to perform commands in the node</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster containing the node</p></li>
+<li><p><strong>node_name</strong> (<em>str</em>) – Name of the node to get the SSH client</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Paramiko SSH Client connected to node</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>SSHClient</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractClusterDriver.execute_playbook_in_nodes">
+<em class="property">abstract </em><code class="sig-name descname">execute_playbook_in_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, cluster_name: str, nodes: List[str], playbook_path: str, *args, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractClusterDriver.execute_playbook_in_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute an Ansible playbook in some nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_name</strong> (<em>str</em>) – Name of the cluster containing the nodes</p></li>
+<li><p><strong>nodes</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Name of the nodes to execute the playbook</p></li>
+<li><p><strong>playbook_path</strong> (<em>str</em>) – Path to the playbook to be executed</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword to be passed to the Playbook. Keyword key-values turn Ansible variables</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary with nodes as keys and their values are booleans indicating if the playbook was successfully executed in the node</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="clap.common.cluster_driver.AbstractInstanceInterface">
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.cluster_driver.</code><code class="sig-name descname">AbstractInstanceInterface</code><span class="sig-paren">(</span><em class="sig-param">repository_operator: RepositoryOperations</em>, <em class="sig-param">driver_obj: AbstractClusterDriver</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractInstanceInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class implementing the interface between the driver and the clap objects.
+The interface is responsible for create and manage clusters and nodes entries in the clap platform repository.
+Clap objects interact with the driver interface instead of the driver directly.</p>
+<dl class="attribute">
+<dt id="clap.common.cluster_driver.AbstractInstanceInterface.__driver_id__">
+<code class="sig-name descname">__driver_id__</code><em class="property"> = DriverID</em><a class="headerlink" href="#clap.common.cluster_driver.AbstractInstanceInterface.__driver_id__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractInstanceInterface.create_cluster">
+<em class="property">abstract </em><code class="sig-name descname">create_cluster</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_template_path: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractInstanceInterface.create_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a cluster based on a given template</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_template_path</strong> (<em>str</em>) – Path to the cluster’s configuration file</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Information about the new created cluster</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../cluster_repository/index.html#clap.common.cluster_repository.ClusterInfo" title="clap.common.cluster_repository.ClusterInfo">ClusterInfo</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractInstanceInterface.stop_cluster">
+<em class="property">abstract </em><code class="sig-name descname">stop_cluster</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_id: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractInstanceInterface.stop_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop a cluster based on its cluster id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to be stopped</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractInstanceInterface.start_nodes">
+<em class="property">abstract </em><code class="sig-name descname">start_nodes</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_id: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractInstanceInterface.start_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts (instantiates) nodes in an instantiated cluster, given its cluster id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to start nodes</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of the created nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../cluster_repository/index.html#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractInstanceInterface.stop_nodes">
+<em class="property">abstract </em><code class="sig-name descname">stop_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractInstanceInterface.stop_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop instantiated node, given its IDs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – IDs of the nodes to be stopped</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractInstanceInterface.check_nodes_alive">
+<em class="property">abstract </em><code class="sig-name descname">check_nodes_alive</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractInstanceInterface.check_nodes_alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if some nodes are reachable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – ID of the nodes to perform the query</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary with node_id as keys and a boolean values indicating if the node is reachable or not</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractInstanceInterface.get_connection_to_nodes">
+<em class="property">abstract </em><code class="sig-name descname">get_connection_to_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractInstanceInterface.get_connection_to_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get SSH client connected to the nodes, used to perform commands.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – ID of the nodes to get an SSH connection</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary with the node_ids as keys and the values are Paramiko SSH Clients, used to perform operation in the node</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, SSHClient]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clap.common.cluster_driver.AbstractInstanceInterface.execute_playbook_in_nodes">
+<em class="property">abstract </em><code class="sig-name descname">execute_playbook_in_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str], playbook_path: str, *args, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_driver.AbstractInstanceInterface.execute_playbook_in_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute an Ansible playbook in a set of nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – ID of the nodes to execute the playbook</p></li>
+<li><p><strong>playbook_path</strong> (<em>str</em>) – Path to the playbook to be executed</p></li>
+<li><p><strong>args</strong> – Additional arguments to be used</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword to be passed to the Playbook. Keyword key-values turn Ansible variables</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary with nodes as keys and their values are booleans indicating if the playbook was successfully executed in the node</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="clap.common.cluster_driver.Codes">
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.cluster_driver.</code><code class="sig-name descname">Codes</code><a class="headerlink" href="#clap.common.cluster_driver.Codes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Status codes for modules and nodes</p>
+<dl class="attribute">
+<dt id="clap.common.cluster_driver.Codes.NODE_STATUS_INIT">
+<code class="sig-name descname">NODE_STATUS_INIT</code><em class="property"> = initialized</em><a class="headerlink" href="#clap.common.cluster_driver.Codes.NODE_STATUS_INIT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.cluster_driver.Codes.NODE_STATUS_UNREACHABLE">
+<code class="sig-name descname">NODE_STATUS_UNREACHABLE</code><em class="property"> = unreachable</em><a class="headerlink" href="#clap.common.cluster_driver.Codes.NODE_STATUS_UNREACHABLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.cluster_driver.Codes.NODE_STATUS_REACHABLE">
+<code class="sig-name descname">NODE_STATUS_REACHABLE</code><em class="property"> = reachable</em><a class="headerlink" href="#clap.common.cluster_driver.Codes.NODE_STATUS_REACHABLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.cluster_driver.Codes.NODE_STATUS_PAUSED">
+<code class="sig-name descname">NODE_STATUS_PAUSED</code><em class="property"> = paused</em><a class="headerlink" href="#clap.common.cluster_driver.Codes.NODE_STATUS_PAUSED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.cluster_driver.Codes.NODE_STATUS_STOPPED">
+<code class="sig-name descname">NODE_STATUS_STOPPED</code><em class="property"> = stopped</em><a class="headerlink" href="#clap.common.cluster_driver.Codes.NODE_STATUS_STOPPED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Otávio Napoli
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

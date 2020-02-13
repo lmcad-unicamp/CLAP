@@ -1,0 +1,260 @@
+:mod:`clap.common.cluster_repository`
+=====================================
+
+.. py:module:: clap.common.cluster_repository
+
+
+Module Contents
+---------------
+
+.. py:class:: PlatformControlInfo(*args, **kwargs)
+
+   Bases: :class:`clap.common.repository.AbstractEntry`
+
+   This class holds control information used to create nodes and cluster in the repository (database).
+   It holds an incremental index to be used when creating such elements.
+
+
+.. py:class:: ClusterInfo(**kwargs)
+
+   Bases: :class:`clap.common.repository.AbstractEntry`
+
+   This class holds information about a cluster that is stored in the repository and used by several interfaces
+   Each cluster is unique and is composed by the following elements:
+       * cluster_id: The unique identification of the cluster, used to perform operations across modules and instance interfaces
+       * cluster_name: The name of the cluster used by the driver object that controls this cluster
+       * provider: The cluster (or cloud) provider that this cluster is attached (e.g., aws_ec2_boto, azure, ...)
+       * keypair: The name of the keypair used to connect to the machines created in this cluster
+       * region: The avaliability zone that this cluster was created
+       * template: Name of the template that was used to create this cluster
+       * driver_id: ID of the driver that controls this cluster
+       * driver_version: Version of the driver used by this cluster
+       * tags: Additional user tags for cluster identification
+
+   .. method:: __repr__(self)
+
+
+
+
+.. py:class:: NodeInfo(**kwargs)
+
+   Bases: :class:`clap.common.repository.AbstractEntry`
+
+   This class holds information about a node that is stored in the repository and used by several interfaces
+   Each node is unique and is composed by the following elements:
+       * node_id: The unique identification of the node, used to perform operations across modules and instance interfaces
+       * node_name: The name of the node used by the driver object that controls it
+       * cluster_id: ID of the cluster that this node is attached to
+       * flavor: Instance flavor (e.g., t2.micro in aws)
+       * status: Last known status of the node (see PlatformCodes)
+       * ip: IP address used to connect to this node (address used to perform SSH)
+       * driver_id: ID of the driver that controls this node
+       * driver_version: Version of the driver used by this node
+       * keypair: The name of the keypair used to connect to the machines created in the node cluster
+       * key: The private key file used to perform SSH and connect to machines
+       * tags: Additional user tags for node identification
+
+   .. method:: __repr__(self)
+
+
+
+
+.. py:class:: RepositoryOperations(platform_repository: str, repository_type: str, validator: AbstractDataValidator = None)
+
+   .. method:: __validate(self, entry: AbstractEntry)
+
+
+
+   .. method:: _get_platform_repository(self)
+
+
+      Get the platform repository connection
+
+      :return: The platform database connection
+      :rtype: AbstractRepository
+
+
+   .. method:: exists_platform_db(self)
+
+
+      Check if the platform database exists
+
+      :return: A boolean representing the existence of the platform database
+      :rtype: bool
+
+
+   .. method:: create_platform_db(self, exists: str = 'pass')
+
+
+      Creates the platform Database
+
+      :param exists: This parameter can be:
+      * 'pass' (default): will do nothing if the platform database tables already exists
+      * 'fail': will raise `TableAlreadyExists` exception
+      * 'overwrite': will drop and create a new table, if it already exists
+      :return: A open repository connection
+      :rtype: AbstractRepository
+
+
+   .. method:: _write_platform_control_info(self, control: PlatformControlInfo)
+
+
+      Helper function to write Platform Control information on the correct table in the repository
+
+      :param control: Control information to be written
+      :type control: PlatformControlInfo
+      :return: None
+
+
+   .. method:: _read_platform_control_info(self)
+
+
+      Helper function to read Platform control information from the correct table in the repository
+
+      :return: PlatformControlInfo
+
+
+   .. method:: _write_cluster_info(self, cluster: ClusterInfo, create: bool = False)
+
+
+      Helper function to write Cluster information on the correct table in the repository
+
+      :param cluster: Cluster information to be written
+      :type cluster: ClusterInfo
+      :param create: If true, create a new element, else update the one with same id
+      :type create: str
+      :return: None
+
+
+   .. method:: _read_clusters_info(self, **where)
+
+
+      Helper function to read Cluster information from the correct table in the repository
+
+      :param where: Dictionary of criterion to be matched when retrieving elements (e.g., {'cluster.id' == 'xxx'})
+      :return: List of cluster matching the criterion passed
+      :rtype: List[ClusterInfo]
+
+
+   .. method:: _write_node_info(self, node: NodeInfo, create: bool = False)
+
+
+      Helper function to write Node information on the correct table in the repository
+
+      :param node: node information to be written
+      :type node: NodeInfo
+      :param create: If true, create a new element, else update the one with same id
+      :type create: str
+      :return: None
+
+
+   .. method:: _read_nodes_info(self, **where)
+
+
+      Helper function to read Nodes information from the correct table in the repository
+
+      :param where: Dictionary of criterion to be matched when retrieving elements (e.g., {'node.id' == 'xxx'})
+      :return: List of nodes matching the criterion passed
+      :rtype: List[NodeInfo]
+
+
+   .. method:: _delete_clusters_info(self, **where)
+
+
+
+   .. method:: _delete_nodes_info(self, **where)
+
+
+
+   .. method:: get_platform_control(self)
+
+
+
+   .. method:: get_cluster(self, cluster_id: str)
+
+
+
+   .. method:: get_clusters(self, cluster_ids: List[str])
+
+
+      Given a list with cluster ids, it returns all the Cluster Information that matches the Ids in the repository
+
+      :param cluster_ids: List of cluster ids to be queried
+      :type cluster_ids: List[str]
+      :return: Matched cluster information
+      :rtype: List[ClusterInfo]
+
+
+   .. method:: get_all_clusters(self)
+
+
+      Get the information of all created cluster in the repository
+
+      :return: List with the information of all created cluster
+      :rtype: List[ClusterInfo]
+
+
+   .. method:: get_clusters_by_tags(self, **tags)
+
+
+      Given a dictionary of tags, it get all the cluster in the repository that matches the tags passed
+
+      :param tags: Tags to be matched
+      :return: List of cluster that match the passed tags
+      :rtype: List[ClusterInfo]
+
+
+   .. method:: remove_cluster(self, cluster_id: str)
+
+
+
+   .. method:: get_node(self, node_id)
+
+
+
+   .. method:: get_nodes(self, node_ids: List[str])
+
+
+      Given a list with node ids, it returns all the Node Information that matches the ids in the repository
+
+      :param node_ids: List of node ids to be queried
+      :type node_ids: List[str]
+      :return: Matched nodes information
+      :rtype: List[NodeInfo]
+
+
+   .. method:: get_all_nodes(self)
+
+
+      Get the information of all created nodes in the repository
+
+      :return: List with the information of all created nodes
+      :rtype: List[NodeInfo]
+
+
+   .. method:: get_nodes_from_cluster(self, cluster_id: str)
+
+
+      Given a list of cluster ids, return all nodes in cluster that matches the ids passed in the repository
+
+      :param cluster_id: Id of the cluster
+      :type cluster_id: str
+      :return: All the nodes that matches the cluster ids passed
+      :rtype: List[NodeInfo]
+
+
+   .. method:: get_nodes_by_tags(self, **tags)
+
+
+      Given a dictionary of tags, it get all the nodes in the repository that matches the tags passed
+
+      :param tags: Tags to be matched
+      :return: List of nodes that match the passed tags
+      :rtype: List[NodeInfo]
+
+
+   .. method:: remove_node(self, node_id: str)
+
+
+
+

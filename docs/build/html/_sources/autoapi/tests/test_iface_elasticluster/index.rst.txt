@@ -1,0 +1,6 @@
+:mod:`tests.test_iface_elasticluster`
+=====================================
+
+.. py:module:: tests.test_iface_elasticluster
+
+

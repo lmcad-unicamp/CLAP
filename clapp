@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+os.environ['CLAP'] = os.getcwd()
+
+from app.cliapp.app import main
+sys.exit(main(sys.argv[1:]))

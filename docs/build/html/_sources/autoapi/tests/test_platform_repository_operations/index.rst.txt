@@ -1,0 +1,6 @@
+:mod:`tests.test_platform_repository_operations`
+================================================
+
+.. py:module:: tests.test_platform_repository_operations
+
+
