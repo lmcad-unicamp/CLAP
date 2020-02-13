@@ -301,3 +301,5 @@ See modules
 * The `node connect` command uses an old tty API and commands may be slow **yet**.
 
 * Regular expressions to select nodes are not suported **yet**
+
+* CLAP is not portable yet. For now, configurations stills depends on local information
