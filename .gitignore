@@ -41,4 +41,4 @@ coverage.xml
 target/
 
 # Environment
-clap-env/* 
+clap-env/ 
