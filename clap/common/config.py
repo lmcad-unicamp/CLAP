@@ -6,6 +6,9 @@ if 'CLAP' not in os.environ:
     raise ValueError('CLAP environment variable is not set. Please set the CLAP variable in your system, '
                      'pointing directly to the clap root directory!')
 
+if 'CLAP_PATH' not in os.environ:
+    raise ValueError('CLAP_PATH environment variable is not set. Please set the CLAP_PATH variable in your system!')
+
 
 class Defaults:
     log_level = logging.INFO
@@ -14,11 +17,11 @@ class Defaults:
     DRIVER_ID = 'elasticluster'
     DEFAULT_CONF_TYPE = 'json'
 
-    configs_path = path_extend('~', '.clap', 'configs')
-    private_path = path_extend('~', '.clap', 'private')
-    storage_path = path_extend('~', '.clap', 'storage')
-    groups_path = path_extend('~', '.clap', 'groups')
-    modules_path = path_extend('~', '.clap', 'modules')
+    configs_path = path_extend('$CLAP_PATH', 'configs')
+    private_path = path_extend('$CLAP_PATH', 'private')
+    storage_path = path_extend('$CLAP_PATH', 'storage')
+    groups_path = path_extend('$CLAP_PATH', 'groups')
+    modules_path = path_extend('$CLAP_PATH', 'modules')
     elasticluster_storage_path = path_extend(storage_path, 'clusters.d')
 
     cloud_conf = path_extend(configs_path, 'providers.yaml')

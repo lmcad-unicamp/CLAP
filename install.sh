@@ -10,11 +10,13 @@ sudo apt-get update
 sudo apt-get install -y gcc g++ git libc6-dev libffi-dev libssl-dev python3-dev virtualenv python3 python3-pip || abort "Executing apt command"
 echo "OK"
 
+CLAP_PATH=~/.clap
 
 echo "Creating clap virtualenv..."
 virtualenv -p python3 clap-env || abort "Creating venv"
-echo 'export CLAP='$PWD >> clap-env/bin/activate || abort "Error writting on activate"
-echo 'export PATH=$PATH':$PWD >> clap-env/bin/activate || abort "Error writting on activate"
+echo "export CLAP=$PWD" >> clap-env/bin/activate || abort "Error writting on activate"
+echo "export CLAP_PATH=$CLAP_PATH" >> clap-env/bin/activate || abort "Error writting on activate"
+echo "export PATH=$PATH:$PWD" >> clap-env/bin/activate || abort "Error writting on activate"
 source clap-env/bin/activate || abort "Activating venv"
 echo "OK"
 
@@ -34,20 +36,19 @@ pip install -e . || abort "Installing elasticluster"
 cd ../..
 echo "OK"
 
-rm -rf downloads
-
 echo "Installing clap requirements"
 pip install -r requirements.txt || abort "Installing clap requirements"
 echo "OK"
 
 echo "Creating default folders"
-mkdir -p ~/.clap/configs/
-mkdir -p ~/.clap/modules/
-mkdir -p ~/.clap/groups/
-mkdir -p ~/.clap/private/
-mkdir -p ~/.clap/storage/
-mkdir -p ~/.clap/storage/clusters.d
-cp -r ./share/configs/ ~/.clap/
-cp -r ./share/groups/ ~/.clap/
+echo "Using default CLAP path: $CLAP_PATH" 
+mkdir -p $CLAP_PATH/configs/
+mkdir -p $CLAP_PATH/modules/
+mkdir -p $CLAP_PATH/groups/
+mkdir -p $CLAP_PATH/private/
+mkdir -p $CLAP_PATH/storage/
+mkdir -p $CLAP_PATH/storage/clusters.d
+cp -r ./share/configs/ $CLAP_PATH
+cp -r ./share/groups/ $CLAP_PATH
 
 echo "OK"

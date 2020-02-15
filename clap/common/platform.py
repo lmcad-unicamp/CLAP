@@ -59,15 +59,6 @@ class ModuleInterface:
 
         return [str(k) for k in self.__modules_map__.keys()]
 
-    def get_group(self, group_name):
-        pass
-
-    def get_groups(self):
-        pass
-
-    def get_group_names(self):
-        pass
-
 
 class GroupInterface:
     __groups_actions_map__ = dict()
