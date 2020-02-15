@@ -34,6 +34,7 @@ pip install -e . || abort "Installing elasticluster"
 cd ../..
 echo "OK"
 
+rm -rf downloads
 
 echo "Installing clap requirements"
 pip install -r requirements.txt || abort "Installing clap requirements"
