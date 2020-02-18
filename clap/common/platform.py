@@ -73,13 +73,17 @@ class GroupInterface:
                 spec = importlib.util.spec_from_file_location(pkg_name, path_extend(Defaults.groups_path, pkg_name, '__init__.py'))
                 cls = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(cls)
-                GroupInterface.__groups_actions_map__[pkg_name] = cls.actions
+                GroupInterface.__groups_actions_map__[pkg_name] = cls
 
     def __init__(self):
         self.__find_groups()
 
-    def get_group(self, group_name: str) -> Tuple[str, Dict[str, str]]:
-        return path_extend(Defaults.groups_path, group_name), GroupInterface.__groups_actions_map__[group_name]
+    def get_group(self, group_name: str) -> Tuple[str, Dict[str, str], List[str], List[str]]:
+        group = GroupInterface.__groups_actions_map__[group_name]
+        actions = getattr(group, 'actions', dict())
+        hosts = getattr(group, 'hosts', list())
+        dependencies = getattr(group, 'dependencies', list())
+        return path_extend(Defaults.groups_path, group_name), actions, hosts, dependencies
 
     def get_group_names(self) -> List[str]:
         return list(GroupInterface.__groups_actions_map__.keys())
@@ -230,7 +234,7 @@ class MultiInstanceAPI:
 
     def add_nodes_to_group(self, node_ids: List[str], group: str, group_args: Dict = None, error_action='ignore'):
         log.info("Adding nodes `{}` to group `{}`".format(', '.join(node_ids), group))
-        group_path, group_actions = GroupInterface().get_group(group)
+        group_path, group_actions, group_hosts, group_dependencies = GroupInterface().get_group(group)
 
         if 'setup' in group_actions:
             setup_actions = [group_actions['setup']] if isinstance(group_actions['setup'], str) else group_actions['setup']
@@ -257,7 +261,7 @@ class MultiInstanceAPI:
 
     def execute_group_action(self, node_ids: List[str], group: str, action: str, group_args: Dict = None, error_action='ignore'):
         log.info("Executing action `{}` of group `{}` in nodes `{}`".format(action, group, ', '.join(node_ids)))
-        group_path, group_actions = GroupInterface().get_group(group)
+        group_path, group_actions, group_hosts, group_dependencies = GroupInterface().get_group(group)
 
         node_with_group = self.__check_nodes_in_group(node_ids, group)
         if len(node_ids) != len(node_with_group):
@@ -282,7 +286,7 @@ class MultiInstanceAPI:
 
     def remove_node_from_group(self, node_ids: List[str], group: str, group_args: Dict = None, error_action='ignore'):
         log.info("Removing group `{}` from nodes `{}`".format(group, ', '.join(node_ids)))
-        group_path, group_actions = GroupInterface().get_group(group)
+        group_path, group_actions, group_hosts, group_dependencies = GroupInterface().get_group(group)
 
         node_with_group = self.__check_nodes_in_group(node_ids, group)
         if len(node_ids) != len(node_with_group):
