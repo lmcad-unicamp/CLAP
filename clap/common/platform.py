@@ -292,6 +292,21 @@ class MultiInstanceAPI:
     def __check_dependencies(self, node_ids: List[str], group_dependencies: List[str]):
         pass
 
+    def add_nodes_to_group(self,
+                           node_ids: List[str],
+                           group_name: str,
+                           group_args: Dict = None,
+                           error_action: str = 'error'):
+        split_vals = group_name.split('/')
+
+        if len(split_vals) > 2:
+            raise Exception("Invalid group and hosts `{}`".format(group_name))
+
+        return self.__add_nodes_to_group(
+            {split_vals[0]: node_ids if len(split_vals) == 1 else {split_vals[1]: node_ids}},
+            group_args,
+            error_action)
+
     # Dict {
     #   'group_name': {
     #       'host_name': ['node-1', 'node-2']  --> if invalid hostname -- error
@@ -300,10 +315,10 @@ class MultiInstanceAPI:
     #   'group_name': ['node-1', 'node-2'] --> If group have no hosts ok, else add to nodes to all hosts in the group
     # }
 
-    def add_nodes_to_group(self,
-                           group_hosts_map: Dict[str, Union[List[str], Dict[str, List[str]]]],
-                           group_args: Dict = None,
-                           error_action='error'):
+    def __add_nodes_to_group(self,
+                             group_hosts_map: Dict[str, Union[List[str], Dict[str, List[str]]]],
+                             group_args: Dict = None,
+                             error_action: str = 'error'):
         node_ids = []
 
         for group_name, hosts in group_hosts_map.items():

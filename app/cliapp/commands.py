@@ -222,7 +222,6 @@ def node_connect(namespace: argparse.Namespace):
     print("Connection to `{}` closed".format(namespace.node_id))
 
 
-## TODO redo this func
 def add_group_to_node(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
     try:
