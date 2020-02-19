@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import List, Dict
+from typing import List, Dict, Any, Union
 from paramiko import SSHClient
 from clap.common.cluster_repository import RepositoryOperations, NodeInfo
 
@@ -46,7 +46,10 @@ class AbstractInstanceInterface:
         raise NotImplementedError("Must implement this method in derived classes!")
 
     @abstractmethod
-    def execute_playbook_in_nodes(self, node_ids: List[str], playbook_path: str, *args, **kwargs) -> Dict[str, bool]:
+    def execute_playbook_in_nodes(self, playbook_path: str,
+                                  group_hosts_map: Dict[str, List[str]],
+                                  extra_args: Dict[str, str] = None,
+                                  group_vars: Dict[str, Dict[str, str]] = None) -> Dict[str, bool]:
         raise NotImplementedError("Must implement this method in derived classes!")
 
 

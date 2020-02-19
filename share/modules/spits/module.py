@@ -39,7 +39,7 @@ def __deregister_installation(node_ids: List[str]):
 
 def spits_install(node_ids: List[str], spits_src: str):
     playbook = __validate_playbook(os.path.join(Defaults.share_playbooks, 'spits', 'spits_install.yml'))
-    installeds = PlatformFactory.get_instance_api().execute_playbook_in_nodes(node_ids, playbook, spits_src=spits_src)
+    installeds = PlatformFactory.get_instance_api().execute_playbook_in_nodes(playbook, node_ids)
     __register_installation([node_id for node_id, installed in installeds.items() if installed])
     return installeds
 
@@ -50,7 +50,7 @@ def spits_check(node_ids: List[str]):
 
 def spits_uninstall(node_ids: List[str], *args, **kwargs):
     playbook = __validate_playbook(os.path.join(Defaults.share_playbooks, 'spits', 'spits_uninstall.yml'))
-    uninstalleds = PlatformFactory.get_instance_api().execute_playbook_in_nodes(node_ids, playbook, *args, **kwargs)
+    uninstalleds = PlatformFactory.get_instance_api().execute_playbook_in_nodes(playbook, node_ids)
     __deregister_installation([node_id for node_id, uninstalled in uninstalleds.items() if uninstalled])
     return uninstalleds
 
@@ -248,15 +248,7 @@ def spits_job_create(job_id: str,  job_conf_path: str, node_ids: List[str]) -> S
     log.info("Creating job `{}` based on `{}` in nodes `{}`".format(
         job.job_id, job.job_name, ', '.join(node_ids)))
     # Execute playbook in nodes with parameters passed. The key-value parameters are replaced in ansible file
-    executed_nodes = platform.execute_playbook_in_nodes(
-        node_ids,
-        playbook,
-        job_id="{}".format(job.job_id),
-        job_name="{}".format(job.job_name),
-        spits_binary_path="{}".format(job.spits_binary_path),
-        spits_binary="{}".format(os.path.basename(job.spits_binary_path)),
-        spits_args="{}".format(job.spits_binary_args)
-    )
+    executed_nodes = platform.execute_playbook_in_nodes(playbook, node_ids)
 
     # Get successfully executed nodes (nodes with status = True)
     nodes = [node for node, status in executed_nodes.items() if status]
@@ -320,7 +312,7 @@ def spits_job_copy(job_id: str, dest: str):
     except Exception as err:
         raise Exception("No job manager found for job `{}`: {}".format(job_id, err))
 
-    return platform.execute_playbook_in_nodes([jm_process.node_id], playbook, job_id=job_id, destination=dest)[jm_process.node_id]
+    return platform.execute_playbook_in_nodes(playbook, [jm_process.node_id])[jm_process.node_id]
 
 
 # TODO Implement method job_stop
@@ -336,7 +328,7 @@ def spits_job_stop(job_id: str):
         raise Exception("Invalid job `{}`: {}".format(job_id, err))
 
     nodes = list(set([process.node_id for process in processes]))
-    executed_nodes = platform.execute_playbook_in_nodes(nodes, playbook, job_id=job_id)
+    executed_nodes = platform.execute_playbook_in_nodes(playbook, nodes)
 
     job_remove = True
 
@@ -382,7 +374,7 @@ def spits_process_start_jm(jobid: str, node_ids: List[str]):
     if not all(node in job.nodes for node in node_ids):
         raise Exception("Not all nodes have created job `{}`".format(job.job_id))
 
-    executed_nodes = platform.execute_playbook_in_nodes(node_ids, playbook, job_id=job.job_id)
+    executed_nodes = platform.execute_playbook_in_nodes(playbook, node_ids)
 
     ok_executed_nodes = [node for node, status in executed_nodes.items() if status]
     ips = {node.node_id: node.ip for node in platform.get_nodes(ok_executed_nodes)}
@@ -452,7 +444,7 @@ def spits_process_start_tm(jobid: str, node_ids: List[str]):
     if not all(node in job.nodes for node in node_ids):
         raise Exception("Not all nodes have created job `{}`".format(job.job_id))
 
-    executed_nodes = platform.execute_playbook_in_nodes(node_ids, playbook, job_id=job.job_id)
+    executed_nodes = platform.execute_playbook_in_nodes(playbook, node_ids)
 
     ok_executed_nodes = [node for node, status in executed_nodes.items() if status]
     ips = {node.node_id: node.ip for node in platform.get_nodes(ok_executed_nodes)}

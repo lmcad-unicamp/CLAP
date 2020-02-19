@@ -1,10 +1,10 @@
 from .module import *
 
 # Module Name
-name = 'spits'
+name = 'template'
 
 # Module description
-description = 'Spits Module for manage Spits Jobs'
+description = 'Template'
 
 # Long description
 long_description = 'Long SPITS module description'

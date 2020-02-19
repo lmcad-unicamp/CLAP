@@ -192,7 +192,7 @@ def node_playbook(namespace: argparse.Namespace):
     except Exception:
         raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
                         "Please check the extra parameters passed")
-    multi_instance.execute_playbook_in_nodes(namespace.node_ids, namespace.playbook_file, **extra)
+    multi_instance.execute_playbook_in_nodes(namespace.playbook_file, namespace.node_ids)
 
 
 def node_exec_command(namespace: argparse.Namespace):

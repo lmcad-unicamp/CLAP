@@ -9,7 +9,7 @@ from collections import defaultdict
 from datetime import datetime
 from subprocess import call
 from time import time
-from typing import Optional, List, Dict, Set, Tuple
+from typing import Optional, List, Dict, Set, Tuple, Union, Any
 
 import elasticluster.conf
 import paramiko
@@ -203,7 +203,7 @@ class ElasticCreator:
 
     @staticmethod
     def get_cluster_obj(cluster_name: str, storage_path: str = Defaults.elasticluster_storage_path,
-                        storage_type: str = 'json') -> Optional[Cluster]:
+                        storage_type: str = 'json') -> Cluster:
         paths = [storage_path[:-2] if storage_path.endswith('.d') else storage_path]
         configfiles = elasticluster.conf._expand_config_file_list(paths)
         if not configfiles:
@@ -231,14 +231,14 @@ class ElasticCreator:
         return False
 
     @staticmethod
-    def get_node_from_cluster(cluster_name: str, node_name: str) -> Optional[Node]:
+    def get_node_from_cluster(cluster_name: str, node_name: str) -> Node:
         cluster = ElasticCreator.get_cluster_obj(cluster_name)
         if not cluster:
             raise Exception("Invalid elasticluster cluster with name `{}`".format(cluster_name))
         return cluster.get_node_by_name(node_name)
 
     @staticmethod
-    def get_nodes_from_cluster(cluster_name: str, nodes: List[str]) -> Optional[List[Node]]:
+    def get_nodes_from_cluster(cluster_name: str, nodes: List[str]) -> List[Node]:
         cluster = ElasticCreator.get_cluster_obj(cluster_name)
         if not cluster:
             raise Exception("Invalid elasticluster cluster with name `{}`".format(cluster_name))
@@ -257,8 +257,12 @@ class ElasticCreator:
 
 
 class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
-    def __init__(self, ansible_provider: AnsibleSetupProvider):
+    def __init__(self, ansible_provider: AnsibleSetupProvider,
+                 kind_groups_map: Dict[str, List[str]],
+                 kind_key_value_vars: Dict[str, Dict[str, str]]):
         self.__dict__.update(ansible_provider.__dict__)
+        self.groups = kind_groups_map
+        self.environment = kind_key_value_vars
 
     def run_playbook(self, cluster: Cluster, nodes: List[Node], playbook: str, extra_args=tuple()) -> Dict[str, bool]:
         run_id = (
@@ -655,16 +659,6 @@ def elasticluster_get_connection_to_node(cluster_name: str, node_name: str, *arg
     return node.connect(keyfile, timeout)
 
 
-def elasticluster_execute_playbook_in_nodes(cluster_name: str, nodes: List[str], playbook_path: str, *args,
-                                            **kwargs) -> Dict[str, bool]:
-    nodes = [ElasticCreator.get_node_from_cluster(cluster_name, node) for node in nodes]
-    cluster = ElasticCreator.get_cluster_obj(cluster_name)
-    wrapper = AnsibleSetupProviderWrapper(cluster._setup_provider)
-    extra_args = tuple(['{}="{}"'.format(k, v) for k, v in kwargs.items()])
-    return wrapper.run_playbook(
-        cluster, nodes, playbook_path, extra_args=extra_args)
-
-
 class ElasticlusterInterface(AbstractInstanceInterface):
     __interface_id__ = 'elasticluster'
 
@@ -849,18 +843,33 @@ class ElasticlusterInterface(AbstractInstanceInterface):
 
         return connections
 
-    def execute_playbook_in_nodes(self, node_ids: List[str], playbook_path: str, *args, **kwargs) -> Dict[str, bool]:
-        node_ids = list(set(node_ids))
-        nodes_info = self.repository_operator.get_nodes(node_ids)
+    def execute_playbook_in_nodes(self, playbook_path: str,
+                                  group_hosts_map: Dict[str, List[str]],
+                                  extra_args: Dict[str, str] = None,
+                                  group_vars: Dict[str, Dict[str, str]] = None) -> Dict[str, bool]:
+        node_ids = set([node_id for node_list in group_hosts_map.values() for node_id in node_list])
+        nodes_info = self.repository_operator.get_nodes(list(node_ids))
+        reverse_map = {node.eclust_node_name: node.node_id for node in nodes_info}
         cluster_ids = set([node.cluster_id for node in nodes_info])
         executed_nodes = dict()
 
         for cluster_id in cluster_ids:
+            ecc_nodes = list()
             cluster_info = self.repository_operator.get_cluster(cluster_id)
-            node_names = set([node.eclust_node_name for node in nodes_info
-                              if node.cluster_id == cluster_id])
-            executed_nodes.update(elasticluster_execute_playbook_in_nodes(
-                cluster_info.eclust_cluster_name, list(node_names), playbook_path, *args, **kwargs))
+            ecc_cluster = ElasticCreator.get_cluster_obj(cluster_name=cluster_info.eclust_cluster_name)
 
-        reverse_map = {node.eclust_node_name: node.node_id for node in nodes_info}
+            host_set = {host for group, _hosts in group_hosts_map.items() for host in _hosts}
+            nodeid_groups_map = {host: [group for group, _hosts in group_hosts_map.items() if host in _hosts] for host in host_set}
+            for nodeid, groups, in nodeid_groups_map.items():
+                node = ElasticCreator.get_node_from_cluster(cluster_id, self.repository_operator.get_node(nodeid).eclust_node_name)
+                node.kind = nodeid
+                ecc_nodes.append(node)
+
+            group_vars = group_vars if group_vars else {}
+            ecc_ansible_wrapper = AnsibleSetupProviderWrapper(ecc_cluster._setup_provider, nodeid_groups_map, group_vars)
+            ecc_extra_args = tuple(['{}="{}"'.format(k, v) for k, v in extra_args.items()]) if extra_args else {}
+
+            executed_nodes.update(ecc_ansible_wrapper.run_playbook(
+                ecc_cluster, ecc_nodes, playbook_path, extra_args=ecc_extra_args))
+
         return {reverse_map[node_name]: status for node_name, status in executed_nodes.items()}
