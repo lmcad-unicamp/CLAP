@@ -20,7 +20,7 @@ class Defaults:
     configs_path = path_extend('$CLAP_PATH', 'configs')
     private_path = path_extend('$CLAP_PATH', 'private')
     storage_path = path_extend('$CLAP_PATH', 'storage')
-    groups_path = path_extend('$CLAP_PATH', 'groups')
+    groups_path = path_extend('$CLAP_PATH', 'groups', 'groups')
     modules_path = path_extend('$CLAP_PATH', 'modules')
     elasticluster_storage_path = path_extend(storage_path, 'clusters.d')
 

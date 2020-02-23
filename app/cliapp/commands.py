@@ -256,8 +256,16 @@ def list_groups(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
     groups = multi_instance.get_groups()
 
-    for group in sorted(groups):
-        print('* ', group)
+    for group_name, group_actions, group_hosts, group_dependencies in sorted(groups, key=lambda x: x[0]):
+        print('* ' + group_name)
+        if group_actions:
+            print(' ' * 4 + 'actions: ' + ', '.join(sorted(group_actions)))
+        if group_hosts:
+            print(' ' * 4 + 'hosts: ' + ', '.join(sorted(group_hosts)))
+        if group_dependencies:
+            print(' ' * 4 + 'dependencies: ' + ', '.join(sorted(group_dependencies)))
+
+
 
     print("Listed {} groups".format(len(groups)))
 
