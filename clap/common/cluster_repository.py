@@ -82,8 +82,9 @@ class NodeInfo(AbstractEntry):
         super(NodeInfo, self).__init__(**kwargs)
 
     def __repr__(self):
-        return 'Node(id=`{}`, instance_type=`{}`, status=`{}`, provider_id: `{}`, connection_ip=`{}`, groups=`{}`, update_time=`{}`)'.format(
-            self.node_id, self.instance_type, self.status, self.provider_id, self.ip, ', '.join(list(self.groups.keys())), datetime.fromtimestamp(self.update_time))
+        return 'Node(id=`{}`, instance_type=`{}`, status=`{}`, provider_id: `{}`, connection_ip=`{}`, groups=`{}`, tags=`{}`)'.format(
+            self.node_id, self.instance_type, self.status, self.provider_id, self.ip,
+            ', '.join(list(self.groups.keys())), ', '.join(["{}={}".format(k, v) for k, v in self.tags.items()]))
 
 
 class RepositoryOperations:

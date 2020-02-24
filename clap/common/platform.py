@@ -148,6 +148,10 @@ class MultiInstanceAPI:
             self._get_instance_iface(cluster.driver_id).pause_nodes([
                 node.node_id for node in nodes if node.cluster_id == cluster.cluster_id])
 
+    # TODO implement
+    def resume_nodes(self, node_ids: List[str]):
+        pass
+
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
         nodes = self.get_nodes(node_ids)
         checked_nodes = dict()
@@ -212,6 +216,7 @@ class MultiInstanceAPI:
                 node.node_id for node in nodes if node.cluster_id == cluster.cluster_id], *args, **kwargs))
         return connections
 
+
     def get_node(self, node_id: str) -> NodeInfo:
         try:
             return self.__repository_operations.get_node(node_id)
@@ -229,6 +234,39 @@ class MultiInstanceAPI:
                 node_set.difference([node.node_id for node in nodes]))))
 
         return nodes
+
+    def get_nodes_with_tags(self, tags: Dict[str, str]) -> List[NodeInfo]:
+        tagged_nodes = []
+        for node in self.__repository_operations.get_all_nodes():
+            to_add = True
+            for tag, val in tags.items():
+                if tag not in node.tags or node.tags[tag] != val:
+                    to_add = False
+                    break
+
+            if to_add:
+                tagged_nodes.append(node)
+
+        return tagged_nodes
+
+    def add_tags_to_nodes(self, node_ids: List[str], tags: Dict[str, str]) -> List[NodeInfo]:
+        added_nodes = []
+        for node in self.get_nodes(node_ids):
+            node.tags.update(tags)
+            self.__repository_operations.write_node_info(node, create=False)
+            added_nodes.append(node)
+        return added_nodes
+
+    def remove_tags_from_nodes(self, node_ids: List[str], tags: List[str]) -> List[NodeInfo]:
+        removed_nodes = []
+        for node in self.get_nodes(node_ids):
+            for tag in tags:
+                if tag in list(node.tags.keys()):
+                    node.tags.pop(tag)
+            self.__repository_operations.write_node_info(node)
+            removed_nodes.append(node)
+
+        return removed_nodes
 
     def get_groups(self) -> List[Tuple[str, List[str], List[str], str]]:
         groups = []

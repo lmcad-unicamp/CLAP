@@ -35,6 +35,7 @@ def common_arguments_parser():
     node_subcom_parser.set_defaults(func=node_start)
 
     node_subcom_parser = node_com_parser.add_parser('list', help='List nodes')
+    node_subcom_parser.add_argument('--tag', action='store', help='Get nodes with specified tag')
     node_subcom_parser.set_defaults(func=node_list)
 
     node_subcom_parser = node_com_parser.add_parser('show', help='Show detailed information of the nodes')
@@ -99,6 +100,20 @@ def common_arguments_parser():
                                      help="Keyworded (format: x=y) Arguments to be passed to the action")
     group_subcom_parser.set_defaults(func=remove_group_from_node)
 
+    # Tag commands
+    tag_parser = commands_parser.add_parser('tag', help='Tag nodes')
+    tag_com_parser = tag_parser.add_subparsers(title='subcommand', dest='subcommand')
+
+    tag_subcom_parser = tag_com_parser.add_parser('add', help='Add tags to nodes')
+    tag_subcom_parser.add_argument('tag', action='store', help='Tag to add. Format: key=val')
+    tag_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be added to the group')
+    tag_subcom_parser.set_defaults(func=node_add_tag)
+
+    tag_subcom_parser = tag_com_parser.add_parser('remove', help='Remove tags to nodes')
+    tag_subcom_parser.add_argument('tag', action='store', help='Tag to add. Format: key=val')
+    tag_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be added to the group')
+    tag_subcom_parser.set_defaults(func=node_remove_tag)
+
     return parser, commands_parser
 
 
@@ -143,7 +158,17 @@ def node_start(namespace: argparse.Namespace):
 
 def node_list(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
-    nodes = multi_instance.get_nodes()
+
+    if namespace.tag:
+        try:
+            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+        except Exception:
+            raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
+                            "Please check the tag parameters passed")
+        nodes = multi_instance.get_nodes_with_tags(tag)
+
+    else:
+        nodes = multi_instance.get_nodes()
 
     for node_info in nodes:
         print('* ', node_info)
@@ -220,6 +245,23 @@ def node_connect(namespace: argparse.Namespace):
     interactive.interactive_shell(channel)
     ssh_client.close()
     print("Connection to `{}` closed".format(namespace.node_id))
+
+
+def node_add_tag(namespace: argparse.Namespace):
+    multi_instance = __get_instance_api(namespace)
+
+    try:
+        tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+    except Exception:
+        raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
+                        "Please check the tag parameters passed")
+
+    nodes = multi_instance.add_tags_to_nodes(namespace.node_ids, tag)
+    print("Added tag {} for {} nodes".format(namespace.tag, len(nodes)))
+
+
+def node_remove_tag(namespace: argparse.Namespace):
+    pass
 
 
 def add_group_to_node(namespace: argparse.Namespace):
