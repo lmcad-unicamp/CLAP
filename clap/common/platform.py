@@ -69,21 +69,26 @@ class GroupInterface:
     @staticmethod
     def __find_groups():
         if not GroupInterface.__groups_actions_map__:
-            for pkg_name in setuptools.find_packages(Defaults.groups_path):
-                spec = importlib.util.spec_from_file_location(pkg_name, path_extend(Defaults.groups_path, pkg_name, '__init__.py'))
+            groups_path = path_extend(Defaults.groups_path, 'groups')
+            for group_file in os.listdir(groups_path):
+                if not group_file.endswith('.py') or group_file.startswith('__'):
+                    continue
+
+                spec = importlib.util.spec_from_file_location(
+                    groups_path, path_extend(groups_path, group_file))
                 cls = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(cls)
-                GroupInterface.__groups_actions_map__[pkg_name] = cls
+                GroupInterface.__groups_actions_map__[group_file.split('.')[0]] = cls
 
     def __init__(self):
         self.__find_groups()
 
-    def get_group(self, group_name: str) -> Tuple[str, Dict[str, str], List[str], List[str]]:
+    def get_group(self, group_name: str) -> Tuple[List[str], List[str], str]:
         group = GroupInterface.__groups_actions_map__[group_name]
-        actions = getattr(group, 'actions', dict())
+        actions = getattr(group, 'actions', list())
         hosts = getattr(group, 'hosts', list())
-        dependencies = getattr(group, 'dependencies', list())
-        return path_extend(Defaults.groups_path, group_name), actions, hosts, dependencies
+        playbook = getattr(group, 'playbook', str)
+        return actions, hosts, playbook
 
     def get_group_names(self) -> List[str]:
         return list(GroupInterface.__groups_actions_map__.keys())
@@ -225,28 +230,23 @@ class MultiInstanceAPI:
 
         return nodes
 
-    def get_groups(self) -> List[Tuple[str, List[str], List[str], List[str]]]:
+    def get_groups(self) -> List[Tuple[str, List[str], List[str], str]]:
         groups = []
         for group_name in GroupInterface().get_group_names():
-            group_path, group_actions, group_hosts, group_dependencies = GroupInterface().get_group(group_name)
-            groups.append((group_name, list(group_actions.keys()), group_hosts, group_dependencies))
+            group_actions, group_hosts, group_playbook = GroupInterface().get_group(group_name)
+            groups.append((group_name, group_actions, group_hosts, group_playbook))
         return groups
 
-    def __execute_group_action_sequence(
-            self,  hosts: Dict[str, List[str]],
-            actions: List[str],
-            group_path: str,
-            extra_args: Dict[str, str],
-            error_action: str = 'error') -> List[str]:
+    def __execute_group_action_sequence(self,  hosts: Dict[str, List[str]], actions: List[str], group_path: str,
+                                        extra_args: Dict[str, str], error_action: str = 'error') -> List[str]:
 
         executeds = dict()
-        execute_playbook = Defaults.execution_playbook
 
         for action in actions:
             # log.info("Setting up nodes `{}` with setup playbook: `{}`".format(', '.join(node_ids),
             #                                                                  path_extend(group_path, action)))
             extra_args['playbook_path'] = path_extend(group_path, action)
-            executeds = self.execute_playbook_in_nodes(execute_playbook, hosts, extra_args=extra_args)
+            executeds = self.execute_playbook_in_nodes(Defaults.execution_playbook, hosts, extra_args=extra_args)
             error_nodes = [node_id for node_id, status in executeds.items() if not status]
 
             if error_nodes:
@@ -258,12 +258,12 @@ class MultiInstanceAPI:
                     #             for group, host_list in hosts.items():
                     log.error("Error executing setup playbook `{}` in nodes `{}`. Ignoring these nodes...".format(
                         action, ', '.join(error_nodes)))
-                    raise  Exception("Not handling ignore...")
+                    raise Exception("Not handling ignore...")
 
         return list(executeds.keys())
 
-    def __check_nodes_in_group(self, node_ids: List[str], group: str) -> List[str]:
-        nodes = self.__repository_operations.get_nodes(node_ids)
+    def __check_nodes_in_group(self, group: str, node_ids: List[str] = None) -> List[str]:
+        nodes = self.__repository_operations.get_nodes(node_ids) if node_ids else self.__repository_operations.get_all_nodes()
         members = []
         for node in nodes:
             if group in {group_name.split('/')[0] for group_name in list(node.groups.keys())}:
@@ -274,11 +274,7 @@ class MultiInstanceAPI:
     def __check_dependencies(self, node_ids: List[str], group_dependencies: List[str]):
         pass
 
-    def add_nodes_to_group(self,
-                           node_ids: List[str],
-                           group_name: str,
-                           group_args: Dict = None,
-                           error_action: str = 'error'):
+    def add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict = None, error_action: str = 'error'):
         split_vals = group_name.split('/')
 
         if len(split_vals) > 2:
@@ -297,14 +293,12 @@ class MultiInstanceAPI:
     #   'group_name': ['node-1', 'node-2'] --> If group have no hosts ok, else add to nodes to all hosts in the group
     # }
 
-    def __add_nodes_to_group(self,
-                             group_hosts_map: Dict[str, Union[List[str], Dict[str, List[str]]]],
-                             group_args: Dict = None,
-                             error_action: str = 'error'):
+    def __add_nodes_to_group(self, group_hosts_map: Dict[str, Union[List[str], Dict[str, List[str]]]],
+                             group_args: Dict = None, error_action: str = 'error'):
         node_ids = []
 
         for group_name, hosts in group_hosts_map.items():
-            group_path, group_actions, group_hosts, group_dependencies = GroupInterface().get_group(group_name)
+            group_actions, group_hosts, group_playbook = GroupInterface().get_group(group_name)
 
             if isinstance(hosts, dict):
                 host_names = list(hosts.keys())
@@ -319,50 +313,92 @@ class MultiInstanceAPI:
             else:
                 raise Exception("Invalid type for hosts (must be a list or a dict)")
 
-            # TODO Check dependencies
-            # self.__check_dependencies(node_ids, group_dependencies)
+            if 'setup' not in group_actions:
+                raise Exception("Missing action `setup` in the playbook")
 
-            if 'setup' in group_actions:
-                setup_actions = [group_actions['setup']] if isinstance(group_actions['setup'], str) \
-                    else group_actions['setup']
-                group_args = group_args if group_args else {}
-                node_ids = self.__execute_group_action_sequence(
-                    hosts, setup_actions, group_path, group_args, error_action)
+            group_args = group_args if group_args else {}
+            group_args['action'] = 'setup'
 
-                if len(node_ids) == 0:
-                    log.error("No nodes successfully executed setup")
-                    return []
+            node_ids = self.__execute_group_action_sequence(
+                hosts, [group_playbook], Defaults.groups_path, group_args, error_action)
 
-            # TODO if group has no setup action, the node must be added to group
-                for host_name, host_list in hosts.items():
-                    for node_id in node_ids:
-                        if node_id in host_list:
-                            node = self.__repository_operations.get_node(node_id)
-                            # TODO update or replace?
-                            if host_name == '__default__':
-                                node.groups[group_name] = group_args
-                            else:
-                                node.groups["{}/{}".format(group_name, host_name)] = group_args
+            if len(node_ids) == 0:
+                log.error("No nodes successfully executed setup")
+                return []
 
-                            self.__repository_operations.write_node_info(node)
+            for host_name, host_list in hosts.items():
+                for node_id in node_ids:
+                    if node_id in host_list:
+                        node = self.__repository_operations.get_node(node_id)
+                        # TODO update or replace?
+                        if host_name == '__default__':
+                            node.groups[group_name] = group_args
+                        else:
+                            node.groups["{}/{}".format(group_name, host_name)] = group_args
+
+                        self.__repository_operations.write_node_info(node)
 
         return node_ids
 
-    def execute_group_action(self, node_ids: List[str], group_name: str, action: str, group_args: Dict = None,
-                             error_action='error'):
+    # group: a
+    # group: a/x
+    # group: a; nodes: [1,2]
+    # group: a/x; nodes: [1,2]
+
+    def execute_group_action(self, group_name: str, action: str, group_args: Dict = None, node_ids: List[str] = None,
+                             error_action='ignore'):
+        split_vals = group_name.split('/')
+        if len(split_vals) > 2:
+            raise Exception("Invalid group and hosts `{}`".format(group_name))
+
+        if node_ids:
+            node_with_group = self.__check_nodes_in_group(split_vals[0], node_ids)
+            if len(node_ids) != len(node_with_group):
+                raise Exception("Nodes `{}` are not members of group `{}`".format(
+                    ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
+        else:
+            node_ids = self.__check_nodes_in_group(split_vals[0])
+
+        if not node_ids:
+            raise Exception("No nodes in group `{}` to perform action `{}`".format(group_name, action))
+
+        # Verify in subgroup
+        if len(split_vals) > 1:
+            node_with_group = [node.node_id for node in self.__repository_operations.get_nodes(node_ids)
+                               if group_name in list(node.groups.keys())]
+
+            if len(node_ids) != len(node_with_group):
+                raise Exception("Nodes `{}` are not members of group `{}`".format(
+                    ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
+
+
+        return self.__execute_group_action(node_ids, group_name, action, group_args, error_action)
+
+    def __execute_group_action(self, node_ids: List[str], group_name: str, action: str, group_args: Dict = None,
+                               error_action='error'):
+        split_vals = group_name.split('/')
+        group_name = split_vals[0]
+
         log.info("Executing action `{}` of group `{}` in nodes `{}`".format(action, group_name, ', '.join(node_ids)))
-        group_path, group_actions, group_hosts, group_dependencies = GroupInterface().get_group(group_name)
-
-        node_with_group = self.__check_nodes_in_group(node_ids, group_name)
-        if len(node_ids) != len(node_with_group):
-            raise Exception("Nodes `{}` are not members of group `{}`".format(
-                ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
-
+        group_actions, group_hosts, group_playbook = GroupInterface().get_group(group_name)
         hosts_map = dict()
 
+        if action not in group_actions:
+            raise Exception("Invalid action `{}` for group `{}`".format(action, group_name))
+
         if not group_hosts:
+            if len(split_vals) > 1:
+                raise Exception("Invalid host `{}` (the group does not have any hosts to be specified)".format(split_vals[1]))
+
             hosts_map['__default__'] = node_ids
+
         else:
+            if len(split_vals) > 1:
+                if split_vals[1] not in group_hosts:
+                    raise Exception("Invalid host `{}` for group `{}`".format(split_vals[1], group_name))
+                else:
+                    group_hosts = [split_vals[1]]
+
             for host_name in group_hosts:
                 for node in self.__repository_operations.get_nodes(node_ids):
                     final_host_name = "{}/{}".format(group_name, host_name)
@@ -375,9 +411,12 @@ class MultiInstanceAPI:
                     else:
                         hosts_map[host_name].append(node.node_id)
 
-        actions = [group_actions[action]] if isinstance(group_actions[action], str) else group_actions[action]
-        group_args = group_args if group_args else {}
-        node_ids = self.__execute_group_action_sequence(hosts_map, actions, group_path, group_args, error_action)
+        if not hosts_map:
+            raise Exception("No nodes to perform action `{}` from group `{}`".format(action, group_name))
+
+        group_args['action'] = action
+        node_ids = self.__execute_group_action_sequence(hosts_map, [group_playbook], Defaults.groups_path,
+                                                        group_args, error_action)
 
         if len(node_ids) == 0:
             log.error("No nodes successfully executed action `{}`".format(action))
@@ -385,12 +424,6 @@ class MultiInstanceAPI:
 
         return node_ids
 
-    def execute_action_in_nodes_of_group(self, group: str, action: str, group_args: Dict = None, error_action='ignore'):
-        node_ids = [node.node_id for node in self.__repository_operations.get_all_nodes()
-                    if group in [n.split('/')[0] for n in list(node.groups.keys())]]
-        if not node_ids:
-            raise Exception("No nodes in group `{}`".format(group))
-        return self.execute_group_action(node_ids, group, action, group_args, error_action)
 
     # def remove_nodes_from_group(self, node_ids: List[str], group_name: str, group_args: Dict = None, error_action='ignore'):
     #     log.info("Removing group `{}` from nodes `{}`".format(group_name, ', '.join(node_ids)))
@@ -423,7 +456,7 @@ class MultiInstanceAPI:
         log.info("Removing group `{}` from nodes `{}`".format(group, ', '.join(node_ids)))
         group_path, group_actions, group_hosts, group_dependencies = GroupInterface().get_group(group)
 
-        node_with_group = self.__check_nodes_in_group(node_ids, group)
+        node_with_group = self.__check_nodes_in_group(group, node_ids)
         if len(node_ids) != len(node_with_group):
             raise Exception("Nodes `{}` are not members of group `{}`".format(
                 ', '.join(set(node_ids).difference(set(node_with_group))), group))

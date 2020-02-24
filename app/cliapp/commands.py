@@ -243,29 +243,24 @@ def execute_group_action(namespace: argparse.Namespace):
         raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
                         "Please check the extra parameters passed")
 
-    if namespace.nodes:
-        actioned_nodes = multi_instance.execute_group_action(namespace.nodes, namespace.group, namespace.action, group_args=extra)
-    else:
-        actioned_nodes = multi_instance.execute_action_in_nodes_of_group(namespace.group, namespace.action, group_args=extra)
+    actioned_nodes = multi_instance.execute_group_action(
+        namespace.group, namespace.action, group_args=extra, node_ids=namespace.nodes)
 
     if actioned_nodes:
-        print("Nodes `{}` successfully performed action `{}` from group `{}`".format(', '.join(actioned_nodes), namespace.action, namespace.group))
+        print("Nodes `{}` successfully performed action `{}` from group `{}`".format(
+            ', '.join(actioned_nodes), namespace.action, namespace.group))
 
 
 def list_groups(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
     groups = multi_instance.get_groups()
 
-    for group_name, group_actions, group_hosts, group_dependencies in sorted(groups, key=lambda x: x[0]):
-        print('* ' + group_name)
+    for group_name, group_actions, group_hosts, group_playbook in sorted(groups, key=lambda x: x[0]):
+        print('* ' + group_name + " ({})".format(group_playbook))
         if group_actions:
             print(' ' * 4 + 'actions: ' + ', '.join(sorted(group_actions)))
         if group_hosts:
             print(' ' * 4 + 'hosts: ' + ', '.join(sorted(group_hosts)))
-        if group_dependencies:
-            print(' ' * 4 + 'dependencies: ' + ', '.join(sorted(group_dependencies)))
-
-
 
     print("Listed {} groups".format(len(groups)))
 
