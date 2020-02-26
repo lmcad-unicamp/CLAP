@@ -264,7 +264,8 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
         self.groups = kind_groups_map
         self.environment = kind_key_value_vars
 
-    def run_playbook(self, cluster: Cluster, nodes: List[Node], playbook: str, extra_args=tuple()) -> Dict[str, bool]:
+    def run_playbook(self, cluster: Cluster, nodes: List[Node], node_name_id_map: Dict[str, str], playbook: str,
+                     extra_args=tuple()) -> Dict[str, bool]:
         run_id = (
             'elasticluster.{name}.{date}.{pid}@{host}'
                 .format(
@@ -274,7 +275,7 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
                 host=platform.node(),
             )
         )
-        inventory_path = self.build_inventory(cluster, nodes)
+        inventory_path = self.build_inventory(cluster, nodes, node_name_id_map)
         if inventory_path is None:
             # no inventory file has been created: this can only happen
             # if no nodes have been started nor can be reached
@@ -444,14 +445,14 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
                 # playbook might still have failed -- so explicitly
                 # check for a "done" report showing that each node run
                 # the playbook until the very last task
-                cluster_hosts = set(node.name for node in nodes)
+                cluster_hosts = set(node_id for node_id in list(node_name_id_map.values()))
                 done_hosts = set()
-                for node_name in cluster_hosts:
+                for node_id in cluster_hosts:
                     try:
-                        with open(node_name + '.log') as stream:
+                        with open(node_id + '.log') as stream:
                             status = stream.read().strip()
                         if status == 'done':
-                            done_hosts.add(node_name)
+                            done_hosts.add(node_id)
                     except (OSError, IOError):
                         # no status file for host, do not add it to
                         # `done_hosts`
@@ -467,8 +468,7 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
                     ok = True
                 elif len(done_hosts) == 0:
                     # total failure
-                    log.error(
-                        "No host reported successfully running the setup playbook!")
+                    log.error("No host reported successfully running the setup playbook!")
                 else:
                     # partial failure
                     log.error(
@@ -485,7 +485,7 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
             # return False
         return ok_hosts
 
-    def build_inventory(self, cluster: Cluster, nodes: List[Node]):
+    def build_inventory(self, cluster: Cluster, nodes: List[Node], node_name_id_map: Dict[str, str]):
         inventory_data = defaultdict(list)
 
         for node in nodes:
@@ -533,7 +533,7 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
 
             for group in self.groups[node.kind]:
                 inventory_data[group].append(
-                    (node.name, ip_addr, ' '.join(extra_vars)))
+                    (node_name_id_map[node.name], ip_addr, ' '.join(extra_vars)))
 
         if not inventory_data:
             log.info("No inventory file was created.")
@@ -870,6 +870,6 @@ class ElasticlusterInterface(AbstractInstanceInterface):
             ecc_extra_args = tuple(['{}="{}"'.format(k, v) for k, v in extra_args.items()]) if extra_args else {}
 
             executed_nodes.update(ecc_ansible_wrapper.run_playbook(
-                ecc_cluster, ecc_nodes, playbook_path, extra_args=ecc_extra_args))
+                ecc_cluster, ecc_nodes, reverse_map, playbook=playbook_path, extra_args=ecc_extra_args))
 
         return {reverse_map[node_name]: status for node_name, status in executed_nodes.items()}

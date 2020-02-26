@@ -249,6 +249,9 @@ def node_connect(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
     print('Connecting to node `{}` (via SSH)'.format(namespace.node_id))
     ssh_client = multi_instance.get_connection_to_nodes([namespace.node_id])[namespace.node_id]
+    if not ssh_client:
+        raise Exception("Connection to `{}` was unsuccessful. "
+                        "Check you internet connection or if the node is up and alive".format(namespace.node_id))
     channel = ssh_client.get_transport().open_session()
     channel.get_pty()
     channel.invoke_shell()
