@@ -86,6 +86,15 @@ class ElasticCreator:
             data = {'provider': provider_config, 'login': login_config, 'instances': instances}
             json.dump(data, file)
 
+    @staticmethod
+    def upddate_cluster_node(cluster: Cluster, node: Node):
+        for n in cluster.nodes[node.kind]:
+            if n.name == node.name:
+                cluster.nodes[node.kind].remove(n)
+
+        cluster.nodes[node.kind].append(node)
+        cluster.repository.save_or_update(cluster)
+
 
     @staticmethod
     def __to_elasticluster_config(cluster_name, instances, login_config, provider_config):
@@ -646,12 +655,6 @@ def elasticluster_pause_nodes(cluster_name: str, nodes: List[str]) -> None:
         node.pause()
         cluster.repository.save_or_update(cluster)
 
-
-def elasticluster_check_node_alive(cluster_name: str, node_name: str, *args, **kwargs) -> bool:
-    node = ElasticCreator.get_node_from_cluster(cluster_name, node_name)
-    return node.is_alive()
-
-
 def elasticluster_get_connection_to_node(cluster_name: str, node_name: str, *args, **kwargs) -> paramiko.SSHClient:
     keyfile = kwargs.get('keyfile', None)
     timeout = kwargs.get('timeout', 10)
@@ -821,12 +824,32 @@ class ElasticlusterInterface(AbstractInstanceInterface):
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
         checkeds = dict()
         for node in self.repository_operator.get_nodes(node_ids):
+            first_ip = node.ip
             cluster_info = self.repository_operator.get_cluster(node.cluster_id)
-            check = elasticluster_check_node_alive(cluster_info.eclust_cluster_name, node.eclust_node_name)
-            checkeds[node.node_id] = check
-            node.status = Codes.NODE_STATUS_REACHABLE if check else Codes.NODE_STATUS_UNREACHABLE
+            cluster_obj = ElasticCreator.get_cluster_obj(cluster_info.eclust_cluster_name)
+            node_obj = ElasticCreator.get_node_from_cluster(cluster_info.eclust_cluster_name, node.eclust_node_name)
+
+            if not node_obj.is_alive():
+                checkeds[node.node_id] = False
+                node.status = Codes.NODE_STATUS_UNREACHABLE
+                node.update_time = time()
+                self.repository_operator.write_node_info(node)
+                continue
+
+            client = node_obj.connect()
+            node.status = Codes.NODE_STATUS_REACHABLE if client else Codes.NODE_STATUS_UNREACHABLE
+            checkeds[node.node_id] = True if client else False
+            node.ip = node_obj.connection_ip()
             node.update_time = time()
+
             self.repository_operator.write_node_info(node)
+            ElasticCreator.upddate_cluster_node(cluster_obj, node_obj)
+
+            if client:
+                client.close()
+
+            if node.ip != first_ip:
+                log.info("Node `{}` ip has changed to `{}`".format(node.node_id, node.ip))
 
         return checkeds
 
