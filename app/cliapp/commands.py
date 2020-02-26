@@ -30,6 +30,7 @@ def common_arguments_parser():
         help='Type of the nodes to be instantiated (based on the cluster template). Format is <node_type>:<num>, '
              'if num is not provided, default is 1')
     node_subcom_parser.add_argument('--group', action='store', nargs='+', help='Groups to add nodes after started')
+    node_subcom_parser.add_argument('--tag', action='store', help='Tag nodes after started. Format: key=val')
     node_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
                                     help="Keyworded (format: x=y) Arguments to be passed to the group setup action")
     node_subcom_parser.set_defaults(func=node_start)
@@ -135,6 +136,15 @@ def node_start(namespace: argparse.Namespace):
         nodes[splited_values[0]] = 1 if len(splited_values) == 1 else int(splited_values[1])
 
     nodes_info = multi_instance.start_nodes(nodes)
+
+    if namespace.tag:
+        try:
+            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+        except Exception:
+            raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
+                            "Please check the tag parameters passed")
+        nodes_info = multi_instance.add_tags_to_nodes([n.node_id for n in nodes_info], tag)
+        print("Added tag `{}` to {} nodes".format(namespace.tag, len(nodes_info)))
 
     for node_info in nodes_info:
         print('* ', node_info)
@@ -257,7 +267,7 @@ def node_add_tag(namespace: argparse.Namespace):
                         "Please check the tag parameters passed")
 
     nodes = multi_instance.add_tags_to_nodes(namespace.node_ids, tag)
-    print("Added tag {} for {} nodes".format(namespace.tag, len(nodes)))
+    print("Added tag `{}` for {} nodes".format(namespace.tag, len(nodes)))
 
 
 def node_remove_tag(namespace: argparse.Namespace):
