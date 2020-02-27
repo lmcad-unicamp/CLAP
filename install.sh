@@ -1,16 +1,11 @@
-# Install elasticluster and their dependencies
+#!/bin/bash
+
+CLAP_PATH=~/.clap
 
 function abort() {
 	echo "Error: $1"
 	exit 1
 }
-
-echo "Installing dependencies...."
-sudo apt-get update
-sudo apt-get install -y gcc g++ git libc6-dev libffi-dev libssl-dev python3-dev virtualenv python3 python3-pip || abort "Executing apt command"
-echo "OK"
-
-CLAP_PATH=~/.clap
 
 echo "Creating clap virtualenv..."
 virtualenv -p python3 clap-env || abort "Creating venv"
@@ -25,13 +20,13 @@ pip install --upgrade 'pip>=9.0.0' || abort "Upgrading PIP"
 echo "OK"
 
 mkdir -p downloads
-cd downloads
+cd downloads || abort "Invalid directory downloads"
 
 echo "Fetching elasticluster"
 if [[ ! -d elasticluster ]]; then
-  git clone git://github.com/gc3-uzh-ch/elasticluster.git elasticluster || abort "Fetching elasticluster"
+  git clone https://github.com/elasticluster/elasticluster.git elasticluster || abort "Fetching elasticluster"
 fi
-cd elasticluster
+cd elasticluster || abort "Invalid directory elasticluster"
 pip install -e . || abort "Installing elasticluster"
 cd ../..
 echo "OK"
@@ -50,5 +45,6 @@ mkdir -p $CLAP_PATH/storage/
 mkdir -p $CLAP_PATH/storage/clusters.d
 cp -r ./share/configs/ $CLAP_PATH
 cp -r ./share/groups/ $CLAP_PATH
+cp -r ./share/modules/ $CLAP_PATH
 
 echo "OK"

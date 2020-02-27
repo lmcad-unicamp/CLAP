@@ -2,33 +2,39 @@
 Installation Guide
 .................................
 
-1.  Clone the repository with
+1. Install requirement packages
+
+::
+
+    gcc g++ git libc6-dev libffi-dev libssl-dev python3-dev virtualenv python3 python3-pip
+
+2.  Clone the repository with
 
 ::
 
     git clone https://github.com/lmcad-unicamp/CLAP.git clap
 
-2.  Enter in clap directory with
+3.  Enter in clap directory with
 
 ::
 
     cd clap
 
-3.  Set the install script to execute with ``chmod`` and run the script!
+4.  Set the install script to execute with ``chmod`` and run the script!
 
 ::
 
     chmod +x install.sh
     ./install.sh
 
-4.  To use ``clap``, you will need to activate the ``virtual-env``.
+5.  To use ``clap``, you will need to activate the ``virtual-env``.
     In the ``clap`` root directory run:
 
 ::
 
     source clap-env/bin/activate
 
-5.  Try ``clap``, via the CLI interface:
+6.  Try ``clap``, via the CLI interface:
 
 ::
 
