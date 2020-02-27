@@ -23,7 +23,7 @@ Module Contents
    Each cluster is unique and is composed by the following elements:
        * cluster_id: The unique identification of the cluster, used to perform operations across modules and instance interfaces
        * cluster_name: The name of the cluster used by the driver object that controls this cluster
-       * provider: The cluster (or cloud) provider that this cluster is attached (e.g., aws_ec2_boto, azure, ...)
+       * cloud: The cluster (or cloud) provider that this cluster is attached (e.g., aws, azure, ...)
        * keypair: The name of the keypair used to connect to the machines created in this cluster
        * region: The avaliability zone that this cluster was created
        * template: Name of the template that was used to create this cluster
@@ -59,11 +59,7 @@ Module Contents
 
 
 
-.. py:class:: RepositoryOperations(platform_repository: str, repository_type: str, validator: AbstractDataValidator = None)
-
-   .. method:: __validate(self, entry: AbstractEntry)
-
-
+.. py:class:: RepositoryOperations(platform_repository: str, repository_type: str)
 
    .. method:: _get_platform_repository(self)
 
@@ -96,7 +92,7 @@ Module Contents
       :rtype: AbstractRepository
 
 
-   .. method:: _write_platform_control_info(self, control: PlatformControlInfo)
+   .. method:: write_platform_control_info(self, control: PlatformControlInfo)
 
 
       Helper function to write Platform Control information on the correct table in the repository
@@ -106,7 +102,7 @@ Module Contents
       :return: None
 
 
-   .. method:: _read_platform_control_info(self)
+   .. method:: read_platform_control_info(self)
 
 
       Helper function to read Platform control information from the correct table in the repository
@@ -114,7 +110,7 @@ Module Contents
       :return: PlatformControlInfo
 
 
-   .. method:: _write_cluster_info(self, cluster: ClusterInfo, create: bool = False)
+   .. method:: write_cluster_info(self, cluster: ClusterInfo, create: bool = False)
 
 
       Helper function to write Cluster information on the correct table in the repository
@@ -136,7 +132,7 @@ Module Contents
       :rtype: List[ClusterInfo]
 
 
-   .. method:: _write_node_info(self, node: NodeInfo, create: bool = False)
+   .. method:: write_node_info(self, node: NodeInfo, create: bool = False)
 
 
       Helper function to write Node information on the correct table in the repository
@@ -194,16 +190,6 @@ Module Contents
       :rtype: List[ClusterInfo]
 
 
-   .. method:: get_clusters_by_tags(self, **tags)
-
-
-      Given a dictionary of tags, it get all the cluster in the repository that matches the tags passed
-
-      :param tags: Tags to be matched
-      :return: List of cluster that match the passed tags
-      :rtype: List[ClusterInfo]
-
-
    .. method:: remove_cluster(self, cluster_id: str)
 
 
@@ -240,16 +226,6 @@ Module Contents
       :param cluster_id: Id of the cluster
       :type cluster_id: str
       :return: All the nodes that matches the cluster ids passed
-      :rtype: List[NodeInfo]
-
-
-   .. method:: get_nodes_by_tags(self, **tags)
-
-
-      Given a dictionary of tags, it get all the nodes in the repository that matches the tags passed
-
-      :param tags: Tags to be matched
-      :return: List of nodes that match the passed tags
       :rtype: List[NodeInfo]
 
 

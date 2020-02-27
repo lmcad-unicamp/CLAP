@@ -7,19 +7,6 @@
 Module Contents
 ---------------
 
-.. py:class:: RepositoryDefaults
-
-   .. attribute:: DEFAULT_REPOSITORY_CLASS
-      :annotation: = tinydb
-
-      
-
-   .. attribute:: DEFAULT_VALIDATOR
-      :annotation: = schema
-
-      
-
-
 .. py:class:: AbstractEntry(*args, **kwargs)
 
    Bases: :class:`clap.common.utils.Struct`
@@ -27,28 +14,6 @@ Module Contents
    This class represent a single entry in the Repository. Basically its a dictionary that is a serializable and
    is a generic container for a data format. Implementations derived from this class represent specific element types in a repository.
    Objects (variables) inside this class can be accessed using `element['variable']` or `element.variable` notations
-
-   .. attribute:: SCHEMA
-      
-
-      
-
-
-.. py:class:: AbstractDataValidator(schema: dict)
-
-   .. method:: validate(self, value: AbstractEntry)
-      :abstractmethod:
-
-
-
-
-.. py:class:: SchemaValidator(schema: dict)
-
-   Bases: :class:`clap.common.repository.AbstractDataValidator`
-
-   .. method:: validate(self, value: AbstractEntry)
-
-
 
 
 .. py:class:: AbstractRepository(repository: str, create_repository: bool, storage_type: str = None, *args, **kwargs)
@@ -385,21 +350,7 @@ Module Contents
 
 .. py:class:: RepositoryFactory
 
-   .. method:: get_validator(schema: dict, validator: str = RepositoryDefaults.DEFAULT_VALIDATOR)
-      :staticmethod:
-
-
-      Get the default validator instance to validate values to be stored
-
-      :param schema: Schema to be used to validate
-      :type schema: dict
-      :param validator: Validator object to be created
-      :type validator: str
-      :return: The validator object to validate the passed schema
-      :rtype: AbstractDataValidator
-
-
-   .. method:: get_repository(repository: str, repository_type: str = RepositoryDefaults.DEFAULT_REPOSITORY_CLASS, storage_type: str = None, create_new: bool = True)
+   .. method:: get_repository(repository: str, repository_type: str = Defaults.REPOSITORY_TYPE, storage_type: str = None, create_new: bool = True)
       :staticmethod:
 
 
@@ -418,7 +369,7 @@ Module Contents
       :raises ValueError: If the repository implementation type is invalid
 
 
-   .. method:: exists_repository(repository: str, repository_type=RepositoryDefaults.DEFAULT_REPOSITORY_CLASS)
+   .. method:: exists_repository(repository: str, repository_type=Defaults.REPOSITORY_TYPE)
       :staticmethod:
 
 

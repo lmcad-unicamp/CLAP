@@ -235,6 +235,10 @@ def node_exec_command(namespace: argparse.Namespace):
     command = ' '.join(namespace.cmd)
     print('Executing in node `{}` the command (via SSH): `{}`'.format(namespace.node_id, command))
     ssh_client = multi_instance.get_connection_to_nodes([namespace.node_id])[namespace.node_id]
+    if not ssh_client:
+        raise Exception("Connection to `{}` was unsuccessful. "
+                        "Check you internet connection or if the node is up and alive".format(namespace.node_id))
+
     _, stdout, stderr = ssh_client.exec_command(command)
     print("{} STD OUTPUT {}".format('-'*40, '-'*40))
     print(''.join(stdout.readlines()))

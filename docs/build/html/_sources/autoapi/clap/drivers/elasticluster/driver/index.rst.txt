@@ -7,20 +7,24 @@
 Module Contents
 ---------------
 
-.. py:class:: ConfigReader(config_filepath: str)
+.. py:class:: ElasticCreator
 
-   .. method:: _read_config(self)
-
-
-
-   .. method:: to_elasticluster_config(self, cluster_name: str)
+   .. method:: create_cluster_obj(cluster_name: str, provider_config: dict, login_config: dict, instances: dict, storage_path: str = Defaults.elasticluster_storage_path, storage_type: str = Defaults.DEFAULT_CONF_TYPE)
+      :staticmethod:
 
 
 
+   .. method:: update_cluster_config(cluster_name: str, provider_config: dict, login_config: dict, instances: dict, storage_path: str = Defaults.elasticluster_storage_path, storage_type: str = Defaults.DEFAULT_CONF_TYPE)
+      :staticmethod:
 
-.. py:class:: ElastiCreator
 
-   .. method:: create_cluster_obj(config_filepath: str, cluster_name: str, storage_path: str = Defaults.elasticluster_storage_path, storage_type: str = 'json')
+
+   .. method:: upddate_cluster_node(cluster: Cluster, node: Node)
+      :staticmethod:
+
+
+
+   .. method:: __to_elasticluster_config(cluster_name, instances, login_config, provider_config)
       :staticmethod:
 
 
@@ -56,138 +60,69 @@ Module Contents
 
 
 
-.. py:class:: ElasticlusterDriver
-
-   Bases: :class:`clap.common.cluster_driver.AbstractClusterDriver`
-
-   .. attribute:: __driver_name__
-      :annotation: = Elasticluster Driver
-
-      
-
-   .. attribute:: __driver_id__
-      :annotation: = elasticluster
-
-      
-
-   .. attribute:: __driver_version__
-      :annotation: = 0.1
-
-      
-
-   .. attribute:: DEFAULT_STORAGE_TYPE
-      :annotation: = json
-
-      
-
-   .. method:: get_cluster_obj(self, cluster_name: str)
-
-
-
-   .. method:: get_all_clusters(self)
-
-
-
-   .. method:: exist_cluster(self, cluster_name: str)
-
-
-
-   .. method:: create_cluster(self, cluster_name: str, config_path: str, *args, **kwargs)
-
-
-
-   .. method:: remove_cluster(self, cluster_name: str, *args, **kwargs)
-
-
-
-   .. method:: stop_cluster(self, cluster_name: str, *args, **kwargs)
-
-
-
-   .. method:: get_nodes_from_cluster(self, cluster_name: str, *args, **kwargs)
-
-
-
-   .. method:: get_cluster_of_node(self, node_name: str, *args, **kwargs)
-
-
-
-   .. method:: start_nodes(self, cluster_name: str, storage_path: str = Defaults.elasticluster_storage_path, max_concurrent_requests: int = 0, *args, **kwargs)
-
-
-
-   .. method:: stop_nodes(self, cluster_name: str, nodes: List[str], *args, **kwargs)
-
-
-
-   .. method:: pause_nodes(self, cluster_name: str, node_name: str, *args, **kwargs)
-
-
-
-   .. method:: resume_nodes(self, cluster_name: str, node_name: str, *args, **kwargs)
-
-
-
-   .. method:: check_node_alive(self, cluster_name: str, node_name: str, *args, **kwargs)
-
-
-
-   .. method:: get_default_node_ip(self, cluster_name: str, node_name: str, *args, **kwargs)
-
-
-
-   .. method:: get_connection_to_node(self, cluster_name: str, node_name: str, *args, **kwargs)
-
-
-
-   .. method:: update_node_ips(self, cluster_name: str, node_name: str, *args, **kwargs)
-
-
-
-   .. method:: execute_playbook_in_nodes(self, cluster_name: str, nodes: List[str], playbook_path: str, *args, **kwargs)
-
-
-
-
-.. py:class:: AnsibleSetupProviderWrapper(ansible_provider: AnsibleSetupProvider)
+.. py:class:: AnsibleSetupProviderWrapper(ansible_provider: AnsibleSetupProvider, kind_groups_map: Dict[str, List[str]], kind_key_value_vars: Dict[str, Dict[str, str]])
 
    Bases: :class:`elasticluster.providers.ansible_provider.AnsibleSetupProvider`
 
-   .. method:: run_playbook(self, cluster: Cluster, nodes: List[Node], playbook: str, extra_args=tuple())
+   .. method:: run_playbook(self, cluster: Cluster, nodes: List[Node], node_name_id_map: Dict[str, str], playbook: str, extra_args=tuple())
 
 
 
-   .. method:: build_inventory(self, cluster: Cluster, nodes: List[Node])
+   .. method:: build_inventory(self, cluster: Cluster, nodes: List[Node], node_name_id_map: Dict[str, str])
 
 
 
 
-.. py:class:: ElasticlusterInterface
+.. function:: elaticluster_start_nodes(cluster_name: str, instances_num: Dict[str, int], storage_path: str = Defaults.elasticluster_storage_path, max_concurrent_requests: int = 0) -> Tuple[Cluster, Set[Node]]
 
-   Bases: :class:`clap.common.cluster_driver.AbstractInstanceInterface`
 
-   .. attribute:: __driver_id__
+.. function:: elasticluster_check_starting_nodes(cluster: Cluster, node_objs: Set[Node])
+
+
+.. function:: elasticluster_stop_nodes(cluster_name: str, nodes: List[str], *args, **kwargs) -> None
+
+
+.. function:: elasticluster_pause_nodes(cluster_name: str, nodes: List[str]) -> None
+
+
+.. function:: elasticluster_get_connection_to_node(cluster_name: str, node_name: str, *args, **kwargs) -> paramiko.SSHClient
+
+
+.. py:class:: ElasticlusterInterface(repository_operator: RepositoryOperations)
+
+   Bases: :class:`clap.common.driver.AbstractInstanceInterface`
+
+   .. attribute:: __interface_id__
       :annotation: = elasticluster
 
       
 
-   .. method:: create_cluster(self, cluster_template_path: str, *args, **kwargs)
+   .. method:: __get_or_create_cluster(self, cloud_conf: str, login_conf: str)
 
 
 
-   .. method:: stop_cluster(self, cluster_id: str, *args, **kwargs)
+   .. method:: __stop_cluster(self, cluster_id: str, *args, **kwargs)
 
 
 
-   .. method:: start_nodes(self, cluster_id: str, *args, **kwargs)
+   .. method:: start_nodes(self, instances_num: Dict[str, int])
 
 
 
-   .. method:: stop_nodes(self, node_ids: List[str], *args, **kwargs)
+   .. method:: stop_nodes(self, node_ids: List[str])
 
 
 
-   .. method:: check_nodes_alive(self, node_ids: List[str], *args, **kwargs)
+   .. method:: pause_nodes(self, node_ids: List[str])
+
+
+
+   .. method:: resume_nodes(self, node_ids: List[str])
+      :abstractmethod:
+
+
+
+   .. method:: check_nodes_alive(self, node_ids: List[str])
 
 
 
@@ -195,7 +130,7 @@ Module Contents
 
 
 
-   .. method:: execute_playbook_in_nodes(self, node_ids: List[str], playbook_path: str, *args, **kwargs)
+   .. method:: execute_playbook_in_nodes(self, playbook_path: str, group_hosts_map: Dict[str, List[str]], extra_args: Dict[str, str] = None, group_vars: Dict[str, Dict[str, str]] = None)
 
 
 

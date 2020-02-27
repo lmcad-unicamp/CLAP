@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
@@ -34,7 +34,9 @@
   <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="clap.common.commands" href="../commands/index.html" />
+    <link rel="prev" title="clap.common" href="../index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -78,9 +80,35 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../index.html">API Reference</a></li>
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../shared_groups.html">Groups shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.cluster_repository</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.commands</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../driver/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.driver</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../exceptions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.exceptions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../factory/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.factory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../platform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.platform</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.repository</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -126,6 +154,12 @@
     
       <li><a href="../../../../index.html">Docs</a> &raquo;</li>
         
+          <li><a href="../../../index.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a> &raquo;</li>
+        
+          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a> &raquo;</li>
+        
       <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.cluster_repository</span></code></li>
     
     
@@ -167,7 +201,7 @@ Each cluster is unique and is composed by the following elements:</p>
 <div><ul class="simple">
 <li><p>cluster_id: The unique identification of the cluster, used to perform operations across modules and instance interfaces</p></li>
 <li><p>cluster_name: The name of the cluster used by the driver object that controls this cluster</p></li>
-<li><p>provider: The cluster (or cloud) provider that this cluster is attached (e.g., aws_ec2_boto, azure, …)</p></li>
+<li><p>cloud: The cluster (or cloud) provider that this cluster is attached (e.g., aws, azure, …)</p></li>
 <li><p>keypair: The name of the keypair used to connect to the machines created in this cluster</p></li>
 <li><p>region: The avaliability zone that this cluster was created</p></li>
 <li><p>template: Name of the template that was used to create this cluster</p></li>
@@ -213,13 +247,8 @@ Each node is unique and is composed by the following elements:</p>
 
 <dl class="class">
 <dt id="clap.common.cluster_repository.RepositoryOperations">
-<em class="property">class </em><code class="sig-prename descclassname">clap.common.cluster_repository.</code><code class="sig-name descname">RepositoryOperations</code><span class="sig-paren">(</span><em class="sig-param">platform_repository: str</em>, <em class="sig-param">repository_type: str</em>, <em class="sig-param">validator: AbstractDataValidator = None</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.cluster_repository.</code><code class="sig-name descname">RepositoryOperations</code><span class="sig-paren">(</span><em class="sig-param">platform_repository: str</em>, <em class="sig-param">repository_type: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="clap.common.cluster_repository.RepositoryOperations.__validate">
-<code class="sig-name descname">__validate</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">entry: AbstractEntry</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.__validate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="clap.common.cluster_repository.RepositoryOperations._get_platform_repository">
 <code class="sig-name descname">_get_platform_repository</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations._get_platform_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the platform repository connection</p>
@@ -272,8 +301,8 @@ Each node is unique and is composed by the following elements:</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="clap.common.cluster_repository.RepositoryOperations._write_platform_control_info">
-<code class="sig-name descname">_write_platform_control_info</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">control: PlatformControlInfo</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations._write_platform_control_info" title="Permalink to this definition">¶</a></dt>
+<dt id="clap.common.cluster_repository.RepositoryOperations.write_platform_control_info">
+<code class="sig-name descname">write_platform_control_info</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">control: PlatformControlInfo</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.write_platform_control_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to write Platform Control information on the correct table in the repository</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -286,8 +315,8 @@ Each node is unique and is composed by the following elements:</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="clap.common.cluster_repository.RepositoryOperations._read_platform_control_info">
-<code class="sig-name descname">_read_platform_control_info</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations._read_platform_control_info" title="Permalink to this definition">¶</a></dt>
+<dt id="clap.common.cluster_repository.RepositoryOperations.read_platform_control_info">
+<code class="sig-name descname">read_platform_control_info</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.read_platform_control_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to read Platform control information from the correct table in the repository</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -297,8 +326,8 @@ Each node is unique and is composed by the following elements:</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="clap.common.cluster_repository.RepositoryOperations._write_cluster_info">
-<code class="sig-name descname">_write_cluster_info</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster: ClusterInfo</em>, <em class="sig-param">create: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations._write_cluster_info" title="Permalink to this definition">¶</a></dt>
+<dt id="clap.common.cluster_repository.RepositoryOperations.write_cluster_info">
+<code class="sig-name descname">write_cluster_info</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster: ClusterInfo</em>, <em class="sig-param">create: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.write_cluster_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to write Cluster information on the correct table in the repository</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -331,8 +360,8 @@ Each node is unique and is composed by the following elements:</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="clap.common.cluster_repository.RepositoryOperations._write_node_info">
-<code class="sig-name descname">_write_node_info</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">node: NodeInfo</em>, <em class="sig-param">create: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations._write_node_info" title="Permalink to this definition">¶</a></dt>
+<dt id="clap.common.cluster_repository.RepositoryOperations.write_node_info">
+<code class="sig-name descname">write_node_info</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">node: NodeInfo</em>, <em class="sig-param">create: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.write_node_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to write Node information on the correct table in the repository</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -416,23 +445,6 @@ Each node is unique and is composed by the following elements:</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="clap.common.cluster_repository.RepositoryOperations.get_clusters_by_tags">
-<code class="sig-name descname">get_clusters_by_tags</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">**tags</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.get_clusters_by_tags" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a dictionary of tags, it get all the cluster in the repository that matches the tags passed</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>tags</strong> – Tags to be matched</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of cluster that match the passed tags</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[<a class="reference internal" href="#clap.common.cluster_repository.ClusterInfo" title="clap.common.cluster_repository.ClusterInfo">ClusterInfo</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
 <dt id="clap.common.cluster_repository.RepositoryOperations.remove_cluster">
 <code class="sig-name descname">remove_cluster</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_id: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.remove_cluster" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -491,23 +503,6 @@ Each node is unique and is composed by the following elements:</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="clap.common.cluster_repository.RepositoryOperations.get_nodes_by_tags">
-<code class="sig-name descname">get_nodes_by_tags</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">**tags</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.get_nodes_by_tags" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a dictionary of tags, it get all the nodes in the repository that matches the tags passed</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>tags</strong> – Tags to be matched</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of nodes that match the passed tags</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[<a class="reference internal" href="#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
 <dt id="clap.common.cluster_repository.RepositoryOperations.remove_node">
 <code class="sig-name descname">remove_node</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">node_id: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.remove_node" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -522,6 +517,15 @@ Each node is unique and is composed by the following elements:</p>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../commands/index.html" class="btn btn-neutral float-right" title="clap.common.commands" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="clap.common" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

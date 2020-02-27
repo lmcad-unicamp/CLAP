@@ -1,6 +1,0 @@
-:mod:`tests.test_repository_tinydb`
-===================================
-
-.. py:module:: tests.test_repository_tinydb
-
-

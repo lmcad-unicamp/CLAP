@@ -1,6 +1,0 @@
-:mod:`tests.test_multiinstance_api`
-===================================
-
-.. py:module:: tests.test_multiinstance_api
-
-

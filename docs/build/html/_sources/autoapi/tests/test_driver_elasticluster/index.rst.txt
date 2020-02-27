@@ -1,6 +1,0 @@
-:mod:`tests.test_driver_elasticluster`
-======================================
-
-.. py:module:: tests.test_driver_elasticluster
-
-

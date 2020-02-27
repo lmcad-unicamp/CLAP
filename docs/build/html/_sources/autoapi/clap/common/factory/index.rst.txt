@@ -29,7 +29,7 @@ Module Contents
       :rtype: ModuleInterface
 
 
-   .. method:: get_instance_api()
+   .. method:: get_instance_api(platform_db: str = Defaults.PLATFORM_REPOSITORY, repository_type: str = Defaults.REPOSITORY_TYPE, default_driver: str = Defaults.DRIVER_ID)
       :staticmethod:
 
 

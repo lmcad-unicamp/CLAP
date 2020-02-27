@@ -19,6 +19,26 @@ Module Contents
 
       
 
+   .. attribute:: REPOSITORY_TYPE
+      :annotation: = tinydb
+
+      
+
+   .. attribute:: DRIVER_ID
+      :annotation: = elasticluster
+
+      
+
+   .. attribute:: DEFAULT_CONF_TYPE
+      :annotation: = json
+
+      
+
+   .. attribute:: configs_path
+      
+
+      
+
    .. attribute:: private_path
       
 
@@ -29,12 +49,12 @@ Module Contents
 
       
 
-   .. attribute:: elasticluster_storage_path
+   .. attribute:: execution_playbook
       
 
       
 
-   .. attribute:: drivers_path
+   .. attribute:: groups_path
       
 
       
@@ -44,34 +64,23 @@ Module Contents
 
       
 
-   .. attribute:: share_playbooks
+   .. attribute:: elasticluster_storage_path
       
 
       
 
-   .. attribute:: templates_path
+   .. attribute:: cloud_conf
       
 
       
 
-
-.. py:class:: PlatformDefaults
-
-   Default configurations for all platform operations.
-   Changing these variables will alter all platform operations
-
-   .. attribute:: REPOSITORY_TYPE
-      :annotation: = tinydb
+   .. attribute:: login_conf
+      
 
       
 
-   .. attribute:: VALIDATOR
-      :annotation: = schema
-
+   .. attribute:: instances_conf
       
-
-   .. attribute:: DRIVER_ID
-      :annotation: = elasticluster
 
       
 
@@ -79,5 +88,55 @@ Module Contents
       
 
       
+
+
+.. data:: PROVIDERS_SCHEMA
+   
+
+   
+
+.. data:: LOGIN_SCHEMA
+   
+
+   
+
+.. data:: INSTANCE_SCHEMA
+   
+
+   
+
+.. py:class:: ConfigReader(providers_file: str, logins_file: str, instances_file: str)
+
+   .. method:: __validate(self, schema: dict, data: dict)
+
+
+
+   .. method:: __check_instances(self)
+
+
+
+   .. method:: get_instance(self, instance_name: str)
+
+
+
+   .. method:: get_instances(self)
+
+
+
+   .. method:: get_provider(self, provider_name: str)
+
+
+
+   .. method:: get_providers(self, provider_name: str)
+
+
+
+   .. method:: get_login(self, login_name: str)
+
+
+
+   .. method:: get_logins(self, login_name: str)
+
+
 
 

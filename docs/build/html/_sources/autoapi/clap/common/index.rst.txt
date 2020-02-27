@@ -10,9 +10,10 @@ Submodules
    :titlesonly:
    :maxdepth: 1
 
-   cluster_driver/index.rst
    cluster_repository/index.rst
+   commands/index.rst
    config/index.rst
+   driver/index.rst
    exceptions/index.rst
    factory/index.rst
    platform/index.rst

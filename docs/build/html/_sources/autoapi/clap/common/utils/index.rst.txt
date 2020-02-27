@@ -50,3 +50,12 @@ Module Contents
 
 
 
+.. function:: path_extend(*args) -> str
+
+
+.. function:: get_file_checksum(file_path: str) -> str
+
+
+.. function:: yaml_load(filename: str) -> dict
+
+

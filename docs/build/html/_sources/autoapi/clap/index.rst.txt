@@ -12,6 +12,5 @@ Subpackages
 
    common/index.rst
    drivers/index.rst
-   modules/index.rst
 
 

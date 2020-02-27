@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
@@ -34,7 +34,9 @@
   <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="clap.common.utils" href="../utils/index.html" />
+    <link rel="prev" title="clap.common.platform" href="../platform/index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -78,9 +80,35 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../index.html">API Reference</a></li>
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../shared_groups.html">Groups shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../cluster_repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.cluster_repository</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.commands</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../driver/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.driver</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../exceptions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.exceptions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../factory/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.factory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../platform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.platform</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.repository</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -126,6 +154,12 @@
     
       <li><a href="../../../../index.html">Docs</a> &raquo;</li>
         
+          <li><a href="../../../index.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a> &raquo;</li>
+        
+          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a> &raquo;</li>
+        
       <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.repository</span></code></li>
     
     
@@ -150,53 +184,12 @@
 <div class="section" id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="clap.common.repository.RepositoryDefaults">
-<em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">RepositoryDefaults</code><a class="headerlink" href="#clap.common.repository.RepositoryDefaults" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="attribute">
-<dt id="clap.common.repository.RepositoryDefaults.DEFAULT_REPOSITORY_CLASS">
-<code class="sig-name descname">DEFAULT_REPOSITORY_CLASS</code><em class="property"> = tinydb</em><a class="headerlink" href="#clap.common.repository.RepositoryDefaults.DEFAULT_REPOSITORY_CLASS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="clap.common.repository.RepositoryDefaults.DEFAULT_VALIDATOR">
-<code class="sig-name descname">DEFAULT_VALIDATOR</code><em class="property"> = schema</em><a class="headerlink" href="#clap.common.repository.RepositoryDefaults.DEFAULT_VALIDATOR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="clap.common.repository.AbstractEntry">
 <em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">AbstractEntry</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../utils/index.html#clap.common.utils.Struct" title="clap.common.utils.Struct"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.utils.Struct</span></code></a></p>
 <p>This class represent a single entry in the Repository. Basically its a dictionary that is a serializable and
 is a generic container for a data format. Implementations derived from this class represent specific element types in a repository.
 Objects (variables) inside this class can be accessed using <cite>element[‘variable’]</cite> or <cite>element.variable</cite> notations</p>
-<dl class="attribute">
-<dt id="clap.common.repository.AbstractEntry.SCHEMA">
-<code class="sig-name descname">SCHEMA</code><a class="headerlink" href="#clap.common.repository.AbstractEntry.SCHEMA" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="clap.common.repository.AbstractDataValidator">
-<em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">AbstractDataValidator</code><span class="sig-paren">(</span><em class="sig-param">schema: dict</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractDataValidator" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="clap.common.repository.AbstractDataValidator.validate">
-<em class="property">abstract </em><code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">value: AbstractEntry</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractDataValidator.validate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="clap.common.repository.SchemaValidator">
-<em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">SchemaValidator</code><span class="sig-paren">(</span><em class="sig-param">schema: dict</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.SchemaValidator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#clap.common.repository.AbstractDataValidator" title="clap.common.repository.AbstractDataValidator"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.repository.AbstractDataValidator</span></code></a></p>
-<dl class="method">
-<dt id="clap.common.repository.SchemaValidator.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">value: AbstractEntry</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.SchemaValidator.validate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="class">
@@ -648,28 +641,8 @@ A clause must be specified!</p></li>
 <dt id="clap.common.repository.RepositoryFactory">
 <em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">RepositoryFactory</code><a class="headerlink" href="#clap.common.repository.RepositoryFactory" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="clap.common.repository.RepositoryFactory.get_validator">
-<em class="property">static </em><code class="sig-name descname">get_validator</code><span class="sig-paren">(</span><em class="sig-param">schema: dict</em>, <em class="sig-param">validator: str = RepositoryDefaults.DEFAULT_VALIDATOR</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.RepositoryFactory.get_validator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the default validator instance to validate values to be stored</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>schema</strong> (<em>dict</em>) – Schema to be used to validate</p></li>
-<li><p><strong>validator</strong> (<em>str</em>) – Validator object to be created</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The validator object to validate the passed schema</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#clap.common.repository.AbstractDataValidator" title="clap.common.repository.AbstractDataValidator">AbstractDataValidator</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
 <dt id="clap.common.repository.RepositoryFactory.get_repository">
-<em class="property">static </em><code class="sig-name descname">get_repository</code><span class="sig-paren">(</span><em class="sig-param">repository: str</em>, <em class="sig-param">repository_type: str = RepositoryDefaults.DEFAULT_REPOSITORY_CLASS</em>, <em class="sig-param">storage_type: str = None</em>, <em class="sig-param">create_new: bool = True</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.RepositoryFactory.get_repository" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">get_repository</code><span class="sig-paren">(</span><em class="sig-param">repository: str</em>, <em class="sig-param">repository_type: str = Defaults.REPOSITORY_TYPE</em>, <em class="sig-param">storage_type: str = None</em>, <em class="sig-param">create_new: bool = True</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.RepositoryFactory.get_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a repository, based on a implementation of the <code class="docutils literal notranslate"><span class="pre">AbstractRepository</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -694,7 +667,7 @@ A clause must be specified!</p></li>
 
 <dl class="method">
 <dt id="clap.common.repository.RepositoryFactory.exists_repository">
-<em class="property">static </em><code class="sig-name descname">exists_repository</code><span class="sig-paren">(</span><em class="sig-param">repository: str</em>, <em class="sig-param">repository_type=RepositoryDefaults.DEFAULT_REPOSITORY_CLASS</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.RepositoryFactory.exists_repository" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">exists_repository</code><span class="sig-paren">(</span><em class="sig-param">repository: str</em>, <em class="sig-param">repository_type=Defaults.REPOSITORY_TYPE</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.RepositoryFactory.exists_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a repository already exists</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -725,6 +698,15 @@ A clause must be specified!</p></li>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../utils/index.html" class="btn btn-neutral float-right" title="clap.common.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../platform/index.html" class="btn btn-neutral float-left" title="clap.common.platform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

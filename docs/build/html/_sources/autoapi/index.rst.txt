@@ -6,9 +6,6 @@ This page contains auto-generated API reference documentation [#f1]_.
 .. toctree::
    :titlesonly:
 
-   /autoapi/conf/index
-   /autoapi/tests/index
    /autoapi/clap/index
-   /autoapi/app/index
 
 .. [#f1] Created with `sphinx-autoapi <https://github.com/rtfd/sphinx-autoapi>`_
