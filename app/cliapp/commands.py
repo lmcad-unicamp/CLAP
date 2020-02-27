@@ -248,7 +248,7 @@ def node_stop(namespace: argparse.Namespace):
         print("No nodes stopped")
     else:
         multi_instance.stop_nodes(list(node_ids))
-        print("Nodes `{}` stopped!".format(', '.join(namespace.node_ids)))
+        print("Nodes `{}` stopped!".format(', '.join(node_ids)))
 
 
 def node_resume(namespace: argparse.Namespace):
