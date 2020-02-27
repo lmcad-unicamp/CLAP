@@ -6,7 +6,7 @@ Installation Guide
 
 ::
 
-    git clone https://github.com/otavioon/clpits.git clap
+    git clone https://github.com/lmcad-unicamp/CLAP.git clap
 
 2.  Enter in clap directory with
 
