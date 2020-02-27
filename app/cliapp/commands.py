@@ -3,6 +3,7 @@ import argparse
 from pprint import pprint
 from clap.common.config import Defaults
 from clap.common.factory import PlatformFactory
+from clap.common.utils import log
 from . import interactive
 
 
@@ -36,24 +37,31 @@ def common_arguments_parser():
     node_subcom_parser.set_defaults(func=node_start)
 
     node_subcom_parser = node_com_parser.add_parser('list', help='List nodes')
-    node_subcom_parser.add_argument('--tag', action='store', help='Get nodes with specified tag')
+    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
     node_subcom_parser.set_defaults(func=node_list)
 
     node_subcom_parser = node_com_parser.add_parser('show', help='Show detailed information of the nodes')
-    node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be displayed')
+    node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be displayed')
+    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
     node_subcom_parser.set_defaults(func=node_show)
 
     node_subcom_parser = node_com_parser.add_parser('alive', help='Check if nodes are alive')
-    node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be checked')
+    node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be checked')
+    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
     node_subcom_parser.set_defaults(func=node_alive)
 
     node_subcom_parser = node_com_parser.add_parser('stop', help='Stop and terminate nodes')
-    node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be stopped')
+    node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be stopped')
+    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
     node_subcom_parser.set_defaults(func=node_stop)
 
     node_subcom_parser = node_com_parser.add_parser('pause', help='Pause nodes')
     node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be paused')
     node_subcom_parser.set_defaults(func=node_pause)
+
+    node_subcom_parser = node_com_parser.add_parser('resume', help='Pause nodes')
+    node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be resumed')
+    node_subcom_parser.set_defaults(func=node_resume)
 
     node_subcom_parser = node_com_parser.add_parser('playbook', help='Execute playbook in nodes')
     node_subcom_parser.add_argument('playbook_file', action='store', help='Playbook file to be executed')
@@ -111,8 +119,8 @@ def common_arguments_parser():
     tag_subcom_parser.set_defaults(func=node_add_tag)
 
     tag_subcom_parser = tag_com_parser.add_parser('remove', help='Remove tags to nodes')
-    tag_subcom_parser.add_argument('tag', action='store', help='Tag to add. Format: key=val')
-    tag_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be added to the group')
+    tag_subcom_parser.add_argument('tag', action='store', help='List of tags to remove (just key names)')
+    tag_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be added to the group')
     tag_subcom_parser.set_defaults(func=node_remove_tag)
 
     return parser, commands_parser
@@ -140,11 +148,10 @@ def node_start(namespace: argparse.Namespace):
     if namespace.tag:
         try:
             tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+            nodes_info = multi_instance.add_tags_to_nodes([n.node_id for n in nodes_info], tag)
+            print("Added tag `{}` to {} nodes".format(namespace.tag, len(nodes_info)))
         except Exception:
-            raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
-                            "Please check the tag parameters passed")
-        nodes_info = multi_instance.add_tags_to_nodes([n.node_id for n in nodes_info], tag)
-        print("Added tag `{}` to {} nodes".format(namespace.tag, len(nodes_info)))
+            log.error("Error mounting tag parameters. Please check the tag parameters passed")
 
     for node_info in nodes_info:
         print('* ', node_info)
@@ -155,7 +162,7 @@ def node_start(namespace: argparse.Namespace):
         try:
             extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
         except Exception:
-            raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
+            raise Exception("Error mounting group's extra parameters. Are you putting spaces after `=`? "
                             "Please check the extra parameters passed")
 
         for group in namespace.group:
@@ -164,6 +171,8 @@ def node_start(namespace: argparse.Namespace):
             added_nodes = multi_instance.add_nodes_to_group(started_nodes, group, group_args=extra)
             if added_nodes:
                 print("Nodes `{}` were successfully added to group `{}`".format(', '.join(added_nodes), group))
+            else:
+                log.error("No nodes were added to group `{}`".format(group))
 
 
 def node_list(namespace: argparse.Namespace):
@@ -172,11 +181,9 @@ def node_list(namespace: argparse.Namespace):
     if namespace.tag:
         try:
             tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+            nodes = multi_instance.get_nodes_with_tags(tag)
         except Exception:
-            raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
-                            "Please check the tag parameters passed")
-        nodes = multi_instance.get_nodes_with_tags(tag)
-
+            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
     else:
         nodes = multi_instance.get_nodes()
 
@@ -188,7 +195,16 @@ def node_list(namespace: argparse.Namespace):
 
 def node_show(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
-    nodes = multi_instance.get_nodes(namespace.node_ids)
+    node_ids = set(namespace.node_ids)
+
+    if namespace.tag:
+        try:
+            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+        except Exception:
+            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+
+    nodes = multi_instance.get_nodes(list(node_ids)) if node_ids else {}
 
     for node_info in nodes:
         print('------- `{}` --------'.format(node_info.node_id))
@@ -199,7 +215,16 @@ def node_show(namespace: argparse.Namespace):
 
 def node_alive(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
-    alive_nodes = multi_instance.check_nodes_alive(namespace.node_ids)
+    node_ids = set(namespace.node_ids)
+
+    if namespace.tag:
+        try:
+            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+        except Exception:
+            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+
+    alive_nodes = multi_instance.check_nodes_alive(list(node_ids)) if node_ids else {}
 
     print(' ------ ALIVE NODES ------ ')
     for k in sorted(alive_nodes.keys()):
@@ -210,14 +235,31 @@ def node_alive(namespace: argparse.Namespace):
 
 def node_stop(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
-    multi_instance.stop_nodes(namespace.node_ids)
-    print("Nodes `{}` stopped!".format(', '.join(namespace.node_ids)))
+    node_ids = set(namespace.node_ids)
+
+    if namespace.tag:
+        try:
+            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+        except Exception:
+            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+
+    if not node_ids:
+        print("No nodes stopped")
+    else:
+        multi_instance.stop_nodes(list(node_ids))
+        print("Nodes `{}` stopped!".format(', '.join(namespace.node_ids)))
+
+
+def node_resume(namespace: argparse.Namespace):
+    raise NotImplementedError("Function not implemented yet...")
 
 
 def node_pause(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    multi_instance.pause_nodes(namespace.node_ids)
-    print("Nodes `{}` paused!".format(', '.join(namespace.node_ids)))
+    # multi_instance = __get_instance_api(namespace)
+    # multi_instance.pause_nodes(namespace.node_ids)
+    # print("Nodes `{}` paused!".format(', '.join(namespace.node_ids)))
+    raise NotImplementedError("Function not implemented yet...")
 
 
 def node_playbook(namespace: argparse.Namespace):
@@ -270,15 +312,26 @@ def node_add_tag(namespace: argparse.Namespace):
     try:
         tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
     except Exception:
-        raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
-                        "Please check the tag parameters passed")
+        raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
 
     nodes = multi_instance.add_tags_to_nodes(namespace.node_ids, tag)
     print("Added tag `{}` for {} nodes".format(namespace.tag, len(nodes)))
 
 
 def node_remove_tag(namespace: argparse.Namespace):
-    pass
+    multi_instance = __get_instance_api(namespace)
+    tag = namespace.tag
+    node_ids = namespace.node_ids
+
+    if not node_ids:
+        node_ids = [node.node_id for node in multi_instance.get_nodes()]
+
+    nodes = multi_instance.remove_tags_from_nodes(node_ids, [tag])
+
+    if nodes:
+        print("Removed tag `{}` for nodes `{}`".format(tag, ', '.join([node.node_id for node in nodes])))
+    else:
+        print("No tags removed")
 
 
 def add_group_to_node(namespace: argparse.Namespace):

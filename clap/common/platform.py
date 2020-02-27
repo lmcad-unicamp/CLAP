@@ -216,7 +216,6 @@ class MultiInstanceAPI:
                 node.node_id for node in nodes if node.cluster_id == cluster.cluster_id], *args, **kwargs))
         return connections
 
-
     def get_node(self, node_id: str) -> NodeInfo:
         try:
             return self.__repository_operations.get_node(node_id)
@@ -263,8 +262,8 @@ class MultiInstanceAPI:
             for tag in tags:
                 if tag in list(node.tags.keys()):
                     node.tags.pop(tag)
-            self.__repository_operations.write_node_info(node)
-            removed_nodes.append(node)
+                    self.__repository_operations.write_node_info(node)
+                    removed_nodes.append(node)
 
         return removed_nodes
 
@@ -323,14 +322,6 @@ class MultiInstanceAPI:
             group_args,
             error_action)
 
-    # Dict {
-    #   'group_name': {
-    #       'host_name': ['node-1', 'node-2']  --> if invalid hostname -- error
-    #   }
-    #
-    #   'group_name': ['node-1', 'node-2'] --> If group have no hosts ok, else add to nodes to all hosts in the group
-    # }
-
     def __add_nodes_to_group(self, group_hosts_map: Dict[str, Union[List[str], Dict[str, List[str]]]],
                              group_args: Dict = None, error_action: str = 'error'):
         node_ids = []
@@ -378,11 +369,6 @@ class MultiInstanceAPI:
 
         return node_ids
 
-    # group: a
-    # group: a/x
-    # group: a; nodes: [1,2]
-    # group: a/x; nodes: [1,2]
-
     def execute_group_action(self, group_name: str, action: str, group_args: Dict = None, node_ids: List[str] = None,
                              error_action='ignore'):
         split_vals = group_name.split('/')
@@ -408,7 +394,6 @@ class MultiInstanceAPI:
             if len(node_ids) != len(node_with_group):
                 raise Exception("Nodes `{}` are not members of group `{}`".format(
                     ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
-
 
         return self.__execute_group_action(node_ids, group_name, action, group_args, error_action)
 
