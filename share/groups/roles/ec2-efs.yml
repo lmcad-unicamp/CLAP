@@ -1,0 +1,7 @@
+---   
+- name: EC2 EFS Playbook
+  hosts: all
+  gather_facts: no
+  roles:
+    - role: 'ec2-efs'
+

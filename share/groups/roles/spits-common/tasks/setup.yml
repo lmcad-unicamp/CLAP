@@ -1,0 +1,45 @@
+---
+#
+# Install Docker Community Edition
+# See: https://docs.docker.com/install/
+#
+# Initially contributed by Manuele Simi
+#
+
+- name: Install module dependencies
+  apt:
+    name:
+      # Python 2
+      - python-pip
+      - python-pip-whl
+      - python-setuptools
+      - python-virtualenv
+      - virtualenv
+      # Python 3
+      - python3-pip
+      - python3-virtualenv
+      - python3-setuptools
+      - python3-minimal
+      - zip
+      - unzip
+
+- name: Create SPITS directory
+  become: no
+  file:
+    path: ${HOME}/spits/
+    state: directory
+    mode: 0755
+
+- name: Create tmp directory
+  become: no
+  file:
+    path: ${HOME}/tmp/
+    state: directory
+    mode: 0755
+
+- name: Copy and extract SPITS files
+  become: no
+  unarchive:
+    src: "files/pypits.zip"
+    dest: ${HOME}/spits/
+

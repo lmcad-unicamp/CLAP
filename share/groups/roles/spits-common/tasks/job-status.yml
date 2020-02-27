@@ -1,0 +1,17 @@
+- name: Setting up SPITS for job
+  become: no
+  shell: "${HOME}/spits/bin/spits-job-status2 {{ job_id }}"
+  register: command_output
+
+- name: Copy values to localhost
+  delegate_to: localhost
+  copy:
+    dest: "{{ elasticluster.output_dir }}/{{ ansible_host }}.out"
+    content: "{{ command_output.stdout }}"
+    
+- name: Parse values
+  delegate_to: localhost
+  run_once: true
+  script: "files/parse.py {{ elasticluster.output_dir }} {{ elasticluster.output_dir }}/status"
+  args:
+    executable: python3

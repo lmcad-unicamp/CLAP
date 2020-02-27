@@ -1,0 +1,16 @@
+- name: Create tmp directory
+  become: no
+  file:
+    path: ${HOME}/tmp/
+    state: directory
+
+- name: Copy SPITS binary
+  become: no
+  copy:
+    src: "{{ spits_binary_path }}"
+    dest: ${HOME}/tmp/
+
+- name: Setting up SPITS for job
+  become: no
+  shell: ${HOME}/spits/bin/spits-job-create --force "{{ job_id }}" ${HOME}/tmp/"{{ spits_binary }}" "{{ spits_args }}"
+

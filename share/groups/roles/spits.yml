@@ -1,0 +1,28 @@
+---   
+- name: SPITS Playbook
+  hosts: all
+  gather_facts: no
+  become: no
+  tasks:
+    - include_role:
+        name: "spits-common"
+        tasks_from: "{{ action }}"
+      when: action in ['setup', 'job-create', 'job-status', 'job-add-worker']
+    
+- name: SPITS Jobmanager Playbook
+  hosts: jobmanager
+  gather_facts: no
+  tasks:
+    - include_role:
+        name: "spits-common"
+        tasks_from: "{{ action }}"
+      when: action in ['start-jm']
+    
+- name: SPITS TaskManager Playbook
+  hosts: taskmanager
+  gather_facts: no
+  tasks:
+    - include_role:
+        name: "spits-common"
+        tasks_from: "{{ action }}"
+      when: action in ['start-tm']

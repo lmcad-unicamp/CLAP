@@ -1,0 +1,5 @@
+- name: Run jobmanager for job "{{ job_id }}"
+  become: no
+  poll: 0
+  async: 0
+  shell: cd ${HOME}/spits/ && /usr/bin/python3 -m bin.spits-jobmanager2 "{{ job_id }}" &> ${HOME}/spits-jobs/"{{ job_id }}"/command.out &

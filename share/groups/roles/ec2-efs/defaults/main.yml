@@ -1,0 +1,7 @@
+---
+box_user: ubuntu
+box_group: ubuntu
+efs_id: fs-6fa521ef
+efs_mount_point: /efs
+efs_mount_permissions: 0644
+aws_region: us-east-1

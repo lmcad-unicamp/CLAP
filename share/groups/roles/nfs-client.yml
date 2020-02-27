@@ -1,0 +1,7 @@
+---   
+- name: NFS Client Playbook
+  hosts: all
+  gather_facts: no
+  roles:
+    - role: 'nfs-client'
+
