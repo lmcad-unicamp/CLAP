@@ -3,7 +3,7 @@ Basic Configuration Setup
 ..........................
 
 In order to create compute nodes and interact with them, you will need provide some information about the cloud provider, the login used to connect to the instances and the desired instances.
-By default, CLAP holds all of it information inside the ``~/.clap`` directory (``~`` stands for the user home directory). The minimal structure of ``~/.clap`` directory is shown bellow:
+By default, CLAP holds all of it information inside the ``~/.clap`` directory (``~`` stands for the user home directory). The minimal structure of ``~/.clap`` directory is shown below:
 
 ::
 
@@ -34,7 +34,7 @@ By default, CLAP holds all of it information inside the ``~/.clap`` directory (`
 
 - The ``groups`` directory store groups file and actions, used to perform action in several nodes. More detailed information about groups and actions will be presented at :doc:`groups section <groups>`
 
-- The ``modules`` directory store module files, used to extend clap CLI application via the     troubleshooting. More detailed information about modules will be presented at :doc:`modules section <modules>`
+- The ``modules`` directory store module files, used to extend clap CLI application.
 
 - The ``private`` stores keys and passwords files used to connect to the cloud provider and to the instance itself. Every key/secret files needed in the configuration sections must be placed inside this directory
 
@@ -52,7 +52,7 @@ Cloud provider configuration
 =============================
 
 The ``~/.clap/configs/providers.yaml`` file defines all properties needed to connect to a specific cloud provider.
-An example ``providers.yaml`` file is shown bellow (in YAML format).
+An example ``providers.yaml`` file is shown below (in YAML format).
 
 ::
 
@@ -115,7 +115,7 @@ Login provider configuration
 
 The login contains information on how to access the instances started on the cloud via SSH. So, the section holds information about the userto perform login, the SSH keyfile to log in the machine and others.
 The ``~/.clap/configs/logins.yaml`` file must be populated with desired information.
-An example ``logins.yaml`` file is shown bellow (in YAML format).
+An example ``logins.yaml`` file is shown below (in YAML format).
 
 ::
 
@@ -188,7 +188,7 @@ The template contains information about the virtual machine to start, including 
 The instance template references the provider configuration and login configuration by its ID.
 
 To create a new instance template you can edit the ``~/.clap/configs/instances.yaml`` file.
-An example of ``instances.yaml`` is shown bellow.
+An example of ``instances.yaml`` is shown below.
 
 ::
 

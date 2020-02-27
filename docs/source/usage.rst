@@ -60,7 +60,7 @@ To instantiate one node based on an instance template defined in the ``~/.clap/c
 Where the ``ubuntu-instance-aws`` refers to the instance template ID defined in the ``~/.clap/configs/instances.yaml`` file.
 In this way, you need to configure the files only once and launch instances any time.
 
-To launch more than one machine with the same instance template ID, you can put the desired number after the instance template ID preceded by an ``:``. For instance, the command bellow:
+To launch more than one machine with the same instance template ID, you can put the desired number after the instance template ID preceded by an ``:``. For instance, the command below:
 
 ::
 
@@ -79,7 +79,7 @@ You can also instantiate different machines in a row using the same command, but
 The above command instantiates 2 ``ubuntu-instance-aws`` machines and 2 ``example-instance-aws`` machines in a row!
 
 Once instances are successfully started, CLAP will assign to each one an unique node ID used to perform other operations to it.
-The ``clapp node list`` command can be used to show managed clap instances and a more detailed information of a specific node can be obtained with the command bellow:
+The ``clapp node list`` command can be used to show managed clap instances and a more detailed information of a specific node can be obtained with the command below:
 
 ::
 
@@ -96,7 +96,7 @@ Replacing ``node-1`` with the id of the node to be detailed.
     [ERROR] Thread-XXX: Apparently, Amazon does not compute the RSA key fingerprint as we do! We cannot check if the uploaded keypair is correct!
 
 
-After the node is started, you can check if it is alive using the command bellow:
+After the node is started, you can check if it is alive using the command below:
 
 ::
 
@@ -113,7 +113,7 @@ Terminating Instances
 ----------------------
 
 The ``stop`` command can be used to **terminate** an running instance (in AWS, stop/resume instance is **not supported yet**, so the nodes are terminated).
-The command is shown bellow
+The command is shown below
 
 ::
 
@@ -130,28 +130,28 @@ Executing and Connecting
 
 CLAP provides three simple commands to interact directly with the nodes.
 
-* The ``node connect`` command can be used to get an SSH shell to the desired node, as shown in the command bellow:
+* The ``node connect`` command can be used to get an SSH shell to the desired node, as shown in the command below:
 
 ::
 
         clapp node connect node-1
 
 * The ``node execute`` command can be used to execute an shell script command in a node and print the respective ``stdout`` and ``stderr`` outputs.
-  An example is shown bellow, used to execute the command ``echo ola`` in the node ``node-0`` and retrieve its outputs.
+  An example is shown below, used to execute the command ``echo ola`` in the node ``node-0`` and retrieve its outputs.
 
 ::
 
         clapp node execute node-0 'echo ola'
 
 * The ``node playbook`` command allows to execute an `Ansible playbook <https://www.ansible.com/>`_ in several nodes in a row.
-  An example is shown bellow, used to execute the playbook ``example.yml`` in three nodes (``node-0``, ``node-1`` and ``node-2``)
+  An example is shown below, used to execute the playbook ``example.yml`` in three nodes (``node-0``, ``node-1`` and ``node-2``)
 
   ::
 
         clapp node playbook example.yml node-0 node-1 node-2
 
   And if your playbook contains variables that must be passed from the command line, you can use the ``extra`` parameter.
-  The bellow example shows how to pass a keyworded value to a variable in the playbook.
+  The below example shows how to pass a keyworded value to a variable in the playbook.
 
   ::
 
@@ -172,7 +172,7 @@ Tagging Nodes
 Tags is a (key, value) pair that can be associated to nodes aiming to easily select it when needed.
 Almost every command that you must supply nodes as input may have options to select nodes by tag (will be shown later).
 
-You can use the command bellow to added a tag to some nodes:
+You can use the command below to added a tag to some nodes:
 
 ::
 
@@ -180,7 +180,7 @@ You can use the command bellow to added a tag to some nodes:
 
 Where the tag must be a string in the format (``"key=value"``) and the nodes must be specified after.
 
-To remove tags, you can use the ``tag remove`` command, similarly to the ``tag add`` command, as shown bellow:
+To remove tags, you can use the ``tag remove`` command, similarly to the ``tag add`` command, as shown below:
 
 ::
 
@@ -188,7 +188,7 @@ To remove tags, you can use the ``tag remove`` command, similarly to the ``tag a
 
 Where the tag must be a string in the format (``"key=value"``).
 
-Finally, you can also start nodes and tag them right after its creation, by using the bellow command:
+Finally, you can also start nodes and tag them right after its creation, by using the below command:
 
 ::
 

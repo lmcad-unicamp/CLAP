@@ -111,7 +111,7 @@ Using paths:
             traceback.print_exc()
 
         log.error("{}: {}".format(e.__class__.__name__, e))
-        log.error("Error executing `{} {}`".format(sys.argv[0], ' '.join(arguments)))
+        # log.error("Error executing `{} {}`".format(sys.argv[0], ' '.join(arguments)))
         return 1
 
 

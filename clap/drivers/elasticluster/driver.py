@@ -895,4 +895,4 @@ class ElasticlusterInterface(AbstractInstanceInterface):
             executed_nodes.update(ecc_ansible_wrapper.run_playbook(
                 ecc_cluster, ecc_nodes, reverse_map, playbook=playbook_path, extra_args=ecc_extra_args))
 
-        return {reverse_map[node_name]: status for node_name, status in executed_nodes.items()}
+        return executed_nodes
