@@ -1,0 +1,92 @@
+:mod:`clap.common.driver`
+=========================
+
+.. py:module:: clap.common.driver
+
+
+Module Contents
+---------------
+
+.. py:class:: AbstractInstanceInterface(repository_operator: RepositoryOperations)
+
+   Abstract class implementing the interface between the driver and the clap objects.
+   The interface is responsible for create and manage clusters and nodes entries in the clap platform repository.
+   Clap objects interact with the driver interface instead of the driver directly.
+
+   .. attribute:: __interface_id__
+      :annotation: = InterfaceID
+
+      
+
+   .. attribute:: __interface_version__
+      :annotation: = 0.1.0
+
+      
+
+   .. method:: start_nodes(self, instances_num: Dict[str, int])
+      :abstractmethod:
+
+
+
+   .. method:: stop_nodes(self, node_ids: List[str])
+      :abstractmethod:
+
+
+
+   .. method:: pause_nodes(self, node_ids: List[str])
+      :abstractmethod:
+
+
+
+   .. method:: resume_nodes(self, node_ids: List[str])
+      :abstractmethod:
+
+
+
+   .. method:: check_nodes_alive(self, node_ids: List[str])
+      :abstractmethod:
+
+
+
+   .. method:: get_connection_to_nodes(self, node_ids: List[str], *args, **kwargs)
+      :abstractmethod:
+
+
+
+   .. method:: execute_playbook_in_nodes(self, playbook_path: str, group_hosts_map: Dict[str, List[str]], extra_args: Dict[str, str] = None, group_vars: Dict[str, Dict[str, str]] = None)
+      :abstractmethod:
+
+
+
+
+.. py:class:: Codes
+
+   Status codes for nodes
+       
+
+   .. attribute:: NODE_STATUS_INIT
+      :annotation: = initialized
+
+      
+
+   .. attribute:: NODE_STATUS_UNREACHABLE
+      :annotation: = unreachable
+
+      
+
+   .. attribute:: NODE_STATUS_REACHABLE
+      :annotation: = reachable
+
+      
+
+   .. attribute:: NODE_STATUS_PAUSED
+      :annotation: = paused
+
+      
+
+   .. attribute:: NODE_STATUS_STOPPED
+      :annotation: = stopped
+
+      
+
+

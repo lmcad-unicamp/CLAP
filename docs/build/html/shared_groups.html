@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Groups shared with CLAP &mdash; CLoud Application Platform 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Python API" href="pythonapi.html" />
+    <link rel="prev" title="Groups" href="groups.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html#cloud-provider-configuration">Cloud provider configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html#login-provider-configuration">Login provider configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html#instance-templates-configuration">Instance templates configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups.html#working-groups-in-clap">Working Groups in CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups.html#group-commands">Group Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups.html#group-hosts">Group Hosts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups.html#special-variables">Special variables</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Groups shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Groups shared with CLAP</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/shared_groups.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="groups-shared-with-clap">
+<h1>Groups shared with CLAP<a class="headerlink" href="#groups-shared-with-clap" title="Permalink to this headline">¶</a></h1>
+<p>Here are some groups shared with CLAP:</p>
+<div class="section" id="ec2-efs">
+<h2>EC2 EFS<a class="headerlink" href="#ec2-efs" title="Permalink to this headline">¶</a></h2>
+<p>This group setup and mount an network EFS filesystem on AWS provider.</p>
+<p>The actions for the group is listed below (the <code class="docutils literal notranslate"><span class="pre">setup</span></code> action is automatically executed when the node is added to the group).
+No hosts are needed for this group.</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">EC2 EFS group</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Name</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">setup</span></code></p></td>
+<td><p>Install nfs client and mount EC2 file system</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">umount</span></code></p></td>
+<td><p>Umount EC2 File System</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="setup-action-variables">
+<h3>Setup action variables<a class="headerlink" href="#setup-action-variables" title="Permalink to this headline">¶</a></h3>
+<p>The following variables must be informed when running the <code class="docutils literal notranslate"><span class="pre">setup</span></code> action (via <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter)</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">EC2 EFS <code class="docutils literal notranslate"><span class="pre">setup</span></code> action variables</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Name</strong></p></th>
+<th class="head"><p><strong>Type</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">efs_mount_point</span></code></p></td>
+<td><p>path</p></td>
+<td><p>Directory path where the filesystem will be mounted</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">user</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Name of the user owner (e.g. ubuntu)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">group</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Name of the group owner (e.g. ubuntu)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mount_ip</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Mount ip of the filesystem (see <a class="reference external" href="https://docs.aws.amazon.com/efs/latest/ug/accessing-fs.html">AWS EFS Documentation</a> for more information)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mount_permissions</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Permission used tomount the filesystem (e.g. 0644)</p></td>
+</tr>
+</tbody>
+</table>
+<p>An example of the command would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">group</span> <span class="n">add</span> <span class="n">ec2</span><span class="o">-</span><span class="n">efs</span> <span class="n">node</span><span class="o">-</span><span class="mi">0</span> <span class="o">--</span><span class="n">extra</span> <span class="n">efs_mount_point</span><span class="o">=</span><span class="s2">&quot;/efs&quot;</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span> <span class="n">group</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span> <span class="n">mount_ip</span><span class="o">=</span><span class="s2">&quot;192.168.0.1&quot;</span> <span class="n">mount_permissions</span><span class="o">=</span><span class="s2">&quot;0644&quot;</span>
+</pre></div>
+</div>
+<p>The above command will install and mount EC2 EFS filesystem on <code class="docutils literal notranslate"><span class="pre">node-0</span></code></p>
+</div>
+<div class="section" id="umount-action-variables">
+<h3>Umount action variables<a class="headerlink" href="#umount-action-variables" title="Permalink to this headline">¶</a></h3>
+<p>The following variables must be informed when running the <code class="docutils literal notranslate"><span class="pre">umount</span></code> action (via <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter)</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">EC2 EFS <code class="docutils literal notranslate"><span class="pre">umount</span></code> action variables</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Name</strong></p></th>
+<th class="head"><p><strong>Type</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">efs_mount_point</span></code></p></td>
+<td><p>path</p></td>
+<td><p>Directory path where the filesystem will be unmounted</p></td>
+</tr>
+</tbody>
+</table>
+<p>An example of the command would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">group</span> <span class="n">action</span> <span class="n">ec2</span><span class="o">-</span><span class="n">efs</span> <span class="n">umount</span> <span class="o">--</span><span class="n">nodes</span> <span class="n">node</span><span class="o">-</span><span class="mi">0</span> <span class="o">--</span><span class="n">extra</span> <span class="n">efs_mount_point</span><span class="o">=</span><span class="s2">&quot;/efs&quot;</span>
+</pre></div>
+</div>
+<p>The above command will unmount EC2 EFS filesystem from <code class="docutils literal notranslate"><span class="pre">node-0</span></code></p>
+</div>
+</div>
+<div class="section" id="docker">
+<h2>Docker<a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
+<p>This group installs docker-ce in debian and red-hat based systems</p>
+<p>The actions for the group is listed below (the <code class="docutils literal notranslate"><span class="pre">setup</span></code> action is automatically executed when the node is added to the group).
+No hosts are needed for this group.</p>
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">Docker group</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Name</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">setup</span></code></p></td>
+<td><p>Install docker-ce and start the service</p></td>
+</tr>
+</tbody>
+</table>
+<p>No additional variables is needed for the group</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pythonapi.html" class="btn btn-neutral float-right" title="Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="groups.html" class="btn btn-neutral float-left" title="Groups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Otávio Napoli
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
