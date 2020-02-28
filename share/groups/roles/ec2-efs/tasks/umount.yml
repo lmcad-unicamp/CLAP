@@ -1,0 +1,5 @@
+---
+  - name: Unmount EFS volume
+    mount:
+      name: "{{ efs_mount_point }}"
+      state: unmounted

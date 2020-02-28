@@ -378,16 +378,17 @@ def list_groups(namespace: argparse.Namespace):
 
 
 def remove_group_from_node(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    try:
-        extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
-    except Exception:
-        raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
-                        "Please check the extra parameters passed")
-
-    removed_nodes = multi_instance.remove_node_from_group(namespace.node_ids, namespace.group, group_args=extra)
-    if removed_nodes:
-        print("Nodes `{}` were successfully removed from group `{}`".format(', '.join(removed_nodes), namespace.group))
+    raise NotImplementedError("Not fully implemented yet...")
+    # multi_instance = __get_instance_api(namespace)
+    # try:
+    #     extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+    # except Exception:
+    #     raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
+    #                     "Please check the extra parameters passed")
+    #
+    # removed_nodes = multi_instance.remove_node_from_group(namespace.node_ids, namespace.group, group_args=extra)
+    # if removed_nodes:
+    #     print("Nodes `{}` were successfully removed from group `{}`".format(', '.join(removed_nodes), namespace.group))
 
 
 def print_all_help(parser):
