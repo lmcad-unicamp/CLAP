@@ -1,6 +1,6 @@
-..........................
+==========================
 Basic Configuration Setup
-..........................
+==========================
 
 In order to create compute nodes and interact with them, you will need provide some information about the cloud provider, the login used to connect to the instances and the desired instances.
 By default, CLAP holds all of it information inside the ``~/.clap`` directory (``~`` stands for the user home directory). The minimal structure of ``~/.clap`` directory is shown below:
@@ -41,9 +41,6 @@ By default, CLAP holds all of it information inside the ``~/.clap`` directory (`
 - The ``storage`` directory store metadata information used by ``clap`` (this directory may also contain sensitive information)
 
 To launch an instance and use the CLAP capabilities, you will first need to configure an instance template.
-
-
-# (3 steps= Cloud, Login, Instance) For CLAP, instance templates must be defined in the ``instances.yaml`` file.
 
 In the following sections, it will be shown how to configure the above files used to launch instances and all the valid information that can be used in it.
 

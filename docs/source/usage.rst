@@ -1,6 +1,6 @@
-......................
+==========================
 Usage
-......................
+==========================
 
 CLAP is a platform to start, stop and manage instances (nodes) in different cloud providers transparently.
 CLAP also offer mechanisms to control what is installed in each node and to perform actions in a group of nodes in a row.

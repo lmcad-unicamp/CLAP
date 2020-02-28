@@ -1,6 +1,6 @@
-......................
+==========================
 Groups
-......................
+==========================
 
 In order to perform pre-defined actions in several nodes in a row, CLAP uses the concept of groups, powered by `Ansible playbooks <https://www.ansible.com/>`_. Playbooks can be used to manage configurations of and deployments to remote machines.
 Nodes can be added to and removed from a group and also, a node may belong to multiple groups at once.

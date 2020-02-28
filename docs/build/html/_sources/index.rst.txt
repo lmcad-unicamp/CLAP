@@ -1,6 +1,6 @@
-"""""""""""""""""
+==========================
 CLAP
-"""""""""""""""""
+==========================
 
 CLoud Application Platform (CLAP) provides a interface to manage, interact and deploy HPC applications hosted in different cloud providers.
 CLAP is based on the `elasticluster <https://github.com/elasticluster/elasticluster>`_. project, a tool that allows automated setup of compute clusters
@@ -11,8 +11,6 @@ Some of the features are:
 - User-friendly interface to create, setup, manage, interact and stop multiple computing nodes on different cloud providers at the same time
 - Group system to easily perform actions in different heterogeneous nodes via `Ansible <https://ansible.com/>`_. playbooks
 - Easy-to-use python API.
-
-# CLAP Provides.........
 
 ..  toctree::
     :glob:
