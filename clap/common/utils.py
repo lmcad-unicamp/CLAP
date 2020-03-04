@@ -12,7 +12,7 @@ def setup_log(log_name: str = None, verbosity_level: int = logging.INFO, filenam
     # 0 -> ERROR, 1->WARNING, 2->DEBUG
     formatter = '[%(asctime)s] [%(levelname)s] %(threadName)s: %(message)s'
     if verbosity_level == 0:
-        verbosity_level = logging.ERROR
+        verbosity_level = logging.INFO
     elif verbosity_level == 1:
         verbosity_level = logging.INFO
     elif verbosity_level >= 2:

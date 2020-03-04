@@ -1,15 +1,5 @@
 ---
 
-- name: Common setup for all hosts
-  hosts: all
-  gather_facts: yes
-  pre_tasks:
-    - name: Ensure the APT package cache is updated
-      apt: 
-        update_cache: yes
-        cache_valid_time: 3600
-      become: yes
-
 - name: Run the playbook
   import_playbook: '{{ playbook_path }}'
 

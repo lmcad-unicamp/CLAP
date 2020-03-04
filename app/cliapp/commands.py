@@ -55,13 +55,13 @@ def common_arguments_parser():
     node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
     node_subcom_parser.set_defaults(func=node_stop)
 
-    node_subcom_parser = node_com_parser.add_parser('pause', help='Pause nodes')
-    node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be paused')
-    node_subcom_parser.set_defaults(func=node_pause)
-
-    node_subcom_parser = node_com_parser.add_parser('resume', help='Pause nodes')
-    node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be resumed')
-    node_subcom_parser.set_defaults(func=node_resume)
+    # node_subcom_parser = node_com_parser.add_parser('pause', help='Pause nodes')
+    # node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be paused')
+    # node_subcom_parser.set_defaults(func=node_pause)
+    #
+    # node_subcom_parser = node_com_parser.add_parser('resume', help='Pause nodes')
+    # node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be resumed')
+    # node_subcom_parser.set_defaults(func=node_resume)
 
     node_subcom_parser = node_com_parser.add_parser('playbook', help='Execute playbook in nodes')
     node_subcom_parser.add_argument('playbook_file', action='store', help='Playbook file to be executed')
@@ -249,17 +249,6 @@ def node_stop(namespace: argparse.Namespace):
     else:
         multi_instance.stop_nodes(list(node_ids))
         print("Nodes `{}` stopped!".format(', '.join(node_ids)))
-
-
-def node_resume(namespace: argparse.Namespace):
-    raise NotImplementedError("Function not implemented yet...")
-
-
-def node_pause(namespace: argparse.Namespace):
-    # multi_instance = __get_instance_api(namespace)
-    # multi_instance.pause_nodes(namespace.node_ids)
-    # print("Nodes `{}` paused!".format(', '.join(namespace.node_ids)))
-    raise NotImplementedError("Function not implemented yet...")
 
 
 def node_playbook(namespace: argparse.Namespace):

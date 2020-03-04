@@ -4,5 +4,5 @@ import sys
 import os
 os.environ['CLAP'] = os.getcwd()
 
-from app.server2.app import app
+from app.server.app import app
 app.run(debug=True)

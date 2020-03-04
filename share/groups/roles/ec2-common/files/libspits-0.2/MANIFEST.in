@@ -1,0 +1,3 @@
+include bin/spits-job-create
+include bin/spits-jobmanager
+include bin/spits-taskmanager

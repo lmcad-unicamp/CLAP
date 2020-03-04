@@ -1,0 +1,10 @@
+---   
+- name: SPITS Playbook
+  hosts: localhost
+  gather_facts: no
+  become: no
+  tasks:
+    - include_role:
+        name: "ec2-common"
+        tasks_from: "{{ action }}"
+      when: action in ['pause', 'resume']

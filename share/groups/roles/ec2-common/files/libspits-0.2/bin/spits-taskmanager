@@ -1,0 +1,103 @@
+#!/bin/bash
+# set -x
+
+# Set default SPITS directory and SPITS binaries
+SPITS_JOB_DIR="${SPITS_JOB_DIR:-$HOME/spits-jobs}"
+SCRIPTSDIR="$( cd "$(dirname "$0")"; pwd -P )"
+TM_PATH="$SCRIPTSDIR/../tm.py"
+
+abort() {
+    echo -e $1
+    exit 1
+}
+
+usage() {
+    echo "Usage: $0 [-f|--force] <jobid> [additional_tm_args]"
+    exit 1
+}
+
+# Check SPITS files...
+if [ ! -f $TM_PATH ]; then
+    abort "Invalid task manager file at: $TM_PATH"
+fi
+
+# Check the number of arguments
+if [ "$#" -lt 1 ]; then usage; fi
+
+# Check each argument
+for arg in "$@"; do
+    if [[ "$arg" =~ ^\-+.*$ ]]; then
+        case $1 in
+            -f|--force) FORCE=1 ;;
+            *) echo "Invalid argument: \`$1\`"; ERROR=1 ;;
+        esac
+        shift
+    else
+        break;
+    fi
+done
+# Any error in arguments?
+if [ ! -z "$ERROR" ]; then usage; fi
+
+# Set job information
+JOBID=$1
+TM_ARGS=${@: 2}
+
+# Check SPITS job directory files...
+if [ ! -f "$SPITS_JOB_DIR/$JOBID/job" ]; then
+    abort "Invalid job repository (without job file) for job $JOBID"
+fi
+
+# Check if the job has already finished...
+if [ `sed -n '1{/^1/p};q' "$SPITS_JOB_DIR/$JOBID/finished"` ]; then
+    abort "Job \`$JOBID\` has already terminated (finished=1)"
+fi
+
+# Get job command
+JOBCOMMAND=$(head -n 1 "$SPITS_JOB_DIR/$JOBID/job")
+# Make unique SPITS abbress
+ADDR=$(hostname)
+SPITS_UID="TM-$ADDR-$$"
+SPITS_OUTPUT="logs/$SPITS_UID.out"
+SPITS_ERR="logs/$SPITS_UID.err"
+# Craft python commands and task manager arguments
+PYTHON="${PYTHON:-$(which python3)}"
+PYTHON_CMD+="$PYTHON -u"
+TM_ARGS+=" --uid=$SPITS_UID --jobid=$JOBID --nw=0 --log=$SPITS_ERR --announce=file"
+# Final Command to run
+COMMAND="$PYTHON_CMD $TM_PATH $TM_ARGS $JOBCOMMAND"
+
+# Information...
+echo "Using $SPITS_UID as UID"
+echo "Using $SPITS_OUTPUT as default output"
+echo "Using $SPITS_ERR as error output"
+
+# Prepare to run the command
+# Set signal handler for the command
+signal_handler() {
+    # Get the trap result...
+    RES=$?
+    echo "Caught signal! Killing childs..."
+    kill -9 "$child" 2>/dev/null
+    rm -f "$SPITS_JOB_DIR/$JOBID/nodes/$SPITS_UID"
+}
+# Trap signals: SIGTERM SIGKILL SIGINT to signal_handler function
+trap signal_handler SIGTERM SIGKILL SIGINT
+
+# Enter JOB PATH
+cd "$SPITS_JOB_DIR/$JOBID/"
+# Run command! In background..
+echo -e "Starting TaskManager for job \`$JOBID\` with command:\n$COMMAND > $SPITS_OUTPUT &"
+$COMMAND > $SPITS_OUTPUT &
+# Get process PID and wait, or catch
+child=$!
+wait "$child"
+# Get result
+RES=$?
+
+# FINISH!
+echo "TaskManager terminated with status: $RES"
+
+rm -f "$SPITS_JOB_DIR/$JOBID/nodes/$SPITS_UID"
+
+exit $RES

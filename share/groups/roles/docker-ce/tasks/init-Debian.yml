@@ -1,10 +1,5 @@
 ---
 
-- name: debug message
-  debug:
-    msg: "Ubuntu VALUES: {{ is_ubuntu }}"
-
-
 - name: 'Fail if base OS not supported'
   fail:
     msg: 'Docker CE installation only supported on Debian 9 or later, and Ubuntu 16.04 or later'

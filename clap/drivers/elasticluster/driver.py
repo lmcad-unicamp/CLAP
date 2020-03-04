@@ -13,6 +13,7 @@ from typing import Optional, List, Dict, Set, Tuple, Union, Any
 
 import elasticluster.conf
 import paramiko
+import yaml
 from elasticluster import Cluster
 from elasticluster.cluster import Node
 from elasticluster.providers.ansible_provider import AnsibleSetupProvider
@@ -268,12 +269,14 @@ class ElasticCreator:
 class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
     def __init__(self, ansible_provider: AnsibleSetupProvider,
                  kind_groups_map: Dict[str, List[str]],
-                 kind_key_value_vars: Dict[str, Dict[str, str]]):
+                 kind_key_value_vars: Dict[str, Dict[str, str]],
+                 node_name_id_map: Dict[str, str]):
         self.__dict__.update(ansible_provider.__dict__)
         self.groups = kind_groups_map
         self.environment = kind_key_value_vars
+        self.node_name_id_map = node_name_id_map
 
-    def run_playbook(self, cluster: Cluster, nodes: List[Node], node_name_id_map: Dict[str, str], playbook: str,
+    def run_playbook(self, cluster: Cluster, nodes: List[Node], playbook: str,
                      extra_args=tuple()) -> Dict[str, bool]:
         run_id = (
             'elasticluster.{name}.{date}.{pid}@{host}'
@@ -284,7 +287,7 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
                 host=platform.node(),
             )
         )
-        inventory_path = self.build_inventory(cluster, nodes, node_name_id_map)
+        inventory_path = self.build_inventory(cluster, nodes)
         if inventory_path is None:
             # no inventory file has been created: this can only happen
             # if no nodes have been started nor can be reached
@@ -454,7 +457,7 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
                 # playbook might still have failed -- so explicitly
                 # check for a "done" report showing that each node run
                 # the playbook until the very last task
-                cluster_hosts = set(node_id for node_id in list(node_name_id_map.values()))
+                cluster_hosts = set(node_id for node_id in list(self.node_name_id_map.values()))
                 done_hosts = set()
                 for node_id in cluster_hosts:
                     try:
@@ -494,7 +497,7 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
             # return False
         return ok_hosts
 
-    def build_inventory(self, cluster: Cluster, nodes: List[Node], node_name_id_map: Dict[str, str]):
+    def build_inventory(self, cluster: Cluster, nodes: List[Node]):
         inventory_data = defaultdict(list)
 
         for node in nodes:
@@ -507,11 +510,10 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
                 # FIXME: should this raise a `ConfigurationError` instead?
                 log.warning(
                     "Ignoring node `{0}`:"
-                    " Node kind `{1}` not defined in cluster!"
-                        .format(node.name, node.kind))
+                    " Node kind `{1}` not defined in cluster!".format(node.name, node.kind))
                 continue
 
-            extra_vars = ['ansible_user=%s' % node.image_user]
+            extra_vars = ['ansible_user={}'.format(node.image_user)]
 
             ip_addr, port = parse_ip_address_and_port(node.preferred_ip)
             if port != 22:
@@ -542,7 +544,7 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
 
             for group in self.groups[node.kind]:
                 inventory_data[group].append(
-                    (node_name_id_map[node.name], ip_addr, ' '.join(extra_vars)))
+                    (self.node_name_id_map[node.name], ip_addr, ' '.join(extra_vars)))
 
         if not inventory_data:
             log.info("No inventory file was created.")
@@ -570,6 +572,34 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
                         hostline = "{0} ansible_host={1} {2}\n".format(*host)
                         inventory_file.write(hostline)
         return inventory_path
+
+    def _write_extra_vars(self, cluster, filename='extra_vars.yml'):
+        # build dict of "extra vars"
+        # XXX: we should not repeat here names of attributes that
+        # should not be exported... it would be better to use a simple
+        # naming convention (e.g., omit whatever starts with `_`)
+
+        extra_vars = cluster.to_vars_dict()
+        extra_vars.update(extra_vars.pop('extra', {}))
+        extra_vars['cloud'] = cluster.cloud_provider.to_vars_dict()
+        nodes = extra_vars.pop('nodes')
+        extra_vars['nodes'] = {}
+        for kind, instances in nodes.items():
+            for node in instances:
+                if node.name in self.node_name_id_map:
+                    node_vars = node.to_vars_dict()
+                    node_vars.update(node_vars.pop('extra', {}))
+                    extra_vars['nodes'][self.node_name_id_map[node.name]] = node_vars
+        extra_vars['output_dir'] = os.getcwd()
+        # save it to a YAML file
+        log.debug("Writing extra vars %r to file %s", extra_vars, filename)
+        with open(filename, 'w') as output:
+            # ensure output file is not readable to other users,
+            # as it may contain passwords
+            os.fchmod(output.fileno(), 0o600)
+            # dump variables in YAML format for Ansible to read
+            yaml.dump({ 'elasticluster': extra_vars }, output)
+        return filename
 
 
 def elaticluster_start_nodes(cluster_name: str, instances_num: Dict[str, int], storage_path: str = Defaults.elasticluster_storage_path,
@@ -889,10 +919,11 @@ class ElasticlusterInterface(AbstractInstanceInterface):
                 ecc_nodes.append(node)
 
             group_vars = group_vars if group_vars else {}
-            ecc_ansible_wrapper = AnsibleSetupProviderWrapper(ecc_cluster._setup_provider, nodeid_groups_map, group_vars)
+            ecc_ansible_wrapper = AnsibleSetupProviderWrapper(ecc_cluster._setup_provider, nodeid_groups_map,
+                                                              group_vars, reverse_map)
             ecc_extra_args = tuple(['{}="{}"'.format(k, v) for k, v in extra_args.items()]) if extra_args else {}
 
             executed_nodes.update(ecc_ansible_wrapper.run_playbook(
-                ecc_cluster, ecc_nodes, reverse_map, playbook=playbook_path, extra_args=ecc_extra_args))
+                ecc_cluster, ecc_nodes, playbook=playbook_path, extra_args=ecc_extra_args))
 
         return executed_nodes

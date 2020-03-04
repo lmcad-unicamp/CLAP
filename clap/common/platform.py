@@ -84,6 +84,8 @@ class GroupInterface:
         self.__find_groups()
 
     def get_group(self, group_name: str) -> Tuple[List[str], List[str], str]:
+        if group_name not in GroupInterface.__groups_actions_map__:
+            raise Exception("Invalid group: `{}`".format(group_name))
         group = GroupInterface.__groups_actions_map__[group_name]
         actions = getattr(group, 'actions', list())
         hosts = getattr(group, 'hosts', list())

@@ -7,6 +7,7 @@
 #
 
 - name: Install module dependencies
+  become: yes
   apt:
     name:
       # Python 2
