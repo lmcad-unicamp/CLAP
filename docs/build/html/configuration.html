@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -251,6 +251,10 @@ The valid values for a provider configuration are:</p>
 <td><p>&lt;string&gt;</p></td>
 <td><p>The availability zone you want to use (e.g. <code class="docutils literal notranslate"><span class="pre">us-east-1</span></code>)</p></td>
 </tr>
+<tr class="row-odd"><td><p><strong>vpc (optional)</strong></p></td>
+<td><p>&lt;string&gt;</p></td>
+<td><p>Name or ID of the AWS Virtual Private Cloud to provision resources in.</p></td>
+</tr>
 </tbody>
 </table>
 <p>Access keys consist of two parts: an access key ID (for example, <code class="docutils literal notranslate"><span class="pre">AKIAIOSFODNN7EXAMPLE</span></code>) and a secret access key (for example, <code class="docutils literal notranslate"><span class="pre">wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</span></code>).
@@ -347,9 +351,7 @@ An example of <code class="docutils literal notranslate"><span class="pre">insta
     <span class="n">boot_disk_type</span><span class="p">:</span> <span class="n">gp2</span>                 <span class="c1"># (OPTIONAL) Root filesystem volume storage type, one of gp2 (general purpose SSD), io1 (provisioned IOPS SSD), or standard (the default).</span>
     <span class="n">placement_group</span><span class="p">:</span> <span class="n">XXX</span>                <span class="c1"># (OPTIONAL) Placement group to enable low-latency networking between compute nodes</span>
     <span class="n">image_userdata</span><span class="p">:</span> <span class="s1">&#39;...&#39;</span>               <span class="c1"># (OPTIONAL) Shell script to be executed (as root) when the machine starts.</span>
-    <span class="n">network_ids</span><span class="p">:</span>                        <span class="c1"># (OPTIONAL) List of network or subnet IDs the nodes will be connected to</span>
-        <span class="o">-</span> <span class="n">eni</span><span class="o">-</span><span class="mi">0</span><span class="n">c7b58d5d506d94af</span>
-        <span class="o">-</span> <span class="n">network</span><span class="o">-</span><span class="n">example</span><span class="o">-</span><span class="mi">2</span>
+    <span class="n">network_ids</span><span class="p">:</span>  <span class="n">subnet</span><span class="o">-</span><span class="n">abcdfefxx</span>      <span class="c1"># (OPTIONAL) Subnet IDs the nodes will be connected to</span>
 
 <span class="n">instance</span><span class="o">-</span><span class="n">t2small</span><span class="o">-</span><span class="n">us</span><span class="o">-</span><span class="n">east</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
     <span class="n">provider</span><span class="p">:</span> <span class="n">aws</span><span class="o">-</span><span class="n">east</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">config</span>
@@ -415,8 +417,8 @@ The valid values for the instance templates are:</p>
 <td><p>Shell script to be executed (as root) when the machine starts. This shell script is executed before CLAP even gets a chance to connect to the VM.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>network_ids (optional)</strong></p></td>
-<td><p>&lt;List of strings&gt;</p></td>
-<td><p>List of network or subnet IDs the nodes of the cluster will be connected to</p></td>
+<td><p>&lt;string&gt;</p></td>
+<td><p>Subnet ID that the nodes of the cluster will be connected to</p></td>
 </tr>
 </tbody>
 </table>

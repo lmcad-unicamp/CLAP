@@ -96,6 +96,10 @@ The valid values for a provider configuration are:
         - <string>
         - The availability zone you want to use (e.g. ``us-east-1``)
 
+    *   - **vpc (optional)**
+        - <string>
+        - Name or ID of the AWS Virtual Private Cloud to provision resources in.
+
 
 Access keys consist of two parts: an access key ID (for example, ``AKIAIOSFODNN7EXAMPLE``) and a secret access key (for example, ``wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY``).
 These keys are **required** and is used to connect to the aws provider via third-party applications. (See the `AWS Access Keys documentation <https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_ for more information).
@@ -200,9 +204,7 @@ An example of ``instances.yaml`` is shown below.
         boot_disk_type: gp2                 # (OPTIONAL) Root filesystem volume storage type, one of gp2 (general purpose SSD), io1 (provisioned IOPS SSD), or standard (the default).
         placement_group: XXX                # (OPTIONAL) Placement group to enable low-latency networking between compute nodes
         image_userdata: '...'               # (OPTIONAL) Shell script to be executed (as root) when the machine starts.
-        network_ids:                        # (OPTIONAL) List of network or subnet IDs the nodes will be connected to
-            - eni-0c7b58d5d506d94af
-            - network-example-2
+        network_ids:  subnet-abcdfefxx      # (OPTIONAL) Subnet IDs the nodes will be connected to
 
     instance-t2small-us-east-1:
         provider: aws-east-1-config
@@ -262,8 +264,8 @@ The valid values for the instance templates are:
         - Shell script to be executed (as root) when the machine starts. This shell script is executed before CLAP even gets a chance to connect to the VM.
 
     *   - **network_ids (optional)**
-        - <List of strings>
-        - List of network or subnet IDs the nodes of the cluster will be connected to
+        - <string>
+        - Subnet ID that the nodes of the cluster will be connected to
 
 
 On Amazon EC2, the "default" security group only allows network communication among hosts in the group and does not allow SSH connections from the outside.

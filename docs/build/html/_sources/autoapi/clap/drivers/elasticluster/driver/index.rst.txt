@@ -9,12 +9,12 @@ Module Contents
 
 .. py:class:: ElasticCreator
 
-   .. method:: create_cluster_obj(cluster_name: str, provider_config: dict, login_config: dict, instances: dict, storage_path: str = Defaults.elasticluster_storage_path, storage_type: str = Defaults.DEFAULT_CONF_TYPE)
+   .. method:: create_cluster_obj(cluster_name: str, provider_config: dict, login_config: dict, instances: dict, login_name: str, provider_name: str, storage_path: str = Defaults.elasticluster_storage_path, storage_type: str = Defaults.DEFAULT_CONF_TYPE)
       :staticmethod:
 
 
 
-   .. method:: update_cluster_config(cluster_name: str, provider_config: dict, login_config: dict, instances: dict, storage_path: str = Defaults.elasticluster_storage_path, storage_type: str = Defaults.DEFAULT_CONF_TYPE)
+   .. method:: update_cluster_config(cluster_name: str, provider_config: dict, login_config: dict, instances: dict, login_name: str, provider_name: str, storage_path: str = Defaults.elasticluster_storage_path, storage_type: str = Defaults.DEFAULT_CONF_TYPE)
       :staticmethod:
 
 
@@ -24,7 +24,7 @@ Module Contents
 
 
 
-   .. method:: __to_elasticluster_config(cluster_name, instances, login_config, provider_config)
+   .. method:: __to_elasticluster_config(cluster_name: str, instances: Dict[str, Any], login_configs: Dict[str, Any], provider_configs: Dict[str, Any], login_name: str, provider_name: str)
       :staticmethod:
 
 

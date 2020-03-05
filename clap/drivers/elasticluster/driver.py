@@ -38,10 +38,13 @@ class ElasticCreator:
                            provider_config: dict,
                            login_config: dict,
                            instances: dict,
+                           login_name: str,
+                           provider_name: str,
                            storage_path: str = Defaults.elasticluster_storage_path,
                            storage_type: str = Defaults.DEFAULT_CONF_TYPE) -> Cluster:
 
-        eclust_config = ElasticCreator.__to_elasticluster_config(cluster_name, instances, login_config, provider_config)
+        eclust_config = ElasticCreator.__to_elasticluster_config(cluster_name, instances, login_config,
+                                                                 provider_config, login_name, provider_name)
         config = configparser.ConfigParser()
         config.update(eclust_config)
 
@@ -75,9 +78,12 @@ class ElasticCreator:
                               provider_config: dict,
                               login_config: dict,
                               instances: dict,
+                              login_name: str,
+                              provider_name: str,
                               storage_path: str = Defaults.elasticluster_storage_path,
                               storage_type: str = Defaults.DEFAULT_CONF_TYPE):
-        eclust_config = ElasticCreator.__to_elasticluster_config(cluster_name, instances, login_config, provider_config)
+        eclust_config = ElasticCreator.__to_elasticluster_config(cluster_name, instances, login_config, provider_config,
+                                                                 login_name, provider_name)
         config = configparser.ConfigParser()
         config.update(eclust_config)
         with open('{}/{}.conf'.format(storage_path, cluster_name), 'w') as configfile:
@@ -98,7 +104,8 @@ class ElasticCreator:
 
 
     @staticmethod
-    def __to_elasticluster_config(cluster_name, instances, login_config, provider_config):
+    def __to_elasticluster_config(cluster_name: str, instances: Dict[str, Any], login_configs: Dict[str, Any],
+                                  provider_configs: Dict[str, Any], login_name: str, provider_name: str):
         # Transform to elasticluster config
         eclust_config = dict()
         cluster_section = "cluster/{}".format(cluster_name)
@@ -107,7 +114,7 @@ class ElasticCreator:
         setup_section = "setup/setup-{}".format(cluster_name)
 
         # --------------------- Parse AWS cloud ---------------------------
-        if provider_config['provider'] == 'aws':
+        if provider_configs['provider'] == 'aws':
             key_renames = {
                 ('access_keyfile', 'ec2_access_key'),
                 ('secret_access_keyfile', 'ec2_secret_key'),
@@ -118,7 +125,7 @@ class ElasticCreator:
                 'provider': 'ec2_boto',
             }
             for key, val in key_renames:
-                eclust_config[cloud_section][val] = provider_config[key]
+                eclust_config[cloud_section][val] = provider_configs[key]
 
             eclust_config[cloud_section]['ec2_access_key'] = path_extend(
                 Defaults.private_path, eclust_config[cloud_section]['ec2_access_key'])
@@ -130,16 +137,22 @@ class ElasticCreator:
                 eclust_config[cloud_section]['ec2_access_key']).read().strip()
             eclust_config[cloud_section]['ec2_secret_key'] = path_extend(
                 Defaults.private_path, eclust_config[cloud_section]['ec2_secret_key'])
-
             if not os.path.isfile(eclust_config[cloud_section]['ec2_secret_key']):
                 raise ValueError(
                     "Invalid secret key file at `{}`".format(eclust_config[cloud_section]['ec2_secret_key']))
 
             eclust_config[cloud_section]['ec2_secret_key'] = open(
                 eclust_config[cloud_section]['ec2_secret_key']).read().strip()
-        else:
-            raise ValueError("Invalid provider `{}`".format(provider_config['provider']))
 
+            other_valid_provider_keys = ['vpc']
+            for valid_key in other_valid_provider_keys:
+                if valid_key in provider_configs:
+                    eclust_config[cloud_section][valid_key] = provider_configs[valid_key]
+
+        else:
+            raise ValueError("Invalid provider `{}`".format(provider_configs['provider']))
+
+        # -----------------------------------------------------------------
         # --------------------- Parse Login -------------------------------
         key_renames = {
             ('user', 'image_user'),
@@ -150,7 +163,7 @@ class ElasticCreator:
             ('sudo_user', 'image_user_sudo')
         }
         eclust_config[login_section] = {
-            val: login_config[key] for key, val in key_renames
+            val: login_configs[key] for key, val in key_renames
         }
         # Update private key files
         eclust_config[login_section]['user_key_public'] = path_extend(
@@ -163,19 +176,38 @@ class ElasticCreator:
             raise ValueError(
                 "Invalid private key file at `{}`".format(eclust_config[login_section]['user_key_private']))
 
+        other_valid_login_keys = []
+        for valid_key in other_valid_login_keys:
+            if valid_key in login_configs:
+                eclust_config[login_section][valid_key] = login_configs[valid_key]
+
         # ---------------------- Nodes Section ----------------------------
+        invalid_nodes = []
         for node, node_config in instances.items():
+            if node_config['provider'] != provider_name:
+                invalid_nodes.append(node)
+                continue
+
+            if node_config['login'] != login_name:
+                invalid_nodes.append(node)
+                continue
+
             node_section = "cluster/{}/{}".format(cluster_name, node)
             eclust_config[node_section] = {
                 'login': cluster_name
             }
 
+            # This populates all the node keys
             for name, config in node_config.items():
                 if name in ('login', 'provider'):
                     pass
                 eclust_config[node_section][name] = config
 
+        for node in invalid_nodes:
+            instances.pop(node)
+
         # Cluster Section
+
         eclust_config[cluster_section] = {
             "{}_nodes".format(node): 0 for node in list(instances.keys())
         }
@@ -711,10 +743,10 @@ class ElasticlusterInterface(AbstractInstanceInterface):
         # TODO If cluster is already created, verify if the config is the same....
         if ElasticCreator.exists_cluster(cluster_id):
             cluster = ElasticCreator.get_cluster_obj(cluster_id)
-            ElasticCreator.update_cluster_config(cluster_id, provider, login, instances)
+            ElasticCreator.update_cluster_config(cluster_id, provider, login, instances, login_conf, cloud_conf)
             return self.repository_operator.get_cluster(cluster_id)
 
-        cluster_obj = ElasticCreator.create_cluster_obj(cluster_id, provider, login, instances)
+        cluster_obj = ElasticCreator.create_cluster_obj(cluster_id, provider, login, instances, login_conf, cloud_conf)
         cluster_obj.repository.save_or_update(cluster_obj)
 
         # OK cluster was created, lets initialize nodes structures and

@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
@@ -188,12 +188,12 @@
 <em class="property">class </em><code class="sig-prename descclassname">clap.drivers.elasticluster.driver.</code><code class="sig-name descname">ElasticCreator</code><a class="headerlink" href="#clap.drivers.elasticluster.driver.ElasticCreator" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="clap.drivers.elasticluster.driver.ElasticCreator.create_cluster_obj">
-<em class="property">static </em><code class="sig-name descname">create_cluster_obj</code><span class="sig-paren">(</span><em class="sig-param">cluster_name: str</em>, <em class="sig-param">provider_config: dict</em>, <em class="sig-param">login_config: dict</em>, <em class="sig-param">instances: dict</em>, <em class="sig-param">storage_path: str = Defaults.elasticluster_storage_path</em>, <em class="sig-param">storage_type: str = Defaults.DEFAULT_CONF_TYPE</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.ElasticCreator.create_cluster_obj" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">create_cluster_obj</code><span class="sig-paren">(</span><em class="sig-param">cluster_name: str</em>, <em class="sig-param">provider_config: dict</em>, <em class="sig-param">login_config: dict</em>, <em class="sig-param">instances: dict</em>, <em class="sig-param">login_name: str</em>, <em class="sig-param">provider_name: str</em>, <em class="sig-param">storage_path: str = Defaults.elasticluster_storage_path</em>, <em class="sig-param">storage_type: str = Defaults.DEFAULT_CONF_TYPE</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.ElasticCreator.create_cluster_obj" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="clap.drivers.elasticluster.driver.ElasticCreator.update_cluster_config">
-<em class="property">static </em><code class="sig-name descname">update_cluster_config</code><span class="sig-paren">(</span><em class="sig-param">cluster_name: str</em>, <em class="sig-param">provider_config: dict</em>, <em class="sig-param">login_config: dict</em>, <em class="sig-param">instances: dict</em>, <em class="sig-param">storage_path: str = Defaults.elasticluster_storage_path</em>, <em class="sig-param">storage_type: str = Defaults.DEFAULT_CONF_TYPE</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.ElasticCreator.update_cluster_config" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">update_cluster_config</code><span class="sig-paren">(</span><em class="sig-param">cluster_name: str</em>, <em class="sig-param">provider_config: dict</em>, <em class="sig-param">login_config: dict</em>, <em class="sig-param">instances: dict</em>, <em class="sig-param">login_name: str</em>, <em class="sig-param">provider_name: str</em>, <em class="sig-param">storage_path: str = Defaults.elasticluster_storage_path</em>, <em class="sig-param">storage_type: str = Defaults.DEFAULT_CONF_TYPE</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.ElasticCreator.update_cluster_config" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -203,7 +203,7 @@
 
 <dl class="method">
 <dt id="clap.drivers.elasticluster.driver.ElasticCreator.__to_elasticluster_config">
-<em class="property">static </em><code class="sig-name descname">__to_elasticluster_config</code><span class="sig-paren">(</span><em class="sig-param">cluster_name</em>, <em class="sig-param">instances</em>, <em class="sig-param">login_config</em>, <em class="sig-param">provider_config</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.ElasticCreator.__to_elasticluster_config" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">__to_elasticluster_config</code><span class="sig-paren">(</span><em class="sig-param">cluster_name: str, instances: Dict[str, Any], login_configs: Dict[str, Any], provider_configs: Dict[str, Any], login_name: str, provider_name: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.ElasticCreator.__to_elasticluster_config" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
