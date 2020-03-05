@@ -60,15 +60,19 @@ Module Contents
 
 
 
-.. py:class:: AnsibleSetupProviderWrapper(ansible_provider: AnsibleSetupProvider, kind_groups_map: Dict[str, List[str]], kind_key_value_vars: Dict[str, Dict[str, str]])
+.. py:class:: AnsibleSetupProviderWrapper(ansible_provider: AnsibleSetupProvider, kind_groups_map: Dict[str, List[str]], kind_key_value_vars: Dict[str, Dict[str, str]], node_name_id_map: Dict[str, str])
 
    Bases: :class:`elasticluster.providers.ansible_provider.AnsibleSetupProvider`
 
-   .. method:: run_playbook(self, cluster: Cluster, nodes: List[Node], node_name_id_map: Dict[str, str], playbook: str, extra_args=tuple())
+   .. method:: run_playbook(self, cluster: Cluster, nodes: List[Node], playbook: str, extra_args=tuple())
 
 
 
-   .. method:: build_inventory(self, cluster: Cluster, nodes: List[Node], node_name_id_map: Dict[str, str])
+   .. method:: build_inventory(self, cluster: Cluster, nodes: List[Node])
+
+
+
+   .. method:: _write_extra_vars(self, cluster, filename='extra_vars.yml')
 
 
 

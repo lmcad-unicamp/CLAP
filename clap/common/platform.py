@@ -7,10 +7,6 @@ from paramiko import SSHClient
 from clap.common.config import Defaults
 from clap.common.driver import AbstractInstanceInterface
 from clap.common.cluster_repository import RepositoryOperations, NodeInfo
-
-
-# TODO: Surround try/except in starting nodes/cluster
-# TODO: Treat SPOT instances; NodeInfo --(add)--> temporary field, spoted time
 from clap.common.utils import path_extend, log
 
 
@@ -65,7 +61,6 @@ class GroupInterface:
 
     GROUP_SCHEMA = None
 
-    # TODO, must validate schema
     @staticmethod
     def __find_groups():
         if not GroupInterface.__groups_actions_map__:
@@ -143,16 +138,6 @@ class MultiInstanceAPI:
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
             self._get_instance_iface(cluster.driver_id).stop_nodes([
                 node.node_id for node in nodes if node.cluster_id == cluster.cluster_id])
-
-    def pause_nodes(self, node_ids: List[str]):
-        nodes = self.get_nodes(node_ids)
-        for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            self._get_instance_iface(cluster.driver_id).pause_nodes([
-                node.node_id for node in nodes if node.cluster_id == cluster.cluster_id])
-
-    # TODO implement
-    def resume_nodes(self, node_ids: List[str]):
-        pass
 
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
         nodes = self.get_nodes(node_ids)
@@ -310,9 +295,6 @@ class MultiInstanceAPI:
 
         return members
 
-    def __check_dependencies(self, node_ids: List[str], group_dependencies: List[str]):
-        pass
-
     def add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict = None, error_action: str = 'error'):
         split_vals = group_name.split('/')
 
@@ -389,6 +371,7 @@ class MultiInstanceAPI:
             raise Exception("No nodes in group `{}` to perform action `{}`".format(group_name, action))
 
         # Verify in subgroup
+        # TODO check subgroup not group
         if len(split_vals) > 1:
             node_with_group = [node.node_id for node in self.__repository_operations.get_nodes(node_ids)
                                if group_name in list(node.groups.keys())]
@@ -449,56 +432,53 @@ class MultiInstanceAPI:
 
         return node_ids
 
+    # TODO validate function
+    def remove_nodes_from_group(self, group_name: str, node_ids: List[str] = None, remove_action: str = None,
+                                group_args: Dict = None):
+        split_vals = group_name.split('/')
 
-    # def remove_nodes_from_group(self, node_ids: List[str], group_name: str, group_args: Dict = None, error_action='ignore'):
-    #     log.info("Removing group `{}` from nodes `{}`".format(group_name, ', '.join(node_ids)))
-    #     group_path, group_actions, group_hosts, group_dependencies = GroupInterface().get_group(group_name)
-    #
-    #     node_with_group = self.__check_nodes_in_group(node_ids, group_name)
-    #     if len(node_ids) != len(node_with_group):
-    #         raise Exception("Nodes `{}` are not members of group `{}`".format(
-    #             ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
-    #
-    #     hosts_map = dict()
-    #
-    #     if not group_hosts:
-    #         hosts_map['__default__'] = node_ids
-    #     else:
-    #         for host_name in group_hosts:
-    #             for node in self.__repository_operations.get_nodes(node_ids):
-    #                 final_host_name = "{}/{}".format(group_name, host_name)
-    #
-    #                 if final_host_name not in node.groups:
-    #                     continue
-    #
-    #                 if host_name not in hosts_map:
-    #                     hosts_map[host_name] = [node.node_id]
-    #                 else:
-    #                     hosts_map[host_name].append(node.node_id)
+        if len(split_vals) > 2:
+            raise Exception("Invalid group and hosts `{}`".format(group_name))
 
-    # TODO this func
-    def remove_node_from_group(self, node_ids: List[str], group: str, group_args: Dict = None, error_action='ignore'):
-        log.info("Removing group `{}` from nodes `{}`".format(group, ', '.join(node_ids)))
-        group_path, group_actions, group_hosts, group_dependencies = GroupInterface().get_group(group)
+        if node_ids:
+            node_with_group = self.__check_nodes_in_group(split_vals[0], node_ids)
+            if len(node_ids) != len(node_with_group):
+                raise Exception("Nodes `{}` are not members of group `{}`".format(
+                    ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
+        else:
+            node_ids = self.__check_nodes_in_group(split_vals[0])
 
-        node_with_group = self.__check_nodes_in_group(group, node_ids)
-        if len(node_ids) != len(node_with_group):
-            raise Exception("Nodes `{}` are not members of group `{}`".format(
-                ', '.join(set(node_ids).difference(set(node_with_group))), group))
+        if not node_ids:
+            raise Exception("No nodes in group `{}`".format(group_name))
 
-        if 'stop' in group_actions:
-            stop_actions = [group_actions['stop']] if isinstance(group_actions['stop'], str) else group_actions['stop']
-            group_args = group_args if group_args else {}
+        # Verify in subgroup
+        # TODO check subgroup not group
+        if len(split_vals) > 1:
+            node_with_group = [node.node_id for node in self.__repository_operations.get_nodes(node_ids)
+                               if group_name in list(node.groups.keys())]
 
-            node_ids = self.__execute_group_action_sequence(node_ids, stop_actions, group_path, group_args, error_action)
+            if len(node_ids) != len(node_with_group):
+                raise Exception("Nodes `{}` are not members of group `{}`".format(
+                    ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
 
-        if len(node_ids) == 0:
-            log.error("No nodes successfully executed stop")
-            return []
+        if remove_action:
+            removeds = self.__execute_group_action(node_ids, group_name, remove_action, group_args)
+            if len(removeds) != len(node_ids):
+                raise Exception("Nodes `{}` have failed to execute action `{}`".format(
+                    ', '.join(set(node_ids).difference(set(removeds))), remove_action))
 
-        nodes = self.__repository_operations.get_nodes(node_ids)
-        for node in nodes:
-            node.groups.pop(group)
+        for node_id in node_ids:
+            node = self.__repository_operations.get_node(node_id)
+
+            if len(split_vals) > 1:
+                node.groups.pop(group_name)
+
+            else:
+                for gname in list(node.groups.keys()):
+                    if gname == group_name or gname.startswith("{}/".format(gname)):
+                        node.groups.pop(gname)
+                    # else:
+                    #    raise Exception()
             self.__repository_operations.write_node_info(node)
 
         return node_ids

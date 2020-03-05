@@ -598,7 +598,7 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
             # as it may contain passwords
             os.fchmod(output.fileno(), 0o600)
             # dump variables in YAML format for Ansible to read
-            yaml.dump({ 'elasticluster': extra_vars }, output)
+            yaml.dump({'elasticluster': extra_vars }, output)
         return filename
 
 

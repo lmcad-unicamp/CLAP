@@ -105,14 +105,6 @@ Module Contents
 
 
 
-   .. method:: pause_nodes(self, node_ids: List[str])
-
-
-
-   .. method:: resume_nodes(self, node_ids: List[str])
-
-
-
    .. method:: check_nodes_alive(self, node_ids: List[str])
 
 
@@ -157,10 +149,6 @@ Module Contents
 
 
 
-   .. method:: __check_dependencies(self, node_ids: List[str], group_dependencies: List[str])
-
-
-
    .. method:: add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict = None, error_action: str = 'error')
 
 
@@ -177,7 +165,7 @@ Module Contents
 
 
 
-   .. method:: remove_node_from_group(self, node_ids: List[str], group: str, group_args: Dict = None, error_action='ignore')
+   .. method:: remove_nodes_from_group(self, group_name: str, node_ids: List[str] = None, remove_action: str = None, group_args: Dict = None)
 
 
 

@@ -22,10 +22,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -91,7 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="groups.html#working-groups-in-clap">Working Groups in CLAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="groups.html#group-commands">Group Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="groups.html#group-hosts">Group Hosts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="groups.html#special-variables">Special variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups.html#special-variables-tips">Special variables tips</a></li>
 <li class="toctree-l1"><a class="reference internal" href="shared_groups.html">Groups shared with CLAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
@@ -190,8 +190,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/clap/common/platform/index.html#clap.common.platform.MultiInstanceAPI.__add_nodes_to_group">__add_nodes_to_group() (clap.common.platform.MultiInstanceAPI method)</a>
 </li>
-      <li><a href="autoapi/clap/common/platform/index.html#clap.common.platform.MultiInstanceAPI.__check_dependencies">__check_dependencies() (clap.common.platform.MultiInstanceAPI method)</a>
-</li>
       <li><a href="autoapi/clap/common/config/index.html#clap.common.config.ConfigReader.__check_instances">__check_instances() (clap.common.config.ConfigReader method)</a>
 </li>
       <li><a href="autoapi/clap/common/platform/index.html#clap.common.platform.MultiInstanceAPI.__check_nodes_in_group">__check_nodes_in_group() (clap.common.platform.MultiInstanceAPI method)</a>
@@ -236,10 +234,10 @@
 </li>
       <li><a href="autoapi/clap/common/factory/index.html#clap.common.factory.PlatformFactory.__module_iface__">__module_iface__ (clap.common.factory.PlatformFactory attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/clap/common/platform/index.html#clap.common.platform.ModuleInterface.__modules_map__">__modules_map__ (clap.common.platform.ModuleInterface attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/clap/common/factory/index.html#clap.common.factory.PlatformFactory.__multi_instance_api__">__multi_instance_api__ (clap.common.factory.PlatformFactory attribute)</a>
 </li>
       <li><a href="autoapi/clap/common/repository/index.html#clap.common.repository.AbstractRepository.__repository_id__">__repository_id__ (clap.common.repository.AbstractRepository attribute)</a>
@@ -293,6 +291,8 @@
       <li><a href="autoapi/clap/common/cluster_repository/index.html#clap.common.cluster_repository.RepositoryOperations._read_clusters_info">_read_clusters_info() (clap.common.cluster_repository.RepositoryOperations method)</a>
 </li>
       <li><a href="autoapi/clap/common/cluster_repository/index.html#clap.common.cluster_repository.RepositoryOperations._read_nodes_info">_read_nodes_info() (clap.common.cluster_repository.RepositoryOperations method)</a>
+</li>
+      <li><a href="autoapi/clap/drivers/elasticluster/driver/index.html#clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper._write_extra_vars">_write_extra_vars() (clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -673,8 +673,6 @@
       <li><a href="autoapi/clap/common/driver/index.html#clap.common.driver.AbstractInstanceInterface.pause_nodes">pause_nodes() (clap.common.driver.AbstractInstanceInterface method)</a>
 
       <ul>
-        <li><a href="autoapi/clap/common/platform/index.html#clap.common.platform.MultiInstanceAPI.pause_nodes">(clap.common.platform.MultiInstanceAPI method)</a>
-</li>
         <li><a href="autoapi/clap/drivers/elasticluster/driver/index.html#clap.drivers.elasticluster.driver.ElasticlusterInterface.pause_nodes">(clap.drivers.elasticluster.driver.ElasticlusterInterface method)</a>
 </li>
         <li><a href="autoapi/clap/drivers/elasticluster/index.html#clap.drivers.elasticluster.ElasticlusterInterface.pause_nodes">(clap.drivers.elasticluster.ElasticlusterInterface method)</a>
@@ -704,7 +702,7 @@
 </li>
       <li><a href="autoapi/clap/common/cluster_repository/index.html#clap.common.cluster_repository.RepositoryOperations.remove_node">remove_node() (clap.common.cluster_repository.RepositoryOperations method)</a>
 </li>
-      <li><a href="autoapi/clap/common/platform/index.html#clap.common.platform.MultiInstanceAPI.remove_node_from_group">remove_node_from_group() (clap.common.platform.MultiInstanceAPI method)</a>
+      <li><a href="autoapi/clap/common/platform/index.html#clap.common.platform.MultiInstanceAPI.remove_nodes_from_group">remove_nodes_from_group() (clap.common.platform.MultiInstanceAPI method)</a>
 </li>
       <li><a href="autoapi/clap/common/platform/index.html#clap.common.platform.MultiInstanceAPI.remove_tags_from_nodes">remove_tags_from_nodes() (clap.common.platform.MultiInstanceAPI method)</a>
 </li>
@@ -714,15 +712,13 @@
 </li>
       <li><a href="autoapi/clap/common/repository/index.html#clap.common.repository.RepositoryFactory">RepositoryFactory (class in clap.common.repository)</a>
 </li>
-      <li><a href="autoapi/clap/common/cluster_repository/index.html#clap.common.cluster_repository.RepositoryOperations">RepositoryOperations (class in clap.common.cluster_repository)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/clap/common/cluster_repository/index.html#clap.common.cluster_repository.RepositoryOperations">RepositoryOperations (class in clap.common.cluster_repository)</a>
+</li>
       <li><a href="autoapi/clap/common/driver/index.html#clap.common.driver.AbstractInstanceInterface.resume_nodes">resume_nodes() (clap.common.driver.AbstractInstanceInterface method)</a>
 
       <ul>
-        <li><a href="autoapi/clap/common/platform/index.html#clap.common.platform.MultiInstanceAPI.resume_nodes">(clap.common.platform.MultiInstanceAPI method)</a>
-</li>
         <li><a href="autoapi/clap/drivers/elasticluster/driver/index.html#clap.drivers.elasticluster.driver.ElasticlusterInterface.resume_nodes">(clap.drivers.elasticluster.driver.ElasticlusterInterface method)</a>
 </li>
         <li><a href="autoapi/clap/drivers/elasticluster/index.html#clap.drivers.elasticluster.ElasticlusterInterface.resume_nodes">(clap.drivers.elasticluster.ElasticlusterInterface method)</a>

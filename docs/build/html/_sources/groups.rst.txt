@@ -249,11 +249,26 @@ And the ``start-master`` action will only execute in nodes of the group ``exampl
 More information about hosts can be found in the :doc:`tutorials section <tutorials>`.
 
 ===============================
-Special variables
+Special variables tips
 ===============================
 
 For all Ansible playbooks the following variables can be used:
 
-* **inventory_name**
-* **ansible_host**
-* XXX
+
+..  list-table:: Some Ansible special variables
+    :header-rows: 1
+
+    *   - **Name**
+        - **Description**
+
+    *   - ``inventory_name``
+        - ID of the node performing the task (e.g. ``node-0``)
+
+    *   - ``ansible_host``
+        - Connection IP used for the host
+
+    *   - ``elasticluster.nodes``
+        - Dictionary with nodes performing the task. The dictionary key is the node id and the value is another dictionary with several information about the node (e.g. the instance id)
+
+    *   - ``ansible_user``
+        - Name of the user used for login in the machine from a node

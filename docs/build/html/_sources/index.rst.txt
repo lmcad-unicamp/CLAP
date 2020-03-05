@@ -14,7 +14,7 @@ Some of the features are:
 
 ..  toctree::
     :glob:
-    :maxdepth: 2
+    :maxdepth: 1
     :titlesonly:
     :caption: Table of Contents
     :name: mastertoc

@@ -45,6 +45,7 @@ If there is any node already instantiated, an example output is shown below:
 For several commands, CLAP uses the node id (e.g. ``node-1``, ``node-2``) to perform operation in the nodes, transparently.
 Nodes may have tags (discussed lately) to easily perform selections and mey belong to groups, to perform group actions (discussed later).
 
+You may want to see the :doc:`troubleshooting page <troubleshooting>` if any failure occurs when working with nodes.
 
 ------------------------------------
 Start Instances and Check Aliveness
@@ -195,3 +196,4 @@ Finally, you can also start nodes and tag them right after its creation, by usin
     clapp -v node start ubuntu-instance-aws:4 --tag "key=value"
     
 The above command instantiates 4 ``ubuntu-instance-aws`` machines and tags them with tag ``"key=value"``, after its creation.
+

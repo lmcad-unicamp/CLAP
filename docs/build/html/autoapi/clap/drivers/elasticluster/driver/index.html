@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script src="../../../../../_static/jquery.js"></script>
-        <script src="../../../../../_static/underscore.js"></script>
-        <script src="../../../../../_static/doctools.js"></script>
-        <script src="../../../../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
@@ -91,7 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../groups.html#working-groups-in-clap">Working Groups in CLAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../groups.html#group-commands">Group Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../groups.html#group-hosts">Group Hosts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../groups.html#special-variables">Special variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../groups.html#special-variables-tips">Special variables tips</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../shared_groups.html">Groups shared with CLAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../pythonapi.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a></li>
@@ -240,16 +240,21 @@
 
 <dl class="class">
 <dt id="clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper">
-<em class="property">class </em><code class="sig-prename descclassname">clap.drivers.elasticluster.driver.</code><code class="sig-name descname">AnsibleSetupProviderWrapper</code><span class="sig-paren">(</span><em class="sig-param">ansible_provider: AnsibleSetupProvider, kind_groups_map: Dict[str, List[str]], kind_key_value_vars: Dict[str, Dict[str, str]]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">clap.drivers.elasticluster.driver.</code><code class="sig-name descname">AnsibleSetupProviderWrapper</code><span class="sig-paren">(</span><em class="sig-param">ansible_provider: AnsibleSetupProvider, kind_groups_map: Dict[str, List[str]], kind_key_value_vars: Dict[str, Dict[str, str]], node_name_id_map: Dict[str, str]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">elasticluster.providers.ansible_provider.AnsibleSetupProvider</span></code></p>
 <dl class="method">
 <dt id="clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper.run_playbook">
-<code class="sig-name descname">run_playbook</code><span class="sig-paren">(</span><em class="sig-param">self, cluster: Cluster, nodes: List[Node], node_name_id_map: Dict[str, str], playbook: str, extra_args=tuple()</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper.run_playbook" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run_playbook</code><span class="sig-paren">(</span><em class="sig-param">self, cluster: Cluster, nodes: List[Node], playbook: str, extra_args=tuple()</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper.run_playbook" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper.build_inventory">
-<code class="sig-name descname">build_inventory</code><span class="sig-paren">(</span><em class="sig-param">self, cluster: Cluster, nodes: List[Node], node_name_id_map: Dict[str, str]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper.build_inventory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_inventory</code><span class="sig-paren">(</span><em class="sig-param">self, cluster: Cluster, nodes: List[Node]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper.build_inventory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper._write_extra_vars">
+<code class="sig-name descname">_write_extra_vars</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster</em>, <em class="sig-param">filename='extra_vars.yml'</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.driver.AnsibleSetupProviderWrapper._write_extra_vars" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

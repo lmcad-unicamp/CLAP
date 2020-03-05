@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/underscore.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
@@ -92,7 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#working-groups-in-clap">Working Groups in CLAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-commands">Group Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-hosts">Group Hosts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#special-variables">Special variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#special-variables-tips">Special variables tips</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../shared_groups.html">Groups shared with CLAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pythonapi.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a></li>
@@ -312,16 +312,6 @@ and cloud providers in a transparently manner.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="clap.common.platform.MultiInstanceAPI.pause_nodes">
-<code class="sig-name descname">pause_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.pause_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="clap.common.platform.MultiInstanceAPI.resume_nodes">
-<code class="sig-name descname">resume_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.resume_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="clap.common.platform.MultiInstanceAPI.check_nodes_alive">
 <code class="sig-name descname">check_nodes_alive</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.check_nodes_alive" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -377,11 +367,6 @@ and cloud providers in a transparently manner.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="clap.common.platform.MultiInstanceAPI.__check_dependencies">
-<code class="sig-name descname">__check_dependencies</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str], group_dependencies: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.__check_dependencies" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="clap.common.platform.MultiInstanceAPI.add_nodes_to_group">
 <code class="sig-name descname">add_nodes_to_group</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str], group_name: str, group_args: Dict = None, error_action: str = 'error'</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.add_nodes_to_group" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -402,8 +387,8 @@ and cloud providers in a transparently manner.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="clap.common.platform.MultiInstanceAPI.remove_node_from_group">
-<code class="sig-name descname">remove_node_from_group</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str], group: str, group_args: Dict = None, error_action='ignore'</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.remove_node_from_group" title="Permalink to this definition">¶</a></dt>
+<dt id="clap.common.platform.MultiInstanceAPI.remove_nodes_from_group">
+<code class="sig-name descname">remove_nodes_from_group</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">group_name: str</em>, <em class="sig-param">node_ids: List[str] = None</em>, <em class="sig-param">remove_action: str = None</em>, <em class="sig-param">group_args: Dict = None</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.remove_nodes_from_group" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

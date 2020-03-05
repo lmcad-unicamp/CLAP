@@ -23,7 +23,7 @@ Some of the features are:
 
 4. Set the install script to execute with `chmod` and run the script!
     > `chmod +x install.sh`    
-    > `./install.sh`  
+      `./install.sh`  
 
 5. To use `clap`, you will need to activate the virtual-env. In the `clap` root directory run:
     > source clap-env/bin/activate   
@@ -31,6 +31,6 @@ Some of the features are:
 6. Try `clap`, via the CLI interface:
     > clapp -vv --show-all-help   
 
-7. In the CLAP folder, go to the folder `docs/build/html/` and open `index.html` (in browser) for more information of the configuration and usage
+7. Inside CLAP folder, go to the folder `docs/build/html/` and open `index.html` (in browser) for more information of the configuration and usage
 
 ---

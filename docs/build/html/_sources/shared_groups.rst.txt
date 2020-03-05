@@ -5,6 +5,48 @@ Groups shared with CLAP
 Here are some groups shared with CLAP:
 
 
+EC2 Common
+====================
+
+This group provide means to interact with AWS EC2 instances, such as pausing and resuming nodes
+
+The actions for the group is listed below (the ``setup`` action is automatically executed when the node is added to the group).
+No hosts are needed for this group.
+
+..  list-table:: EC2 Common group
+    :header-rows: 1
+
+    *   - **Name**
+        - **Description**
+
+    *   - ``pause``
+        - Pause (stop) instances in the EC2 cloud
+
+    *   - ``resume``
+        - Resume paused (stopped) instances in the EC2 cloud
+
+Example of the command is showed below:
+
+- Adding nodes to the group
+
+::
+
+    clapp group add ec2-common node-0
+
+The above command add ``node-0`` to the EC2 Common group
+
+
+- Pausing (stopping) intances
+
+::
+
+    clapp group action ec2-common pause
+    clapp group action ec2-common pause --nodes node-0 node-1
+
+For the above commands, the first one pause (stop) all EC2 instances belonging tho the EC2 Common group
+and the second one pause only the nodes ``node-0`` and ``node-1``.
+
+
 EC2 EFS
 ====================
 
