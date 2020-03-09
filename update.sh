@@ -4,6 +4,7 @@ CLAP_PATH=~/.clap
 
 echo -n "Pulling repository for updates... "
 date
+git pull
 git checkout .
 echo "OK"
 
