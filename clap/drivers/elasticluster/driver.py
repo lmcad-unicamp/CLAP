@@ -520,12 +520,11 @@ class AnsibleSetupProviderWrapper(AnsibleSetupProvider):
                         " successful termination of the setup playbook:"
                         " %s", (', '.join(cluster_hosts - done_hosts)))
         if ok:
-            log.info("Cluster correctly configured.")
+            log.info("Nodes correctly configured!")
             # return True
         else:
             log.warning(
-                "The cluster has likely *not* been configured correctly."
-                " You may need to re-run `elasticluster setup`.")
+                "Nodes have likely *not* been configured correctly.")
             # return False
         return ok_hosts
 
