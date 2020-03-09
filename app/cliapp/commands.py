@@ -86,7 +86,8 @@ def common_arguments_parser():
 
     group_subcom_parser = group_com_parser.add_parser('add', help='Add nodes to a group')
     group_subcom_parser.add_argument('group', action='store', help='Name of the group to be added')
-    group_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be added to the group')
+    group_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be added to the group')
+    group_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
     group_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
                                      help="Keyworded (format: x=y) Arguments to be passed to the action")
     group_subcom_parser.set_defaults(func=add_group_to_node)
@@ -325,13 +326,27 @@ def node_remove_tag(namespace: argparse.Namespace):
 
 def add_group_to_node(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
+    node_ids = set(namespace.node_ids)
+
+    if namespace.tag:
+        try:
+            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+        except Exception:
+            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+
+    if not node_ids:
+        print("No nodes to add to the group `{}`".format(namespace.group))
+
+    node_ids = list(node_ids)
+
     try:
         extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
     except Exception:
         raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
                         "Please check the extra parameters passed")
 
-    added_nodes = multi_instance.add_nodes_to_group(namespace.node_ids, namespace.group, group_args=extra)
+    added_nodes = multi_instance.add_nodes_to_group(node_ids, namespace.group, group_args=extra)
     if added_nodes:
         print("Nodes `{}` were successfully added to group `{}`".format(', '.join(added_nodes), namespace.group))
 
