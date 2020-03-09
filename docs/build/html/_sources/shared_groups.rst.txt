@@ -2,7 +2,224 @@
 Groups shared with CLAP
 ==========================
 
-Here are some groups shared with CLAP:
+Here are some groups shared with CLAP. Setup action is **always** executed when adding a node to a group.
+Also, the ``--nodes`` and ``--tag`` parameters can be passed to the ``clapp group action`` command to selectively select nodes inside the group that will execute the action, else the action will be performed in all nodes belonging to a group.
+
+
+Commands common
+===================
+
+This group provide means to execute common known commands in several machines in the group, such as: reboot, copy files to nodes, copy and execute shell scripts, among others.
+Consider add instances to this group to quickly perform common commands in several nodes in a row.
+
+No hosts are needed for this group.
+
+..  list-table:: Common available actions
+    :header-rows: 1
+
+    *   - **Name**
+        - **Description**
+
+    *   - ``copy``
+        - Copy a file from the localhost to the remote nodes
+
+    *   - ``fetch``
+        - Fetch files from the remote nodes to the localhost
+
+    *   - ``reboot``
+        - Reboot a machine and waits it to become available
+
+    *   - ``run-command``
+        - Execute a **shell** command in the remote hosts
+
+    *   - ``run-script``
+        - Transfer a script from localhost to remote nodes and execute it in the remote hosts
+
+    *   - ``update-packages``
+        - Update packages in the remote hosts
+
+Variables and examples for each action is shown below
+
+--------------------------
+copy action variables
+--------------------------
+
+The following variables must be informed when running the ``copy`` action (via ``extra`` parameter)
+
+..  list-table:: Common-commands ``copy`` action variables
+    :header-rows: 1
+
+    *   - **Name**
+        - **Type**
+        - **Description**
+
+    *   - ``src``
+        - path
+        - File to be copied to the remote hosts. If the path **is not absolute** (it is relative), it will search in the group's files directory else the file indicated will be copied.
+          If the file is a directory, it will be recursive copied.
+
+    *   - ``dest``
+        - path
+        - Destination path where the files will be put into (remote nodes)
+
+
+Examples of the group's ``copy`` action is showed below:
+
+::
+
+    clapp group action commands-common copy --extra src="/home/ubuntu/file" dest="~"
+
+The above command copy the file at ``/home/ubuntu/file`` (localhost) the the ``~`` directory of the remote hosts
+
+Or, you can use filters such as ``--nodes`` and ``--tag`` to the ``clapp group action`` command to selectively specify which nodes inside the group the action will be executed
+
+::
+
+    clapp group action commands-common copy --nodes node-0  node-1 --extra src="/home/ubuntu/file" dest="~"
+    clapp group action commands-common copy --tag 'x=y' --extra src="/home/ubuntu/file" dest="~"
+
+
+The above (first one) command copy the file at ``/home/ubuntu/file`` (localhost) the the ``~`` directory of the nodes ``node-0`` and ``node-1``
+
+The above (second one) command copy the file at ``/home/ubuntu/file`` (localhost) the the ``~`` directory of all nodes in the belonging to the ``commands-common`` group, tagged with ``x=y``
+
+
+--------------------------
+fetch action variables
+--------------------------
+
+The following variables must be informed when running the ``fetch`` action (via ``extra`` parameter)
+
+..  list-table:: Common-commands ``fetch`` action variables
+    :header-rows: 1
+
+    *   - **Name**
+        - **Type**
+        - **Description**
+
+    *   - ``src``
+        - path
+        - File to be copied from the remote hosts.
+          If the file is a directory, it will be recursive copied.
+
+    *   - ``dest``
+        - path
+        - Destination path where the files will be put into (localhost)
+
+
+Examples of the group ``fetch`` action is showed below:
+
+::
+
+    clapp group action commands-common fetch --extra src="~/file" dest="/home/ubuntu/fetched_files/"
+
+The above command fetch a file at ``~/file`` directory from the nodes and place at the  ``/home/ubuntu/fetched_files/`` directory of the localhost
+
+
+--------------------------
+reboot action variables
+--------------------------
+
+This action does not require any additional variable to be passed
+
+::
+
+    clapp group action commands-common reboot
+    clapp group action commands-common reboot --nodes node-0
+    clapp group action commands-common reboot --tag 'x=y'
+
+The first command reboot all machines belonging to the ``commands-common`` group.
+
+The second one reboot the ``node-0`` and the third one reboot the machines belonging to the group and tagged with ``'x=y'``
+
+
+------------------------------
+run-command action variables
+------------------------------
+
+The following variables must be informed when running the ``run-command`` action (via ``extra`` parameter)
+
+..  list-table:: Common-commands ``run-command`` action variables
+    :header-rows: 1
+
+    *   - **Name**
+        - **Type**
+        - **Description**
+
+    *   - ``cmd``
+        - string
+        - String with the command to be executed in the nodes
+
+    *   - ``workdir`` (optional)
+        - path
+        - Change into this directory before running the command. If none is passed, home directory of the remote node will be used
+
+
+Examples of the group ``run-command`` action is showed below:
+
+::
+
+    clapp group action commands-common run-command --extra cmd="ls"
+    clapp group action commands-common run-command --extra cmd="ls" workdir="/bin"
+
+The above command (first one) runs the command ``ls`` in the remote nodes
+
+The above command (second one) runs the command ``ls`` in the remote nodes, after changing to the "/bin" directory
+
+------------------------------
+run-script action variables
+------------------------------
+
+The following variables must be informed when running the ``run-script`` action (via ``extra`` parameter).
+
+..  list-table:: Common-commands ``run-script`` action variables
+    :header-rows: 1
+
+    *   - **Name**
+        - **Type**
+        - **Description**
+
+    *   - ``src``
+        - string
+        - Shell script file to be executed in the remote nodes. The file will be first copied (from localhost) to the nodes and after will be executed. Note: the script file **must begin** with the bash shebang (``#!/bin/bash``). Also the script filepath must be **absolute** else, if relative path is passed, Ansible seach in the group's file directory. The script will be deleted from nodes after execution.
+
+    *   - ``args`` (optional)
+        - string
+        - Command-line arguments to be passed to the script.
+
+    *   - ``workdir`` (optional)
+        - path
+        - Change into this directory before running the command. If none is passed, home directory of the remote node will be used (Path must be absolute for Unix-aware nodes)
+
+
+Examples of the group ``run-script`` action is showed below:
+
+::
+
+    clapp group action commands-common run-script --extra src="/home/ubuntu/echo.sh"
+    clapp group action commands-common run-script --extra src="/home/ubuntu/echo.sh" args="1 2 3"
+    clapp group action commands-common run-script --extra src="/home/ubuntu/echo.sh" args="1 2 3" workdir="/home"
+
+
+The above command (first one) will copy the ``/home/ubuntu/echo.sh`` script from localhost to the remote nodes and execute it (similar to run ``bash -c echo.sh`` in the hosts).
+
+The above command (second one) will copy the ``/home/ubuntu/echo.sh`` script from localhost to the remote nodes and execute it using the arguments "1 2 3" (similar to run ``bash -c echo.sh 1 2 3`` in the hosts).
+
+The above command (third one) is similar to the second one but will execute the script in the ``/home`` directory.
+
+
+----------------------------------
+update-packages action variables
+----------------------------------
+
+This action does not require any additional variable to be passed
+
+::
+
+    clapp group action commands-common update-packages
+
+The above command will update the package list from remote hosts (similar to ``apt update`` command)
+
 
 
 EC2 Common
@@ -13,7 +230,7 @@ This group provide means to interact with AWS EC2 instances, such as pausing and
 The actions for the group is listed below (the ``setup`` action is automatically executed when the node is added to the group).
 No hosts are needed for this group.
 
-..  list-table:: EC2 Common group
+..  list-table:: EC2 Common group actions
     :header-rows: 1
 
     *   - **Name**
@@ -56,7 +273,7 @@ The actions for the group is listed below (the ``setup`` action is automatically
 No hosts are needed for this group.
 
 
-..  list-table:: EC2 EFS group
+..  list-table:: EC2 EFS group actions
     :header-rows: 1
 
     *   - **Name**

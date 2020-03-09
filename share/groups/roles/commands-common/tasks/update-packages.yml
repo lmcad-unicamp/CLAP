@@ -1,0 +1,4 @@
+- name: Update all installed packages to latest version
+  become: yes
+  apt:
+    update_cache: yes

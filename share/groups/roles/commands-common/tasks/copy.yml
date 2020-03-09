@@ -1,0 +1,5 @@
+- name: Ansible copy files from local to remote host
+  become: no
+  copy:
+    src: "{{ src }}"
+    dest: "{{ dest }}"

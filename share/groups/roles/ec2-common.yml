@@ -1,5 +1,5 @@
 ---   
-- name: SPITS Playbook
+- name: EC2 Playbook
   hosts: localhost
   gather_facts: no
   become: no

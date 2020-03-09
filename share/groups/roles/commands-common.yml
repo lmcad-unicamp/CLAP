@@ -1,0 +1,9 @@
+---   
+- name: "Common commands: executing action `{{ action }}`"
+  hosts: all
+  gather_facts: no
+  become: no
+  tasks:
+    - include_role:
+        name: "commands-common"
+        tasks_from: "{{ action }}"

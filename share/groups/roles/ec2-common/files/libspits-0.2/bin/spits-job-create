@@ -1,0 +1,75 @@
+#!/bin/bash
+# set -x
+SPITS_JOB_DIR="${SPITS_JOB_DIR:-$HOME/spits-jobs}"
+
+abort() {
+    echo -e $1
+    exit 1
+}
+
+usage() {
+    echo "Usage: $0 [-f|--force] [-d|--data] <jobid> <spits_binary> [spits_bin_args]"
+    exit 1
+}
+if [ "$#" -lt 2 ]; then usage; fi
+
+# Check arguments...
+for arg in "$@"; do
+    if [[ "$arg" =~ ^\-+.*$ ]]; then
+        case $1 in
+            -f|--force) FORCE=1 ;;
+            -d|--data) shift; DATADIR=$1 ;;
+            *) echo "Invalid argument: $1"; ERROR=1 ;;
+        esac
+        shift
+    else
+        break;
+    fi
+done
+if [ ! -z "$ERROR" ]; then usage; fi
+
+JOBID=$1
+BINARY=$2
+BINARY_ARGS=${@: 3}
+
+# Check if it is a valid job identifier...
+if [[ ! "$JOBID" =~ ^[a-zA-Z][a-zA-Z0-9_]*$ ]]; then
+    abort "Invalid job id: \`$1\`";
+fi
+
+if [ ! -f "$BINARY" ]; then
+    abort "Invalid SPITS binary at '$2'";
+fi
+
+if [ -d "$SPITS_JOB_DIR/$JOBID" ]; then
+    if [ -z "$FORCE" ]; then
+        abort "Job \`$JOBID\` already exists at '$SPITS_JOB_DIR/$JOBID'"
+    else
+        echo "Removing job \`$JOBID\` at '$SPITS_JOB_DIR/$JOBID'"
+        rm -rf "$SPITS_JOB_DIR/$JOBID" || abort "Error removing '$SPITS_JOB_DIR/$JOBID'"
+    fi
+fi
+
+# Create default files
+echo "Creating SPITS job \`$JOBID\` at '$SPITS_JOB_DIR/$JOBID'"
+mkdir -p "$SPITS_JOB_DIR/$JOBID" || abort "Error creating job \`$JOBID\`"
+mkdir -p "$SPITS_JOB_DIR/$JOBID/bin" || abort "Error creating (bin) job \`$JOBID\`"
+mkdir -p "$SPITS_JOB_DIR/$JOBID/logs" || abort "Error creating (logs) job \`$JOBID\`"
+mkdir -p "$SPITS_JOB_DIR/$JOBID/nodes" || abort "Error creating (nodes) job \`$JOBID\`"
+echo -e "-1" > $SPITS_JOB_DIR/$JOBID/finished || abort "Error creating (finihed) job \`$JOBID\`"
+
+# Copy binaries and auxiliary files
+echo -e "Copying binary file \`$(basename $BINARY)\`"
+cp $BINARY "$SPITS_JOB_DIR/$JOBID/bin/$(basename $BINARY)" || abort "Error copying job file for job \`$JOBID\`"
+
+if [ ! -z "$DATADIR" ]; then
+    echo "Copying aux files at '$DATADIR' to '$SPITS_JOB_DIR/$JOBID/bin'"
+    cp -R $DATADIR $SPITS_JOB_DIR/$JOBID/bin
+fi
+
+# Craft job command
+echo -e "$SPITS_JOB_DIR/$JOBID/bin/$(basename $BINARY) $BINARY_ARGS" > $SPITS_JOB_DIR/$JOBID/job || abort "Error copying auxiliary files to job \`$JOBID\`"
+
+# OK
+echo -e "Job \`$JOBID\` successfully created at '$SPITS_JOB_DIR/$JOBID'"
+exit 0
