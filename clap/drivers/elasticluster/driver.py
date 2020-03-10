@@ -731,6 +731,23 @@ class ElasticlusterInterface(AbstractInstanceInterface):
         self.cluster_prefix = 'clap'
         self.node_prefix = 'node'
 
+    def __get_updated_cluster(self, cluster_id: str) -> ClusterInfo:
+        cluster_info = self.repository_operator.get_cluster(cluster_id)
+        reader = ConfigReader(Defaults.cloud_conf, Defaults.login_conf, Defaults.instances_conf)
+        provider = reader.get_provider(cluster_info.provider_id)
+        login = reader.get_login(cluster_info.login_id)
+        instances = reader.get_instances()
+        cluster_id = "{}-{}-{}".format(self.cluster_prefix, cluster_info.provider_id, cluster_info.login_id)
+
+        ElasticCreator.update_cluster_config(
+            cluster_id, provider, login, instances, cluster_info.login_id, cluster_info.provider_id)
+
+        cluster_info.provider_conf = provider
+        cluster_info.login_conf = login
+        self.repository_operator.write_cluster_info(cluster_info)
+
+        return cluster_info
+
     def __get_or_create_cluster(self, cloud_conf: str, login_conf: str) -> ClusterInfo:
         reader = ConfigReader(Defaults.cloud_conf, Defaults.login_conf, Defaults.instances_conf)
 
@@ -765,7 +782,7 @@ class ElasticlusterInterface(AbstractInstanceInterface):
 
     def __stop_cluster(self, cluster_id: str, *args, **kwargs):
         log.debug("Stopping cluster `{}`".format(cluster_id))
-        cluster_info = self.repository_operator.get_cluster(cluster_id)
+        cluster_info = self.__get_updated_cluster(cluster_id)
         cluster_name = cluster_info.eclust_cluster_name
 
         force = kwargs.get('force', False)
@@ -862,7 +879,7 @@ class ElasticlusterInterface(AbstractInstanceInterface):
     def stop_nodes(self, node_ids: List[str]):
         for node_info in self.repository_operator.get_nodes(node_ids):
             log.info("Stopping node `{}`...".format(node_info.node_id))
-            cluster_info = self.repository_operator.get_cluster(node_info.cluster_id)
+            cluster_info = self.__get_updated_cluster(node_info.cluster_id)
             elasticluster_stop_nodes(cluster_info.eclust_cluster_name, [node_info.eclust_node_name])
             self.repository_operator.remove_node(node_info.node_id)
             log.debug("Node `{}` removed successfully".format(node_info.node_id))
@@ -873,7 +890,7 @@ class ElasticlusterInterface(AbstractInstanceInterface):
     def pause_nodes(self, node_ids: List[str]):
         for node_info in self.repository_operator.get_nodes(node_ids):
             log.info("Pausing node `{}`...".format(node_info.node_id))
-            cluster_info = self.repository_operator.get_cluster(node_info.cluster_id)
+            cluster_info = self.__get_updated_cluster(node_info.cluster_id)
             elasticluster_pause_nodes(cluster_info.eclust_cluster_name, [node_info.eclust_node_name])
             node_info.status = Codes.NODE_STATUS_PAUSED
             node_info.update_time = time()
@@ -886,7 +903,7 @@ class ElasticlusterInterface(AbstractInstanceInterface):
         checkeds = dict()
         for node in self.repository_operator.get_nodes(node_ids):
             first_ip = node.ip
-            cluster_info = self.repository_operator.get_cluster(node.cluster_id)
+            cluster_info = self.__get_updated_cluster(node.cluster_id)
             cluster_obj = ElasticCreator.get_cluster_obj(cluster_info.eclust_cluster_name)
             node_obj = ElasticCreator.get_node_from_cluster(cluster_info.eclust_cluster_name, node.eclust_node_name)
 
@@ -917,7 +934,7 @@ class ElasticlusterInterface(AbstractInstanceInterface):
     def get_connection_to_nodes(self, node_ids: List[str], *args, **kwargs) -> Dict[str, SSHClient]:
         connections = dict()
         for node in self.repository_operator.get_nodes(node_ids):
-            cluster_info = self.repository_operator.get_cluster(node.cluster_id)
+            cluster_info = self.__get_updated_cluster(node.cluster_id)
             connections[node.node_id] = elasticluster_get_connection_to_node(
                 cluster_info.eclust_cluster_name, node.eclust_node_name, *args, **kwargs)
 
@@ -939,7 +956,7 @@ class ElasticlusterInterface(AbstractInstanceInterface):
 
         for cluster_id in cluster_ids:
             ecc_nodes = list()
-            cluster_info = self.repository_operator.get_cluster(cluster_id)
+            cluster_info = self.__get_updated_cluster(cluster_id)
             ecc_cluster = ElasticCreator.get_cluster_obj(cluster_name=cluster_info.eclust_cluster_name)
 
             host_set = {host for group, _hosts in group_hosts_map.items() for host in _hosts}
