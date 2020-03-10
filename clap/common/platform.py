@@ -1,13 +1,13 @@
 import setuptools
 import importlib.util
 import os
-from typing import List, Dict, Tuple, Union
+from typing import List, Dict, Tuple, Union, Any
 from paramiko import SSHClient
 
 from clap.common.config import Defaults
 from clap.common.driver import AbstractInstanceInterface
 from clap.common.cluster_repository import RepositoryOperations, NodeInfo
-from clap.common.utils import path_extend, log
+from clap.common.utils import path_extend, log, yaml_load
 
 
 class ModuleInterface:
@@ -129,6 +129,10 @@ class MultiInstanceAPI:
             driver_id = self.__default_driver
 
         return self.__interfaces_map__[driver_id](self.__repository_operations)
+
+    @staticmethod
+    def get_instance_templates() -> Dict[str, Any]:
+        return yaml_load(Defaults.instances_conf)
 
     def start_nodes(self, instances_num: Dict[str, int]) -> List[NodeInfo]:
         return self._get_instance_iface(self.__default_driver).start_nodes(instances_num)
@@ -432,7 +436,6 @@ class MultiInstanceAPI:
 
         return node_ids
 
-    # TODO validate function
     def remove_nodes_from_group(self, group_name: str, node_ids: List[str] = None, remove_action: str = None,
                                 group_args: Dict = None):
         split_vals = group_name.split('/')
@@ -482,3 +485,9 @@ class MultiInstanceAPI:
             self.__repository_operations.write_node_info(node)
 
         return node_ids
+
+    def export_platform(self, output_filename: str):
+        pass
+
+    def import_platform(self, zip_filename: str):
+        pass

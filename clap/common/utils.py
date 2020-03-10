@@ -79,4 +79,4 @@ def get_file_checksum(file_path: str) -> str:
 
 def yaml_load(filename: str) -> dict:
     with open(filename, 'r') as file:
-        return yaml.load(file)
+        return yaml.load(file, Loader=yaml.FullLoader)

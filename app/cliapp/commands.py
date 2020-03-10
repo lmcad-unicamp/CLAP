@@ -124,6 +124,14 @@ def common_arguments_parser():
     tag_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be added to the group')
     tag_subcom_parser.set_defaults(func=node_remove_tag)
 
+
+    # Templates commands
+    template_parser = commands_parser.add_parser('template', help='Templates information')
+    template_com_parser = template_parser.add_subparsers(title='subcommand', dest='subcommand')
+
+    template_subcom_parser = template_com_parser.add_parser('list', help='List instance templates')
+    template_subcom_parser.set_defaults(func=list_templates)
+
     return parser, commands_parser
 
 
@@ -393,6 +401,22 @@ def remove_group_from_node(namespace: argparse.Namespace):
     # removed_nodes = multi_instance.remove_node_from_group(namespace.node_ids, namespace.group, group_args=extra)
     # if removed_nodes:
     #     print("Nodes `{}` were successfully removed from group `{}`".format(', '.join(removed_nodes), namespace.group))
+
+
+def list_templates(namespace: argparse.Namespace):
+    templates = __get_instance_api(namespace).get_instance_templates()
+    len_templates = len(templates)
+    print("Instance Templates")
+    for inst_name, inst_values in templates.items():
+        try:
+            print("* Instance: `{}`".format(inst_name))
+            print("    cloud: {}".format(inst_values['provider']))
+            print("    login: {}".format(inst_values['login']))
+        except KeyError as e:
+            log.error("Error with instance template `{}`: {}".format(inst_name, e))
+            len_templates -= 1
+
+    print("Listed {} instance templates".format(len_templates))
 
 
 def print_all_help(parser):
