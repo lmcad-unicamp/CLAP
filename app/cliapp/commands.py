@@ -124,13 +124,24 @@ def common_arguments_parser():
     tag_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be added to the group')
     tag_subcom_parser.set_defaults(func=node_remove_tag)
 
-
     # Templates commands
     template_parser = commands_parser.add_parser('template', help='Templates information')
     template_com_parser = template_parser.add_subparsers(title='subcommand', dest='subcommand')
 
     template_subcom_parser = template_com_parser.add_parser('list', help='List instance templates')
     template_subcom_parser.set_defaults(func=list_templates)
+
+    # zip commands
+    zip_parser = commands_parser.add_parser('zip', help='Import/export platform information')
+    zip_com_parser = zip_parser.add_subparsers(title='subcommand', dest='subcommand')
+
+    zip_subcom_parser = zip_com_parser.add_parser('import', help='Import platform information')
+    zip_subcom_parser.add_argument('zipfile', action='store', help='Path of the zip file to import the platform information')
+    zip_subcom_parser.set_defaults(func=import_platform)
+
+    zip_subcom_parser = zip_com_parser.add_parser('export', help='Import platform information')
+    zip_subcom_parser.add_argument('zipfile', action='store', help='Path to the zip file to export the platform information')
+    zip_subcom_parser.set_defaults(func=export_platform)
 
     return parser, commands_parser
 
@@ -417,6 +428,14 @@ def list_templates(namespace: argparse.Namespace):
             len_templates -= 1
 
     print("Listed {} instance templates".format(len_templates))
+
+
+def import_platform(namespace: argparse.Namespace):
+    raise NotImplementedError("Not fully implemented")
+
+
+def export_platform(namespace: argparse.Namespace):
+    raise NotImplementedError("Not fully implemented")
 
 
 def print_all_help(parser):
