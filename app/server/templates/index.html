@@ -4,7 +4,7 @@
 
 
 <script>
-    var nodes = " {{ nodes }} "
+    var nodes = JSON.parse({{nodes|tojson|safe}})
 
     function start_loading(){
         display_list()
@@ -29,12 +29,49 @@
     function display_list(){
         div = document.getElementById("node-div")
         div.innerHTML = ""
+        
+        for (node_idx in nodes){
+            console.log(nodes[node_idx])
+            
+            div.innerHTML +=  '<div class="row">' +
+                '<div class="col-sm">' +
+                '<h5><b>' + nodes[node_idx]['node_id'] + '</b></h5>' +
+                '</div>' +
+                '<div class="col-sm">' +
+                '<b>IP:</b>' + nodes[node_idx]['ip'] +
+                '</div>' +
+                '<div class="col-sm">' +
+                '<b>Provider:</b>' + nodes[node_idx]['provider_id'] +
+                '</div>'
 
-        for (node in nodes) {
-            div.innerHTML += '<div class="row">'
-            div.innerHTML += '<div class="col-sm">'
-            div.innerHTML += '<h5><b>' + node['node_id'] + '</b></h5>'
-            div.innerHTML += '</div>'
+            if (Object.keys(nodes[node_idx]['groups']).length > 0){
+                div.innerHTML +=  '<div class="col-sm">' +
+                    '<h6><b>Groups</b></h6>'
+                
+                arr = []
+                for (group_name in nodes[node_idx]['groups']){
+                    arr.push(group_name)
+                } 
+                arr.join(',')
+                div.innerHTML += arr
+                                
+                div.innerHTML += '</div>'
+            }
+            
+            if (Object.keys(nodes[node_idx]['tags']).length > 0){
+                div.innerHTML +=  '<div class="col-sm">' +
+                    '<h6><b>Tags</b></h6>'
+                
+                arr = []
+                for (tag in nodes[node_idx]['tags']){
+                    arr.push(tag + ": " + nodes[node_idx]['tags'][tag])
+                } 
+                arr.join(', ')
+                div.innerHTML += arr
+                                
+                div.innerHTML += '</div>'
+            }
+
             div.innerHTML += '</div>'
         }
     }

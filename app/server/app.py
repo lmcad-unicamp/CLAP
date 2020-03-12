@@ -21,9 +21,9 @@ db = SQLAlchemy(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def index(result=None):
-    #nodes = json.dumps([node.__dict__ for node in node_get()])
-    #print(nodes)
-    return render_template('index.html', nodes=None)
+    nodes = json.dumps([node.__dict__ for node in node_get()])
+    print(nodes)
+    return render_template('index.html', nodes=nodes)
 
 
 def process_request(text):
