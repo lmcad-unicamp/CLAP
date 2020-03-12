@@ -6,8 +6,10 @@ from wtforms import StringField, SubmitField, BooleanField, PasswordField, Integ
 from wtforms.validators import DataRequired, Length
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
+import json
 
 from clap.common.factory import PlatformFactory
+from .commands import *
 
 
 app = Flask(__name__)
@@ -16,28 +18,12 @@ app.secret_key = 'dev'
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
 
-class ClusterCreateForm(FlaskForm):
-    cluster_name = TextAreaField()
-    edit = SubmitField()
-
-
-class ClusterCreateForm(FlaskForm):
-    message = TextAreaField()
-    close = SubmitField()
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index(result=None):
-    multi_instance = PlatformFactory.get_instance_api()
-
-    nodes = multi_instance.get_nodes()
-
-    if 'question' in request.form:
-        result = process_request(request.args.get('question'))
-    print("REQUEST ARGS: {}".format(request.args))
-    print("REQUEST: {}".format(request.form))
-
-    return render_template('index.html', nodes=nodes)
+    #nodes = json.dumps([node.__dict__ for node in node_get()])
+    #print(nodes)
+    return render_template('index.html', nodes=None)
 
 
 def process_request(text):
