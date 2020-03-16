@@ -1,99 +1,122 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block page %}
 
+<script type="text/javascript">
+    refresh_timeout = 10000
 
-<script>
-    var nodes = JSON.parse({{nodes|tojson|safe}})
+    window.addEventListener('DOMContentLoaded', (event) => {
+        $(document).on('click', '#refresh_nodes', update_node_list)
+        $(document).on('click', '#stop_nodes', nodes_stop)
 
-    function start_loading(){
-        display_list()
+        update_node_list()
+        //setInterval(update_node_list, refresh_timeout);
+    });
+
+    function date_string(){
+        var currentdate = new Date(); 
+        var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+
+        return datetime
+    }
+
+    function update_node_list(){
+        $.ajax({
+            url: "/get-nodes",
+            type: "get",
+
+            success: function(response) {
+                var nodes = JSON.parse(response)
+                var table = $('#node-table').DataTable()
+                table.rows().remove()
+
+                for (node_idx in nodes){
+                    var groups = []
+                    var tags = []
+
+                    if (Object.keys(nodes[node_idx]['groups']).length > 0) {
+                        for (group_idx in nodes[node_idx]['groups']) {
+                            groups.push(group_idx)
+                        }
+                    }
+
+                    if (Object.keys(nodes[node_idx]['tags']).length > 0) {
+                        for (tag_idx in nodes[node_idx]['tags']) {
+                            tags.push(tag_idx + "=" + nodes[node_idx]['tags'][tag_idx] + " ")
+
+                        }
+                    }
+
+                    groups.join(", ")
+                    tags.join(", ")
+
+                    table.row.add([
+                        nodes[node_idx]['node_id'],
+                        nodes[node_idx]['provider_id'],
+                        nodes[node_idx]['status'],
+                        groups,
+                        tags
+                    ]).draw(false);
+                }
+
+                $('#node-table tbody').on('click', 'tr', function () {
+                    $(this).toggleClass('selected');
+                });
+
+                $("#node-update-time").html("<h5>Update time: " + date_string() + "</h5>")
+            },
+
+            error: function(xhr) {
+                console.log('Error queying nodes from server')
+                $("#node-table-div").html("<b> Error queying nodes from server </b>")
+                $("#node-update-time").html("<b>Update time: " + date_string() + "</b>")
+            }
+        });
     }
 
     function start_nodes(){
-        console.log(nodes)
         alert("Start action")
     }
 
-    function check_alives(){
+    function nodes_stop(){
+        var table = $('#node-table').DataTable()
+        alert( table.rows('.selected').data().length +' row(s) selected' );
     }
 
-    function stop_nodes(){
-        console.log(nodes)
-        alert("Stop action")
-    }
-
-    function refresh_list(){
-    }
-
-    function display_list(){
-        div = document.getElementById("node-div")
-        div.innerHTML = ""
-        
-        for (node_idx in nodes){
-            console.log(nodes[node_idx])
-            
-            div.innerHTML +=  '<div class="row">' +
-                '<div class="col-sm">' +
-                '<h5><b>' + nodes[node_idx]['node_id'] + '</b></h5>' +
-                '</div>' +
-                '<div class="col-sm">' +
-                '<b>IP:</b>' + nodes[node_idx]['ip'] +
-                '</div>' +
-                '<div class="col-sm">' +
-                '<b>Provider:</b>' + nodes[node_idx]['provider_id'] +
-                '</div>'
-
-            if (Object.keys(nodes[node_idx]['groups']).length > 0){
-                div.innerHTML +=  '<div class="col-sm">' +
-                    '<h6><b>Groups</b></h6>'
-                
-                arr = []
-                for (group_name in nodes[node_idx]['groups']){
-                    arr.push(group_name)
-                } 
-                arr.join(',')
-                div.innerHTML += arr
-                                
-                div.innerHTML += '</div>'
-            }
-            
-            if (Object.keys(nodes[node_idx]['tags']).length > 0){
-                div.innerHTML +=  '<div class="col-sm">' +
-                    '<h6><b>Tags</b></h6>'
-                
-                arr = []
-                for (tag in nodes[node_idx]['tags']){
-                    arr.push(tag + ": " + nodes[node_idx]['tags'][tag])
-                } 
-                arr.join(', ')
-                div.innerHTML += arr
-                                
-                div.innerHTML += '</div>'
-            }
-
-            div.innerHTML += '</div>'
-        }
-    }
-
+    
 </script>
 
 <h1>CLAP Manager</h1>
 
 
 <div class="container">
-    <div class="col-sm">
-        <div class="row">
-                <div class="btn-group">
-                        <button class="btn btn-outline-primary" onclick="start_nodes()">
-                                Start Instances
-                        </button>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="btn-group">
+                <button type="submit" id="start_nodes" class="btn btn-outline-primary">
+                    Start Instances
+                </button>
 
-                        <button class="btn btn-outline-primary" onclick="stop_nodes()">
-                                Stop
-                        </button>
-                </div>
+                <button type="submit" id="refresh_nodes" class="btn btn-outline-primary">
+                    Refresh
+                </button>
+
+                <button type="submit" id="stop_nodes" class="btn btn-outline-primary">
+                    Stop
+                </button>
+            </div>
         </div>
+
+        <div class="col-md-6 text-center text-right" id="node-update-time" >
+            <span>
+            </span>
+        </div>
+
     </div>
 </div>
 
@@ -101,10 +124,25 @@
 
     <h2>Nodes</h2>
 
-    <div id="node-div">
+    <div id="node-table-div" class="table-responsive">
+    <!-- <div id="node-table-div"> -->
+        <table id="node-table" class="table" style="width:100%">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Provider</th>
+                    <th>Status</th>
+                    <th>Groups</th>
+                    <th>Tags</th>
+                </tr>
+            </thead>
 
+            <tbody>
+            </tbody>
+        </table>
     </div>
 
 </div>
+
 
 {% endblock %}

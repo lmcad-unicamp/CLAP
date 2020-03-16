@@ -7,13 +7,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>CLAPP</title>
+
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
     {{ bootstrap.load_css() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dataTables.jqueryui.min.css') }}">
 </head>
 
-<body onload="start_loading()">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+<body>
+          
+
+<!--     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -23,20 +29,24 @@
                 {{ render_nav_item('index', 'Home', use_li=True) }}
             </ul>
         </div>
-    </nav>
+    </nav> -->
     
     <main class="container">
-        {{ render_messages(container=False, dismissible=True) }}
-        {% block content %}{% endblock %}
+        {% block page %}
+        {% endblock %}
     </main>
 
     <footer class="text-center">
         {% block footer %}
-            <small> CLAP </a>
-            </small>
+        <small> <a href="https://github.com/lmcad-unicamp/CLAP"> </a></small>
         {% endblock %}
     </footer>
 
     {{ bootstrap.load_js() }}
+
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/dataTables.jqueryui.min.js') }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/dataTables.bootstrap4.min.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,356 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Usage &mdash; CLoud Application Platform 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Groups" href="groups.html" />
+    <link rel="prev" title="Basic Configuration Setup" href="configuration.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html#cloud-provider-configuration">Cloud provider configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html#login-provider-configuration">Login provider configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html#instance-templates-configuration">Instance templates configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups.html#working-groups-in-clap">Working Groups in CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups.html#group-commands">Group Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups.html#group-hosts">Group Hosts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups.html#special-variables-tips">Special variables tips</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shared_groups.html">Groups shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Usage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>CLAP is a platform to start, stop and manage instances (nodes) in different cloud providers transparently.
+CLAP also offer mechanisms to control what is installed in each node and to perform actions in a group of nodes in a row.</p>
+<p>This section describes the common use commands to start, stop and manage instances.</p>
+<p>To use clap, first activate the virtual environment running the following command (inside CLAP directory):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">clap</span><span class="o">-</span><span class="n">env</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+</pre></div>
+</div>
+<p>CLAP has several commands, you can use</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="o">-</span><span class="n">v</span> <span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="nb">all</span>
+</pre></div>
+</div>
+<p>command to get information about all available commands.
+Alternatively you can use <code class="docutils literal notranslate"><span class="pre">--help</span></code> in each command to see the features.
+The <code class="docutils literal notranslate"><span class="pre">-v</span></code> parameter can always be used, increasing he verbosity level of CLAP. <code class="docutils literal notranslate"><span class="pre">-vv</span></code> allows showing DEBUG messages.</p>
+<div class="section" id="list-available-instances">
+<h2>List available instances<a class="headerlink" href="#list-available-instances" title="Permalink to this headline">¶</a></h2>
+<p>To list the nodes managed by CLAP, you can use the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="nb">list</span>
+</pre></div>
+</div>
+<p>If there is any node already instantiated, an example output is shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>*  Node(id=`node-1`, instance_type=`type-a`, status=`reachable`, provider_id: `aws-config-us-east-1`, connection_ip=`54.89.209.193`, groups=`spits/jobmanager`, tags=`spits=cluster-spits`)
+*  Node(id=`node-2`, instance_type=`type-a`, status=`reachable`, provider_id: `aws-config-us-east-1`, connection_ip=`54.157.8.46`, groups=`spits/taskmanager`, tags=`spits=cluster-spits`)
+Listed 2 nodes(s)
+</pre></div>
+</div>
+<p>For several commands, CLAP uses the node id (e.g. <code class="docutils literal notranslate"><span class="pre">node-1</span></code>, <code class="docutils literal notranslate"><span class="pre">node-2</span></code>) to perform operation in the nodes, transparently.
+Nodes may have tags (discussed lately) to easily perform selections and mey belong to groups, to perform group actions (discussed later).</p>
+<p>You may want to see the <a class="reference internal" href="troubleshooting.html"><span class="doc">troubleshooting page</span></a> if any failure occurs when working with nodes.</p>
+</div>
+<div class="section" id="start-instances-and-check-aliveness">
+<h2>Start Instances and Check Aliveness<a class="headerlink" href="#start-instances-and-check-aliveness" title="Permalink to this headline">¶</a></h2>
+<p>To instantiate one node based on an instance template defined in the <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/instances.yaml</span></code> file, you can use the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="o">-</span><span class="n">v</span> <span class="n">node</span> <span class="n">start</span> <span class="n">ubuntu</span><span class="o">-</span><span class="n">instance</span><span class="o">-</span><span class="n">aws</span>
+</pre></div>
+</div>
+<p>Where the <code class="docutils literal notranslate"><span class="pre">ubuntu-instance-aws</span></code> refers to the instance template ID defined in the <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/instances.yaml</span></code> file.
+In this way, you need to configure the files only once and launch instances any time.</p>
+<p>To launch more than one machine with the same instance template ID, you can put the desired number after the instance template ID preceded by an <code class="docutils literal notranslate"><span class="pre">:</span></code>. For instance, the command below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="o">-</span><span class="n">v</span> <span class="n">node</span> <span class="n">start</span> <span class="n">ubuntu</span><span class="o">-</span><span class="n">instance</span><span class="o">-</span><span class="n">aws</span><span class="p">:</span><span class="mi">4</span>
+</pre></div>
+</div>
+<p>Instantiates 4 <code class="docutils literal notranslate"><span class="pre">ubuntu-instance-aws</span></code> virtual machines in a row!
+Once the instance is started, CLAP will try to login (via SSH) with the login information provided.
+The machine is considered instantiated when the SSH connection is performed successfully. Machines instantiated that cannot perform SSH in a timeout (600 seconds) are automatically <strong>stopped</strong>.</p>
+<p>You can also instantiate different machines in a row using the same command, but just appending more instance template IDs to it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="o">-</span><span class="n">v</span> <span class="n">node</span> <span class="n">start</span> <span class="n">ubuntu</span><span class="o">-</span><span class="n">instance</span><span class="o">-</span><span class="n">aws</span><span class="p">:</span><span class="mi">2</span> <span class="n">example</span><span class="o">-</span><span class="n">instance</span><span class="o">-</span><span class="n">aws</span><span class="p">:</span><span class="mi">2</span>
+</pre></div>
+</div>
+<p>The above command instantiates 2 <code class="docutils literal notranslate"><span class="pre">ubuntu-instance-aws</span></code> machines and 2 <code class="docutils literal notranslate"><span class="pre">example-instance-aws</span></code> machines in a row!</p>
+<p>Once instances are successfully started, CLAP will assign to each one an unique node ID used to perform other operations to it.
+The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">node</span> <span class="pre">list</span></code> command can be used to show managed clap instances and a more detailed information of a specific node can be obtained with the command below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">show</span> <span class="n">node</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>Replacing <code class="docutils literal notranslate"><span class="pre">node-1</span></code> with the id of the node to be detailed.</p>
+<p><strong>NOTE</strong></p>
+<ul class="simple">
+<li><p>If the message below appears, don’t worry, just ignore it.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[ERROR] Thread-XXX: Apparently, Amazon does not compute the RSA key fingerprint as we do! We cannot check if the uploaded keypair is correct!
+</pre></div>
+</div>
+<p>After the node is started, you can check if it is alive using the command below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">alive</span> <span class="n">node</span><span class="o">-</span><span class="mi">1</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">node-0</span></code> must be replaced with the node ID of interest. Also, more nodes can be checked, simple appending their node IDs to the command.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">alive</span></code> command also updates the node connection IP and can be very useful when the node IP changes (e.g. instance stopped comes alive, or when using floating ips)
+Its recommended to run the command periodically to update nodes information.</p>
+</div>
+<div class="section" id="terminating-instances">
+<h2>Terminating Instances<a class="headerlink" href="#terminating-instances" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">stop</span></code> command can be used to <strong>terminate</strong> an running instance (in AWS, stop/resume instance is <strong>not supported yet</strong>, so the nodes are terminated).
+The command is shown below</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="o">-</span><span class="n">v</span> <span class="n">node</span> <span class="n">stop</span> <span class="n">node</span><span class="o">-</span><span class="mi">1</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">node-0</span></code> must be replaced with the node ID of interest. Also, more nodes can be stopped, simple appending their node IDs to the command.</p>
+<p>If an instance is stopped (not terminated) in the AWS EC2 console, it must be resumed from there.
+After an instance is resumed it is prudent to run the <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">alive</span></code> command to update instance information.</p>
+</div>
+<div class="section" id="executing-and-connecting">
+<h2>Executing and Connecting<a class="headerlink" href="#executing-and-connecting" title="Permalink to this headline">¶</a></h2>
+<p>CLAP provides three simple commands to interact directly with the nodes.</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">connect</span></code> command can be used to get an SSH shell to the desired node, as shown in the command below:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">connect</span> <span class="n">node</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">execute</span></code> command can be used to execute an shell script command in a node and print the respective <code class="docutils literal notranslate"><span class="pre">stdout</span></code> and <code class="docutils literal notranslate"><span class="pre">stderr</span></code> outputs.
+An example is shown below, used to execute the command <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">ola</span></code> in the node <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and retrieve its outputs.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">execute</span> <span class="n">node</span><span class="o">-</span><span class="mi">0</span> <span class="s1">&#39;echo ola&#39;</span>
+</pre></div>
+</div>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">playbook</span></code> command allows to execute an <a class="reference external" href="https://www.ansible.com/">Ansible playbook</a> in several nodes in a row.
+An example is shown below, used to execute the playbook <code class="docutils literal notranslate"><span class="pre">example.yml</span></code> in three nodes (<code class="docutils literal notranslate"><span class="pre">node-0</span></code>, <code class="docutils literal notranslate"><span class="pre">node-1</span></code> and <code class="docutils literal notranslate"><span class="pre">node-2</span></code>)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">playbook</span> <span class="n">example</span><span class="o">.</span><span class="n">yml</span> <span class="n">node</span><span class="o">-</span><span class="mi">0</span> <span class="n">node</span><span class="o">-</span><span class="mi">1</span> <span class="n">node</span><span class="o">-</span><span class="mi">2</span>
+</pre></div>
+</div>
+<p>And if your playbook contains variables that must be passed from the command line, you can use the <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter.
+The below example shows how to pass a keyworded value to a variable in the playbook.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">playbook</span> <span class="n">example</span><span class="o">.</span><span class="n">yml</span> <span class="n">node</span><span class="o">-</span><span class="mi">0</span> <span class="n">node</span><span class="o">-</span><span class="mi">1</span> <span class="n">node</span><span class="o">-</span><span class="mi">2</span> <span class="o">--</span><span class="n">extra</span> <span class="n">variable1</span><span class="o">=</span><span class="s2">&quot;any value&quot;</span> <span class="n">variable2</span><span class="o">=</span><span class="s2">&quot;another value&quot;</span>
+</pre></div>
+</div>
+<p>Where the <code class="docutils literal notranslate"><span class="pre">variable1</span></code> and <code class="docutils literal notranslate"><span class="pre">variable2</span></code> are passed to the playbook in your execution.</p>
+<p><strong>NOTE</strong></p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter must be the last one in the <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">playbook</span></code> command</p></li>
+<li><p>You may want to set a higher verbosity level to see Ansible outputs (not just errors). For that, use the <code class="docutils literal notranslate"><span class="pre">-v</span></code> parameter, just after <code class="docutils literal notranslate"><span class="pre">clapp</span></code> command.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="tagging-nodes">
+<h2>Tagging Nodes<a class="headerlink" href="#tagging-nodes" title="Permalink to this headline">¶</a></h2>
+<p>Tags is a (key, value) pair that can be associated to nodes aiming to easily select it when needed.
+Almost every command that you must supply nodes as input may have options to select nodes by tag (will be shown later).</p>
+<p>You can use the command below to added a tag to some nodes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">tag</span> <span class="n">add</span> <span class="s2">&quot;key=value&quot;</span> <span class="n">node</span><span class="o">-</span><span class="mi">0</span> <span class="n">node</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>Where the tag must be a string in the format (<code class="docutils literal notranslate"><span class="pre">&quot;key=value&quot;</span></code>) and the nodes must be specified after.</p>
+<p>To remove tags, you can use the <code class="docutils literal notranslate"><span class="pre">tag</span> <span class="pre">remove</span></code> command, similarly to the <code class="docutils literal notranslate"><span class="pre">tag</span> <span class="pre">add</span></code> command, as shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">tag</span> <span class="n">remove</span> <span class="s2">&quot;key=value&quot;</span> <span class="n">node</span><span class="o">-</span><span class="mi">0</span> <span class="n">node</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>Where the tag must be a string in the format (<code class="docutils literal notranslate"><span class="pre">&quot;key=value&quot;</span></code>).</p>
+<p>Finally, you can also start nodes and tag them right after its creation, by using the below command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="o">-</span><span class="n">v</span> <span class="n">node</span> <span class="n">start</span> <span class="n">ubuntu</span><span class="o">-</span><span class="n">instance</span><span class="o">-</span><span class="n">aws</span><span class="p">:</span><span class="mi">4</span> <span class="o">--</span><span class="n">tag</span> <span class="s2">&quot;key=value&quot;</span>
+</pre></div>
+</div>
+<p>The above command instantiates 4 <code class="docutils literal notranslate"><span class="pre">ubuntu-instance-aws</span></code> machines and tags them with tag <code class="docutils literal notranslate"><span class="pre">&quot;key=value&quot;</span></code>, after its creation.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="groups.html" class="btn btn-neutral float-right" title="Groups" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="configuration.html" class="btn btn-neutral float-left" title="Basic Configuration Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Otávio Napoli
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
