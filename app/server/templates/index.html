@@ -2,40 +2,45 @@
 
 {% block page %}
 
+
+<script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='ace/ace.js') }}"></script>
+
 <script type="text/javascript">
-    refresh_timeout = 10000
+    check_alive_timeout = 30000
+    editor = null
+    editorfile = null
+    instance_start_count = 0
 
     window.addEventListener('DOMContentLoaded', (event) => {
-        $(document).on('click', '#refresh_nodes', update_node_list)
+        $(document).on('click', '#refresh_nodes', function(){
+            // FIX ME
+            update_node_list()
+            update_node_list()
+        })
         $(document).on('click', '#stop_nodes', nodes_stop)
 
+        start_nodes()
         update_node_list()
-        //setInterval(update_node_list, refresh_timeout);
+        editor_buttons()
+        $('#messageInformationContainer').hide()
+        setInterval(check_nodes_alive, check_alive_timeout);
     });
 
-    function date_string(){
-        var currentdate = new Date(); 
-        var datetime = currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + " @ "  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
-
-        return datetime
+    function date_string() {
+        return moment().toString()
     }
 
-    function update_node_list(){
+    function update_node_list() {
         $.ajax({
-            url: "/get-nodes",
+            url: "/nodes/get",
             type: "get",
 
-            success: function(response) {
+            success: function (response) {
                 var nodes = JSON.parse(response)
                 var table = $('#node-table').DataTable()
                 table.rows().remove()
 
-                for (node_idx in nodes){
+                for (node_idx in nodes) {
                     var groups = []
                     var tags = []
 
@@ -55,94 +60,382 @@
                     groups.join(", ")
                     tags.join(", ")
 
-                    table.row.add([
+                    var added_row = table.row.add([
                         nodes[node_idx]['node_id'],
                         nodes[node_idx]['provider_id'],
                         nodes[node_idx]['status'],
+                        nodes[node_idx]['ip'],
                         groups,
                         tags
-                    ]).draw(false);
+                    ]).draw(true)
                 }
 
                 $('#node-table tbody').on('click', 'tr', function () {
                     $(this).toggleClass('selected');
                 });
 
-                $("#node-update-time").html("<h5>Update time: " + date_string() + "</h5>")
+                $("#node-update-time").html("Updated: " + date_string())
             },
 
-            error: function(xhr) {
+            error: function (xhr) {
                 console.log('Error queying nodes from server')
                 $("#node-table-div").html("<b> Error queying nodes from server </b>")
-                $("#node-update-time").html("<b>Update time: " + date_string() + "</b>")
             }
         });
     }
 
-    function start_nodes(){
-        alert("Start action")
+    function update_instance_types() {
+        $.ajax({
+            url: "/templates/get",
+            type: "get",
+
+            success: function (response) {
+                var templates = JSON.parse(response)
+                $('#instance-type').empty();
+
+                for (template_idx in templates) {
+                    $('#instance-type').append(new Option(templates[template_idx], templates[template_idx]))
+                }
+            },
+
+            error: function (response) {
+                console.log("Error")
+            }
+        })
     }
 
-    function nodes_stop(){
+    function append_starting_node(id, text) {
+        $('#messageInformationContainer').show()
+
+        var image_icon = document.createElement('IMG')
+        image_icon.setAttribute('src', "{{ url_for('static', filename='images/loading.gif') }}")
+
+        var li = document.createElement("li");
+        li.appendChild(document.createTextNode(text));
+        li.appendChild(image_icon)
+        li.setAttribute("id", id);
+        li.setAttribute("class", "list-group-item");
+        var info_list = $('#informationList');
+        info_list.append(li)
+    }
+
+    function remove_starting_node(id) {
+        $('#' + id).remove()
+        if ($('#informationList li').length <= 0) {
+            $('#messageInformationContainer').hide()
+        }
+    }
+
+    function start_nodes() {
+        $('#instance-start-submit-form').click(function (event) {
+            $('#start_instances_modal').modal('hide');
+            var inst_id = "start_instance_" + instance_start_count.toString()
+            instance_start_count++
+            append_starting_node(inst_id, inst_id)
+
+            $.ajax({
+                url: "/nodes/start",
+                type: "post",
+                data: $('#start-instance-form').serialize(),
+
+                success: function (response) {
+                    //location.reload();
+                    remove_starting_node(inst_id)
+                    // FIX ME
+                    update_node_list()
+                    update_node_list()
+                },
+
+                error: function (response) {
+                    remove_starting_node(inst_id)
+                    alert("Error starting instances" + inst_id)
+                }
+            })
+        });
+
+
+        $("#start-instance-button").click(function () {
+            $('#start_instances_modal').modal('show');
+            update_instance_types()
+        });
+    }
+
+    function nodes_stop() {
         var table = $('#node-table').DataTable()
-        alert( table.rows('.selected').data().length +' row(s) selected' );
+        alert(table.rows('.selected').data().length + ' row(s) selected');
     }
 
-    
+    function check_nodes_alive() {
+        console.log("Checking alive...")
+
+        $.ajax({
+            url: "/nodes/alive",
+            type: "get",
+
+            success: function(){
+                // FIXME
+                update_node_list()
+                update_node_list()
+            },
+        })
+    }
+
+    function show_editor() {
+        $('#editorContainer').show()
+        $('#editorContainer').children().show()
+        $('#contentContainer').hide()
+        $('#contentContainer').children().hide()
+        editor = ace.edit("editor");
+        editor.setValue("", -1)
+        editor.getSession().setMode('ace/mode/yaml')
+    }
+
+    function hide_editor() {
+        $('#editorContainer').hide()
+        $('#editorContainer').children().hide()
+        $('#contentContainer').show()
+        $('#contentContainer').children().show()
+        editor.destroy();
+        editor = null
+        editorfile = null
+    }
+
+    function editor_buttons() {
+        $('#editorContainer').hide()
+        $('#editorContainer').children().hide()
+
+        $("#configurationProviderButton").click(function () {
+            show_editor()
+            editorfile = 'provider'
+
+            $.ajax({
+                url: "/templates/files/providers",
+                type: "get",
+
+                success: function (response) {
+                    editor.setValue(response, -1)
+                },
+
+                error: function (response) {
+                    editorfile = null
+                }
+            })
+        });
+
+        $("#configurationLoginButton").click(function () {
+            show_editor()
+            editorfile = 'login'
+
+            $.ajax({
+                url: "/templates/files/logins",
+                type: "get",
+
+                success: function (response) {
+                    editor.setValue(response, -1)
+                },
+
+                error: function (response) {
+                    editorfile = null
+                }
+            })
+        });
+
+        $("#configurationInstanceButton").click(function () {
+            show_editor()
+            editorfile = 'templates'
+
+            $.ajax({
+                url: "/templates/files/templates",
+                type: "get",
+
+                success: function (response) {
+                    editor.setValue(response, -1)
+                },
+
+                error: function (response) {
+                    editorfile = null
+                }
+            })
+        });
+
+        $("#dismiss_editor").click(function () {
+            hide_editor()
+        });
+
+        $("#save_editor").click(function () {
+            var url = ""
+
+            if (editorfile == 'provider') {
+                url = "/templates/files/save-providers"
+            }
+            else if (editorfile == 'login') {
+                url = "/templates/files/save-logins"
+            }
+            else if (editorfile == 'templates') {
+                url = "/templates/files/save-templates"
+            }
+
+            $.ajax({
+                url: url,
+                type: "post",
+                processData: false,
+                data: JSON.stringify(editor.getValue()),
+                dataType: 'json',
+                contentType: 'application/json',
+
+                success: function (response) {
+                    alert("Saved sucessfully!")
+                },
+
+                error: function (response) {
+                    alert(response.responseJSON.message)
+                }
+            })
+
+
+            hide_editor()
+        });
+    }
+
+
 </script>
 
-<h1>CLAP Manager</h1>
 
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
+<div class="container" id="globalContainer">
+
+    <div class="container pt-3 text-center p-3 bg-primary text-white" id="titleContainer">
+        <h1>CLAP Manager</h1>
+    </div>
+
+    <div class="container" id="contentContainer">
+        <div class="container pt-3 text-center" id="menuContainer">
+            <div class="align-center">
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary" id="start-instance-button">
+                        Start Instances
+                    </button>
+
+                    <!-- START INSTANCE MODAL -->
+                    <div class="modal fade" id="start_instances_modal" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Start Instances</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <form id="start-instance-form" name="instance-form">
+                                        <div class="form-row align-items-center">
+                                            <div class="col-auto my-1">
+                                                <select placeholder="Instance Type" id="instance-type"
+                                                    name="instance-type" class="custom-select">
+                                                </select>
+                                            </div>
+
+                                            <div class="col-auto my-1">
+                                                <input type="number" class="form-control" value="1" id="instance-num"
+                                                    name="instance-num" placeholder="Number of Instances">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button class="btn btn-danger " data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary 
+                                    submit-button" id='instance-start-submit-form'>Start
+                                        Instances</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" id="refresh_nodes" class="btn btn-outline-primary">
+                        Refresh
+                    </button>
+
+                    <button type="button" id="stop_nodes" class="btn btn-outline-danger">
+                        Stop
+                    </button>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary dropdown-toggle" id="configuration_dropdown"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{{ url_for('static', filename='images/gear.png') }}" />
+                    </button>
+
+                    <div class="dropdown-menu" aria-labelledby="configuration_dropdown">
+                        <button class="dropdown-item" type="button" id="configurationProviderButton">
+                            Providers File
+                        </button>
+                        <button class="dropdown-item" type="button" id="configurationLoginButton">
+                            Logins File
+                        </button>
+                        <button class="dropdown-item" type="button" id="configurationInstanceButton">
+                            Instance Templates
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container pt-3 text-center" id="messageInformationContainer">
+            <ul class="list-group" id="informationList">
+            </ul>
+        </div>
+
+        <div class="container pt-3" id="tableContainer">
+            <div id="node-table-div" class="table-responsive">
+                <table id="node-table" class="table table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Provider</th>
+                            <th>Status</th>
+                            <th>IP</th>
+                            <th>Groups</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="container" id="footerContainer">
+            <div class="container pt-1 text-center">
+                <small id="node-update-time" class="text-muted"></small>
+            </div>
+        </div>
+    </div>
+
+    <div class="container text-center" id="editorContainer">
+        <div class="container pt-3 text-center" id="editorMenuContainer">
             <div class="btn-group">
-                <button type="submit" id="start_nodes" class="btn btn-outline-primary">
-                    Start Instances
+                <button type="button" class="btn btn-outline-primary" id="save_editor">
+                    Save
                 </button>
 
-                <button type="submit" id="refresh_nodes" class="btn btn-outline-primary">
-                    Refresh
-                </button>
-
-                <button type="submit" id="stop_nodes" class="btn btn-outline-primary">
-                    Stop
+                <button type="button" class="btn btn-outline-danger" id="dismiss_editor">
+                    Dismiss
                 </button>
             </div>
         </div>
 
-        <div class="col-md-6 text-center text-right" id="node-update-time" >
-            <span>
-            </span>
+        <div class="container pt-3 align-center">
+            <div class="container pt-3 align-center" id="editor">
+            </div>
         </div>
-
     </div>
 </div>
-
-<div class="container">
-
-    <h2>Nodes</h2>
-
-    <div id="node-table-div" class="table-responsive">
-    <!-- <div id="node-table-div"> -->
-        <table id="node-table" class="table" style="width:100%">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Provider</th>
-                    <th>Status</th>
-                    <th>Groups</th>
-                    <th>Tags</th>
-                </tr>
-            </thead>
-
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-
-</div>
-
 
 {% endblock %}

@@ -9,11 +9,11 @@
     <title>CLAPP</title>
 
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
     {{ bootstrap.load_css() }}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dataTables.jqueryui.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 
 <body>
@@ -36,17 +36,19 @@
         {% endblock %}
     </main>
 
-    <footer class="text-center">
+    <!-- <footer class="text-center">
         {% block footer %}
         <small> <a href="https://github.com/lmcad-unicamp/CLAP"> </a></small>
         {% endblock %}
-    </footer>
-
-    {{ bootstrap.load_js() }}
+    </footer> -->
 
     <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    {{ bootstrap.load_js() }}
     <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
     <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/dataTables.jqueryui.min.js') }}"></script>
     <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/dataTables.bootstrap4.min.js') }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/moment-with-locales.js') }}"></script>
+    
 </body>
 </html>

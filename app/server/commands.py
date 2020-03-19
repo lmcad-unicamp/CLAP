@@ -1,3 +1,4 @@
+import yaml
 from typing import Dict, List, Any, Tuple
 
 from clap.common.cluster_repository import NodeInfo
@@ -134,6 +135,39 @@ def group_get(**kwargs) -> Dict[str, Tuple[List[str], List[str], str]]:
 
     return group_values
 
+def __save_yaml(yaml_string: str, filename: str) -> bool:
+    try:
+        yaml.safe_load(yaml_string)
+
+        with open(filename, 'w') as f:
+            f.write(yaml_string)
+
+        return True
+
+    except Exception as e:
+        log.error(e)
+        return False
 
 def get_templates(**kwargs) -> Dict[str, Any]:
     return __get_instance_api(**kwargs).get_instance_templates()
+
+def read_provider_file(**kwargs) -> str:
+    with open(Defaults.cloud_conf, 'r') as f:
+        return f.read()
+
+def read_login_file(**kwargs) -> str:
+    with open(Defaults.login_conf, 'r') as f:
+        return f.read()
+
+def read_template_file(**kwargs) -> str:
+    with open(Defaults.instances_conf, 'r') as f:
+        return f.read()
+
+def save_provider_file(yaml_string: str) -> bool:
+    return __save_yaml(yaml_string, Defaults.cloud_conf)
+
+def save_login_file(yaml_string: str) -> bool:
+    return __save_yaml(yaml_string, Defaults.login_conf)
+
+def save_template_file(yaml_string: str) -> bool:
+    return __save_yaml(yaml_string, Defaults.instances_conf)

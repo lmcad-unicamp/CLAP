@@ -5,4 +5,5 @@ import os
 os.environ['CLAP'] = os.getcwd()
 
 from app.server.app import app
-app.run(debug=True)
+app.run(debug=False, use_reloader=False)
+#socketio.run(app)
