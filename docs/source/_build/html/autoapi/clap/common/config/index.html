@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>clap.common.config &mdash; CLoud Application Platform 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="clap.common.driver" href="../driver/index.html" />
+    <link rel="prev" title="clap.common.commands" href="../commands/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#cloud-provider-configuration">Cloud provider configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#login-provider-configuration">Login provider configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#instance-templates-configuration">Instance templates configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#working-groups-in-clap">Working Groups in CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-commands">Group Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-hosts">Group Hosts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#special-variables-tips">Special variables tips</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../shared_groups.html">Groups shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../cluster_repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.cluster_repository</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.commands</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../driver/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.driver</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../exceptions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.exceptions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../factory/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.factory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../platform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.platform</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.repository</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a> &raquo;</li>
+        
+          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.config</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../../_sources/autoapi/clap/common/config/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-clap.common.config">
+<span id="clap-common-config"></span><h1><a class="reference internal" href="#module-clap.common.config" title="clap.common.config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.config</span></code></a><a class="headerlink" href="#module-clap.common.config" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="clap.common.config.Defaults">
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.config.</code><code class="sig-name descname">Defaults</code><a class="headerlink" href="#clap.common.config.Defaults" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="clap.common.config.Defaults.log_level">
+<code class="sig-name descname">log_level</code><a class="headerlink" href="#clap.common.config.Defaults.log_level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.app_name">
+<code class="sig-name descname">app_name</code><em class="property"> = clap</em><a class="headerlink" href="#clap.common.config.Defaults.app_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.REPOSITORY_TYPE">
+<code class="sig-name descname">REPOSITORY_TYPE</code><em class="property"> = tinydb</em><a class="headerlink" href="#clap.common.config.Defaults.REPOSITORY_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.DRIVER_ID">
+<code class="sig-name descname">DRIVER_ID</code><em class="property"> = elasticluster</em><a class="headerlink" href="#clap.common.config.Defaults.DRIVER_ID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.DEFAULT_CONF_TYPE">
+<code class="sig-name descname">DEFAULT_CONF_TYPE</code><em class="property"> = json</em><a class="headerlink" href="#clap.common.config.Defaults.DEFAULT_CONF_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.configs_path">
+<code class="sig-name descname">configs_path</code><a class="headerlink" href="#clap.common.config.Defaults.configs_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.private_path">
+<code class="sig-name descname">private_path</code><a class="headerlink" href="#clap.common.config.Defaults.private_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.storage_path">
+<code class="sig-name descname">storage_path</code><a class="headerlink" href="#clap.common.config.Defaults.storage_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.execution_playbook">
+<code class="sig-name descname">execution_playbook</code><a class="headerlink" href="#clap.common.config.Defaults.execution_playbook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.groups_path">
+<code class="sig-name descname">groups_path</code><a class="headerlink" href="#clap.common.config.Defaults.groups_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.modules_path">
+<code class="sig-name descname">modules_path</code><a class="headerlink" href="#clap.common.config.Defaults.modules_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.elasticluster_storage_path">
+<code class="sig-name descname">elasticluster_storage_path</code><a class="headerlink" href="#clap.common.config.Defaults.elasticluster_storage_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.cloud_conf">
+<code class="sig-name descname">cloud_conf</code><a class="headerlink" href="#clap.common.config.Defaults.cloud_conf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.login_conf">
+<code class="sig-name descname">login_conf</code><a class="headerlink" href="#clap.common.config.Defaults.login_conf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.instances_conf">
+<code class="sig-name descname">instances_conf</code><a class="headerlink" href="#clap.common.config.Defaults.instances_conf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="clap.common.config.Defaults.PLATFORM_REPOSITORY">
+<code class="sig-name descname">PLATFORM_REPOSITORY</code><a class="headerlink" href="#clap.common.config.Defaults.PLATFORM_REPOSITORY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="data">
+<dt id="clap.common.config.PROVIDERS_SCHEMA">
+<code class="sig-prename descclassname">clap.common.config.</code><code class="sig-name descname">PROVIDERS_SCHEMA</code><a class="headerlink" href="#clap.common.config.PROVIDERS_SCHEMA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="clap.common.config.LOGIN_SCHEMA">
+<code class="sig-prename descclassname">clap.common.config.</code><code class="sig-name descname">LOGIN_SCHEMA</code><a class="headerlink" href="#clap.common.config.LOGIN_SCHEMA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="clap.common.config.INSTANCE_SCHEMA">
+<code class="sig-prename descclassname">clap.common.config.</code><code class="sig-name descname">INSTANCE_SCHEMA</code><a class="headerlink" href="#clap.common.config.INSTANCE_SCHEMA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="clap.common.config.ConfigReader">
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.config.</code><code class="sig-name descname">ConfigReader</code><span class="sig-paren">(</span><em class="sig-param">providers_file: str</em>, <em class="sig-param">logins_file: str</em>, <em class="sig-param">instances_file: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.config.ConfigReader" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="clap.common.config.ConfigReader.__validate">
+<code class="sig-name descname">__validate</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">schema: dict</em>, <em class="sig-param">data: dict</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.config.ConfigReader.__validate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="clap.common.config.ConfigReader.__check_instances">
+<code class="sig-name descname">__check_instances</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.config.ConfigReader.__check_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="clap.common.config.ConfigReader.get_instance">
+<code class="sig-name descname">get_instance</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">instance_name: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.config.ConfigReader.get_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="clap.common.config.ConfigReader.get_instances">
+<code class="sig-name descname">get_instances</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.config.ConfigReader.get_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="clap.common.config.ConfigReader.get_provider">
+<code class="sig-name descname">get_provider</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">provider_name: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.config.ConfigReader.get_provider" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="clap.common.config.ConfigReader.get_providers">
+<code class="sig-name descname">get_providers</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">provider_name: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.config.ConfigReader.get_providers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="clap.common.config.ConfigReader.get_login">
+<code class="sig-name descname">get_login</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">login_name: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.config.ConfigReader.get_login" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="clap.common.config.ConfigReader.get_logins">
+<code class="sig-name descname">get_logins</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">login_name: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.config.ConfigReader.get_logins" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../driver/index.html" class="btn btn-neutral float-right" title="clap.common.driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../commands/index.html" class="btn btn-neutral float-left" title="clap.common.commands" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Otávio Napoli
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

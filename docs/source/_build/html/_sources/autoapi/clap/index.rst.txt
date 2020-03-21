@@ -1,0 +1,16 @@
+:mod:`clap`
+===========
+
+.. py:module:: clap
+
+
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   common/index.rst
+   drivers/index.rst
+
+

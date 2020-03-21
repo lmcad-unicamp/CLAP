@@ -242,7 +242,13 @@ No hosts are needed for this group.
     *   - ``resume``
         - Resume paused (stopped) instances in the EC2 cloud
 
-Example of the command is showed below:
+    *   - ``list-vols``
+        - List mounted volumes from instances
+
+
+    *   - ``attach-ebs``
+        - Mount EBS volume to instances
+
 
 - Adding nodes to the group
 
@@ -250,18 +256,97 @@ Example of the command is showed below:
 
     clapp group add ec2-common node-0
 
+
 The above command add ``node-0`` to the EC2 Common group
 
 
-- Pausing (stopping) intances
+Other variables and commands for each action are shown in sections below.
+
+
+--------------------------
+Pause action and variables
+--------------------------
+
+This action does not require any additional variable to be passed.
+To pause instances (not destroy), use te following commands
 
 ::
 
     clapp group action ec2-common pause
     clapp group action ec2-common pause --nodes node-0 node-1
+    clapp group action ec2-common pause --tag "x=y"
 
 For the above commands, the first one pause (stop) all EC2 instances belonging tho the EC2 Common group
 and the second one pause only the nodes ``node-0`` and ``node-1``.
+The third one pause instances of the group tagged with "x=y"
+
+
+-----------------------------
+Resume action and variables
+-----------------------------
+
+This action does not require any additional variable to be passed.
+To resume paused instances, use te following commands
+
+::
+
+    clapp group action ec2-common resume
+    clapp group action ec2-common resume --nodes node-0 node-1
+    clapp group action ec2-common resume --tag "x=y"
+
+For the above commands, the first one resume all EC2 instances belonging tho the EC2 Common group
+and the second one resume only the nodes ``node-0`` and ``node-1``.
+The third one resume instances of the group tagged with "x=y"
+
+**NOTE**: When instances are resumed their public IP may change. Use the ``clapp node alive`` command to refresh the nodes and their respective IPs!
+
+
+-----------------------------------
+List volumes action and variables
+-----------------------------------
+
+This action does not require any additional variable to be passed.
+To list mounted volumes of isntances, use the commands below:
+
+::
+
+    clapp group action ec2-common list-vols
+
+The command outputs the volumes attached to each instance in the ec2-common group
+
+
+----------------------------------------
+Attach EBS volumes action and variables
+----------------------------------------
+
+The following variables must be informed when running the ``attach-ebs`` action (via ``extra`` parameter). Only one EBS can be mounted per instance.
+
+..  list-table:: Common-commands ``run-script`` action variables
+    :header-rows: 1
+
+    *   - **Name**
+        - **Type**
+        - **Description**
+
+    *   - ``ebs_volume_id``
+        - string
+        - ID of the volume to be mounted
+
+    *   - ``ebs_device_name``
+        - string
+        - Name ofthe device to be mounted (e.g. ``/dev/sdf``)
+
+    *   - ``ebs_delete_upon_termination`` (optional)
+        - boolean (yes or no)
+        - Delete EBS volume when instance is terminated? (default: yes)
+
+Examples of the group ``attach-ebs`` action is showed below:
+
+::
+
+    clapp group action ec2-common attach-ebs --nodes node-2 --extra ebs_device_name="/dev/sdf" ebs_volume_id="vol-0c4b1c38682bd9903"
+
+The above example attach the EBS volume ``vol-0c4b1c38682bd9903`` on ``node-2`` in the ``/dev/sdf`` (note, you must format and mount the volume yet)
 
 
 EC2 EFS
@@ -325,7 +410,7 @@ An example of the command would be:
 
     clapp group add ec2-efs node-0 --extra efs_mount_point="/efs" user="ubuntu" group="ubuntu" mount_ip="192.168.0.1" mount_permissions="0644"
 
-The above command will install and mount EC2 EFS filesystem on ``node-0``
+The above command will install EC2 EFS filesystem on ``node-0`` and mount the EFS Filesystem from ``192.168.0.1`` it at ``/efs`` with ``0644`` permissions (read-write for user and read-only for others).
 
 
 ---------------------------

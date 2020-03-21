@@ -1,10 +1,12 @@
 import yaml
 from typing import Dict, List, Any, Tuple
+from multiprocessing import Process, Queue
 
 from clap.common.cluster_repository import NodeInfo
 from clap.common.config import Defaults
 from clap.common.factory import PlatformFactory
 from clap.common.utils import log
+
 
 
 def __get_instance_api(**kwargs):
@@ -16,23 +18,29 @@ def __get_instance_api(**kwargs):
         platform_db=platform_db, repository_type=repo_type, default_driver=driver)
 
 
-def node_start(nodes: Dict[str, int], tag: Dict[str, str] = None,
-               group: str = None, group_extra: Dict = None, **kwargs) -> List[NodeInfo]:
-    multi_instance = __get_instance_api(**kwargs)
-    nodes_info = multi_instance.start_nodes(nodes)
-    node_ids = [n.node_id for n in nodes_info]
+def node_start(queue: Queue, nodes: Dict[str, int], tag: Dict[str, str] = None,
+               group: str = None, group_extra: Dict = None, **kwargs):
+    try:
+        multi_instance = __get_instance_api(**kwargs)
+        nodes_info = multi_instance.start_nodes(nodes)
+        node_ids = [n.node_id for n in nodes_info]
 
-    if tag:
-        log.info("Adding tag `{}` to nodes `{}`".format(tag, ', '.join(node_ids)))
-        nodes_info = multi_instance.add_tags_to_nodes([n.node_id for n in nodes_info], tag)
+        if tag:
+            log.info("Adding tag `{}` to nodes `{}`".format(tag, ', '.join(node_ids)))
+            nodes_info = multi_instance.add_tags_to_nodes([n.node_id for n in nodes_info], tag)
 
-    if group:
-        log.info("Adding nodes `{}` to group `{}`".format(', '.join(node_ids), group))
-        added_nodes = multi_instance.add_nodes_to_group(node_ids, group, group_args=group_extra if group_extra else {})
-        if len(added_nodes) != len(node_ids):
-            log.error("{} nodes were not added to group `{}`".format(len(node_ids) - len(added_nodes), group))
+        if group:
+            log.info("Adding nodes `{}` to group `{}`".format(', '.join(node_ids), group))
+            added_nodes = multi_instance.add_nodes_to_group(node_ids, group, group_args=group_extra if group_extra else {})
+            if len(added_nodes) != len(node_ids):
+                log.error("{} nodes were not added to group `{}`".format(len(node_ids) - len(added_nodes), group))
 
-    return nodes_info
+        queue.put((0, nodes_info))
+    except Exception as e:
+        queue.put((1, e))
+
+
+
 
 
 def node_alive(node_ids: List[str] = None, tag: Dict[str, str] = None, **kwargs):

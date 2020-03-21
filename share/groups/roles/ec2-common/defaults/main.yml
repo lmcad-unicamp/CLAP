@@ -1,0 +1,2 @@
+---
+ebs_delete_upon_termination: yes

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from multiprocessing import Process, Queue
+
 from flask import Flask, render_template, request, json, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, BooleanField, PasswordField, IntegerField, TextField, FormField, \
@@ -11,8 +13,6 @@ from app.server import commands
 from app.server.exceptions import exceptions
 
 app = Flask(__name__)
-app.secret_key = 'dev'
-
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
 
@@ -29,8 +29,17 @@ def start_nodes(result=None):
             instances[i_name] = int(val)
             qtde += int(val)
 
-    nodes = commands.node_start(instances)
+    queue = Queue()
+    p = Process(target=commands.node_start, args=(queue, instances))
+    p.start()
+    p.join()
+    ret_code, ret_val = queue.get()
 
+    if ret_code != 0:
+        return jsonify(message="Error starting nodes.".format()), 601
+    
+    nodes = ret_val
+    
     if len(nodes) != qtde:
         return jsonify(message="Only {} of {} nodes were sucessfully started...".format(len(nodes), qtde)), 601
     else:

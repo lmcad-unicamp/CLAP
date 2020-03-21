@@ -7,4 +7,4 @@
     - include_role:
         name: "ec2-common"
         tasks_from: "{{ action }}"
-      when: action in ['pause', 'resume']
+      when: action in ['pause', 'resume', 'attach-ebs', 'list-vols']
