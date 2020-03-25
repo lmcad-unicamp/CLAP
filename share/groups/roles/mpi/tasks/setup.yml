@@ -1,0 +1,47 @@
+#Key passed as argument and the inventory containing the nodes should be reachable
+# (either as argument or in the correct folder)
+
+
+
+- name: passing key
+  copy:
+    src: ~/.clap/private/{{ elasticluster.nodes[inventory_hostname].user_key_name }}.pem #Key should be here
+    dest: ~{{ user }}/.ssh/id_rsa
+    mode: '0644'
+  register: kk
+
+
+
+
+
+
+
+- name: install the required package for OpenMPI
+  become: yes
+  package:
+    name:   openmpi-bin
+    state: present
+    update_cache: yes
+#TODO: criar dicionario com o tipo da instancia e como o pacote se chama no respectivo sistema, na instancia AMI linux o nome eh "openmpi-devel", Com ubuntu o nome eh: openmpi-bin
+
+
+
+   #Aparentemente nao precisa escapar as aspas tal comando (e possiveis variacoes ) funcionam!
+- name: testing env variables
+  become: yes
+  shell: |
+        stringTemp="export PATH=/usr/lib64/openmpi/bin:$PATH
+        export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib
+        " &&
+        echo "$(echo -n "$stringTemp"; cat .bashrc)" > .bashrc
+
+- name: Check whether the bin files were properly exported
+  shell: "which -a orted"
+  register: output
+
+- name: Creates directory
+  become: no
+  file:
+    path: ~/efs
+    state: directory
+    mode: "0755"

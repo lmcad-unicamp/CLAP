@@ -1,0 +1,5 @@
+
+- name: passing var
+  debug:
+    msg: " inside testevar : {{ mount_ip }}, efs_mount_point = {{ efs_mount_point }} mount_ip
+ = {{ mount_ip }}"

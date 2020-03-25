@@ -1,0 +1,45 @@
+#Group-addition must be passed with the extra var mount_ip
+
+- name: MPI  Playbook for all
+  hosts: all
+  vars:
+      efs_mount_point: "~{{ user }}/efs"
+      user: "ubuntu"
+      group: "ubuntu"
+      mount_ip: "{{ mount_ip }}"
+      mount_permissions: "0755"
+
+  gather_facts: yes
+  tasks:
+     - include_role:
+          name: 'mpi'
+          tasks_from: setup
+
+
+     - include_role:
+            #become_user: "ubuntu"
+            name: 'ec2-efs'
+            tasks_from: main
+
+
+
+
+
+
+- name: MPI  Playbook for master
+  hosts: master
+  gather_facts: no
+  tasks:
+     - include_role:
+          name: 'mpi'
+          tasks_from: master
+       when: False
+
+- name: MPI  Playbook for slave
+  hosts: slave
+  gather_facts: no
+  tasks:
+      - include_role:
+          name: 'mpi'
+          tasks_from: slave
+        when: False

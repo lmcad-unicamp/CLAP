@@ -1,0 +1,4 @@
+- name: Master playbook
+  become: no
+  debug:
+    msg: "Hey from master, ip: {{ ansible_host }} I'm in group {{ groups }}"
