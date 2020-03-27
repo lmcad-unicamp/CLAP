@@ -1,0 +1,20 @@
+#Arguments:
+# file_path= absolute path ( on localhost) of the folder containing all *.c files
+# make_File = absolute path for te makefile that compiles the code above
+
+- name: Creates directory
+  become: no
+  file:
+    path: "~{{ exec_dir }}"
+    state: directory
+    mode: "0755"
+
+
+
+- name: passing file
+  copy:
+    src: "{{ item }}"
+    dest: "~{{ exec_dir }}/"
+    mode: '0644'
+  with_fileglob:
+    - "{{ file_path }}/*.c"

@@ -1,4 +1,4 @@
 playbook = 'roles/mpi.yml'
 
-actions = ['setup']
+actions = ['setup', 'compile']
 hosts = ['master', 'slave']
