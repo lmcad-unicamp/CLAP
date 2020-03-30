@@ -15,22 +15,27 @@
 
 
 
-
 - name: install the required package for OpenMPI
   become: yes
   package:
-    name:   openmpi-bin
-    state: present
-    update_cache: yes
+    name:
+    - openmpi-bin
+    - openmpi-common
+
+    state: latest
+  register: resultMPI
+
 #TODO: criar dicionario com o tipo da instancia e como o pacote se chama no respectivo sistema, na instancia AMI linux o nome eh "openmpi-devel", Com ubuntu o nome eh: openmpi-bin
 
+- debug:
+    msg: resultMPI.stdout
 
 - name: Getting gcc, make
   become: yes
   package:
     name:   build-essential
     state: present
- 
+
 
 
 

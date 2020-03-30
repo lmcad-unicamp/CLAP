@@ -27,7 +27,16 @@
     mode: '0644'
   with_fileglob:
     - "{{ file_path }}/*"
-  when: false
+
+
+- name: passing run a  file (debugging the running phasem to be removed)
+  copy:
+    src: "{{ item }}"
+    dest: "~{{ exec_dir }}/"
+    mode: '0644'
+  with_fileglob:
+    - "{{ file_path }}/run"
+    - "{{ file_path }}/hosts"
 
 
 - name: compile
@@ -36,6 +45,7 @@
     cd {{ exec_dir }}
     make
 
+  when: false
 
   register: outputCommand
 
