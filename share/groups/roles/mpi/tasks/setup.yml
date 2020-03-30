@@ -25,6 +25,14 @@
 #TODO: criar dicionario com o tipo da instancia e como o pacote se chama no respectivo sistema, na instancia AMI linux o nome eh "openmpi-devel", Com ubuntu o nome eh: openmpi-bin
 
 
+- name: Getting gcc, make
+  become: yes
+  package:
+    name:   build-essential
+    state: present
+ 
+
+
 
    #Aparentemente nao precisa escapar as aspas tal comando (e possiveis variacoes ) funcionam!
 - name: testing env variables

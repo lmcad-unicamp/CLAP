@@ -1,6 +1,15 @@
 #Arguments:
 # file_path= absolute path ( on localhost) of the folder containing all *.c files
-# make_File = absolute path for te makefile that compiles the code above
+
+# To create a directory or pass file the path must be absolute ~exec_dir where
+#  exec_dir= (user)/efs/app_name/
+# however, in a shell command, the current directory is ~(user)/ so cd exec_dir yields
+# ~(user)/(user)/efs/app_name/, which does not exist
+# There are two options:
+# 1- Hardcode the directory
+# 2- change to home director and resuse the exec_dir <- Option used
+
+
 
 - name: Creates directory
   become: no
@@ -17,4 +26,18 @@
     dest: "~{{ exec_dir }}/"
     mode: '0644'
   with_fileglob:
-    - "{{ file_path }}/*.c"
+    - "{{ file_path }}/*"
+  when: false
+
+
+- name: compile
+  shell: |
+    cd ..
+    cd {{ exec_dir }}
+    make
+
+
+  register: outputCommand
+
+- debug:
+    msg: outputCommand
