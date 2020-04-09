@@ -1,5 +1,17 @@
-- name: Run taskmanager for job "{{ job_id }}"
+- name: Run task manager for job "{{ jobid }}"
   become: no
   poll: 0
   async: 0
-  shell: cd ${HOME}/spits/ && /usr/bin/python3 -m bin.spits-taskmanager2 "{{ job_id }}" &> ${HOME}/spits-jobs/"{{ job_id }}"/command.out &
+  shell: "{{ PYPITS_PATH }}/scripts/spits-task-manager.py --jobdir {{ SPITS_JOB_PATH }} --pypitsdir {{ PYPITS_PATH }} {{ jobid }} {{ tmargs }} &"
+
+- name: Get directory for rsync
+  become: no
+  shell: "echo {{ SPITS_JOB_PATH }}"
+  register: spitspath
+
+- name: Copy task manager nodes to localhost
+  become: no
+  synchronize: 
+    src: "{{ spitspath.stdout }}/{{ jobid }}/nodes/" 
+    dest: "{{ elasticluster.output_dir }}/nodes"
+    mode: pull

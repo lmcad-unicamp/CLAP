@@ -1,9 +1,0 @@
-- name: Include tasks
-  include_tasks: job-status.yml
-    
-- name: Add workers
-  delegate_to: localhost
-  run_once: true
-  script: "files/add_worker.py {{ elasticluster.output_dir }}/status"
-  args:
-    executable: python3

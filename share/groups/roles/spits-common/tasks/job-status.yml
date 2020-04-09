@@ -1,17 +1,24 @@
-- name: Setting up SPITS for job
+- name: Get job status for job "{{ jobid }}"
   become: no
-  shell: "${HOME}/spits/bin/spits-job-status2 {{ job_id }}"
-  register: command_output
+  shell: "{{ PYPITS_PATH }}/scripts/spits-job-status.py --jobdir {{ SPITS_JOB_PATH }} {{ jobid }}"
+  register: job_status
+  
+- set_fact:
+    job_status_json: "{{ job_status.stdout | from_json }}"
+  
+- name: Print job status
+  become: no
+  debug: 
+    var: job_status_json
 
-- name: Copy values to localhost
-  delegate_to: localhost
-  copy:
-    dest: "{{ elasticluster.output_dir }}/{{ ansible_host }}.out"
-    content: "{{ command_output.stdout }}"
+- name: Get metrics for job "{{ jobid }}"
+  become: no
+  shell: "{{ PYPITS_PATH }}/scripts/spits-metric-values.py {{ jmaddr }} {{ jmport }} "
+  register: job_manager_metrics
+  when: not job_status_json.finished
     
-- name: Parse values
-  delegate_to: localhost
-  run_once: true
-  script: "files/parse.py {{ elasticluster.output_dir }} {{ elasticluster.output_dir }}/status"
-  args:
-    executable: python3
+- name: Print job manager metrics status
+  become: no
+  debug: 
+    var: job_manager_metrics.stdout 
+  when: not job_status_json.finished

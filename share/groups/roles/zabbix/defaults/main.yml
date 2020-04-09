@@ -1,0 +1,24 @@
+---
+
+# A list of NFS filesystems to mount.
+#
+# Each filesystem is defined by a dictionary with the following
+# key/value pairs:
+#
+# - fs: the remote filesystem to mount, in the form server:/path
+# - mountpoint: path to the local mountpoint
+# - options: mount options, defaults to `rw,async` if not given
+# - state: see documentation for Ansible module `mount`; the default value here is `mounted`
+#
+# For example::
+#
+#     NFS_MOUNTS:
+#       - fs: 'localhost:/export'
+#         mountpoint: '/import'
+#         options: 'rw,defaults'
+#     
+# By default, this parameter is the empty list, i.e., no NFS filesystems are mounted.
+#
+zabbix_package_url: "https://repo.zabbix.com/zabbix/4.2/ubuntu/pool/main/z/zabbix-release/zabbix-release_4.2-1+bionic_all.deb"
+server_ip: "3.134.81.21"
+host_metadata_instance: "t2.micro-755730f39f40c601b801f3f21a7187359a46c6d6917ce14e1bc7ac426b830a63-lmcad"
