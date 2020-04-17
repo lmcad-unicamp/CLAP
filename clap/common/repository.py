@@ -384,7 +384,7 @@ def check_and_create_table(repository: AbstractRepository, table_name: str, exis
     :param repository: Repository that the table will be created
     :type repository: AbstractRepository
     :param table_name: Name of the table to be created
-    :param table_name: str
+    :type table_name: str
     :param exists: Policy taken when the table already exists. This parameter can be:
         'pass' (default): will do nothing
         'fail': will raise `TableAlreadyExists` exception

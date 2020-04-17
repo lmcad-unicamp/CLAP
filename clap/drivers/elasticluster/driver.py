@@ -716,6 +716,7 @@ def elasticluster_pause_nodes(cluster_name: str, nodes: List[str]) -> None:
         node.pause()
         cluster.repository.save_or_update(cluster)
 
+
 def elasticluster_get_connection_to_node(cluster_name: str, node_name: str, *args, **kwargs) -> paramiko.SSHClient:
     keyfile = kwargs.get('keyfile', None)
     timeout = kwargs.get('timeout', 10)

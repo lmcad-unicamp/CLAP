@@ -134,10 +134,27 @@ class MultiInstanceAPI:
     def get_instance_templates() -> Dict[str, Any]:
         return yaml_load(Defaults.instances_conf)
 
+    # --------------------------------------------------------------------------------
+    # ########################### Operations with driver ############################
+    # The following operations directly uses a driver interface to interact with nodes
+    # --------------------------------------------------------------------------------
+
     def start_nodes(self, instances_num: Dict[str, int]) -> List[NodeInfo]:
+        """ Start instances based on the configuration values
+
+        :param instances_num: Dictionary containing the instance name as key and number of instances as value]
+        :type instances_num: Dict[str, int]
+        :return: List of created nodes 
+        :rtype: List[NodeInfo]
+        """
         return self._get_instance_iface(self.__default_driver).start_nodes(instances_num)
 
     def stop_nodes(self, node_ids: List[str]):
+        """ Stop started nodes based on their node ids
+
+        :param node_ids: List of node ids to stop
+        :type node_ids: List[str]
+        """
         nodes = self.get_nodes(node_ids)
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
             self._get_instance_iface(cluster.driver_id).stop_nodes([
@@ -207,6 +224,11 @@ class MultiInstanceAPI:
                 node.node_id for node in nodes if node.cluster_id == cluster.cluster_id], *args, **kwargs))
         return connections
 
+    # --------------------------------------------------------------------------------
+    # ########################### Operations with repository ##########################
+    # The following operations directly uses the reporitory
+    # --------------------------------------------------------------------------------
+
     def get_node(self, node_id: str) -> NodeInfo:
         try:
             return self.__repository_operations.get_node(node_id)
@@ -239,6 +261,11 @@ class MultiInstanceAPI:
 
         return tagged_nodes
 
+    # --------------------------------------------------------------------------------
+    # ########################### Operations with tags ###############################
+    # The following operations add/remove tags from nodes
+    # --------------------------------------------------------------------------------
+
     def add_tags_to_nodes(self, node_ids: List[str], tags: Dict[str, str]) -> List[NodeInfo]:
         added_nodes = []
         for node in self.get_nodes(node_ids):
@@ -257,6 +284,11 @@ class MultiInstanceAPI:
                     removed_nodes.append(node)
 
         return removed_nodes
+
+    # --------------------------------------------------------------------------------
+    # ########################### Operations with groups ###############################
+    # The following perform group operations 
+    # --------------------------------------------------------------------------------
 
     def get_groups(self) -> List[Tuple[str, List[str], List[str], str]]:
         groups = []
@@ -485,6 +517,11 @@ class MultiInstanceAPI:
             self.__repository_operations.write_node_info(node)
 
         return node_ids
+
+    # --------------------------------------------------------------------------------
+    # ########################### Save/Restore operations ##############################
+    # The following perform group operations 
+    # --------------------------------------------------------------------------------
 
     def export_platform(self, output_filename: str):
         pass
