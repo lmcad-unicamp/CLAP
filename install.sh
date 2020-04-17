@@ -24,7 +24,7 @@ cd downloads || abort "Invalid directory downloads"
 
 echo "Fetching elasticluster"
 if [[ ! -d elasticluster ]]; then
-  git clone https://github.com/elasticluster/elasticluster.git elasticluster || abort "Fetching elasticluster"
+  git clone -b v1.3.dev25 https://github.com/elasticluster/elasticluster.git elasticluster || abort "Fetching elasticluster"
 fi
 cd elasticluster || abort "Invalid directory elasticluster"
 pip install -e . || abort "Installing elasticluster"
