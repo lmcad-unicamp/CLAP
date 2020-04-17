@@ -11,20 +11,20 @@
   register: kk
 
 
-
-
-
+- name: testing env variables
+  become: yes
+  shell: |
+        sudo apt-get update
 
 - name: install the required package for OpenMPI
   become: yes
   package:
     name:
     - openmpi-bin
-    - openmpi-common
+    - libopenmpi-dev
 
     state: latest
   register: resultMPI
-
 #TODO: criar dicionario com o tipo da instancia e como o pacote se chama no respectivo sistema, na instancia AMI linux o nome eh "openmpi-devel", Com ubuntu o nome eh: openmpi-bin
 
 - debug:
@@ -43,8 +43,7 @@
 - name: testing env variables
   become: yes
   shell: |
-        stringTemp="export PATH=/usr/lib64/openmpi/bin:$PATH
-        export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib
+        stringTemp="export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/openmpi/lib
         " &&
         echo "$(echo -n "$stringTemp"; cat .bashrc)" > .bashrc
 
@@ -58,3 +57,16 @@
     path: ~/efs
     state: directory
     mode: "0755"
+
+- name: Disable firewall (shotgun approach, in the future probably properly configure)
+  become: yes
+  shell: ufw disable
+
+
+
+- name: Disable Strict Host Key Checking in SSH Config
+  lineinfile: >
+      dest=/etc/ssh/ssh_config
+      line="StrictHostKeyChecking no"
+      insertafter='EOF'
+      state=present

@@ -7,7 +7,7 @@
 # ~(user)/(user)/efs/app_name/, which does not exist
 # There are two options:
 # 1- Hardcode the directory
-# 2- change to home director and resuse the exec_dir <- Option used
+# 2- change to home director and re-use the exec_dir <- Option used
 
 
 
@@ -19,7 +19,6 @@
     mode: "0755"
 
 
-
 - name: passing file
   copy:
     src: "{{ item }}"
@@ -29,25 +28,38 @@
     - "{{ file_path }}/*"
 
 
-- name: passing run a  file (debugging the running phasem to be removed)
-  copy:
-    src: "{{ item }}"
-    dest: "~{{ exec_dir }}/"
-    mode: '0644'
-  with_fileglob:
-    - "{{ file_path }}/run"
-    - "{{ file_path }}/hosts"
+#- name: passing run a  file (debugging the running phasem to be removed)
+#  copy:
+#    src: "{{ item }}"
+#    dest: "~{{ exec_dir }}/"
+#    mode: '0644'
+#  with_fileglob:
+#    - "{{ file_path }}/run"
+#    - "{{ file_path }}/hosts"
 
 
-- name: compile
+- name: compile & run
+  become: yes  #MPI cannot be runned as root
   shell: |
     cd ..
     cd {{ exec_dir }}
     make
+    chmod +rx  run.sh
 
-  when: false
+  args:
+    executable: /bin/bash
+
+- name: run
+  become: no  #MPI cannot be runned as root
+  shell: |
+    cd ..
+    cd {{ exec_dir }}
+    ./run
+
 
   register: outputCommand
+
+
 
 - debug:
     msg: outputCommand
