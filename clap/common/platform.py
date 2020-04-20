@@ -101,7 +101,10 @@ class MultiInstanceAPI:
     def __find_ifaces():
         if not MultiInstanceAPI.__interfaces_map__:
             from clap.drivers.elasticluster.driver import ElasticlusterInterface
+            from clap.drivers.ansible.driver import AnsibleInterface
+            
             MultiInstanceAPI.__interfaces_map__[ElasticlusterInterface.__interface_id__] = ElasticlusterInterface
+            MultiInstanceAPI.__interfaces_map__[AnsibleInterface.__interface_id__] = AnsibleInterface
 
             # for pkg_name in setuptools.find_packages(Defaults.drivers_path):
             #     pkg = importlib.import_module('clap.drivers.{}'.format(pkg_name))
@@ -128,7 +131,9 @@ class MultiInstanceAPI:
         if not driver_id:
             driver_id = self.__default_driver
 
-        return self.__interfaces_map__[driver_id](self.__repository_operations)
+        driver =  self.__interfaces_map__[driver_id](self.__repository_operations)
+        log.info("Using driver: `{}`".format(driver.__interface_id__))
+        return driver
 
     @staticmethod
     def get_instance_templates() -> Dict[str, Any]:

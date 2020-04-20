@@ -56,7 +56,7 @@ class AbstractInstanceInterface:
 class Codes:
     """ Status codes for nodes
     """
-    NODE_STATUS_INIT = 'initialized'
+    NODE_STATUS_INIT = 'started'
     NODE_STATUS_UNREACHABLE = 'unreachable'
     NODE_STATUS_REACHABLE = 'reachable'
     NODE_STATUS_PAUSED = 'paused'

@@ -2,9 +2,20 @@ import hashlib
 import logging
 import os.path
 import yaml
+import tempfile
+import shutil
+from contextlib import contextmanager
 from collections.abc import MutableMapping
 
 log = logging.getLogger()
+
+@contextmanager
+def tmpdir(suffix=None, prefix='clap.', dir=None):
+    dd = tempfile.mkdtemp(suffix=suffix, prefix=prefix, dir=dir)
+    try:
+        yield dd
+    finally:
+        shutil.rmtree(dd)
 
 
 def setup_log(log_name: str = None, verbosity_level: int = logging.INFO, filename: str = ''):
@@ -27,6 +38,16 @@ def setup_log(log_name: str = None, verbosity_level: int = logging.INFO, filenam
 
     log = logging.getLogger(log_name)
 
+
+def get_log_level(log_level):
+    if log_level == logging.DEBUG:
+        return 3
+    elif log_level == logging.INFO:
+        return 2
+    elif log_level == logging.WARNING:
+        return 1
+    return 0
+    
 
 class Struct(MutableMapping, object):
     def __init__(self, initializer=None, **kwargs):

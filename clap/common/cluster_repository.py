@@ -40,6 +40,7 @@ class ClusterInfo(AbstractEntry):
         self.login_conf = None
         self.driver_id = None
         self.creation_time = time()
+        self.extra = None
         super(ClusterInfo, self).__init__(**kwargs)
 
     def __repr__(self):
@@ -79,11 +80,12 @@ class NodeInfo(AbstractEntry):
         self.tags = dict()
         self.groups = dict()
         self.driver_id = None
+        self.extra = None
         super(NodeInfo, self).__init__(**kwargs)
 
     def __repr__(self):
-        return 'Node(id=`{}`, instance_type=`{}`, status=`{}`, provider_id: `{}`, connection_ip=`{}`, groups=`{}`, tags=`{}`)'.format(
-            self.node_id, self.instance_type, self.status, self.provider_id, self.ip,
+        return 'Node(id=`{}`, in-use-driver=`{}`, instance_type=`{}`, status=`{}`, public_ip=`{}`, groups=`{}`, tags=`{}`)'.format(
+            self.node_id, self.driver_id, self.instance_type, self.status, self.ip,
             ', '.join(list(self.groups.keys())), ', '.join(["{}={}".format(k, v) for k, v in self.tags.items()]))
 
 
@@ -198,7 +200,7 @@ class RepositoryOperations:
         return self.read_platform_control_info()
 
     def get_cluster(self, cluster_id: str) -> ClusterInfo:
-        return next(iter(self.get_clusters([cluster_id])))
+        return next(iter(self.get_clusters([cluster_id])), None)
 
     def get_clusters(self, cluster_ids: List[str]) -> List[ClusterInfo]:
         """ Given a list with cluster ids, it returns all the Cluster Information that matches the Ids in the repository

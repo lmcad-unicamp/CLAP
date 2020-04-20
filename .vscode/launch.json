@@ -4,12 +4,55 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
+
         {
             "name": "Run clapp server",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp_server",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Start type-a node",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["node", "start", "type-a:1"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Start 2xtype-a and 2xtype-b node",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["node", "start", "type-a:2", "type-b:2"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Stop node-0",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["node", "stop", "node-0"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Alive node-11, node-12, node-13, node-14",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["node", "alive", "node-11", "node-12", "node-13", "node-14"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Run sleep playbook in node-11",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["node", "playbook", "/home/napoli/temp/sleep.yml", "node-11", "--extra", "output_file='hello'"],
+            "console": "integratedTerminal"
         }
+
     ]
 }

@@ -14,7 +14,7 @@ class Defaults:
     log_level = logging.INFO
     app_name = 'clap'
     REPOSITORY_TYPE = 'tinydb'
-    DRIVER_ID = 'elasticluster'
+    DRIVER_ID = 'ansible'
     DEFAULT_CONF_TYPE = 'json'
 
     configs_path = path_extend('$CLAP_PATH', 'configs')

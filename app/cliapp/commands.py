@@ -6,6 +6,14 @@ from clap.common.factory import PlatformFactory
 from clap.common.utils import log
 from . import interactive
 
+# TODO multi-node tags and instantiate with multiple tags
+# TODO instantiate with multiple groups (in order)
+# TODO More than one execute SSH and output
+# TODO template commands (instantiate based on a template)
+# TODO SPITS MODULE
+# TODO ZABBIX MODULE
+# TODO auto-driver search
+
 
 def common_arguments_parser():
     parser = argparse.ArgumentParser(prog='clap', description='CLPits starts and manages modules in the cloud')
@@ -194,6 +202,8 @@ def node_start(namespace: argparse.Namespace):
             else:
                 log.error("No nodes were added to group `{}`".format(group))
 
+    return 0
+
 
 def node_list(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
@@ -211,6 +221,8 @@ def node_list(namespace: argparse.Namespace):
         print('* ', node_info)
 
     print("Listed {} nodes(s)".format(len(nodes)))
+
+    return 0
 
 
 def node_show(namespace: argparse.Namespace):
@@ -232,6 +244,8 @@ def node_show(namespace: argparse.Namespace):
 
     print("Listed {} nodes(s)".format(len(nodes)))
 
+    return 0
+
 
 def node_alive(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
@@ -252,6 +266,8 @@ def node_alive(namespace: argparse.Namespace):
 
     print('Checked {} nodes'.format(len(alive_nodes)))
 
+    return 0
+
 
 def node_stop(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
@@ -270,6 +286,8 @@ def node_stop(namespace: argparse.Namespace):
         multi_instance.stop_nodes(list(node_ids))
         print("Nodes `{}` stopped!".format(', '.join(node_ids)))
 
+    return 0
+
 
 def node_playbook(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
@@ -278,13 +296,16 @@ def node_playbook(namespace: argparse.Namespace):
     except Exception:
         raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
                         "Please check the extra parameters passed")
-    multi_instance.execute_playbook_in_nodes(namespace.playbook_file, namespace.node_ids)
+    multi_instance.execute_playbook_in_nodes(namespace.playbook_file, namespace.node_ids, extra)
+
+    return 0
 
 
 def node_exec_command(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
     command = ' '.join(namespace.cmd)
     print('Executing in node `{}` the command (via SSH): `{}`'.format(namespace.node_id, command))
+
     ssh_client = multi_instance.get_connection_to_nodes([namespace.node_id])[namespace.node_id]
     if not ssh_client:
         raise Exception("Connection to `{}` was unsuccessful. "
@@ -299,20 +320,30 @@ def node_exec_command(namespace: argparse.Namespace):
 
     ssh_client.close()
 
+    return 0
+
 
 def node_connect(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
     print('Connecting to node `{}` (via SSH)'.format(namespace.node_id))
-    ssh_client = multi_instance.get_connection_to_nodes([namespace.node_id])[namespace.node_id]
-    if not ssh_client:
-        raise Exception("Connection to `{}` was unsuccessful. "
-                        "Check you internet connection or if the node is up and alive".format(namespace.node_id))
-    channel = ssh_client.get_transport().open_session()
-    channel.get_pty()
-    channel.invoke_shell()
-    interactive.interactive_shell(channel)
-    ssh_client.close()
+
+    # Not the best way...
+    if multi_instance.get_node(namespace.node_id).driver_id == 'ansible':
+        multi_instance.get_connection_to_nodes([namespace.node_id], open_shell=True)
+
+    else:
+        ssh_client = multi_instance.get_connection_to_nodes([namespace.node_id])[namespace.node_id]
+        if not ssh_client:
+            raise Exception("Connection to `{}` was unsuccessful. "
+                            "Check you internet connection or if the node is up and alive".format(namespace.node_id))
+        channel = ssh_client.get_transport().open_session()
+        channel.get_pty()
+        channel.invoke_shell()
+        interactive.interactive_shell(channel)
+        ssh_client.close()
+    
     print("Connection to `{}` closed".format(namespace.node_id))
+    return 0
 
 
 def node_add_tag(namespace: argparse.Namespace):
@@ -325,6 +356,8 @@ def node_add_tag(namespace: argparse.Namespace):
 
     nodes = multi_instance.add_tags_to_nodes(namespace.node_ids, tag)
     print("Added tag `{}` for {} nodes".format(namespace.tag, len(nodes)))
+
+    return 0
 
 
 def node_remove_tag(namespace: argparse.Namespace):
@@ -341,6 +374,8 @@ def node_remove_tag(namespace: argparse.Namespace):
         print("Removed tag `{}` for nodes `{}`".format(tag, ', '.join([node.node_id for node in nodes])))
     else:
         print("No tags removed")
+
+    return 0
 
 
 def add_group_to_node(namespace: argparse.Namespace):
@@ -369,6 +404,8 @@ def add_group_to_node(namespace: argparse.Namespace):
     if added_nodes:
         print("Nodes `{}` were successfully added to group `{}`".format(', '.join(added_nodes), namespace.group))
 
+    return 0
+
 
 def execute_group_action(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
@@ -385,6 +422,8 @@ def execute_group_action(namespace: argparse.Namespace):
         print("Nodes `{}` successfully performed action `{}` from group `{}`".format(
             ', '.join(actioned_nodes), namespace.action, namespace.group))
 
+    return 0
+
 
 def list_groups(namespace: argparse.Namespace):
     multi_instance = __get_instance_api(namespace)
@@ -398,6 +437,8 @@ def list_groups(namespace: argparse.Namespace):
             print(' ' * 4 + 'hosts: ' + ', '.join(sorted(group_hosts)))
 
     print("Listed {} groups".format(len(groups)))
+
+    return 0
 
 
 def remove_group_from_node(namespace: argparse.Namespace):
@@ -429,6 +470,8 @@ def list_templates(namespace: argparse.Namespace):
 
     print("Listed {} instance templates".format(len_templates))
 
+    return 0
+
 
 def import_platform(namespace: argparse.Namespace):
     raise NotImplementedError("Not fully implemented")
@@ -446,4 +489,6 @@ def print_all_help(parser):
         if isinstance(a, argparse._SubParsersAction):
             for name, p in a._name_parser_map.items():
                 print_all_help(p)
+
+    return 0
 

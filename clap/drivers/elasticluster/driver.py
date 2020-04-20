@@ -738,7 +738,7 @@ class ElasticlusterInterface(AbstractInstanceInterface):
         provider = reader.get_provider(cluster_info.provider_id)
         login = reader.get_login(cluster_info.login_id)
         instances = reader.get_instances()
-        cluster_id = "{}-{}-{}".format(self.cluster_prefix, cluster_info.provider_id, cluster_info.login_id)
+        cluster_id = "{}-{}-{}".format(self.__interface_id__, self.cluster_prefix, cluster_info.provider_id, cluster_info.login_id)
 
         ElasticCreator.update_cluster_config(
             cluster_id, provider, login, instances, cluster_info.login_id, cluster_info.provider_id)
@@ -755,7 +755,7 @@ class ElasticlusterInterface(AbstractInstanceInterface):
         provider = reader.get_provider(cloud_conf)
         login = reader.get_login(login_conf)
         instances = reader.get_instances()
-        cluster_id = "{}-{}-{}".format(self.cluster_prefix, cloud_conf, login_conf)
+        cluster_id = "{}-{}-{}-{}".format(self.__interface_id__, self.cluster_prefix, cloud_conf, login_conf)
 
         # TODO If cluster is already created, verify if the config is the same....
         if ElasticCreator.exists_cluster(cluster_id):
