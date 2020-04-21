@@ -39,22 +39,23 @@
 
 
 - name: compile & run
-  become: yes  #MPI cannot be runned as root
-  shell: |
-    cd ..
-    cd {{ exec_dir }}
-    make
-    chmod +rx  run.sh
-
-  args:
-    executable: /bin/bash
-
-- name: run
   become: no  #MPI cannot be runned as root
   shell: |
     cd ..
     cd {{ exec_dir }}
-    ./run
+    make
+    source run
+
+
+  args:
+    executable: /bin/bash
+
+#- name: run
+#  become: no  #MPI cannot be runned as root
+#  shell: |
+#    cd ..
+#    cd {{ exec_dir }}
+#    ./run
 
 
   register: outputCommand
