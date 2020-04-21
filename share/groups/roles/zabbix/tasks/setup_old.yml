@@ -1,0 +1,87 @@
+#- name: Check if zabbix package is installed
+  #command: dpkg-query -W zabbix
+  #register: zabbix_installed
+  #failed_when: zabbix_installed.rc > 1 # Some failure... stop!
+  #changed_when: zabbix_installed.rc == 1 # Register if zabbix is not installed!
+
+- name: Download zabbix package
+  get_url: 
+    url: "{{ zabbix_package_url }}" # Defined in a variable called zabbix_package_url at /defaults/main.yml the value "https://repo.zabbix.com/zabbix/4.2/ubuntu/pool/main/z/zabbix-release/zabbix-release_4.2-1+bionic_all.deb"
+    dest: "/tmp/zabbix.deb"
+  # when: zabbix_installed.rc == 1 # Only execute download if zabbix is not installed
+  
+- name: Install zabbix package
+  become: true
+  apt: 
+    deb: /tmp/zabbix.deb
+  # when: my_package_check_deb.rc == 1 # Only execute download if zabbix is not installed
+
+- name: Update packages..
+  become: true
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    
+- name: Install zabbix agent
+  become: true
+  apt:
+    name: zabbix-agent
+    state: present
+    
+- name: Query for instance id
+  uri: 
+    url: "http://169.254.169.254/latest/meta-data/instance-id"
+    return_content: yes
+  register: instance_id # The instance id is saved in the variable instance_id, use "{{ instance_id }}" to use the variable in the ansible playbook
+
+- name: Print instance id
+  debug:
+    msg: "The instance id is: {{ instance_id.content }}"
+    
+- name: Sed hostname in files
+  become: true
+  replace:
+    path: /etc/zabbix/zabbix_agentd.conf
+    regexp: "# Hostname="
+    replace: "Hostname={{ instance_id.content }}"
+    
+- name: Sed server in files
+  become: true
+  replace:
+    path: /etc/zabbix/zabbix_agentd.conf
+    regexp: "Server=127.0.0.1"
+    replace: "Server={{ server_ip }}" # Server ip defined in a variable with value: 3.134.81.21
+    
+- name: Sed server active in files
+  become: true
+  replace:
+    path: /etc/zabbix/zabbix_agentd.conf
+    regexp: "ServerActive=127.0.0.1"
+    replace: "ServerActive={{ server_ip }}"
+    
+- name: Sed hostmetadata in files
+  become: true
+  replace:
+    path: /etc/zabbix/zabbix_agentd.conf
+    regexp: "# HostMetadata="
+    replace: "HostMetadata={{ host_metadata_instance }}" # Defined in a variable as t2.micro-755730f39f40c601b801f3f21a7187359a46c6d6917ce14e1bc7ac426b830a63-lmcad
+
+- name: Sed EnableRemoteCommands active in files
+  become: true
+  replace:
+    path: /etc/zabbix/zabbix_agentd.conf
+    regexp: "# EnableRemoteCommands=0"
+    replace: "EnableRemoteCommands=1"
+  
+- name: Restart zabbix agent
+  become: true
+  systemd:
+    state: restarted
+    name: zabbix-agent
+    
+- name: Enable zabbix agent
+  become: true
+  systemd:
+    state: started
+    enabled: yes
+    name: zabbix-agent
