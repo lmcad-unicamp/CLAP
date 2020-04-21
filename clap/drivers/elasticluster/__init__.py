@@ -1,3 +1,3 @@
 from .driver import ElasticlusterInterface
 
-interface = ElasticlusterInterface
+__all__ = ['ElasticlusterInterface']

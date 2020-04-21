@@ -1,8 +1,11 @@
 import setuptools
+import inspect
 import importlib.util
 import os
 from typing import List, Dict, Tuple, Union, Any
 from paramiko import SSHClient
+
+import clap.drivers
 
 from clap.common.config import Defaults
 from clap.common.driver import AbstractInstanceInterface
@@ -100,17 +103,15 @@ class MultiInstanceAPI:
     @staticmethod
     def __find_ifaces():
         if not MultiInstanceAPI.__interfaces_map__:
-            from clap.drivers.elasticluster.driver import ElasticlusterInterface
-            from clap.drivers.ansible.driver import AnsibleInterface
-            
-            MultiInstanceAPI.__interfaces_map__[ElasticlusterInterface.__interface_id__] = ElasticlusterInterface
-            MultiInstanceAPI.__interfaces_map__[AnsibleInterface.__interface_id__] = AnsibleInterface
+            for pkg_name in setuptools.find_packages(os.path.dirname(clap.drivers.__file__)):
+                classes = [obj for _, obj in inspect.getmembers(importlib.import_module(
+                            'clap.drivers.{}'.format(pkg_name))) if inspect.isclass(obj)]
 
-            # for pkg_name in setuptools.find_packages(Defaults.drivers_path):
-            #     pkg = importlib.import_module('clap.drivers.{}'.format(pkg_name))
-            #     MultiInstanceAPI.__interfaces_map__[pkg.interface.__interface_id__] = pkg.interface
-            # log.debug("Found {} interfaces. "
-            #           "{}".format(len(MultiInstanceAPI.__interfaces_map__), MultiInstanceAPI.__interfaces_map__))
+                MultiInstanceAPI.__interfaces_map__.update({obj.__interface_id__: obj for obj in classes 
+                    if issubclass(obj, AbstractInstanceInterface)})
+            
+            log.debug("Found {} interfaces. {}".format( len(MultiInstanceAPI.__interfaces_map__),
+                ', '.join(list(MultiInstanceAPI.__interfaces_map__.keys())) ) )
 
     def __init__(self, platform_db: str, repository_type: str, default_driver: str):
         """ Create a MultiInstance API used to manage several clusters and nodes in a transparent manner
@@ -132,7 +133,7 @@ class MultiInstanceAPI:
             driver_id = self.__default_driver
 
         driver =  self.__interfaces_map__[driver_id](self.__repository_operations)
-        log.info("Using driver: `{}`".format(driver.__interface_id__))
+        log.debug("Using driver: `{}`".format(driver.__interface_id__))
         return driver
 
     @staticmethod
