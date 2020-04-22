@@ -37,15 +37,17 @@ def setup_log(log_name: str = None, verbosity_level: int = logging.INFO, filenam
         logging.basicConfig(level=verbosity_level, format=formatter)
 
     log = logging.getLogger(log_name)
+    
+    return verbosity_level
 
 
 def get_log_level(log_level):
     if log_level == logging.DEBUG:
         return 3
-    elif log_level == logging.INFO:
-        return 2
     elif log_level == logging.WARNING:
-        return 1
+        return 2
+    elif log_level == logging.INFO:
+        return 0
     return 0
     
 

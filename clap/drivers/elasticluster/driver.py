@@ -877,28 +877,32 @@ class ElasticlusterInterface(AbstractInstanceInterface):
 
         return reachable_nodes
 
-    def stop_nodes(self, node_ids: List[str]):
+    def stop_nodes(self, node_ids: List[str]) -> List[str]:
+        stopped_nodes = []
         for node_info in self.repository_operator.get_nodes(node_ids):
             log.info("Stopping node `{}`...".format(node_info.node_id))
             cluster_info = self.__get_updated_cluster(node_info.cluster_id)
             elasticluster_stop_nodes(cluster_info.eclust_cluster_name, [node_info.eclust_node_name])
             self.repository_operator.remove_node(node_info.node_id)
             log.debug("Node `{}` removed successfully".format(node_info.node_id))
+            stopped_nodes.append(node_info.node_id)
 
             if len(self.repository_operator.get_nodes_from_cluster(cluster_info.cluster_id)) == 0:
                 self.__stop_cluster(cluster_info.cluster_id)
+        return stopped_nodes
 
-    def pause_nodes(self, node_ids: List[str]):
-        for node_info in self.repository_operator.get_nodes(node_ids):
-            log.info("Pausing node `{}`...".format(node_info.node_id))
-            cluster_info = self.__get_updated_cluster(node_info.cluster_id)
-            elasticluster_pause_nodes(cluster_info.eclust_cluster_name, [node_info.eclust_node_name])
-            node_info.status = Codes.NODE_STATUS_PAUSED
-            node_info.update_time = time()
-            self.repository_operator.write_node_info(node_info)
+    def pause_nodes(self, node_ids: List[str]) -> List[str]:
+        # for node_info in self.repository_operator.get_nodes(node_ids):
+        #     log.info("Pausing node `{}`...".format(node_info.node_id))
+        #     cluster_info = self.__get_updated_cluster(node_info.cluster_id)
+        #     elasticluster_pause_nodes(cluster_info.eclust_cluster_name, [node_info.eclust_node_name])
+        #     node_info.status = Codes.NODE_STATUS_PAUSED
+        #     node_info.update_time = time()
+        #     self.repository_operator.write_node_info(node_info)
+        raise NotImplementedError("{} driver does not implement this function yet...".format(self.__interface_id__))
 
-    def resume_nodes(self, node_ids: List[str]):
-        raise NotImplementedError("Not implemented")
+    def resume_nodes(self, node_ids: List[str]) -> List[str]:
+        raise NotImplementedError("{} driver does not implement this function yet...".format(self.__interface_id__))
 
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
         checkeds = dict()

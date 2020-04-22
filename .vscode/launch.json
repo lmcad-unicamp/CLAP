@@ -4,8 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
-
         {
             "name": "Run clapp server",
             "type": "python",
@@ -51,6 +49,22 @@
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
             "args": ["node", "playbook", "/home/napoli/temp/sleep.yml", "node-11", "--extra", "output_file='hello'"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Resume node-26 and node-27",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vvvv", "node", "resume", "node-26", "node-27"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pause node-26 and node-27",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vvvv", "node", "pause", "node-26", "node-27"],
             "console": "integratedTerminal"
         }
 

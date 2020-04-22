@@ -1,5 +1,6 @@
 import clap.common
-from time import time
+import time
+import datetime
 from datetime import datetime
 from typing import List
 from clap.common.repository import AbstractEntry, AbstractRepository, RepositoryFactory
@@ -39,7 +40,7 @@ class ClusterInfo(AbstractEntry):
         self.provider_conf = None
         self.login_conf = None
         self.driver_id = None
-        self.creation_time = time()
+        self.creation_time = time.time()
         self.extra = None
         super(ClusterInfo, self).__init__(**kwargs)
 
@@ -73,7 +74,7 @@ class NodeInfo(AbstractEntry):
         self.provider_id = None
         self.login_id = None
         self.instance_conf = None
-        self.creation_time = time()
+        self.creation_time = time.time()
         self.update_time = self.creation_time
         self.ip = None
         self.status = None
@@ -84,9 +85,10 @@ class NodeInfo(AbstractEntry):
         super(NodeInfo, self).__init__(**kwargs)
 
     def __repr__(self):
-        return 'Node(id=`{}`, in-use-driver=`{}`, instance_type=`{}`, status=`{}`, public_ip=`{}`, groups=`{}`, tags=`{}`)'.format(
-            self.node_id, self.driver_id, self.instance_type, self.status, self.ip,
-            ', '.join(list(self.groups.keys())), ', '.join(["{}={}".format(k, v) for k, v in self.tags.items()]))
+        return 'Node(id=`{}`, type=`{}`, status=`{}`, public_ip=`{}`, groups=`{}`, tags=`{}`, last_update=`{}`'.format(
+            self.node_id, self.instance_type, self.status, self.ip,
+            ', '.join(list(self.groups.keys())), ', '.join(["{}={}".format(k, v) for k, v in self.tags.items()]),
+            time.strftime("%d-%m-%y %H:%M:%S", time.localtime(self.update_time)))
 
 
 class RepositoryOperations:

@@ -64,7 +64,7 @@ def main(arguments: List[str]):
 
     try:
         args = parser.parse_args(arguments)
-        setup_log(Defaults.app_name, args.verbose)
+        Defaults.log_level = setup_log(Defaults.app_name, args.verbose)
 
     except Exception as err:
         log.error("Parsing command line arguments: {}".format(err))

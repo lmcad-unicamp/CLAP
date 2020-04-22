@@ -12,7 +12,6 @@ from . import interactive
 # TODO template commands (instantiate based on a template)
 # TODO SPITS MODULE
 # TODO ZABBIX MODULE
-# TODO auto-driver search
 
 
 def common_arguments_parser():
@@ -63,13 +62,15 @@ def common_arguments_parser():
     node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
     node_subcom_parser.set_defaults(func=node_stop)
 
-    # node_subcom_parser = node_com_parser.add_parser('pause', help='Pause nodes')
-    # node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be paused')
-    # node_subcom_parser.set_defaults(func=node_pause)
-    #
-    # node_subcom_parser = node_com_parser.add_parser('resume', help='Pause nodes')
-    # node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be resumed')
-    # node_subcom_parser.set_defaults(func=node_resume)
+    node_subcom_parser = node_com_parser.add_parser('pause', help='Pause nodes')
+    node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be paused')
+    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
+    node_subcom_parser.set_defaults(func=node_pause)
+    
+    node_subcom_parser = node_com_parser.add_parser('resume', help='Resume nodes')
+    node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be resumed')
+    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
+    node_subcom_parser.set_defaults(func=node_resume)
 
     node_subcom_parser = node_com_parser.add_parser('playbook', help='Execute playbook in nodes')
     node_subcom_parser.add_argument('playbook_file', action='store', help='Playbook file to be executed')
@@ -283,8 +284,55 @@ def node_stop(namespace: argparse.Namespace):
     if not node_ids:
         print("No nodes stopped")
     else:
-        multi_instance.stop_nodes(list(node_ids))
-        print("Nodes `{}` stopped!".format(', '.join(node_ids)))
+        node_ids = multi_instance.stop_nodes(list(node_ids))
+        if not node_ids:
+            print("No nodes stopped")
+        else:
+            print("Nodes `{}` stopped!".format(', '.join(node_ids)))
+
+    return 0
+
+def node_pause(namespace: argparse.Namespace):
+    multi_instance = __get_instance_api(namespace)
+    node_ids = set(namespace.node_ids)
+
+    if namespace.tag:
+        try:
+            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+        except Exception:
+            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+
+    if not node_ids:
+        print("No nodes paused")
+    else:
+        node_ids = multi_instance.pause_nodes(list(node_ids))
+        if not node_ids:
+            print("No nodes paused")
+        else:
+            print("Nodes `{}` paused!".format(', '.join(node_ids)))
+
+    return 0
+
+def node_resume(namespace: argparse.Namespace):
+    multi_instance = __get_instance_api(namespace)
+    node_ids = set(namespace.node_ids)
+
+    if namespace.tag:
+        try:
+            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+        except Exception:
+            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+
+    if not node_ids:
+        print("No nodes resumed")
+    else:
+        node_ids = multi_instance.resume_nodes(list(node_ids))
+        if not node_ids:
+            print("No nodes resumed")
+        else:
+            print("Nodes `{}` resumed!".format(', '.join(node_ids)))
 
     return 0
 
@@ -306,11 +354,12 @@ def node_exec_command(namespace: argparse.Namespace):
     command = ' '.join(namespace.cmd)
     print('Executing in node `{}` the command (via SSH): `{}`'.format(namespace.node_id, command))
 
-    ssh_client = multi_instance.get_connection_to_nodes([namespace.node_id])[namespace.node_id]
+    ssh_client = multi_instance.get_connection_to_nodes([namespace.node_id])
     if not ssh_client:
         raise Exception("Connection to `{}` was unsuccessful. "
                         "Check you internet connection or if the node is up and alive".format(namespace.node_id))
 
+    ssh_client = ssh_client[namespace.node_id]
     _, stdout, stderr = ssh_client.exec_command(command)
     print("{} STD OUTPUT {}".format('-'*40, '-'*40))
     print(''.join(stdout.readlines()))

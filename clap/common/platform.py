@@ -155,16 +155,44 @@ class MultiInstanceAPI:
         """
         return self._get_instance_iface(self.__default_driver).start_nodes(instances_num)
 
-    def stop_nodes(self, node_ids: List[str]):
+    def stop_nodes(self, node_ids: List[str]) -> List[str]:
         """ Stop started nodes based on their node ids
 
         :param node_ids: List of node ids to stop
         :type node_ids: List[str]
         """
         nodes = self.get_nodes(node_ids)
+        stopped_nodes = []
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            self._get_instance_iface(cluster.driver_id).stop_nodes([
+            stopped_nodes += self._get_instance_iface(cluster.driver_id).stop_nodes([
                 node.node_id for node in nodes if node.cluster_id == cluster.cluster_id])
+        return stopped_nodes
+
+    def pause_nodes(self, node_ids: List[str]) -> List[str]:
+        """ Pause started nodes based on their node ids
+
+        :param node_ids: List of node ids to pause
+        :type node_ids: List[str]
+        """
+        nodes = self.get_nodes(node_ids)
+        paused_nodes = []
+        for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
+            paused_nodes += self._get_instance_iface(cluster.driver_id).pause_nodes([
+                node.node_id for node in nodes if node.cluster_id == cluster.cluster_id])
+        return paused_nodes
+
+    def resume_nodes(self, node_ids: List[str]) -> List[str]:
+        """ Resume paused nodes based on their node ids
+
+        :param node_ids: List of node ids to resume
+        :type node_ids: List[str]
+        """
+        nodes = self.get_nodes(node_ids)
+        resumed_nodes = []
+        for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
+            resumed_nodes += self._get_instance_iface(cluster.driver_id).resume_nodes([
+                node.node_id for node in nodes if node.cluster_id == cluster.cluster_id])
+        return resumed_nodes
 
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
         nodes = self.get_nodes(node_ids)

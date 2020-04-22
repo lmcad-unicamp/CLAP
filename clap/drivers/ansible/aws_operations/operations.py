@@ -3,6 +3,7 @@ import yaml
 import ansible_runner
 import random
 import logging
+import time
 
 from queue import Queue
 from typing import List, Dict, Set, Tuple
@@ -24,7 +25,7 @@ def __get_ansible_verbosity__():
 def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: ClusterInfo, provider_conf: dict, 
                     login_conf: dict, instance_name: str, instance_conf: dict, count: int, driver_id: str,
                     instance_wait_timeout: int = 600, node_prefix: str = 'node', additional_ansible_kwargs: dict = None,
-                    instance_tags: dict = None):
+                    instance_tags: dict = None) -> List[str]:
     # Main task name
     task_check_name = 'Start instances (timeout: {} seconds)'.format(instance_wait_timeout)
 
@@ -51,7 +52,7 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
         # Craft EC2 Task
         ec2_command_values = {
             'name': task_check_name,
-            'with_items': node_names,
+            'register': 'ec2_vals',
             'ec2': {
                 'aws_access_key': aws_access_key,
                 'aws_secret_key': aws_secret_key,
@@ -64,10 +65,10 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
                 'wait_timeout': instance_wait_timeout,
                 'instance_tags': {
                     'CreatedWith': 'CLAP',
-                    'Name': '{}-{{{{item}}}}'.format(cluster.cluster_id)
                 }
             }
         }
+
 
         # List of tasks for the playbook
         tasks = []
@@ -136,7 +137,7 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
         elif 'default_security_group' in cluster.extra:
             ec2_command_values['ec2']['group'] = cluster.extra['default_security_group']
         else:
-            secgroup_name = "clap-secgroup-{}".format(str(random.random())[2:])
+            secgroup_name = "secgroup-{}-{}-{}-{}".format(driver_id, cluster.provider_id, cluster.login_id, str(random.random())[2:])
             ec2_command_values['ec2']['group'] = secgroup_name
 
             security_group_command = {
@@ -217,18 +218,19 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
             return []
 
         # Get the instance creation event
-        instance_event = next(e for e in list(ret.host_events('localhost')) if e['event'] == 'runner_on_ok' and 
-                                                e['event_data']['task'] == task_check_name)   
-        # Finally get created instances returned by ec2 ansible module
-        created_instances = instance_event['event_data']['res']['results'][0]['instances']
-    
+        instance_event = next(e for e in list(ret.host_events('localhost')) if e['event'] == 'runner_on_ok' and e['event_data']['task'] == task_check_name)
+        created_instances = instance_event['event_data']['res']['instances']
 
+        id_name_map_list = []
+        
         for instance, node_id in zip(created_instances, node_names):
+            node_name = "{}-{}-{}-{}".format(driver_id, cluster.login_id, cluster.provider_id, node_id)
+            id_name_map_list.append({'id': instance['id'], 'name': node_name})
             # Create a new CLAP node
             node_info = NodeInfo(
                 node_id=node_id,
                 cluster_id=cluster['cluster_id'],
-                eclust_node_name=None,
+                eclust_node_name=node_name,
                 provider_id=None,
                 login_id=None,
                 instance_type=instance_name,
@@ -253,19 +255,61 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
 
             # Store the fresh created clap node
             repository.write_node_info(node_info, create=True)
-            created_nodes.append(node_info)
+            created_nodes.append(node_info.node_id)
             print("Created node: `{}` (instance-id: `{}`)".format(node_id, instance['id']))
-
+        
         # Security group newly created?
         if secgroup_name:
             cluster.extra['default_security_group'] = secgroup_name
             repository.write_cluster_info(cluster)
 
+
+        filename = path_extend(dir, 'tag-aws-instances.yml')
+        ec2_tag_instances = {
+            'name': 'Tag EC2 Instances',
+            'vars': {
+                'names': id_name_map_list
+            },
+            'loop': '{{ names }}',
+            'ec2_tag': {
+                'aws_access_key': aws_access_key,
+                'aws_secret_key': aws_secret_key,
+                'region': aws_region,
+                'resource': '{{ item.id }}',
+                'tags': {
+                    'Name': '{{ item.name }}'
+                }
+            }
+        }
+
+        # Final playbook
+        created_playbook = [{
+            'gather_facts': False,
+            'hosts': 'localhost',
+            'tasks': [ec2_tag_instances]
+        }]
+
+        # Craft EC2 start instances command to yaml file
+        with open(filename, 'w') as f:
+            yaml.dump(created_playbook, f, explicit_start=True, default_style=None, 
+                    indent=2, allow_unicode=True, default_flow_style=False)
+
+        log.info("Tagging the instances")
+        log.debug(created_playbook)
+        # Run the playbook!
+        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=__get_ansible_verbosity__())
+
+        if ret.rc != 0:
+            log.error("Error tagging instances. Ansible command returned non-zero code")
+            queue.put([])
+            return []
+
+
     # Put instances in queue to be available in another thread...
     queue.put(created_nodes)
     return created_nodes
 
-def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]):
+def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]:
     # Main task name
     task_check_name = 'Stop instances'
 
@@ -338,7 +382,10 @@ def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf
         queue.put(stopped_nodes)
         return stopped_nodes
 
-def pause_aws_nodes(queue, provider_conf, node_infos: List[NodeInfo]):
+def pause_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]:
+    # Main task name
+    task_check_name = 'Pause aws instances'
+
     try:
         aws_access_key = open(path_extend(Defaults.private_path, provider_conf['access_keyfile']), 'r').read().strip()
         aws_secret_key = open(path_extend(Defaults.private_path, provider_conf['secret_access_keyfile']), 'r').read().strip()
@@ -348,7 +395,7 @@ def pause_aws_nodes(queue, provider_conf, node_infos: List[NodeInfo]):
         raise
 
     ec2_command_values = {
-        'name': 'Pause instances',
+        'name': task_check_name,
         'ec2': {
             'aws_access_key': aws_access_key,
             'aws_secret_key': aws_secret_key,
@@ -368,7 +415,7 @@ def pause_aws_nodes(queue, provider_conf, node_infos: List[NodeInfo]):
     }]
 
     with tmpdir() as dir:
-        filename = path_extend(dir, 'pause-instances.yml')
+        filename = path_extend(dir, 'pause-aws-instances.yml')
 
         # Craft EC2 start instances command to yaml file
         with open(filename, 'w') as f:
@@ -378,26 +425,61 @@ def pause_aws_nodes(queue, provider_conf, node_infos: List[NodeInfo]):
         # Run the playbook!
         ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=__get_ansible_verbosity__())
 
-        # DEbug
-        x = list(ret.events)
-        
         # Not OK?
         if ret.rc != 0:
             log.error("Error pausing instances. Ansible command returned non-zero code")
             queue.put([])
             return []
-        
-        paused_nodes = []            
-        for node in node_infos:
-            node.status = Codes.NODE_STATUS_PAUSED
-            self.repository_operator.write_node_info(node)
-            log.info("Node `{}` has been paused!".format(node.node_id))
-            paused_nodes.append(node)
 
+        # Get the instance removal event
+        instances_event = next(e for e in list(ret.host_events('localhost')) if e['event'] == 'runner_on_ok' and 
+                                                e['event_data']['task'] == task_check_name)   
+        # Finally remove the instances returned by ec2 ansible module
+        paused_instances = instances_event['event_data']['res']['instances']
+        already_paused_instances = instances_event['event_data']['res']['instance_ids']
+        paused_instances_ids = [i['id'] for i in instances_event['event_data']['res']['instances']]
+
+        paused_nodes = []
+        
+        for paused_instance_id in already_paused_instances:
+            if paused_instance_id not in paused_instances_ids:
+                node = next(iter([node for node in node_infos if node.extra['instance_id'] == paused_instance_id]), None)
+                if not node:
+                    log.error("Invalid node with instance id: `{}`".format(paused_instance_id))
+                    continue
+
+                node.ip = None
+                node.status = Codes.NODE_STATUS_PAUSED
+                node.update_time = time.time()
+
+                repository.write_node_info(node)
+                log.info("Node `{}` has been already paused!".format(node.node_id))
+                paused_nodes.append(node.node_id)
+
+        # Run through removed instance ids
+        for instance in paused_instances:
+            # Get node with the selected instance id
+            node = next(iter([node for node in node_infos if node.extra['instance_id'] == instance['id']]), None)
+            # No one? Error?
+            if not node:
+                log.error("Invalid node with instance id: `{}`".format(instance['id']))
+                continue
+            
+            node.ip = None
+            node.status = Codes.NODE_STATUS_PAUSED
+            node.update_time = time.time()
+            # Remove node with instance id
+            repository.write_node_info(node)
+            log.info("Node `{}` has been paused!".format(node.node_id))
+            paused_nodes.append(node.node_id)
+        
         queue.put(paused_nodes)
         return paused_nodes
 
-def resume_aws_nodes(queue, provider_conf, node_infos: List[NodeInfo]):
+def resume_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]:
+    # Main task name
+    task_check_name = 'Resume aws instances'
+
     try:
         aws_access_key = open(path_extend(Defaults.private_path, provider_conf['access_keyfile']), 'r').read().strip()
         aws_secret_key = open(path_extend(Defaults.private_path, provider_conf['secret_access_keyfile']), 'r').read().strip()
@@ -407,13 +489,13 @@ def resume_aws_nodes(queue, provider_conf, node_infos: List[NodeInfo]):
         raise
 
     ec2_command_values = {
-        'name': 'Resume instances',
+        'name': task_check_name,
         'ec2': {
             'aws_access_key': aws_access_key,
             'aws_secret_key': aws_secret_key,
             'region': aws_region,
             'instance_ids': [node.extra['instance_id'] for node in node_infos],
-            'state': 'restarted',
+            'state': 'running',
             'wait': True
         }
     }
@@ -427,7 +509,7 @@ def resume_aws_nodes(queue, provider_conf, node_infos: List[NodeInfo]):
     }]
 
     with tmpdir() as dir:
-        filename = path_extend(dir, 'resume-instances.yml')
+        filename = path_extend(dir, 'resume-aws-instances.yml')
 
         # Craft EC2 start instances command to yaml file
         with open(filename, 'w') as f:
@@ -437,22 +519,62 @@ def resume_aws_nodes(queue, provider_conf, node_infos: List[NodeInfo]):
         # Run the playbook!
         ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=__get_ansible_verbosity__())
 
-        # DEbug
-        x = list(ret.events)
-        
         # Not OK?
         if ret.rc != 0:
             log.error("Error resuming instances. Ansible command returned non-zero code")
             queue.put([])
             return []
-        
-        resumed_nodes = []
-        for node in node_infos:
-            node.status = Codes.NODE_STATUS_INIT
-            self.repository_operator.write_node_info(node)
-            log.info("Node `{}` has been resumed!".format(node.node_id))
-            resumed_nodes.append(node)
 
+        # Get the instance removal event
+        instances_event = next(e for e in list(ret.host_events('localhost')) if e['event'] == 'runner_on_ok' and 
+                                                e['event_data']['task'] == task_check_name)   
+        # Finally remove the instances returned by ec2 ansible module
+        resumed_instances = instances_event['event_data']['res']['instances']
+        already_running_instances = instances_event['event_data']['res']['instance_ids']
+        resumed_instances_ids = [i['id'] for i in instances_event['event_data']['res']['instances']]
+
+        resumed_nodes = []
+        
+        for running_instance_id in already_running_instances:
+            if running_instance_id not in resumed_instances_ids:
+                node = next(iter([node for node in node_infos if node.extra['instance_id'] == running_instance_id]), None)
+                # No one? Error?
+                if not node:
+                    log.error("Invalid node with instance id: `{}`".format(running_instance_id))
+                    continue
+
+                log.info("Node `{}` has been already resumed!".format(node.node_id))
+                resumed_nodes.append(node.node_id)
+
+        
+        # Run through removed instance ids
+        for instance in resumed_instances:
+            # Get node with the selected instance id
+            node = next(iter([node for node in node_infos if node.extra['instance_id'] == instance['id']]), None)
+            # No one? Error?
+            if not node:
+                log.error("Invalid node with instance id: `{}`".format(instance['id']))
+                continue
+            
+            node.ip = instance['public_ip']
+            node.extra = {
+                    'instance_id': instance['id'],
+                    'private_ip': instance['private_ip'],
+                    'dns': instance['dns_name'],
+                    'private_dns': instance['private_dns_name'],
+                    'architecture': instance['architecture'],
+                    'instance_tags': instance['tags'],
+                    'vpc_id': None,
+                    'subnet_id': None
+                }
+            node.status = Codes.NODE_STATUS_INIT
+            node.update_time = time.time()
+
+            # Remove node with instance id
+            repository.write_node_info(node)
+            log.info("Node `{}` has been resumed!".format(node.node_id))
+            resumed_nodes.append(node.node_id)
+        
         queue.put(resumed_nodes)
         return resumed_nodes
 

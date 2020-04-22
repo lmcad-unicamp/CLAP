@@ -6,6 +6,7 @@ import random
 import yaml
 import subprocess
 import paramiko
+import logging
 
 from queue import Queue
 from typing import Optional, List, Dict, Set, Tuple, Union, Any
@@ -194,12 +195,12 @@ class AnsibleInterface(AbstractInstanceInterface):
             return []
 
         # Check SSH connection
-        alive_nodes = self.check_nodes_alive([node.node_id for node in created_nodes], retries=3, retry_timeout=15)
+        alive_nodes = self.check_nodes_alive(created_nodes, retries=3, retry_timeout=15)
 
         # Return last updated nodes
         return self.repository_operator.get_nodes(list(alive_nodes.keys()))
 
-    def stop_nodes(self, node_ids: List[str]):
+    def stop_nodes(self, node_ids: List[str]) -> List[str]:
         # Group instances with same provider and login
         cluster_nodes_map = self.__cluster_nodes_map__(node_ids)
         
@@ -227,31 +228,31 @@ class AnsibleInterface(AbstractInstanceInterface):
 
         return removed_nodes
 
-    def pause_nodes(self, node_ids: List[str]):
+    def pause_nodes(self, node_ids: List[str]) -> List[str]:
         # Group instances with same provider and login
         cluster_nodes_map = self.__cluster_nodes_map__(node_ids)
         
-        removed_nodes = []
+        paused_nodes = []
         q = Queue()
         for cluster_id, list_nodes in cluster_nodes_map.items():
             cluster = self.repository_operator.get_cluster(cluster_id)
             provider_conf = self.reader.get_provider(cluster['provider_id'])
 
             if provider_conf['provider'] == 'aws':
-                log.info("Pausing nodes {}...".format(','.join([n.node_id for n in list_nodes]))) 
+                log.info("Pausing nodes `{}`...".format(', '.join(sorted([n.node_id for n in list_nodes]))))
                 try:
-                    t = threading.Thread(target=self.__stop_aws_nodes__, args=(q, provider_conf, list_nodes))
+                    t = threading.Thread(target=pause_aws_nodes, args=(q, self.repository_operator, provider_conf, list_nodes))
                     t.start()
                     t.join()
                 except BaseException:
-                    log.error("The termination process is running yet, terminating now may cause error in the nodes creation."
+                    log.error("The pause process is running yet, terminating now may cause error in the nodes creation."
                         "Nodes may be in an inconsistent state...")
-                    return removed_nodes
-                removed_nodes += q.get()
+                    return paused_nodes
+                paused_nodes += q.get()
 
-        return removed_nodes
+        return paused_nodes
 
-    def resume_nodes(self, node_ids: List[str]):
+    def resume_nodes(self, node_ids: List[str]) -> List[str]:
         # Group instances with same provider and login
         cluster_nodes_map = self.__cluster_nodes_map__(node_ids)
         
@@ -262,69 +263,96 @@ class AnsibleInterface(AbstractInstanceInterface):
             provider_conf = self.reader.get_provider(cluster['provider_id'])
 
             if provider_conf['provider'] == 'aws':
-                log.info("Resuming nodes {}...".format(','.join([n.node_id for n in list_nodes]))) 
+                log.info("Resuming nodes `{}`...".format(', '.join(sorted([n.node_id for n in list_nodes]))))
                 try:
-                    t = threading.Thread(target=self.__resume_aws_nodes__, args=(q, provider_conf, list_nodes))
+                    t = threading.Thread(target=resume_aws_nodes, args=(q, self.repository_operator, provider_conf, list_nodes))
                     t.start()
                     t.join()
                 except BaseException:
-                    log.error("The termination process is running yet, terminating now may cause error in the nodes creation."
+                    log.error("The resume process is running yet, terminating now may cause error in the nodes creation."
                         "Nodes may be in an inconsistent state...")
                     return resumed_nodes
                 resumed_nodes += q.get()
-        
-        # TODO CHECK CONNECTION
 
-        return resumed_nodes
+
+        if not resumed_nodes:
+            return []
+
+        # Check SSH connection
+        alive_nodes = self.check_nodes_alive(resumed_nodes, retries=3, retry_timeout=15)
+
+        # Return last updated nodes
+        return list(alive_nodes.keys())
 
     def check_nodes_alive(self, node_ids: List[str], shell_command='hostname', retries=1, retry_timeout=15) -> Dict[str, bool]:
         # Group nodes with same provider and login (cluster)
         cluster_nodes_map = self.__cluster_nodes_map__(node_ids)
         
-        q = Queue()
-        # Iterate over all nodes of the cluters
-        for cluster_id, list_nodes in cluster_nodes_map.items():
-            # Get cluster
-            cluster = self.repository_operator.get_cluster(cluster_id)
-            provider_conf = self.reader.get_provider(cluster['provider_id'])
+        for retry in range(1, retries+1):
+            log.info("Checking if node are alive (retry: {}/{})".format(retry, retries))
 
-            if provider_conf['provider'] == 'aws':
-                check_instance_status(q, self.repository_operator, provider_conf, self.repository_operator.get_nodes(node_ids))
+            q = Queue()
+            # Iterate over all nodes of the cluters
+            for cluster_id, list_nodes in cluster_nodes_map.items():
+                # Get cluster
+                cluster = self.repository_operator.get_cluster(cluster_id)
+                provider_conf = self.reader.get_provider(cluster['provider_id'])
+
+                if provider_conf['provider'] == 'aws':
+                    check_instance_status(q, self.repository_operator, provider_conf, self.repository_operator.get_nodes(node_ids))
+                    
+            test_connection = {
+                'name': 'Test SSH Connection',
+                'shell': "{}".format(shell_command)
+            }
+
+            tasks = [test_connection]
+
+            created_playbook = [{
+                'gather_facts': False,
+                'hosts': 'all',
+                'tasks': tasks
+            }]
+
+
+            with tmpdir() as dir:
+                filename = path_extend(dir, 'test-ssh.yml')
+
+                # Craft EC2 start instances command to yaml file
+                with open(filename, 'w') as f:
+                    yaml.dump(created_playbook, f, explicit_start=True, default_style=None, 
+                            indent=2, allow_unicode=True, default_flow_style=False)
+
+                # Filter only reachable nodes
+                nodes_to_check = [node for node in self.repository_operator.get_nodes(node_ids) 
+                                    if node.status == Codes.NODE_STATUS_INIT or node.status == Codes.NODE_STATUS_REACHABLE]
                 
-        test_connection = {
-            'name': 'Test SSH Connection',
-            'shell': "{}".format(shell_command)
-        }
-
-        tasks = [test_connection]
-
-        created_playbook = [{
-            'gather_facts': False,
-            'hosts': 'all',
-            'tasks': tasks
-        }]
-
-
-        with tmpdir() as dir:
-            filename = path_extend(dir, 'test-ssh.yml')
-
-            # Craft EC2 start instances command to yaml file
-            with open(filename, 'w') as f:
-                yaml.dump(created_playbook, f, explicit_start=True, default_style=None, 
-                        indent=2, allow_unicode=True, default_flow_style=False)
-
-            # Filter only reachable nodes
-            nodes_to_check = [node for node in self.repository_operator.get_nodes(node_ids) 
-                                if node.status == Codes.NODE_STATUS_INIT or node.status == Codes.NODE_STATUS_REACHABLE]
-            
-            # Execute test only in reachable nodes...
-            group_hosts_map = {'all': [node.node_id for node in nodes_to_check]}
-            alive_nodes = {}
-
-            for retry in range(1, retries+1):
-                log.info("Checking if node are alive (retry: {}/{})".format(retry, retries))
+                # Execute test only in reachable nodes...
+                group_hosts_map = {'all': [node.node_id for node in nodes_to_check]}
+                alive_nodes = {}
                 alive_nodes = self.execute_playbook_in_nodes(filename, group_hosts_map)
 
+                # Iterate over all passed nodes and check aliveness
+                for node in self.repository_operator.get_nodes(node_ids):
+                    # Is the node get filtered (not reachable)?
+                    if node.node_id not in alive_nodes:
+                        if node.status == Codes.NODE_STATUS_INIT or node.status == Codes.NODE_STATUS_REACHABLE:
+                            node.status = Codes.NODE_STATUS_UNREACHABLE
+                        alive_nodes[node.node_id] = False
+
+                    # If reachable
+                    elif alive_nodes[node.node_id]:
+                        node.status = Codes.NODE_STATUS_REACHABLE
+                    
+                    # If not reachable
+                    else:
+                        node.status = Codes.NODE_STATUS_UNREACHABLE
+
+                    # Update node information
+                    node.update_time = time.time()
+                    self.repository_operator.write_node_info(node)
+
+                
                 # All nodes alive?
                 if all(alive_nodes.values()) or retry == retries:
                     break
@@ -332,27 +360,7 @@ class AnsibleInterface(AbstractInstanceInterface):
                 log.info("Some nodes are not acessible by SSH yet... We will retry again after {} seconds. Please wait...".format(retry_timeout))
                 time.sleep(retry_timeout)
 
-            # Iterate over all passed nodes and check aliveness
-            for node in self.repository_operator.get_nodes(node_ids):
-                # Is the node get filtered (not reachable)?
-                if node.node_id not in alive_nodes:
-                    if node.status == Codes.NODE_STATUS_INIT or node.status == Codes.NODE_STATUS_REACHABLE:
-                        node.status = Codes.NODE_STATUS_UNREACHABLE
-                    alive_nodes[node.node_id] = False
-
-                # If reachable
-                elif alive_nodes[node.node_id]:
-                    node.status = Codes.NODE_STATUS_REACHABLE
-                
-                # If not reachable
-                else:
-                    node.status = Codes.NODE_STATUS_UNREACHABLE
-
-                # Update node information
-                node.update_time = time.time()
-                self.repository_operator.write_node_info(node)
-
-            return alive_nodes
+        return alive_nodes
 
     def get_connection_to_nodes(self, node_ids: List[str], *args, **kwargs) -> Dict[str, paramiko.SSHClient]:
         shells = {}
@@ -369,18 +377,35 @@ class AnsibleInterface(AbstractInstanceInterface):
             user = login['user']
             connection_ip = node.ip
 
+            if not connection_ip:
+                log.error("Invalid connection ip for node `{}`. Try checking if `{}` is alive first...".format(node.node_id, node.node_id))
+                continue
+
             if 'open_shell' in kwargs:
-                ssh_command = 'ssh -t -o StrictHostKeyChecking=no -i "{}" {}@{}'.format(key_file, user, connection_ip)
+                ssh_binary = kwargs.get("ssh_binary", 'ssh')
+                ssh_port = kwargs.get('ssh_port', 22)
+                ssh_verbose = "-{}".format('v'*get_log_level(Defaults.log_level)) if get_log_level(Defaults.log_level) > 1 else ""
+
+                ssh_command = '{} -t {} -o "Port={}" -o StrictHostKeyChecking=no -o "User={}" -i "{}" {}'.format(
+                            ssh_binary, ssh_verbose, ssh_port, user, key_file, connection_ip)
                 log.info("Executing ssh command: '{}'".format(ssh_command))
-                subprocess.call(ssh_command, shell=True)
-                log.info("SSH session to {} finalized!".format(connection_ip))
+                try:
+                    subprocess.check_call(ssh_command, shell=True)
+                    log.info("SSH session to {} finalized!".format(connection_ip))
+                except subprocess.CalledProcessError:
+                    log.error("Invalid connection ip for node `{}`. Try checking if `{}` is alive first...".format(node.node_id, node.node_id))
         
             else:
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy)
-                client.connect(connection_ip, port=22, username=user, key_filename=key_file)
-                shells[node.node_id] = client
-
+                try:
+                    client.connect(connection_ip, port=22, username=user, key_filename=key_file)
+                    shells[node.node_id] = client
+                except (paramiko.ssh_exception.SSHException, paramiko.ssh_exception.socket.error) as e:
+                    log.error(e)
+                    log.error("Invalid connection ip for node `{}`. Try checking if `{}` is alive first...".format(node.node_id, node.node_id))
+                except (paramiko.ssh_exception.BadHostKeyException, paramiko.ssh_exception.AuthenticationException) as e:
+                    log.error(e)
         return shells
 
     def execute_playbook_in_nodes(self, playbook_path: str,

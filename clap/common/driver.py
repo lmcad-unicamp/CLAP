@@ -26,16 +26,16 @@ class AbstractInstanceInterface:
         raise NotImplementedError("Must implement this method in derived classes!")
 
     @abstractmethod
-    def stop_nodes(self, node_ids: List[str]):
+    def stop_nodes(self, node_ids: List[str]) -> List[str]:
         raise NotImplementedError("Must implement this method in derived classes!")
 
     @abstractmethod
-    def pause_nodes(self, node_ids: List[str]):
-        pass
+    def pause_nodes(self, node_ids: List[str]) -> List[str]:
+        raise NotImplementedError("Must implement this method in derived classes!")
 
     @abstractmethod
-    def resume_nodes(self, node_ids: List[str]):
-        pass
+    def resume_nodes(self, node_ids: List[str]) -> List[str]:
+        raise NotImplementedError("Must implement this method in derived classes!")
 
     @abstractmethod
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
