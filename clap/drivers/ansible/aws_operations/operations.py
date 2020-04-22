@@ -129,6 +129,33 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
             ec2_command_values['ec2']['vpc_subnet_id'] = instance_conf['network_ids']
             ec2_command_values['ec2']['assign_public_ip'] = True
         
+        # Creating volumes
+        if 'boot_disk_size' in instance_conf or 'boot_disk_device' in instance_conf or 'boot_disk_iops' in instance_conf or 'boot_disk_type' in instance_conf:
+
+            volume_values = {'delete_on_termination': True}
+
+            if 'boot_disk_device' in instance_conf:
+                volume_values['device_name'] = instance_conf['boot_disk_device']
+            else:
+                volume_values['device_name'] = '/dev/sda1'
+            
+            if 'boot_disk_type' in instance_conf:
+                volume_values['volume_type'] = instance_conf['boot_disk_type']
+            else:
+                volume_values['volume_type'] = 'standard'
+            
+            if 'boot_disk_size' in instance_conf:
+                volume_values['volume_size'] = instance_conf['boot_disk_size']
+
+            if 'boot_disk_snapshot' in instance_conf:
+                volume_values['snapshot'] = instance_conf['snapshot']
+
+            if 'boot_disk_iops' in instance_conf:
+                volume_values['iops'] = instance_conf['iops']
+            
+            ec2_command_values['ec2']['volumes'] = [volume_values]
+
+
         # If there is a security group at config (if not, create a new one with default values)... 
         secgroup_name = None
 

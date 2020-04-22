@@ -20,6 +20,14 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Start type-b node",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["node", "start", "type-b:1"],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Start 2xtype-a and 2xtype-b node",
             "type": "python",
             "request": "launch",
