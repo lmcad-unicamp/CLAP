@@ -391,7 +391,7 @@ class MultiInstanceAPI:
 
         return members
 
-    def add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict = None, error_action: str = 'error'):
+    def add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict = None, error_action: str = 'error') -> List[str]:
         split_vals = group_name.split('/')
 
         if len(split_vals) > 2:
@@ -483,7 +483,6 @@ class MultiInstanceAPI:
         split_vals = group_name.split('/')
         group_name = split_vals[0]
 
-        log.info("Executing action `{}` of group `{}` in nodes `{}`".format(action, group_name, ', '.join(node_ids)))
         group_actions, group_hosts, group_playbook = GroupInterface().get_group(group_name)
         hosts_map = dict()
 
@@ -518,6 +517,7 @@ class MultiInstanceAPI:
         if not hosts_map:
             raise Exception("No nodes to perform action `{}` from group `{}`".format(action, group_name))
 
+        log.info("Executing action `{}` of group `{}` in nodes `{}`".format(action, group_name, ', '.join(node_ids)))
         group_args['action'] = action
         node_ids = self.__execute_group_action_sequence(hosts_map, [group_playbook], Defaults.groups_path,
                                                         group_args, error_action)

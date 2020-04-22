@@ -1,6 +1,8 @@
 import argparse
 
 from pprint import pprint
+from operator import attrgetter
+
 from clap.common.config import Defaults
 from clap.common.factory import PlatformFactory
 from clap.common.utils import log
@@ -14,8 +16,15 @@ from . import interactive
 # TODO ZABBIX MODULE
 
 
+class SortingHelpFormatter(argparse.HelpFormatter):
+    def add_arguments(self, actions):
+        actions = sorted(actions, key=attrgetter('option_strings'))
+        super(SortingHelpFormatter, self).add_arguments(actions)
+
+
 def common_arguments_parser():
-    parser = argparse.ArgumentParser(prog='clap', description='CLPits starts and manages modules in the cloud')
+    parser = argparse.ArgumentParser(prog='clap', description='CLAP starts and manages applications on clouds',
+                                     formatter_class=SortingHelpFormatter)
     parser.add_argument('--platform-db', '-p', action='store', default=Defaults.PLATFORM_REPOSITORY,
                         help='Platform database to be used (default: `{}`)'.format(Defaults.PLATFORM_REPOSITORY))
     parser.add_argument('--repo-type', '-r', action='store', default=Defaults.REPOSITORY_TYPE,
@@ -89,35 +98,35 @@ def common_arguments_parser():
     node_subcom_parser.add_argument('node_id', action='store', help='ID of the node to get an SSH connection')
     node_subcom_parser.set_defaults(func=node_connect)
 
-    # Group commands
-    group_parser = commands_parser.add_parser('group', help='Group operation in nodes')
-    group_com_parser = group_parser.add_subparsers(title='subcommand', dest='subcommand')
+    # # Group commands
+    # group_parser = commands_parser.add_parser('group', help='Group operation in nodes')
+    # group_com_parser = group_parser.add_subparsers(title='subcommand', dest='subcommand')
 
-    group_subcom_parser = group_com_parser.add_parser('add', help='Add nodes to a group')
-    group_subcom_parser.add_argument('group', action='store', help='Name of the group to be added')
-    group_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be added to the group')
-    group_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
-    group_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
-                                     help="Keyworded (format: x=y) Arguments to be passed to the action")
-    group_subcom_parser.set_defaults(func=add_group_to_node)
+    # group_subcom_parser = group_com_parser.add_parser('add', help='Add nodes to a group')
+    # group_subcom_parser.add_argument('group', action='store', help='Name of the group to be added')
+    # group_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be added to the group')
+    # group_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
+    # group_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
+    #                                  help="Keyworded (format: x=y) Arguments to be passed to the action")
+    # group_subcom_parser.set_defaults(func=add_group_to_node)
 
-    group_subcom_parser = group_com_parser.add_parser('list', help='List available groups')
-    group_subcom_parser.set_defaults(func=list_groups)
+    # group_subcom_parser = group_com_parser.add_parser('list', help='List available groups')
+    # group_subcom_parser.set_defaults(func=list_groups)
 
-    group_subcom_parser = group_com_parser.add_parser('action', help='Perform an action in the node group')
-    group_subcom_parser.add_argument('group', action='store', help='Name of the group to perform the action')
-    group_subcom_parser.add_argument('action', action='store', help='Name of the action to be performed')
-    group_subcom_parser.add_argument('--nodes', action='store', nargs='+', help='ID of the nodes to be perform the action')
-    group_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
-                                     help="Keyworded (format: x=y) Arguments to be passed to the action")
-    group_subcom_parser.set_defaults(func=execute_group_action)
+    # group_subcom_parser = group_com_parser.add_parser('action', help='Perform an action in the node group')
+    # group_subcom_parser.add_argument('group', action='store', help='Name of the group to perform the action')
+    # group_subcom_parser.add_argument('action', action='store', help='Name of the action to be performed')
+    # group_subcom_parser.add_argument('--nodes', action='store', nargs='+', help='ID of the nodes to be perform the action')
+    # group_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
+    #                                  help="Keyworded (format: x=y) Arguments to be passed to the action")
+    # group_subcom_parser.set_defaults(func=execute_group_action)
 
-    group_subcom_parser = group_com_parser.add_parser('remove', help='Remove nodes from a group')
-    group_subcom_parser.add_argument('group', action='store', help='Name of the group to be removed')
-    group_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be removed from the group')
-    group_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
-                                     help="Keyworded (format: x=y) Arguments to be passed to the action")
-    group_subcom_parser.set_defaults(func=remove_group_from_node)
+    # group_subcom_parser = group_com_parser.add_parser('remove', help='Remove nodes from a group')
+    # group_subcom_parser.add_argument('group', action='store', help='Name of the group to be removed')
+    # group_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be removed from the group')
+    # group_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
+    #                                  help="Keyworded (format: x=y) Arguments to be passed to the action")
+    # group_subcom_parser.set_defaults(func=remove_group_from_node)
 
     # # Tag commands
     # tag_parser = commands_parser.add_parser('tag', help='Tag nodes')
@@ -427,81 +436,81 @@ def node_connect(namespace: argparse.Namespace):
 #     return 0
 
 
-def add_group_to_node(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    node_ids = set(namespace.node_ids)
+# def add_group_to_node(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     node_ids = set(namespace.node_ids)
 
-    if namespace.tag:
-        try:
-            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
-            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
-        except Exception:
-            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+#     if namespace.tag:
+#         try:
+#             tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+#             node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+#         except Exception:
+#             raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
 
-    if not node_ids:
-        print("No nodes to add to the group `{}`".format(namespace.group))
+#     if not node_ids:
+#         print("No nodes to add to the group `{}`".format(namespace.group))
 
-    node_ids = list(node_ids)
+#     node_ids = list(node_ids)
 
-    try:
-        extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
-    except Exception:
-        raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
-                        "Please check the extra parameters passed")
+#     try:
+#         extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+#     except Exception:
+#         raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
+#                         "Please check the extra parameters passed")
 
-    added_nodes = multi_instance.add_nodes_to_group(node_ids, namespace.group, group_args=extra)
-    if added_nodes:
-        print("Nodes `{}` were successfully added to group `{}`".format(', '.join(added_nodes), namespace.group))
+#     added_nodes = multi_instance.add_nodes_to_group(node_ids, namespace.group, group_args=extra)
+#     if added_nodes:
+#         print("Nodes `{}` were successfully added to group `{}`".format(', '.join(added_nodes), namespace.group))
 
-    return 0
-
-
-def execute_group_action(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    try:
-        extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
-    except Exception:
-        raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
-                        "Please check the extra parameters passed")
-
-    actioned_nodes = multi_instance.execute_group_action(
-        namespace.group, namespace.action, group_args=extra, node_ids=namespace.nodes)
-
-    if actioned_nodes:
-        print("Nodes `{}` successfully performed action `{}` from group `{}`".format(
-            ', '.join(actioned_nodes), namespace.action, namespace.group))
-
-    return 0
+#     return 0
 
 
-def list_groups(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    groups = multi_instance.get_groups()
+# def execute_group_action(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     try:
+#         extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+#     except Exception:
+#         raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
+#                         "Please check the extra parameters passed")
 
-    for group_name, group_actions, group_hosts, group_playbook in sorted(groups, key=lambda x: x[0]):
-        print('* ' + group_name + " ({})".format(group_playbook))
-        if group_actions:
-            print(' ' * 4 + 'actions: ' + ', '.join(sorted(group_actions)))
-        if group_hosts:
-            print(' ' * 4 + 'hosts: ' + ', '.join(sorted(group_hosts)))
+#     actioned_nodes = multi_instance.execute_group_action(
+#         namespace.group, namespace.action, group_args=extra, node_ids=namespace.nodes)
 
-    print("Listed {} groups".format(len(groups)))
+#     if actioned_nodes:
+#         print("Nodes `{}` successfully performed action `{}` from group `{}`".format(
+#             ', '.join(actioned_nodes), namespace.action, namespace.group))
 
-    return 0
+#     return 0
 
 
-def remove_group_from_node(namespace: argparse.Namespace):
-    raise NotImplementedError("Not fully implemented yet...")
-    # multi_instance = __get_instance_api(namespace)
-    # try:
-    #     extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
-    # except Exception:
-    #     raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
-    #                     "Please check the extra parameters passed")
-    #
-    # removed_nodes = multi_instance.remove_node_from_group(namespace.node_ids, namespace.group, group_args=extra)
-    # if removed_nodes:
-    #     print("Nodes `{}` were successfully removed from group `{}`".format(', '.join(removed_nodes), namespace.group))
+# def list_groups(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     groups = multi_instance.get_groups()
+
+#     for group_name, group_actions, group_hosts, group_playbook in sorted(groups, key=lambda x: x[0]):
+#         print('* ' + group_name + " ({})".format(group_playbook))
+#         if group_actions:
+#             print(' ' * 4 + 'actions: ' + ', '.join(sorted(group_actions)))
+#         if group_hosts:
+#             print(' ' * 4 + 'hosts: ' + ', '.join(sorted(group_hosts)))
+
+#     print("Listed {} groups".format(len(groups)))
+
+#     return 0
+
+
+# def remove_group_from_node(namespace: argparse.Namespace):
+#     raise NotImplementedError("Not fully implemented yet...")
+#     # multi_instance = __get_instance_api(namespace)
+#     # try:
+#     #     extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+#     # except Exception:
+#     #     raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
+#     #                     "Please check the extra parameters passed")
+#     #
+#     # removed_nodes = multi_instance.remove_node_from_group(namespace.node_ids, namespace.group, group_args=extra)
+#     # if removed_nodes:
+#     #     print("Nodes `{}` were successfully removed from group `{}`".format(', '.join(removed_nodes), namespace.group))
 
 
 def list_templates(namespace: argparse.Namespace):

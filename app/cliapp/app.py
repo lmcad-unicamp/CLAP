@@ -20,27 +20,24 @@ def main(arguments: List[str]):
     parser, commands_parser = get_commands_parser()
     module_iface = PlatformFactory.get_module_interface()
 
-
     for mod_name, module in module_iface.get_modules().items():
         parsers = [ obj for name, obj in inspect.getmembers(module, 
                     predicate=lambda mod: inspect.isclass(mod) and issubclass(mod, AbstractParser))
                     if name != 'AbstractParser']
                     
         for p_class in parsers:
-            p_obj = p_class()
-            commands_com_parser = commands_parser.add_parser(p_obj.get_name(), help=p_obj.get_help())
-            commands_subcom_parser = commands_com_parser.add_subparsers(title='commands', dest='subcommand')
-            p_obj.add_parser(commands_subcom_parser)
-
-        
-        # if 'parser' in module.__dict__ and module.parser is not None and issubclass(module.parser, AbstractParser):
-        #     commands_com_parser = commands_parser.add_parser(module.name, help=module.description)
-        #     commands_subcom_parser = commands_com_parser.add_subparsers(title='commands', dest='subcommand')
-        #     module.parser().get_parser(commands_subcom_parser)
+            try:
+                p_obj = p_class()
+                commands_com_parser = commands_parser.add_parser(p_obj.get_name(), help=p_obj.get_help())
+                commands_subcom_parser = commands_com_parser.add_subparsers(title='commands', dest='subcommand')
+                p_obj.add_parser(commands_subcom_parser)
+            except Exception as e:
+                log.error(e)
 
     try:
         args = parser.parse_args(arguments)
         Defaults.log_level = setup_log(Defaults.app_name, args.verbose)
+
         # Set Defaults parameters....
 
     except Exception as err:
