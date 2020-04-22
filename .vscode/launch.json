@@ -74,6 +74,14 @@
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
             "args": ["-vvvv", "node", "pause", "node-26", "node-27"],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Request help",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vvvv", "-h"],
+            "console": "integratedTerminal"
         }
 
     ]

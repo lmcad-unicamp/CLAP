@@ -2,11 +2,14 @@ import setuptools
 import inspect
 import importlib.util
 import os
+import sys
 from typing import List, Dict, Tuple, Union, Any
 from paramiko import SSHClient
 
 import clap.drivers
+import clap.modules
 
+from clap.common.module import AbstractParser
 from clap.common.config import Defaults
 from clap.common.driver import AbstractInstanceInterface
 from clap.common.cluster_repository import RepositoryOperations, NodeInfo
@@ -20,13 +23,24 @@ class ModuleInterface:
 
     @staticmethod
     def __find_modules():
-        if not ModuleInterface.__modules_map__:
-            pass
-            # for pkg_name in setuptools.find_packages(Defaults.modules_path):
-            #     pkg = importlib.import_module('clap.modules.{}'.format(pkg_name))
-            #     ModuleInterface.__modules_map__[pkg.name] = pkg
-            # log.debug("Found {} modules."
-            #           "{}".format(len(ModuleInterface.__modules_map__), ModuleInterface.__modules_map__))
+        if ModuleInterface.__modules_map__:
+            return
+
+        module_paths = [os.path.dirname(clap.modules.__file__)]#, Defaults.modules_path]
+        log.debug("Searching modules in paths: {}".format(", ".join(module_paths)))
+
+        for path in module_paths:
+            sys.path.append(path)
+            
+            for pkg_name in setuptools.find_packages(path):
+                try:
+                    mod =  __import__(pkg_name)
+                    ModuleInterface.__modules_map__[pkg_name] = mod
+                except Exception as e:
+                    log.error(e)
+
+        log.debug("Found {} modules. {}".format( len(ModuleInterface.__modules_map__),
+            ', '.join(list(ModuleInterface.__modules_map__.keys())) ) )
 
     def __init__(self):
         self.__find_modules()
@@ -47,7 +61,7 @@ class ModuleInterface:
         :return: List of modules
         :rtype: List[module]
         """
-        return list(self.__modules_map__.values())
+        return self.__modules_map__
 
     def get_module_names(self) -> List[str]:
         """ Get the name of all the modules in the clap modules repository
@@ -56,7 +70,8 @@ class ModuleInterface:
         :rtype: List[str]
         """
 
-        return [str(k) for k in self.__modules_map__.keys()]
+        return list(self.__modules_map__.keys())
+
 
 
 class GroupInterface:
@@ -66,9 +81,12 @@ class GroupInterface:
 
     @staticmethod
     def __find_groups():
-        if not GroupInterface.__groups_actions_map__:
-            groups_path = path_extend(Defaults.groups_path, 'groups')
-            for group_file in os.listdir(groups_path):
+        if GroupInterface.__groups_actions_map__:
+            return
+
+        groups_path = path_extend(Defaults.groups_path, 'groups')
+        for group_file in os.listdir(groups_path):
+            try:
                 if not group_file.endswith('.py') or group_file.startswith('__'):
                     continue
 
@@ -77,6 +95,8 @@ class GroupInterface:
                 cls = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(cls)
                 GroupInterface.__groups_actions_map__[group_file.split('.')[0]] = cls
+            except Exception as e:
+                log.error(e)
 
     def __init__(self):
         self.__find_groups()
@@ -102,16 +122,22 @@ class MultiInstanceAPI:
 
     @staticmethod
     def __find_ifaces():
-        if not MultiInstanceAPI.__interfaces_map__:
-            for pkg_name in setuptools.find_packages(os.path.dirname(clap.drivers.__file__)):
-                classes = [obj for _, obj in inspect.getmembers(importlib.import_module(
-                            'clap.drivers.{}'.format(pkg_name))) if inspect.isclass(obj)]
+        if MultiInstanceAPI.__interfaces_map__:
+            return
 
-                MultiInstanceAPI.__interfaces_map__.update({obj.__interface_id__: obj for obj in classes 
-                    if issubclass(obj, AbstractInstanceInterface)})
-            
-            log.debug("Found {} interfaces. {}".format( len(MultiInstanceAPI.__interfaces_map__),
-                ', '.join(list(MultiInstanceAPI.__interfaces_map__.keys())) ) )
+        for pkg_name in setuptools.find_packages(os.path.dirname(clap.drivers.__file__)):
+            try:
+                mod = importlib.import_module('clap.drivers.{}'.format(pkg_name))
+                drivers = [ obj for name, obj in inspect.getmembers(mod,
+                            predicate=lambda mod: inspect.isclass(mod) and issubclass(mod, AbstractInstanceInterface))
+                            if name != 'AbstractInstanceInterface' ]
+
+                MultiInstanceAPI.__interfaces_map__.update({obj.__interface_id__: obj for obj in drivers})
+            except Exception as e:
+                log.error(e)
+        
+        log.debug("Found {} interfaces: {}".format( len(MultiInstanceAPI.__interfaces_map__),
+            ', '.join(list(MultiInstanceAPI.__interfaces_map__.keys())) ) )
 
     def __init__(self, platform_db: str, repository_type: str, default_driver: str):
         """ Create a MultiInstance API used to manage several clusters and nodes in a transparent manner
@@ -300,22 +326,22 @@ class MultiInstanceAPI:
     # The following operations add/remove tags from nodes
     # --------------------------------------------------------------------------------
 
-    def add_tags_to_nodes(self, node_ids: List[str], tags: Dict[str, str]) -> List[NodeInfo]:
+    def add_tags_to_nodes(self, node_ids: List[str], tags: Dict[str, str]) -> List[str]:
         added_nodes = []
         for node in self.get_nodes(node_ids):
             node.tags.update(tags)
             self.__repository_operations.write_node_info(node, create=False)
-            added_nodes.append(node)
+            added_nodes.append(node.node_id)
         return added_nodes
 
-    def remove_tags_from_nodes(self, node_ids: List[str], tags: List[str]) -> List[NodeInfo]:
+    def remove_tags_from_nodes(self, node_ids: List[str], tags: List[str]) -> List[str]:
         removed_nodes = []
         for node in self.get_nodes(node_ids):
             for tag in tags:
                 if tag in list(node.tags.keys()):
                     node.tags.pop(tag)
                     self.__repository_operations.write_node_info(node)
-                    removed_nodes.append(node)
+                    removed_nodes.append(node.node_id)
 
         return removed_nodes
 

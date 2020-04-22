@@ -119,19 +119,19 @@ def common_arguments_parser():
                                      help="Keyworded (format: x=y) Arguments to be passed to the action")
     group_subcom_parser.set_defaults(func=remove_group_from_node)
 
-    # Tag commands
-    tag_parser = commands_parser.add_parser('tag', help='Tag nodes')
-    tag_com_parser = tag_parser.add_subparsers(title='subcommand', dest='subcommand')
+    # # Tag commands
+    # tag_parser = commands_parser.add_parser('tag', help='Tag nodes')
+    # tag_com_parser = tag_parser.add_subparsers(title='subcommand', dest='subcommand')
 
-    tag_subcom_parser = tag_com_parser.add_parser('add', help='Add tags to nodes')
-    tag_subcom_parser.add_argument('tag', action='store', help='Tag to add. Format: key=val')
-    tag_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be added to the group')
-    tag_subcom_parser.set_defaults(func=node_add_tag)
+    # tag_subcom_parser = tag_com_parser.add_parser('add', help='Add tags to nodes')
+    # tag_subcom_parser.add_argument('tag', action='store', help='Tag to add. Format: key=val')
+    # tag_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be added to the group')
+    # tag_subcom_parser.set_defaults(func=node_add_tag)
 
-    tag_subcom_parser = tag_com_parser.add_parser('remove', help='Remove tags to nodes')
-    tag_subcom_parser.add_argument('tag', action='store', help='List of tags to remove (just key names)')
-    tag_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be added to the group')
-    tag_subcom_parser.set_defaults(func=node_remove_tag)
+    # tag_subcom_parser = tag_com_parser.add_parser('remove', help='Remove tags to nodes')
+    # tag_subcom_parser.add_argument('tag', action='store', help='List of tags to remove (just key names)')
+    # tag_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be added to the group')
+    # tag_subcom_parser.set_defaults(func=node_remove_tag)
 
     # Templates commands
     template_parser = commands_parser.add_parser('template', help='Templates information')
@@ -395,36 +395,36 @@ def node_connect(namespace: argparse.Namespace):
     return 0
 
 
-def node_add_tag(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
+# def node_add_tag(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
 
-    try:
-        tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
-    except Exception:
-        raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+#     try:
+#         tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+#     except Exception:
+#         raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
 
-    nodes = multi_instance.add_tags_to_nodes(namespace.node_ids, tag)
-    print("Added tag `{}` for {} nodes".format(namespace.tag, len(nodes)))
+#     nodes = multi_instance.add_tags_to_nodes(namespace.node_ids, tag)
+#     print("Added tag `{}` for {} nodes".format(namespace.tag, len(nodes)))
 
-    return 0
+#     return 0
 
 
-def node_remove_tag(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    tag = namespace.tag
-    node_ids = namespace.node_ids
+# def node_remove_tag(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     tag = namespace.tag
+#     node_ids = namespace.node_ids
 
-    if not node_ids:
-        node_ids = [node.node_id for node in multi_instance.get_nodes()]
+#     if not node_ids:
+#         node_ids = [node.node_id for node in multi_instance.get_nodes()]
 
-    nodes = multi_instance.remove_tags_from_nodes(node_ids, [tag])
+#     nodes = multi_instance.remove_tags_from_nodes(node_ids, [tag])
 
-    if nodes:
-        print("Removed tag `{}` for nodes `{}`".format(tag, ', '.join([node.node_id for node in nodes])))
-    else:
-        print("No tags removed")
+#     if nodes:
+#         print("Removed tag `{}` for nodes `{}`".format(tag, ', '.join([node.node_id for node in nodes])))
+#     else:
+#         print("No tags removed")
 
-    return 0
+#     return 0
 
 
 def add_group_to_node(namespace: argparse.Namespace):
