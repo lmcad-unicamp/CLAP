@@ -17,7 +17,6 @@ from clap.common.driver import AbstractInstanceInterface, Codes
 from clap.common.utils import path_extend, log, tmpdir, get_log_level
 from clap.drivers.ansible.aws_operations.operations import start_aws_nodes, stop_aws_nodes, pause_aws_nodes, resume_aws_nodes, check_instance_status
 
-# TODO become, become=root
 # TODO test vpc/ subnet
 # TODO test placement_group
 # TODO image_userdata
@@ -54,7 +53,7 @@ class AnsibleInterface(AbstractInstanceInterface):
 
                 node_str = '{} ansible_host={} ansible_connection=ssh ansible_user={} ansible_ssh_private_key_file="{}"'.format(node.node_id, node.ip, user, key_file)
                 if 'sudo' in login:
-                    node_str += " ansible_become=yes"
+                    #node_str += " ansible_become=yes"
                     node_str += " ansible_become_user={}".format(login['sudo_user'] 
                                 if 'sudo_user' in login else 'root')
                     node_str += " ansible_become_method={}".format(login['sudo_method'] 
