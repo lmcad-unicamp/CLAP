@@ -19,9 +19,6 @@ from clap.drivers.ansible.aws_operations.operations import start_aws_nodes, stop
 
 # TODO become, become=root
 # TODO test vpc/ subnet
-# TODO boot_disk_size
-# TODO boot_disk_device
-# TODO boot_disk_type
 # TODO test placement_group
 # TODO image_userdata
 # TODO check network_ids 
@@ -56,6 +53,13 @@ class AnsibleInterface(AbstractInstanceInterface):
                 user = login['user']
 
                 node_str = '{} ansible_host={} ansible_connection=ssh ansible_user={} ansible_ssh_private_key_file="{}"'.format(node.node_id, node.ip, user, key_file)
+                if 'sudo' in login:
+                    node_str += " ansible_become=yes"
+                    node_str += " ansible_become_user={}".format(login['sudo_user'] 
+                                if 'sudo_user' in login else 'root')
+                    node_str += " ansible_become_method={}".format(login['sudo_method'] 
+                                if 'sudo_method' in login else 'sudo')
+                
                 if group in group_vars:
                     for key, value in group_vars[group].items():
                         node_str += ' {}={}'.format(key, value)

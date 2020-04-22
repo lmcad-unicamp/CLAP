@@ -52,11 +52,11 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Run sleep playbook in node-11",
+            "name": "Run sleep playbook in node-4",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["node", "playbook", "/home/napoli/temp/sleep.yml", "node-11", "--extra", "output_file='hello'"],
+            "args": ["node", "playbook", "/home/napoli/temp/sleep.yml", "node-4", "--extra", "output_file='hello'"],
             "console": "integratedTerminal"
         },
         {

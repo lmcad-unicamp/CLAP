@@ -47,5 +47,6 @@ clap-env/
 .pycharmrc
 
 # IDES
-.vscode/
+.vscode/*
 .idea/
+.vscode/launch.json
