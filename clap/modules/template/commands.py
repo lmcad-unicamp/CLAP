@@ -5,12 +5,6 @@ from clap.common.utils import log
 from .module import list_templates
 
 class TagsParser(AbstractParser):
-    def get_name(self) -> str:
-        return "template"
-    
-    def get_help(self) -> str:
-        return "Templates information"
-
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         template_subcom_parser = commands_parser.add_parser('list', help='List instance templates')
         template_subcom_parser.set_defaults(func=self.commands_list_templates)

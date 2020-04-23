@@ -5,12 +5,6 @@ from clap.common.utils import log
 from .module import node_add_tag, node_remove_tag
 
 class TagsParser(AbstractParser):
-    def get_name(self) -> str:
-        return "tag"
-    
-    def get_help(self) -> str:
-        return "Tag nodes"
-
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         tag_subcom_parser = commands_parser.add_parser('add', help='Add tags to nodes')
         tag_subcom_parser.add_argument('tag', action='store', help='Tag to add. Format: key=val')

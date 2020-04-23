@@ -5,12 +5,6 @@ from clap.common.utils import log
 from .module import add_group_to_node, execute_group_action, list_groups, remove_group_from_node
 
 class GroupsParser(AbstractParser):
-    def get_name(self) -> str:
-        return "group"
-    
-    def get_help(self) -> str:
-        return "Group operation in nodes"
-
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         group_subcom_parser = commands_parser.add_parser('add', help='Add nodes to a group')
         group_subcom_parser.add_argument('group', action='store', help='Name of the group to be added')

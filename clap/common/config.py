@@ -11,6 +11,7 @@ if 'CLAP_PATH' not in os.environ:
 
 
 class Defaults:
+    verbosity = 0
     log_level = logging.INFO
     app_name = 'clap'
     REPOSITORY_TYPE = 'tinydb'

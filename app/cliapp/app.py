@@ -7,28 +7,37 @@ import inspect
 
 from typing import List
 
-from app.cliapp.commands import print_all_help, get_commands_parser
+from app.cliapp.commands import get_known_arguments_parser, get_argument_parser, print_all_help
 from clap.common.config import Defaults
 from clap.common.module import AbstractParser
-from clap.common.utils import log, setup_log
+from clap.common.utils import log, setup_log, path_extend
 from clap.common.factory import PlatformFactory
 
 
 def main(arguments: List[str]):
-    #setup_log()
+    # Parse default parameters
+    parser = get_known_arguments_parser()
+    known_args = parser.parse_known_args(arguments)
     
-    parser, commands_parser = get_commands_parser()
+    Defaults.DRIVER_ID = known_args[0].driver
+    Defaults.PLATFORM_REPOSITORY = path_extend(known_args[0].platform_db)
+    Defaults.REPOSITORY_TYPE = known_args[0].repo_type
+    Defaults.verbosity = known_args[0].verbose if known_args[0].verbose < 4 else 4
+    Defaults.log_level = setup_log(Defaults.app_name, Defaults.verbosity)
+
+    # Parse all parameters
+    parser, commands_parser = get_argument_parser()
     module_iface = PlatformFactory.get_module_interface()
 
-    for mod_name, module in module_iface.get_modules().items():
-        parsers = [ obj for name, obj in inspect.getmembers(module, 
+    for mod_name, module_vals in module_iface.get_modules().items():
+        parsers = [ obj for name, obj in inspect.getmembers(module_vals['module'], 
                     predicate=lambda mod: inspect.isclass(mod) and issubclass(mod, AbstractParser))
                     if name != 'AbstractParser']
                     
         for p_class in parsers:
             try:
                 p_obj = p_class()
-                commands_com_parser = commands_parser.add_parser(p_obj.get_name(), help=p_obj.get_help())
+                commands_com_parser = commands_parser.add_parser(mod_name, help=module_vals['description'])
                 commands_subcom_parser = commands_com_parser.add_subparsers(title='commands', dest='subcommand')
                 p_obj.add_parser(commands_subcom_parser)
             except Exception as e:
@@ -36,10 +45,6 @@ def main(arguments: List[str]):
 
     try:
         args = parser.parse_args(arguments)
-        Defaults.log_level = setup_log(Defaults.app_name, args.verbose)
-
-        # Set Defaults parameters....
-
     except Exception as err:
         log.error("Parsing command line arguments: {}".format(err))
         return 1
@@ -55,13 +60,13 @@ Using paths:
   configs path = {}
   groups path = {}
   modules path = {}
-  (driver) elasticluster storage = {}
   verbosity level = {}
+  log_level = {}
 {}
 """.format(
-        time.ctime(), '-' * 80, args.driver, args.platform_db, args.repo_type, Defaults.private_path,
+        time.ctime(), '-' * 80, Defaults.DRIVER_ID, Defaults.PLATFORM_REPOSITORY, Defaults.REPOSITORY_TYPE, Defaults.private_path,
         Defaults.storage_path, Defaults.configs_path, Defaults.groups_path, Defaults.modules_path,
-        Defaults.elasticluster_storage_path, args.verbose, '-' * 80))
+        Defaults.verbosity, Defaults.log_level, '-' * 80))
 
     if args.show_all_help is True:
         print_all_help(parser)

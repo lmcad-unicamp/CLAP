@@ -14,7 +14,7 @@ from typing import Optional, List, Dict, Set, Tuple, Union, Any
 from clap.common.cluster_repository import RepositoryOperations, ClusterInfo, NodeInfo
 from clap.common.config import Defaults, ConfigReader
 from clap.common.driver import AbstractInstanceInterface, Codes
-from clap.common.utils import path_extend, log, tmpdir, get_log_level
+from clap.common.utils import path_extend, log, tmpdir
 from clap.drivers.ansible.aws_operations.operations import start_aws_nodes, stop_aws_nodes, pause_aws_nodes, resume_aws_nodes, check_instance_status
 
 # TODO test vpc/ subnet
@@ -387,7 +387,7 @@ class AnsibleInterface(AbstractInstanceInterface):
             if 'open_shell' in kwargs:
                 ssh_binary = kwargs.get("ssh_binary", 'ssh')
                 ssh_port = kwargs.get('ssh_port', 22)
-                ssh_verbose = "-{}".format('v'*get_log_level(Defaults.log_level)) if get_log_level(Defaults.log_level) > 1 else ""
+                ssh_verbose = "-{}".format('v'*Defaults.verbosity if Defaults.verbosity > 1 else "")
 
                 ssh_command = '{} -t {} -o "Port={}" -o StrictHostKeyChecking=no -o "User={}" -i "{}" {}'.format(
                             ssh_binary, ssh_verbose, ssh_port, user, key_file, connection_ip)
@@ -434,7 +434,7 @@ class AnsibleInterface(AbstractInstanceInterface):
             log.info("Executing playbook: `{}`".format(playbook_path))
             extra_args.update(self.__create_extra_vars__(dir, list(all_nodes)))
             ret = ansible_runner.run(private_data_dir=dir, inventory=inventory_filepath, playbook=playbook_path, 
-                                    verbosity=get_log_level(Defaults.log_level), extravars=extra_args)
+                                    verbosity=Defaults.verbosity, extravars=extra_args)
 
             status_event = [e for e in ret.events if e['event'] == 'playbook_on_stats'][-1]['event_data']
             

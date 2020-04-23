@@ -10,15 +10,6 @@ from .module import (start_nodes, list_nodes, is_alive, stop_nodes,
                     resume_nodes, pause_nodes, execute_playbook, get_ssh_connections)
 
 class NodeParser(AbstractParser):
-    def get_name(self) -> str:
-        return "node"
-    
-    def get_help(self) -> str:
-        return "Manage and perform operation with compute nodes"
-
-    def get_module_dependencies(self) -> List[str]:
-        return ['tag', 'group']
-
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         node_subcom_parser = commands_parser.add_parser('start', help='Start nodes in the cluster (based on the template)')
         node_subcom_parser.add_argument(

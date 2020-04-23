@@ -18,37 +18,28 @@ def tmpdir(suffix=None, prefix='clap.', dir=None):
         shutil.rmtree(dd)
 
 
-def setup_log(log_name: str = None, verbosity_level: int = logging.INFO, filename: str = ''):
+def setup_log(log_name: str = None, verbosity_level: int = 0, filename: str = ''):
     global log
     # 0 -> ERROR, 1->WARNING, 2->DEBUG
     formatter = '[%(asctime)s] [%(levelname)s] %(threadName)s: %(message)s'
+    log_level = 0
     if verbosity_level == 0:
-        verbosity_level = logging.INFO
+        log_level = logging.INFO
     elif verbosity_level == 1:
-        verbosity_level = logging.INFO
+        log_level = logging.INFO
     elif verbosity_level >= 2:
-        verbosity_level = logging.DEBUG
+        log_level = logging.DEBUG
     else:
-        verbosity_level = logging.ERROR
+        log_level = logging.ERROR
 
     if filename:
         logging.basicConfig(filename=filename, filemode='a', level=verbosity_level, format=formatter)
     else:
-        logging.basicConfig(level=verbosity_level, format=formatter)
+        logging.basicConfig(level=log_level, format=formatter)
 
     log = logging.getLogger(log_name)
     
-    return verbosity_level
-
-
-def get_log_level(log_level):
-    if log_level == logging.DEBUG:
-        return 3
-    elif log_level == logging.WARNING:
-        return 2
-    elif log_level == logging.INFO:
-        return 0
-    return 0
+    return log_level
     
 
 class Struct(MutableMapping, object):

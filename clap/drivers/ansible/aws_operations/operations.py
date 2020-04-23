@@ -9,17 +9,9 @@ from queue import Queue
 from typing import List, Dict, Set, Tuple
 
 from clap.common.driver import Codes
-from clap.common.utils import path_extend, log, tmpdir, get_log_level
+from clap.common.utils import path_extend, log, tmpdir
 from clap.common.cluster_repository import RepositoryOperations, ClusterInfo, NodeInfo
 from clap.common.config import Defaults
-
-def __get_ansible_verbosity__():
-    if Defaults.log_level == logging.DEBUG:
-        return 4
-    elif Defaults.log_level == logging.ERROR or Defaults.log_level == logging.CRITICAL:
-        return 0
-    else:
-        return 1
         
 
 def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: ClusterInfo, provider_conf: dict, 
@@ -232,7 +224,7 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
         log.info("Starting {} ec2 instances of type: `{}`...".format(count, instance_name))
         log.debug(created_playbook)
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=__get_ansible_verbosity__())
+        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity)
         
         # Return code not ok?
         # TODO may check return code or inexistence of runner_on_ok & task==Start instances?
@@ -321,7 +313,7 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
         log.info("Tagging the instances")
         log.debug(created_playbook)
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=__get_ansible_verbosity__())
+        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity)
 
         if ret.rc != 0:
             log.error("Error tagging instances. Ansible command returned non-zero code")
@@ -374,7 +366,7 @@ def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf
                     indent=2, allow_unicode=True, default_flow_style=False)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=__get_ansible_verbosity__())
+        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity)
 
         # Not OK?
         if ret.rc != 0:
@@ -447,7 +439,7 @@ def pause_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_con
                     indent=2, allow_unicode=True, default_flow_style=False)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=__get_ansible_verbosity__())
+        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity)
 
         # Not OK?
         if ret.rc != 0:
@@ -541,7 +533,7 @@ def resume_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_co
                     indent=2, allow_unicode=True, default_flow_style=False)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=__get_ansible_verbosity__())
+        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity)
 
         # Not OK?
         if ret.rc != 0:
@@ -643,7 +635,7 @@ def check_instance_status(queue, repository: RepositoryOperations, provider_conf
                     indent=2, allow_unicode=True, default_flow_style=False)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=__get_ansible_verbosity__())
+        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity)
         
         # Not OK?
         if ret.rc != 0:

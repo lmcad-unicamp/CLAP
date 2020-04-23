@@ -23,11 +23,19 @@ class ModuleInterface:
     __modules_map__ = dict()
 
     @staticmethod
-    def __find_modules():
-        if ModuleInterface.__modules_map__:
+    def __check_dependencies__():
+        pass
+
+    @staticmethod
+    def __find_modules__(module_paths: List[str] = None, force: bool = False):
+        if ModuleInterface.__modules_map__ and not force:
             return
 
-        module_paths = [os.path.dirname(clap.modules.__file__)]#, Defaults.modules_path]
+        if not module_paths:
+            module_paths = [os.path.dirname(clap.modules.__file__)]
+        else:
+            module_paths.append(os.path.dirname(clap.modules.__file__))
+
         log.debug("Searching modules in paths: {}".format(", ".join(module_paths)))
 
         for path in module_paths:
@@ -36,15 +44,24 @@ class ModuleInterface:
             for pkg_name in setuptools.find_packages(path):
                 try:
                     mod =  __import__(pkg_name)
-                    ModuleInterface.__modules_map__[pkg_name] = mod
+                    mod_values = {
+                        'name': mod.__module_name__ if '__module_name__' in mod.__dict__ else pkg_name,
+                        'description': mod.__module_description__ if '__module_description__' in mod.__dict__ else '',
+                        'dependencies': mod.__module_dependencies__ if '__module_dependencies__' in mod.__dict__ else [],
+                        'module': mod
+                    }
+                    ModuleInterface.__modules_map__[mod_values['name']] = mod_values
                 except Exception as e:
-                    log.error(e)
+                    log.error("At module `{}`: {}".format(pkg_name, e))
+                    log.error("Discarding module `{}`".format(pkg_name))
 
-        log.debug("Found {} modules. {}".format( len(ModuleInterface.__modules_map__),
+        log.debug("Found {} modules: {}".format( len(ModuleInterface.__modules_map__),
             ', '.join(list(ModuleInterface.__modules_map__.keys())) ) )
 
-    def __init__(self):
-        self.__find_modules()
+        ModuleInterface.__check_dependencies__()
+
+    def __init__(self, module_paths: List[str] = None, force=False):
+        self.__find_modules__(module_paths=module_paths, force=force)
 
     def get_module(self, module_name: str):
         """ Get the module package
@@ -97,7 +114,8 @@ class GroupInterface:
                 spec.loader.exec_module(cls)
                 GroupInterface.__groups_actions_map__[group_file.split('.')[0]] = cls
             except Exception as e:
-                log.error(e)
+                log.error("At group `{}`: {}".format(group_file, e))
+                log.error("Discarding group `{}`".format(group_file))
 
     def __init__(self):
         self.__find_groups()
@@ -135,7 +153,8 @@ class MultiInstanceAPI:
 
                 MultiInstanceAPI.__interfaces_map__.update({obj.__interface_id__: obj for obj in drivers})
             except Exception as e:
-                log.error(e)
+                log.error("At driver package `{}`: {}".format(pkg_name, e))
+                log.error("Discarding driver `{}`".format(pkg_name))
         
         log.debug("Found {} interfaces: {}".format( len(MultiInstanceAPI.__interfaces_map__),
             ', '.join(list(MultiInstanceAPI.__interfaces_map__.keys())) ) )
