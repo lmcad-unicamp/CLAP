@@ -820,11 +820,10 @@ class ElasticlusterInterface(AbstractInstanceInterface):
 
             cluster_info = self.__get_or_create_cluster(provider_name, login_name)
             cluster, started_nodes_objs = elaticluster_start_nodes(cluster_info.eclust_cluster_name, {i_name: instances_num[i_name]})
-            control = self.repository_operator.read_platform_control_info()
 
             for node in started_nodes_objs:
-                node_id = "{}-{}".format(self.node_prefix, control.node_idx)
-                control.node_idx += 1
+                node_idx = self.repository_operator.get_and_increment_node_index()
+                node_id = "{}-{}".format(self.node_prefix, node_idx)
 
                 node_info = NodeInfo(
                     node_id=node_id,
@@ -843,7 +842,6 @@ class ElasticlusterInterface(AbstractInstanceInterface):
                 )
 
                 self.repository_operator.write_node_info(node_info, create=True)
-                self.repository_operator.write_platform_control_info(control)
                 added_nodes.append(node_info)
                 node_info_map[node.name] = node_info
 

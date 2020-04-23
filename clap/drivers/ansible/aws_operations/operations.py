@@ -38,15 +38,12 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
         instance_type = instance_conf['flavor']
         image_id = instance_conf['image_id']
 
-        # Get control info to create a new node...
-        control = repository.read_platform_control_info()
         node_names = []
         # Create vector with node names to instance
         for i in range(0, count):
             # Create a new node id
-            node_id = "{}-{}".format(node_prefix, control.node_idx)
-            control.node_idx += 1
-            repository.write_platform_control_info(control)
+            node_idx = repository.get_and_increment_node_index()
+            node_id = "{}-{}".format(node_prefix, node_idx)
             node_names.append(node_id)
 
         # Craft EC2 Task

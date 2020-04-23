@@ -3,7 +3,7 @@ import time
 import datetime
 from datetime import datetime
 from typing import List
-from clap.common.repository import AbstractEntry, AbstractRepository, RepositoryFactory
+from clap.common.repository import AbstractEntry, AbstractRepository, RepositoryFactory, get_repository_connection
 
 
 class PlatformControlInfo(AbstractEntry):
@@ -123,30 +123,30 @@ class RepositoryOperations:
         :return: A open repository connection
         :rtype: AbstractRepository
         """
-        repository = self._get_platform_repository()
 
-        if clap.common.repository.check_and_create_table(repository, 'control', exists):
-            repository.create_element('control', PlatformControlInfo())
-        clap.common.repository.check_and_create_table(repository, 'clusters', exists)
-        clap.common.repository.check_and_create_table(repository, 'nodes', exists)
+        with get_repository_connection(self._get_platform_repository()) as repository:
+            if clap.common.repository.check_and_create_table(repository, 'control', exists):
+                repository.create_element('control', PlatformControlInfo())
+            clap.common.repository.check_and_create_table(repository, 'clusters', exists)
+            clap.common.repository.check_and_create_table(repository, 'nodes', exists)
+        
         return repository
 
-    def write_platform_control_info(self, control: PlatformControlInfo):
-        """ Helper function to write Platform Control information on the correct table in the repository
-
-        :param control: Control information to be written
-        :type control: PlatformControlInfo
-        :return: None
-        """
-        clap.common.repository.generic_write_entry(control, self._get_platform_repository(), 'control', False)
-
-    def read_platform_control_info(self) -> PlatformControlInfo:
-        """ Helper function to read Platform control information from the correct table in the repository
-
-        :return: PlatformControlInfo
-        """
-        return next(iter(clap.common.repository.generic_read_entry(
-            PlatformControlInfo, self._get_platform_repository(), 'control')), None)
+    def get_and_increment_node_index(self) -> int:
+        with get_repository_connection(self._get_platform_repository()) as repository:
+            control = next(iter(clap.common.repository.generic_read_entry(PlatformControlInfo, repository, 'control')))
+            index = control.node_idx
+            control.node_idx += 1
+            clap.common.repository.generic_write_entry(control, repository, 'control', False)
+            return index
+    
+    def get_and_increment_cluster_index(self) -> int:
+        with get_repository_connection(self._get_platform_repository()) as repository:
+            control = next(iter(clap.common.repository.generic_read_entry(PlatformControlInfo, repository, 'control')))
+            index = control.cluster_idx
+            control.cluster_idx += 1
+            clap.common.repository.generic_write_entry(control, repository, 'control', False)
+            return index
 
     def write_cluster_info(self, cluster: ClusterInfo, create: bool = False):
         """ Helper function to write Cluster information on the correct table in the repository
@@ -157,8 +157,9 @@ class RepositoryOperations:
         :type create: str
         :return: None
         """
-        clap.common.repository.generic_write_entry(cluster, self._get_platform_repository(), 'clusters', create,
-                                                   cluster_id=cluster.cluster_id)
+        with get_repository_connection(self._get_platform_repository()) as repository:
+            clap.common.repository.generic_write_entry(cluster, repository, 'clusters', create,
+                                                    cluster_id=cluster.cluster_id)
 
     def _read_clusters_info(self, **where) -> List[ClusterInfo]:
         """ Helper function to read Cluster information from the correct table in the repository
@@ -167,8 +168,9 @@ class RepositoryOperations:
         :return: List of cluster matching the criterion passed
         :rtype: List[ClusterInfo]
         """
-        return clap.common.repository.generic_read_entry(ClusterInfo, self._get_platform_repository(), 'clusters',
-                                                         **where)
+        with get_repository_connection(self._get_platform_repository()) as repository:
+            return clap.common.repository.generic_read_entry(ClusterInfo, repository, 'clusters',
+                                                            **where)
 
     def write_node_info(self, node: NodeInfo, create: bool = False):
         """ Helper function to write Node information on the correct table in the repository
@@ -179,7 +181,8 @@ class RepositoryOperations:
         :type create: str
         :return: None
         """
-        clap.common.repository.generic_write_entry(node, self._get_platform_repository(), 'nodes', create,
+        with get_repository_connection(self._get_platform_repository()) as repository:
+            clap.common.repository.generic_write_entry(node, repository, 'nodes', create,
                                                    node_id=node.node_id)
 
     def _read_nodes_info(self, **where) -> List[NodeInfo]:
@@ -189,17 +192,17 @@ class RepositoryOperations:
         :return: List of nodes matching the criterion passed
         :rtype: List[NodeInfo]
         """
-        return clap.common.repository.generic_read_entry(NodeInfo, self._get_platform_repository(), 'nodes',
-                                                         **where)
+        with get_repository_connection(self._get_platform_repository()) as repository:
+            return clap.common.repository.generic_read_entry(NodeInfo, repository, 'nodes',
+                                                            **where)
 
     def _delete_clusters_info(self, **where):
-        self._get_platform_repository().drop_elements('clusters', **where)
+        with get_repository_connection(self._get_platform_repository()) as repository:
+            repository.drop_elements('clusters', **where)
 
     def _delete_nodes_info(self, **where):
-        self._get_platform_repository().drop_elements('nodes', **where)
-
-    def get_platform_control(self) -> PlatformControlInfo:
-        return self.read_platform_control_info()
+        with get_repository_connection(self._get_platform_repository()) as repository:
+            repository.drop_elements('nodes', **where)
 
     def get_cluster(self, cluster_id: str) -> ClusterInfo:
         return next(iter(self.get_clusters([cluster_id])), None)
