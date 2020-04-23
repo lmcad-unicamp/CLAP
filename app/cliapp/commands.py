@@ -6,7 +6,6 @@ from operator import attrgetter
 from clap.common.config import Defaults
 from clap.common.factory import PlatformFactory
 from clap.common.utils import log
-from . import interactive
 
 # TODO multi-node tags and instantiate with multiple tags
 # TODO instantiate with multiple groups (in order)
@@ -33,70 +32,70 @@ def common_arguments_parser():
                         help='Cloud driver to manage instances (default: `{}`'.format(Defaults.DRIVER_ID))
     parser.add_argument('--show-all-help', '-hh', help='Show help of all commands', action='store_true', default=False)
     parser.add_argument('--verbose', '-v', action='count', default=0,
-                        help='Increase the verbosity level. 0 for error only (default); 1 for more info; 2 to debug')
+                        help='Increase the verbosity level. Multiple v inscrease more the verbosity. Maximum is 3')
 
-    commands_parser = parser.add_subparsers(title='commands', dest='command')
+    commands_parser = parser.add_subparsers(title='modules', dest='command')
 
      # Node Commands
-    node_parser = commands_parser.add_parser('node', help='Manage/perform operations in the nodes of the clusters')
-    node_com_parser = node_parser.add_subparsers(title='subcommand', dest='subcommand')
+    # node_parser = commands_parser.add_parser('node', help='Manage/perform operations in the nodes of the clusters')
+    # node_com_parser = node_parser.add_subparsers(title='subcommand', dest='subcommand')
 
-    node_subcom_parser = node_com_parser.add_parser('start', help='Start nodes in the cluster (based on the template)')
-    node_subcom_parser.add_argument(
-        'nodes', action='store', nargs='+', metavar='node_type:num',
-        help='Type of the nodes to be instantiated (based on the cluster template). Format is <node_type>:<num>, '
-             'if num is not provided, default is 1')
-    node_subcom_parser.add_argument('--group', action='store', nargs='+', help='Groups to add nodes after started')
-    node_subcom_parser.add_argument('--tag', action='store', help='Tag nodes after started. Format: key=val')
-    node_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
-                                    help="Keyworded (format: x=y) Arguments to be passed to the group setup action")
-    node_subcom_parser.set_defaults(func=node_start)
+    # node_subcom_parser = node_com_parser.add_parser('start', help='Start nodes in the cluster (based on the template)')
+    # node_subcom_parser.add_argument(
+    #     'nodes', action='store', nargs='+', metavar='node_type:num',
+    #     help='Type of the nodes to be instantiated (based on the cluster template). Format is <node_type>:<num>, '
+    #          'if num is not provided, default is 1')
+    # node_subcom_parser.add_argument('--group', action='store', nargs='+', help='Groups to add nodes after started')
+    # node_subcom_parser.add_argument('--tag', action='store', help='Tag nodes after started. Format: key=val')
+    # node_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
+    #                                 help="Keyworded (format: x=y) Arguments to be passed to the group setup action")
+    # node_subcom_parser.set_defaults(func=node_start)
 
-    node_subcom_parser = node_com_parser.add_parser('list', help='List nodes')
-    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
-    node_subcom_parser.set_defaults(func=node_list)
+    # node_subcom_parser = node_com_parser.add_parser('list', help='List nodes')
+    # node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
+    # node_subcom_parser.set_defaults(func=node_list)
 
-    node_subcom_parser = node_com_parser.add_parser('show', help='Show detailed information of the nodes')
-    node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be displayed')
-    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
-    node_subcom_parser.set_defaults(func=node_show)
+    # node_subcom_parser = node_com_parser.add_parser('show', help='Show detailed information of the nodes')
+    # node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be displayed')
+    # node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
+    # node_subcom_parser.set_defaults(func=node_show)
 
-    node_subcom_parser = node_com_parser.add_parser('alive', help='Check if nodes are alive')
-    node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be checked')
-    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
-    node_subcom_parser.set_defaults(func=node_alive)
+    # node_subcom_parser = node_com_parser.add_parser('alive', help='Check if nodes are alive')
+    # node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be checked')
+    # node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
+    # node_subcom_parser.set_defaults(func=node_alive)
 
-    node_subcom_parser = node_com_parser.add_parser('stop', help='Stop and terminate nodes')
-    node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be stopped')
-    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
-    node_subcom_parser.set_defaults(func=node_stop)
+    # node_subcom_parser = node_com_parser.add_parser('stop', help='Stop and terminate nodes')
+    # node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be stopped')
+    # node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
+    # node_subcom_parser.set_defaults(func=node_stop)
 
-    node_subcom_parser = node_com_parser.add_parser('pause', help='Pause nodes')
-    node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be paused')
-    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
-    node_subcom_parser.set_defaults(func=node_pause)
+    # node_subcom_parser = node_com_parser.add_parser('pause', help='Pause nodes')
+    # node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be paused')
+    # node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
+    # node_subcom_parser.set_defaults(func=node_pause)
     
-    node_subcom_parser = node_com_parser.add_parser('resume', help='Resume nodes')
-    node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be resumed')
-    node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
-    node_subcom_parser.set_defaults(func=node_resume)
+    # node_subcom_parser = node_com_parser.add_parser('resume', help='Resume nodes')
+    # node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be resumed')
+    # node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
+    # node_subcom_parser.set_defaults(func=node_resume)
 
-    node_subcom_parser = node_com_parser.add_parser('playbook', help='Execute playbook in nodes')
-    node_subcom_parser.add_argument('playbook_file', action='store', help='Playbook file to be executed')
-    node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be stopped')
-    node_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
-                                    help="Keyworded (format: x=y) Arguments to be passed to the playbook")
-    node_subcom_parser.set_defaults(func=node_playbook)
+    # node_subcom_parser = node_com_parser.add_parser('playbook', help='Execute playbook in nodes')
+    # node_subcom_parser.add_argument('playbook_file', action='store', help='Playbook file to be executed')
+    # node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be stopped')
+    # node_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
+    #                                 help="Keyworded (format: x=y) Arguments to be passed to the playbook")
+    # node_subcom_parser.set_defaults(func=node_playbook)
 
-    node_subcom_parser = node_com_parser.add_parser('execute', help='Execute a command in the node (via SSH)')
-    node_subcom_parser.add_argument('node_id', action='store', help='ID of the node to get an SSH connection')
-    node_subcom_parser.add_argument('cmd', nargs=argparse.REMAINDER, metavar='"cmd"',
-                                    help='Command to be executed')
-    node_subcom_parser.set_defaults(func=node_exec_command)
+    # node_subcom_parser = node_com_parser.add_parser('execute', help='Execute a command in the node (via SSH)')
+    # node_subcom_parser.add_argument('node_id', action='store', help='ID of the node to get an SSH connection')
+    # node_subcom_parser.add_argument('cmd', nargs=argparse.REMAINDER, metavar='"cmd"',
+    #                                 help='Command to be executed')
+    # node_subcom_parser.set_defaults(func=node_exec_command)
 
-    node_subcom_parser = node_com_parser.add_parser('connect', help='Connect via SSH to a node')
-    node_subcom_parser.add_argument('node_id', action='store', help='ID of the node to get an SSH connection')
-    node_subcom_parser.set_defaults(func=node_connect)
+    # node_subcom_parser = node_com_parser.add_parser('connect', help='Connect via SSH to a node')
+    # node_subcom_parser.add_argument('node_id', action='store', help='ID of the node to get an SSH connection')
+    # node_subcom_parser.set_defaults(func=node_connect)
 
     # # Group commands
     # group_parser = commands_parser.add_parser('group', help='Group operation in nodes')
@@ -173,235 +172,235 @@ def get_commands_parser():
     return common_arguments_parser()
 
 
-def node_start(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    nodes = {}
+# def node_start(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     nodes = {}
 
-    for node in namespace.nodes:
-        splited_values = node.split(':')
-        nodes[splited_values[0]] = 1 if len(splited_values) == 1 else int(splited_values[1])
+#     for node in namespace.nodes:
+#         splited_values = node.split(':')
+#         nodes[splited_values[0]] = 1 if len(splited_values) == 1 else int(splited_values[1])
 
-    nodes_info = multi_instance.start_nodes(nodes)
+#     nodes_info = multi_instance.start_nodes(nodes)
 
-    if namespace.tag:
-        try:
-            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
-            nodes_info = multi_instance.add_tags_to_nodes([n.node_id for n in nodes_info], tag)
-            print("Added tag `{}` to {} nodes".format(namespace.tag, len(nodes_info)))
-        except Exception:
-            log.error("Error mounting tag parameters. Please check the tag parameters passed")
+#     if namespace.tag:
+#         try:
+#             tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+#             nodes_info = multi_instance.add_tags_to_nodes([n.node_id for n in nodes_info], tag)
+#             print("Added tag `{}` to {} nodes".format(namespace.tag, len(nodes_info)))
+#         except Exception:
+#             log.error("Error mounting tag parameters. Please check the tag parameters passed")
 
-    for node_info in nodes_info:
-        print('* ', node_info)
+#     for node_info in nodes_info:
+#         print('* ', node_info)
 
-    print("Started {} nodes".format(len(nodes_info)))
+#     print("Started {} nodes".format(len(nodes_info)))
 
-    if namespace.group:
-        try:
-            extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
-        except Exception:
-            raise Exception("Error mounting group's extra parameters. Are you putting spaces after `=`? "
-                            "Please check the extra parameters passed")
+#     if namespace.group:
+#         try:
+#             extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+#         except Exception:
+#             raise Exception("Error mounting group's extra parameters. Are you putting spaces after `=`? "
+#                             "Please check the extra parameters passed")
 
-        for group in namespace.group:
-            started_nodes = [n.node_id for n in nodes_info]
-            print("Adding nodes `{}` to group: `{}`".format(', '.join(started_nodes), group))
-            added_nodes = multi_instance.add_nodes_to_group(started_nodes, group, group_args=extra)
-            if added_nodes:
-                print("Nodes `{}` were successfully added to group `{}`".format(', '.join(added_nodes), group))
-            else:
-                log.error("No nodes were added to group `{}`".format(group))
+#         for group in namespace.group:
+#             started_nodes = [n.node_id for n in nodes_info]
+#             print("Adding nodes `{}` to group: `{}`".format(', '.join(started_nodes), group))
+#             added_nodes = multi_instance.add_nodes_to_group(started_nodes, group, group_args=extra)
+#             if added_nodes:
+#                 print("Nodes `{}` were successfully added to group `{}`".format(', '.join(added_nodes), group))
+#             else:
+#                 log.error("No nodes were added to group `{}`".format(group))
 
-    return 0
-
-
-def node_list(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-
-    if namespace.tag:
-        try:
-            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
-            nodes = multi_instance.get_nodes_with_tags(tag)
-        except Exception:
-            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
-    else:
-        nodes = multi_instance.get_nodes()
-
-    for node_info in nodes:
-        print('* ', node_info)
-
-    print("Listed {} nodes(s)".format(len(nodes)))
-
-    return 0
+#     return 0
 
 
-def node_show(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    node_ids = set(namespace.node_ids)
+# def node_list(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
 
-    if namespace.tag:
-        try:
-            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
-            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
-        except Exception:
-            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+#     if namespace.tag:
+#         try:
+#             tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+#             nodes = multi_instance.get_nodes_with_tags(tag)
+#         except Exception:
+#             raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+#     else:
+#         nodes = multi_instance.get_nodes()
 
-    nodes = multi_instance.get_nodes(list(node_ids)) if node_ids else {}
+#     for node_info in nodes:
+#         print('* ', node_info)
 
-    for node_info in nodes:
-        print('------- `{}` --------'.format(node_info.node_id))
-        pprint(node_info.__dict__, indent=4)
+#     print("Listed {} nodes(s)".format(len(nodes)))
 
-    print("Listed {} nodes(s)".format(len(nodes)))
-
-    return 0
+#     return 0
 
 
-def node_alive(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    node_ids = set(namespace.node_ids)
+# def node_show(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     node_ids = set(namespace.node_ids)
 
-    if namespace.tag:
-        try:
-            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
-            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
-        except Exception:
-            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+#     if namespace.tag:
+#         try:
+#             tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+#             node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+#         except Exception:
+#             raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
 
-    alive_nodes = multi_instance.check_nodes_alive(list(node_ids)) if node_ids else {}
+#     nodes = multi_instance.get_nodes(list(node_ids)) if node_ids else {}
 
-    print(' ------ ALIVE NODES ------ ')
-    for k in sorted(alive_nodes.keys()):
-        print("* {} --> {}".format(k, 'alive' if alive_nodes[k] else 'not reachable'))
+#     for node_info in nodes:
+#         print('------- `{}` --------'.format(node_info.node_id))
+#         pprint(node_info.__dict__, indent=4)
 
-    print('Checked {} nodes'.format(len(alive_nodes)))
+#     print("Listed {} nodes(s)".format(len(nodes)))
 
-    return 0
-
-
-def node_stop(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    node_ids = set(namespace.node_ids)
-
-    if namespace.tag:
-        try:
-            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
-            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
-        except Exception:
-            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
-
-    if not node_ids:
-        print("No nodes stopped")
-    else:
-        node_ids = multi_instance.stop_nodes(list(node_ids))
-        if not node_ids:
-            print("No nodes stopped")
-        else:
-            print("Nodes `{}` stopped!".format(', '.join(node_ids)))
-
-    return 0
-
-def node_pause(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    node_ids = set(namespace.node_ids)
-
-    if namespace.tag:
-        try:
-            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
-            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
-        except Exception:
-            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
-
-    if not node_ids:
-        print("No nodes paused")
-    else:
-        node_ids = multi_instance.pause_nodes(list(node_ids))
-        if not node_ids:
-            print("No nodes paused")
-        else:
-            print("Nodes `{}` paused!".format(', '.join(node_ids)))
-
-    return 0
-
-def node_resume(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    node_ids = set(namespace.node_ids)
-
-    if namespace.tag:
-        try:
-            tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
-            node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
-        except Exception:
-            raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
-
-    if not node_ids:
-        print("No nodes resumed")
-    else:
-        node_ids = multi_instance.resume_nodes(list(node_ids))
-        if not node_ids:
-            print("No nodes resumed")
-        else:
-            print("Nodes `{}` resumed!".format(', '.join(node_ids)))
-
-    return 0
+#     return 0
 
 
-def node_playbook(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    try:
-        extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
-    except Exception:
-        raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
-                        "Please check the extra parameters passed")
-    multi_instance.execute_playbook_in_nodes(namespace.playbook_file, namespace.node_ids, extra)
+# def node_alive(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     node_ids = set(namespace.node_ids)
 
-    return 0
+#     if namespace.tag:
+#         try:
+#             tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+#             node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+#         except Exception:
+#             raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
 
+#     alive_nodes = multi_instance.check_nodes_alive(list(node_ids)) if node_ids else {}
 
-def node_exec_command(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    command = ' '.join(namespace.cmd)
-    print('Executing in node `{}` the command (via SSH): `{}`'.format(namespace.node_id, command))
+#     print(' ------ ALIVE NODES ------ ')
+#     for k in sorted(alive_nodes.keys()):
+#         print("* {} --> {}".format(k, 'alive' if alive_nodes[k] else 'not reachable'))
 
-    ssh_client = multi_instance.get_connection_to_nodes([namespace.node_id])
-    if not ssh_client:
-        raise Exception("Connection to `{}` was unsuccessful. "
-                        "Check you internet connection or if the node is up and alive".format(namespace.node_id))
+#     print('Checked {} nodes'.format(len(alive_nodes)))
 
-    ssh_client = ssh_client[namespace.node_id]
-    _, stdout, stderr = ssh_client.exec_command(command)
-    print("{} STD OUTPUT {}".format('-'*40, '-'*40))
-    print(''.join(stdout.readlines()))
-    print("{} ERR OUTPUT {}".format('-'*40, '-'*40))
-    print(''.join(stderr.readlines()))
-    print('-' * 80)
-
-    ssh_client.close()
-
-    return 0
+#     return 0
 
 
-def node_connect(namespace: argparse.Namespace):
-    multi_instance = __get_instance_api(namespace)
-    print('Connecting to node `{}` (via SSH)'.format(namespace.node_id))
+# def node_stop(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     node_ids = set(namespace.node_ids)
 
-    # Not the best way...
-    if multi_instance.get_node(namespace.node_id).driver_id == 'ansible':
-        multi_instance.get_connection_to_nodes([namespace.node_id], open_shell=True)
+#     if namespace.tag:
+#         try:
+#             tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+#             node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+#         except Exception:
+#             raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
 
-    else:
-        ssh_client = multi_instance.get_connection_to_nodes([namespace.node_id])[namespace.node_id]
-        if not ssh_client:
-            raise Exception("Connection to `{}` was unsuccessful. "
-                            "Check you internet connection or if the node is up and alive".format(namespace.node_id))
-        channel = ssh_client.get_transport().open_session()
-        channel.get_pty()
-        channel.invoke_shell()
-        interactive.interactive_shell(channel)
-        ssh_client.close()
+#     if not node_ids:
+#         print("No nodes stopped")
+#     else:
+#         node_ids = multi_instance.stop_nodes(list(node_ids))
+#         if not node_ids:
+#             print("No nodes stopped")
+#         else:
+#             print("Nodes `{}` stopped!".format(', '.join(node_ids)))
+
+#     return 0
+
+# def node_pause(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     node_ids = set(namespace.node_ids)
+
+#     if namespace.tag:
+#         try:
+#             tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+#             node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+#         except Exception:
+#             raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+
+#     if not node_ids:
+#         print("No nodes paused")
+#     else:
+#         node_ids = multi_instance.pause_nodes(list(node_ids))
+#         if not node_ids:
+#             print("No nodes paused")
+#         else:
+#             print("Nodes `{}` paused!".format(', '.join(node_ids)))
+
+#     return 0
+
+# def node_resume(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     node_ids = set(namespace.node_ids)
+
+#     if namespace.tag:
+#         try:
+#             tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+#             node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
+#         except Exception:
+#             raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+
+#     if not node_ids:
+#         print("No nodes resumed")
+#     else:
+#         node_ids = multi_instance.resume_nodes(list(node_ids))
+#         if not node_ids:
+#             print("No nodes resumed")
+#         else:
+#             print("Nodes `{}` resumed!".format(', '.join(node_ids)))
+
+#     return 0
+
+
+# def node_playbook(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     try:
+#         extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+#     except Exception:
+#         raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
+#                         "Please check the extra parameters passed")
+#     multi_instance.execute_playbook_in_nodes(namespace.playbook_file, namespace.node_ids, extra)
+
+#     return 0
+
+
+# def node_exec_command(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     command = ' '.join(namespace.cmd)
+#     print('Executing in node `{}` the command (via SSH): `{}`'.format(namespace.node_id, command))
+
+#     ssh_client = multi_instance.get_connection_to_nodes([namespace.node_id])
+#     if not ssh_client:
+#         raise Exception("Connection to `{}` was unsuccessful. "
+#                         "Check you internet connection or if the node is up and alive".format(namespace.node_id))
+
+#     ssh_client = ssh_client[namespace.node_id]
+#     _, stdout, stderr = ssh_client.exec_command(command)
+#     print("{} STD OUTPUT {}".format('-'*40, '-'*40))
+#     print(''.join(stdout.readlines()))
+#     print("{} ERR OUTPUT {}".format('-'*40, '-'*40))
+#     print(''.join(stderr.readlines()))
+#     print('-' * 80)
+
+#     ssh_client.close()
+
+#     return 0
+
+
+# def node_connect(namespace: argparse.Namespace):
+#     multi_instance = __get_instance_api(namespace)
+#     print('Connecting to node `{}` (via SSH)'.format(namespace.node_id))
+
+#     # Not the best way...
+#     if multi_instance.get_node(namespace.node_id).driver_id == 'ansible':
+#         multi_instance.get_connection_to_nodes([namespace.node_id], open_shell=True)
+
+#     else:
+#         ssh_client = multi_instance.get_connection_to_nodes([namespace.node_id])[namespace.node_id]
+#         if not ssh_client:
+#             raise Exception("Connection to `{}` was unsuccessful. "
+#                             "Check you internet connection or if the node is up and alive".format(namespace.node_id))
+#         channel = ssh_client.get_transport().open_session()
+#         channel.get_pty()
+#         channel.invoke_shell()
+#         interactive.interactive_shell(channel)
+#         ssh_client.close()
     
-    print("Connection to `{}` closed".format(namespace.node_id))
-    return 0
+#     print("Connection to `{}` closed".format(namespace.node_id))
+#     return 0
 
 
 # def node_add_tag(namespace: argparse.Namespace):

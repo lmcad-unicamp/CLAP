@@ -3,6 +3,7 @@ import inspect
 import importlib.util
 import os
 import sys
+import time
 from typing import List, Dict, Tuple, Union, Any
 from paramiko import SSHClient
 
@@ -187,6 +188,9 @@ class MultiInstanceAPI:
         :param node_ids: List of node ids to stop
         :type node_ids: List[str]
         """
+        if not node_ids:
+            return []
+        
         nodes = self.get_nodes(node_ids)
         stopped_nodes = []
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
@@ -200,6 +204,9 @@ class MultiInstanceAPI:
         :param node_ids: List of node ids to pause
         :type node_ids: List[str]
         """
+        if not node_ids:
+            return []
+
         nodes = self.get_nodes(node_ids)
         paused_nodes = []
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
@@ -213,6 +220,9 @@ class MultiInstanceAPI:
         :param node_ids: List of node ids to resume
         :type node_ids: List[str]
         """
+        if not node_ids:
+            return []
+        
         nodes = self.get_nodes(node_ids)
         resumed_nodes = []
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
@@ -221,6 +231,9 @@ class MultiInstanceAPI:
         return resumed_nodes
 
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
+        if not node_ids:
+            return {}
+
         nodes = self.get_nodes(node_ids)
         checked_nodes = dict()
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
@@ -239,7 +252,11 @@ class MultiInstanceAPI:
         if isinstance(hosts, list):
             hosts = {'default': hosts}
 
-        nodes = self.get_nodes([node_id for group_name, node_list in hosts.items() for node_id in node_list])
+        nodes = [node_id for group_name, node_list in hosts.items() for node_id in node_list]
+        if not nodes:
+            raise Exception("No nodes to execute playbook `{}`".format(playbook_path))
+
+        nodes = self.get_nodes(nodes)
         executed_nodes = {}
         extra_args = extra_args if extra_args else {}
 
@@ -277,6 +294,9 @@ class MultiInstanceAPI:
         return executed_nodes
 
     def get_connection_to_nodes(self, node_ids: List[str], *args, **kwargs) -> Dict[str, SSHClient]:
+        if not node_ids:
+            return []
+
         nodes = self.get_nodes(node_ids)
         connections = dict()
         for cluster in self.__repository_operations.get_clusters(list({node.cluster_id for node in nodes})):
@@ -327,6 +347,9 @@ class MultiInstanceAPI:
     # --------------------------------------------------------------------------------
 
     def add_tags_to_nodes(self, node_ids: List[str], tags: Dict[str, str]) -> List[str]:
+        if not node_ids:
+            return []
+
         added_nodes = []
         for node in self.get_nodes(node_ids):
             node.tags.update(tags)
@@ -335,6 +358,9 @@ class MultiInstanceAPI:
         return added_nodes
 
     def remove_tags_from_nodes(self, node_ids: List[str], tags: List[str]) -> List[str]:
+        if not node_ids:
+            return []
+        
         removed_nodes = []
         for node in self.get_nodes(node_ids):
             for tag in tags:
@@ -441,9 +467,9 @@ class MultiInstanceAPI:
                         node = self.__repository_operations.get_node(node_id)
                         # TODO update or replace?
                         if host_name == '__default__':
-                            node.groups[group_name] = group_args
+                            node.groups[group_name] = time.time()
                         else:
-                            node.groups["{}/{}".format(group_name, host_name)] = group_args
+                            node.groups["{}/{}".format(group_name, host_name)] = time.time()
 
                         self.__repository_operations.write_node_info(node)
 

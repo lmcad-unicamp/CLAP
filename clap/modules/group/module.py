@@ -5,7 +5,7 @@ from clap.common.cluster_repository import NodeInfo
 from clap.common.utils import log
 
 
-def add_group_to_node(node_ids: List[NodeInfo], group: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]:
+def add_group_to_node(node_ids: List[str], group: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = set(node_ids)
 
@@ -25,8 +25,9 @@ def add_group_to_node(node_ids: List[NodeInfo], group: str, group_args: Dict[str
     return added_nodes
 
 
-def execute_group_action(node_ids: List[NodeInfo], group: str, action: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]:
+def execute_group_action(node_ids: List[str], group: str, action: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
+    node_ids = set(node_ids)
 
     if tags:
         try:

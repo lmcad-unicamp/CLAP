@@ -4,7 +4,7 @@ from clap.common.module import AbstractParser
 from clap.common.utils import log
 from .module import add_group_to_node, execute_group_action, list_groups, remove_group_from_node
 
-class TagsParser(AbstractParser):
+class GroupsParser(AbstractParser):
     def get_name(self) -> str:
         return "group"
     
