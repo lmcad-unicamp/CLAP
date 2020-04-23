@@ -407,8 +407,6 @@ class AnsibleInterface(AbstractInstanceInterface):
                 except (paramiko.ssh_exception.SSHException, paramiko.ssh_exception.socket.error) as e:
                     log.error(e)
                     log.error("Invalid connection ip for node `{}`. Try checking if `{}` is alive first...".format(node.node_id, node.node_id))
-                except (paramiko.ssh_exception.BadHostKeyException, paramiko.ssh_exception.AuthenticationException) as e:
-                    log.error(e)
         return shells
 
     def execute_playbook_in_nodes(self, playbook_path: str,

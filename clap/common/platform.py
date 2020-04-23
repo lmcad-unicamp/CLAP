@@ -42,6 +42,8 @@ class ModuleInterface:
             sys.path.append(path)
             
             for pkg_name in setuptools.find_packages(path):
+                if '.' in pkg_name:
+                    continue
                 try:
                     mod =  __import__(pkg_name)
                     mod_values = {
@@ -52,7 +54,7 @@ class ModuleInterface:
                     }
                     ModuleInterface.__modules_map__[mod_values['name']] = mod_values
                 except Exception as e:
-                    log.error("At module `{}`: {}".format(pkg_name, e))
+                    log.error("At module: `{}`: {}".format(pkg_name, e))
                     log.error("Discarding module `{}`".format(pkg_name))
 
         log.debug("Found {} modules: {}".format( len(ModuleInterface.__modules_map__),
@@ -145,6 +147,8 @@ class MultiInstanceAPI:
             return
 
         for pkg_name in setuptools.find_packages(os.path.dirname(clap.drivers.__file__)):
+            if '.' in pkg_name:
+                continue
             try:
                 mod = importlib.import_module('clap.drivers.{}'.format(pkg_name))
                 drivers = [ obj for name, obj in inspect.getmembers(mod,
@@ -153,7 +157,7 @@ class MultiInstanceAPI:
 
                 MultiInstanceAPI.__interfaces_map__.update({obj.__interface_id__: obj for obj in drivers})
             except Exception as e:
-                log.error("At driver package `{}`: {}".format(pkg_name, e))
+                log.error("At driver `{}`: {}".format(pkg_name, e))
                 log.error("Discarding driver `{}`".format(pkg_name))
         
         log.debug("Found {} interfaces: {}".format( len(MultiInstanceAPI.__interfaces_map__),
