@@ -8,6 +8,7 @@ from typing import List, Any, Dict
 from clap.common.config import Defaults
 from clap.common.exceptions import TableAlreadyExists
 from clap.common.utils import Struct, path_extend
+from contextlib import asynccontextmanager
 
 
 # Configuration Defaults
@@ -57,6 +58,14 @@ class AbstractRepository:
         self.repository = repository
         self.create_repository = create_repository
         self.storage_type = storage_type
+
+    @abstractmethod
+    def open_connection(self, *args, **kwargs):
+        raise NotImplementedError
+
+    @abstractmethod
+    def close_connection(self, *args, **kwargs):
+        raise NotImplementedError
 
     @abstractmethod
     def create_table(self, table: str, *args, **kwargs):
@@ -199,6 +208,12 @@ class TinyDBRepository(AbstractRepository):
         if create_repository:
             open(self.repository, 'w+')
         self.db = tinydb.database.TinyDB(self.repository, storage=self.__storage_types_map[self.storage_type])
+
+    def open_connection(self, *args, **kwargs) -> self:
+        return self
+
+    def close_connection(self, *args, **kwargs):
+        pass
 
     def create_table(self, table: str, *args, **kwargs):
         """ Create a new table in the database
@@ -411,6 +426,15 @@ def check_and_create_table(repository: AbstractRepository, table_name: str, exis
     else:
         repository.create_table(table_name)
         return True
+
+
+@asynccontextmanager
+async def get_repository_connection(repository: AbstractRepository, *args, **kwargs):
+    conn = await repository.open_connection(*args, **kwargs)
+    try:
+        yield conn
+    finally:
+        await repository.close_connection()
 
 
 class RepositoryFactory:

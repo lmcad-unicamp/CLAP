@@ -23,6 +23,7 @@ class Defaults:
     execution_playbook = path_extend('$CLAP_PATH', 'groups', 'main.yml')
     groups_path = path_extend('$CLAP_PATH', 'groups')
     modules_path = path_extend('$CLAP_PATH', 'modules')
+    modules_data = path_extend(storage_path, 'modules')
     elasticluster_storage_path = path_extend(storage_path, 'clusters.d')
 
     cloud_conf = path_extend(configs_path, 'providers.yaml')
