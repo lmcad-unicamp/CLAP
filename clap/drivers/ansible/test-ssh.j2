@@ -1,0 +1,6 @@
+---
+- gather_facts: False
+  hosts: all
+  tasks:
+  - name: Test SSH Connection
+    shell: {{ shell_command }} 

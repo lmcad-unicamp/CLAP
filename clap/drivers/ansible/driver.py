@@ -7,6 +7,7 @@ import yaml
 import subprocess
 import paramiko
 import logging
+import jinja2
 
 from queue import Queue
 from typing import Optional, List, Dict, Set, Tuple, Union, Any
@@ -21,7 +22,6 @@ from clap.drivers.ansible.aws_operations.operations import start_aws_nodes, stop
 # TODO test placement_group
 # TODO image_userdata
 # TODO check network_ids 
-# TODO check verbosity
 
 class AnsibleInterface(AbstractInstanceInterface):
     __interface_id__ = 'ansible'
@@ -198,7 +198,7 @@ class AnsibleInterface(AbstractInstanceInterface):
             return []
 
         # Check SSH connection
-        alive_nodes = self.check_nodes_alive(created_nodes, retries=3, retry_timeout=15)
+        alive_nodes = self.check_nodes_alive(created_nodes, retries=3, retry_timeout=20)
 
         # Return last updated nodes
         return self.repository_operator.get_nodes(list(alive_nodes.keys()))
@@ -282,12 +282,12 @@ class AnsibleInterface(AbstractInstanceInterface):
             return []
 
         # Check SSH connection
-        alive_nodes = self.check_nodes_alive(resumed_nodes, retries=3, retry_timeout=15)
+        alive_nodes = self.check_nodes_alive(resumed_nodes, retries=3, retry_timeout=30)
 
         # Return last updated nodes
         return list(alive_nodes.keys())
 
-    def check_nodes_alive(self, node_ids: List[str], shell_command='hostname', retries=1, retry_timeout=15) -> Dict[str, bool]:
+    def check_nodes_alive(self, node_ids: List[str], shell_command='hostname', retries=1, retry_timeout=20) -> Dict[str, bool]:
         # Group nodes with same provider and login (cluster)
         cluster_nodes_map = self.__cluster_nodes_map__(node_ids)
         
@@ -303,28 +303,20 @@ class AnsibleInterface(AbstractInstanceInterface):
 
                 if provider_conf['provider'] == 'aws':
                     check_instance_status(q, self.repository_operator, provider_conf, self.repository_operator.get_nodes(node_ids))
-                    
-            test_connection = {
-                'name': 'Test SSH Connection',
-                'shell': "{}".format(shell_command)
-            }
 
-            tasks = [test_connection]
+            jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(os.path.abspath(__file__))), 
+                        trim_blocks=True, lstrip_blocks=True)
+            template = jinjaenv.get_template('test-ssh.j2')
+            rendered_template = template.render({'shell_command': shell_command})
 
-            created_playbook = [{
-                'gather_facts': False,
-                'hosts': 'all',
-                'tasks': tasks
-            }]
-
+            log.debug("Ansible template to run")
+            log.debug(rendered_template)
 
             with tmpdir() as dir:
                 filename = path_extend(dir, 'test-ssh.yml')
 
-                # Craft EC2 start instances command to yaml file
                 with open(filename, 'w') as f:
-                    yaml.dump(created_playbook, f, explicit_start=True, default_style=None, 
-                            indent=2, allow_unicode=True, default_flow_style=False)
+                    f.write(rendered_template)
 
                 # Filter only reachable nodes
                 nodes_to_check = [node for node in self.repository_operator.get_nodes(node_ids) 
@@ -426,6 +418,10 @@ class AnsibleInterface(AbstractInstanceInterface):
                     for host in list_hosts:
                         inventory_file.write(host)
                         inventory_file.write('\n')
+            
+            with open(inventory_filepath, 'r') as inventory_file: 
+                log.debug("Inventory used")
+                log.debug(inventory_file.readlines())
 
             all_nodes = set([host for group, hosts in group_hosts_map.items() for host in hosts])
 

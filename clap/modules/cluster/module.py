@@ -107,15 +107,13 @@ def __get_nodes_values__(cluster_data: dict, valid_instance_types: List[str], va
     return added_nodes
 
 
-
-def cluster_create(cluster_filepath: str) -> List[NodeInfo]:
+def cluster_create(cluster_filepath: str, extra_args: Dict[str, str] = None) -> List[NodeInfo]:
     node_module = PlatformFactory.get_module_interface().get_module('node')
     tag_module = PlatformFactory.get_module_interface().get_module('tag')
     group_module = PlatformFactory.get_module_interface().get_module('group')
     template_module = PlatformFactory.get_module_interface().get_module('template')
-
+    extra_args = extra_args if extra_args else {}
     repository = ClusterRepositoryOperations()
-
     cluster_data = yaml_load(cluster_filepath)
 
     try:

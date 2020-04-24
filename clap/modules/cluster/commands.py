@@ -20,6 +20,8 @@ class ClusterParser(AbstractParser):
         cluster_subcom_parser = commands_parser.add_parser('start', help='Start cluster given a cluster configuration file')
         cluster_subcom_parser.add_argument('cluster_file', action='store', type=lambda fpath: __is_valid_file__(fpath),
                 help='Path of the file with the cluster information')
+        cluster_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
+                help="Keyworded (format: x=y) Arguments to be passed to the action")
         cluster_subcom_parser.set_defaults(func=self.command_start_cluster)
 
         cluster_subcom_parser = commands_parser.add_parser('stop', help='Stop cluster')
@@ -27,8 +29,10 @@ class ClusterParser(AbstractParser):
 
 
     def command_start_cluster(self, namespace: argparse.Namespace):
-        cluster = cluster_create(namespace.cluster_file)
-        return cluster
+        nodes_info = cluster_create(namespace.cluster_file, namespace.extra)
+        print("Created {} cluster node(s)".format(len(nodes_info)))
+        for node_info in nodes_info:
+            print('* ', node_info)
 
     def command_stop_cluster(self, namespace: argparse.Namespace):
         raise NotImplementedError
