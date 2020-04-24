@@ -1,5 +1,5 @@
 import argparse
-import pprint
+import json
 from typing import List
 
 from clap.common.factory import PlatformFactory
@@ -165,7 +165,7 @@ class NodeParser(AbstractParser):
 
         for node_info in nodes:
             print('------- `{}` --------'.format(node_info.node_id))
-            pprint.pprint(node_info.__dict__, indent=2)
+            print(json.dumps(node_info.__dict__, indent=4))
 
         print("Listed {} node(s)".format(len(nodes)))
 

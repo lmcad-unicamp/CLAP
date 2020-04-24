@@ -90,12 +90,12 @@ class GroupsParser(AbstractParser):
     def command_list_groups(self, namespace: argparse.Namespace):
         groups = list_groups()
 
-        for group_name, group_actions, group_hosts, group_playbook in sorted(groups, key=lambda x: x[0]):
-            print('* ' + group_name + " ({})".format(group_playbook))
-            if group_actions:
-                print(' ' * 4 + 'actions: ' + ', '.join(sorted(group_actions)))
-            if group_hosts:
-                print(' ' * 4 + 'hosts: ' + ', '.join(sorted(group_hosts)))
+        for group_dict in sorted(groups, key=lambda x: x['name']):
+            print('* ' + group_dict['name'] + " ({})".format(group_dict['playbook']))
+            if group_dict['actions']:
+                print(' ' * 4 + 'actions: ' + ', '.join(sorted(group_dict['actions'])))
+            if group_dict['hosts']:
+                print(' ' * 4 + 'hosts: ' + ', '.join(sorted(group_dict['hosts'])))
 
         print("Listed {} groups".format(len(groups)))
 

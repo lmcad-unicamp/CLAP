@@ -113,7 +113,7 @@ class RepositoryOperations:
         """
         return RepositoryFactory.exists_repository(self.platform_db_name)
 
-    def create_platform_db(self, exists: str = 'pass') -> AbstractRepository:
+    def create_platform_db(self, exists: str = 'pass'):
         """ Creates the platform Database
 
         :param exists: This parameter can be:
@@ -129,8 +129,6 @@ class RepositoryOperations:
                 repository.create_element('control', PlatformControlInfo())
             clap.common.repository.check_and_create_table(repository, 'clusters', exists)
             clap.common.repository.check_and_create_table(repository, 'nodes', exists)
-        
-        return repository
 
     def get_and_increment_node_index(self) -> int:
         with get_repository_connection(self._get_platform_repository()) as repository:

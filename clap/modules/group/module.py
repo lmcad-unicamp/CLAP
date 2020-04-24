@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Any
 
 from clap.common.factory import PlatformFactory
 from clap.common.cluster_repository import NodeInfo
@@ -41,7 +41,7 @@ def execute_group_action(node_ids: List[str], group: str, action: str, group_arg
     return actioned_nodes
 
 
-def list_groups() -> List[Tuple[str, List[str], List[str], str]]:
+def list_groups() -> List[Dict[str, Any]]:
     multi_instance = PlatformFactory.get_instance_api()
     groups = multi_instance.get_groups()
     return groups

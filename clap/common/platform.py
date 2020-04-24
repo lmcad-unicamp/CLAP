@@ -65,7 +65,7 @@ class ModuleInterface:
     def __init__(self, module_paths: List[str] = None, force=False):
         self.__find_modules__(module_paths=module_paths, force=force)
 
-    def get_module(self, module_name: str):
+    def get_module(self, module_name: str) -> list:
         """ Get the module package
 
         :param module_name: Name of the clap module
@@ -73,13 +73,13 @@ class ModuleInterface:
         :return: The module
         :rtype: Module
         """
-        return self.__modules_map__[module_name]
+        return self.__modules_map__[module_name]['module']
 
-    def get_modules(self):
+    def get_modules(self) -> Dict[str, Any]:
         """ Get the module package
 
-        :return: List of modules
-        :rtype: List[module]
+        :return: Dictionaty with modules information
+        :rtype: Dict[str, Any]
         """
         return self.__modules_map__
 
@@ -399,11 +399,12 @@ class MultiInstanceAPI:
     # The following perform group operations 
     # --------------------------------------------------------------------------------
 
-    def get_groups(self) -> List[Tuple[str, List[str], List[str], str]]:
+    def get_groups(self) -> List[Dict[str, Any]]:
         groups = []
         for group_name in GroupInterface().get_group_names():
             group_actions, group_hosts, group_playbook = GroupInterface().get_group(group_name)
-            groups.append((group_name, group_actions, group_hosts, group_playbook))
+            group_dict = dict(name=group_name, actions=group_actions, hosts=group_hosts, playbook=group_playbook)
+            groups.append(group_dict)
         return groups
 
     def __execute_group_action_sequence(self,  hosts: Dict[str, List[str]], actions: List[str], group_path: str,

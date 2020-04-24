@@ -13,6 +13,7 @@ from clap.common.utils import path_extend, log, tmpdir
 from clap.common.cluster_repository import RepositoryOperations, ClusterInfo, NodeInfo
 from clap.common.config import Defaults
         
+# TODO use env vars instead of aws_access_key directly in playbook...
 
 def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: ClusterInfo, provider_conf: dict, 
                     login_conf: dict, instance_name: str, instance_conf: dict, count: int, driver_id: str,

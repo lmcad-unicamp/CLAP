@@ -82,6 +82,14 @@
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
             "args": ["-vvvv", "-h"],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Create cluster",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "start", "/home/napoli/cluster1.yml"],
+            "console": "integratedTerminal"
         }
 
     ]
