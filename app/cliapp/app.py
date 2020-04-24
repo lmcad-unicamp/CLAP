@@ -22,7 +22,7 @@ def main(arguments: List[str]):
     Defaults.DRIVER_ID = known_args[0].driver
     Defaults.PLATFORM_REPOSITORY = path_extend(known_args[0].platform_db)
     Defaults.REPOSITORY_TYPE = known_args[0].repo_type
-    Defaults.verbosity = known_args[0].verbose if known_args[0].verbose < 4 else 4
+    Defaults.verbosity = known_args[0].verbose if known_args[0].verbose < 3 else 3
     Defaults.log_level = setup_log(Defaults.app_name, Defaults.verbosity)
 
     # Parse all parameters

@@ -36,11 +36,11 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Stop node-0",
+            "name": "Stop node-30",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["node", "stop", "node-0"],
+            "args": ["-vv", "node", "stop", "node-30"],
             "console": "integratedTerminal"
         },
         {
@@ -60,19 +60,19 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Resume node-26 and node-27",
+            "name": "Resume node-31",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vvvv", "node", "resume", "node-26", "node-27"],
+            "args": ["-vv", "node", "resume", "node-31"],
             "console": "integratedTerminal"
         },
         {
-            "name": "Pause node-26 and node-27",
+            "name": "Pause node-30",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vvvv", "node", "pause", "node-26", "node-27"],
+            "args": ["-vvvv", "node", "pause", "node-30"],
             "console": "integratedTerminal"
         },
         {

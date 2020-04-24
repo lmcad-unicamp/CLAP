@@ -4,6 +4,7 @@ import ansible_runner
 import random
 import logging
 import time
+import jinja2
 
 from queue import Queue
 from typing import List, Dict, Set, Tuple
@@ -326,48 +327,47 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
     queue.put(created_nodes)
     return created_nodes
 
-def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]:
-    # Main task name
-    task_check_name = 'Stop instances'
+def __get_ec2_common_template__(provider_conf: dict, node_infos: List[NodeInfo], task_check_name: str, state: str):
+    aws_access_key = open(path_extend(Defaults.private_path, provider_conf['access_keyfile']), 'r').read().strip()
+    aws_secret_key = open(path_extend(Defaults.private_path, provider_conf['secret_access_keyfile']), 'r').read().strip()
 
-    try:
-        aws_access_key = open(path_extend(Defaults.private_path, provider_conf['access_keyfile']), 'r').read().strip()
-        aws_secret_key = open(path_extend(Defaults.private_path, provider_conf['secret_access_keyfile']), 'r').read().strip()
-        aws_region = provider_conf['region']
-    except Exception as e:
-        log.error(e)
-        raise
+    envvars = os.environ.copy()
+    envvars['AWS_ACCESS_KEY'] = aws_access_key
+    envvars['AWS_SECRET_KEY'] = aws_secret_key
+    envvars['AWS_REGION'] = provider_conf['region']
 
-    ec2_command_values = {
-        'name': task_check_name,
-        'ec2': {
-            'aws_access_key': aws_access_key,
-            'aws_secret_key': aws_secret_key,
-            'region': aws_region,
-            'instance_ids': [node.extra['instance_id'] for node in node_infos],
-            'state': 'absent',
-            'wait': False
-        }
+    ec2_values = {
+        'gather_facts': 'no',
+        'hosts': 'localhost',
+        'task_name': task_check_name,
+        'instance_ids': [node.extra['instance_id'] for node in node_infos],
+        'wait': 'no',
+        'state': state
     }
 
-    tasks = [ec2_command_values]
+    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(os.path.abspath(__file__))), 
+                trim_blocks=True, lstrip_blocks=True)
+    template = jinjaenv.get_template('ec2-common.j2')
+    rendered_template = template.render(ec2_values)
 
-    created_playbook = [{
-        'gather_facts': False,
-        'hosts': 'localhost',
-        'tasks': tasks
-    }]
+    log.debug("Ansible template to run")
+    log.debug(rendered_template)
 
+    return rendered_template, envvars
+
+def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]:
+    # Main task check name
+    task_check_name = 'Stop instances'
+    rendered_template, envvars = __get_ec2_common_template__(provider_conf, node_infos, task_check_name, 'absent')
+    
     with tmpdir() as dir:
-        filename = path_extend(dir, 'stop-aws-instances.yml')
+        filename = path_extend(dir, 'stop-instances.yml')
 
-        # Craft EC2 start instances command to yaml file
         with open(filename, 'w') as f:
-            yaml.dump(created_playbook, f, explicit_start=True, default_style=None, 
-                    indent=2, allow_unicode=True, default_flow_style=False)
+            f.write(rendered_template)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity)
+        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars)
 
         # Not OK?
         if ret.rc != 0:
@@ -400,47 +400,18 @@ def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf
         return stopped_nodes
 
 def pause_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]:
-    # Main task name
-    task_check_name = 'Pause aws instances'
-
-    try:
-        aws_access_key = open(path_extend(Defaults.private_path, provider_conf['access_keyfile']), 'r').read().strip()
-        aws_secret_key = open(path_extend(Defaults.private_path, provider_conf['secret_access_keyfile']), 'r').read().strip()
-        aws_region = provider_conf['region']
-    except Exception as e:
-        log.error(e)
-        raise
-
-    ec2_command_values = {
-        'name': task_check_name,
-        'ec2': {
-            'aws_access_key': aws_access_key,
-            'aws_secret_key': aws_secret_key,
-            'region': aws_region,
-            'instance_ids': [node.extra['instance_id'] for node in node_infos],
-            'state': 'stopped',
-            'wait': True
-        }
-    }
-
-    tasks = [ec2_command_values]
-
-    created_playbook = [{
-        'gather_facts': False,
-        'hosts': 'localhost',
-        'tasks': tasks
-    }]
-
+    # Main task check name
+    task_check_name = 'Pause instances'
+    rendered_template, envvars = __get_ec2_common_template__(provider_conf, node_infos, task_check_name, 'stopped')
+    
     with tmpdir() as dir:
-        filename = path_extend(dir, 'pause-aws-instances.yml')
+        filename = path_extend(dir, 'pause-instances.yml')
 
-        # Craft EC2 start instances command to yaml file
         with open(filename, 'w') as f:
-            yaml.dump(created_playbook, f, explicit_start=True, default_style=None, 
-                    indent=2, allow_unicode=True, default_flow_style=False)
+            f.write(rendered_template)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity)
+        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars, )
 
         # Not OK?
         if ret.rc != 0:
@@ -495,46 +466,17 @@ def pause_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_con
 
 def resume_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]:
     # Main task name
-    task_check_name = 'Resume aws instances'
-
-    try:
-        aws_access_key = open(path_extend(Defaults.private_path, provider_conf['access_keyfile']), 'r').read().strip()
-        aws_secret_key = open(path_extend(Defaults.private_path, provider_conf['secret_access_keyfile']), 'r').read().strip()
-        aws_region = provider_conf['region']
-    except Exception as e:
-        log.error(e)
-        raise
-
-    ec2_command_values = {
-        'name': task_check_name,
-        'ec2': {
-            'aws_access_key': aws_access_key,
-            'aws_secret_key': aws_secret_key,
-            'region': aws_region,
-            'instance_ids': [node.extra['instance_id'] for node in node_infos],
-            'state': 'running',
-            'wait': True
-        }
-    }
-
-    tasks = [ec2_command_values]
-
-    created_playbook = [{
-        'gather_facts': False,
-        'hosts': 'localhost',
-        'tasks': tasks
-    }]
-
+    task_check_name = 'Resume instances'
+    rendered_template, envvars = __get_ec2_common_template__(provider_conf, node_infos, task_check_name, 'running')
+    
     with tmpdir() as dir:
-        filename = path_extend(dir, 'resume-aws-instances.yml')
+        filename = path_extend(dir, 'resume-instances.yml')
 
-        # Craft EC2 start instances command to yaml file
         with open(filename, 'w') as f:
-            yaml.dump(created_playbook, f, explicit_start=True, default_style=None, 
-                    indent=2, allow_unicode=True, default_flow_style=False)
+            f.write(rendered_template)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity)
+        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars)
 
         # Not OK?
         if ret.rc != 0:

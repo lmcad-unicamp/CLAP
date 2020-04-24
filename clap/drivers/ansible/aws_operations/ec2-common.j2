@@ -1,0 +1,12 @@
+---
+- gather_facts: {{ gather_facts }}
+  hosts: {{ hosts }}
+  tasks: 
+  - name: {{ task_name }}
+    ec2: 
+      instance_ids:
+      {% for instance_id in instance_ids %}
+      - {{ instance_id }}
+      {% endfor %}
+      state: {{ state }}
+      wait: {{ wait }}
