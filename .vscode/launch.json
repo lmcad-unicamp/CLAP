@@ -16,7 +16,7 @@
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["node", "start", "type-a:1"],
+            "args": ["-vv", "node", "start", "type-a:1"],
             "console": "integratedTerminal"
         },
         {
@@ -44,11 +44,11 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Alive node-11, node-12, node-13, node-14",
+            "name": "Alive node-31",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["node", "alive", "node-11", "node-12", "node-13", "node-14"],
+            "args": ["-vv", "node", "alive", "node-31"],
             "console": "integratedTerminal"
         },
         {

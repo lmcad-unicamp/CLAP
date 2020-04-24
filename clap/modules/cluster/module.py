@@ -102,31 +102,6 @@ def __get_nodes_values__(cluster_data: dict, valid_instance_types: List[str], va
         else:
             node['actions'] = []
         
-        # if 'actions' in node:
-        #     if type(node['actions']) is not list:
-        #         raise ConfigurationError("Node action values must be a list")
-
-        #     for group_action in node['actions']:
-        #         group_name = next(iter(list(group_action.keys())))
-        #         if group_name not in node['groups']:
-        #             raise ConfigurationError("Invalid group `{}` to perform action".format(group_name))
-        
-        #         for action in group_action[group_name]:
-        #             valid_keys = ['action', 'extra']
-        #             invalid_keys = [k for k in list(action.keys()) if k not in valid_keys]
-        #             if invalid_keys:
-        #                 raise ConfigurationError("The group action (from group `{}`) contain the following invalid key values: {}. Choose from: {}".format(group_name, invalid_keys, valid_keys))
-
-        #             __check_if_in_or_default__(action, 'action', None, valid_groups[group_name])
-
-        #             if 'extra' not in action:
-        #                 action['extra'] = {}
-        #             if type(action['extra']) is not dict:
-        #                 raise ConfigurationError("Type of extra parameter must be a dict")
-
-        # else:
-        #     node['actions'] = {}
-
         added_nodes.append(node)
 
     return added_nodes
