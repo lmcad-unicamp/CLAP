@@ -87,7 +87,7 @@ class NodeInfo(AbstractEntry):
     def __repr__(self):
         return 'Node(id=`{}`, type=`{}`, status=`{}`, public_ip=`{}`, groups=`{}`, tags=`{}`, last_update=`{}`'.format(
             self.node_id, self.instance_type, self.status, self.ip,
-            ', '.join(list(self.groups.keys())), ', '.join(["{}={}".format(k, v) for k, v in self.tags.items()]),
+            ', '.join(list(self.groups.keys())), '; '.join(["{}={}".format(k, ','.join(v)) for k, v in self.tags.items()]),
             time.strftime("%d-%m-%y %H:%M:%S", time.localtime(self.update_time)))
 
 

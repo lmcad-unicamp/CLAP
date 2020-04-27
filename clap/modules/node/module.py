@@ -28,7 +28,6 @@ def is_alive(node_ids: List[str], tags: Dict[str, str] = None) -> Dict[str, bool
 def stop_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = [node.node_id for node in list_nodes(node_ids=node_ids, tags=tags)]
-    
     if not node_ids:
         return []
 
@@ -37,7 +36,6 @@ def stop_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]:
 def resume_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = [node.node_id for node in list_nodes(node_ids=node_ids, tags=tags)]
-    
     if not node_ids:
         return []
 
@@ -46,7 +44,6 @@ def resume_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]:
 def pause_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = [node.node_id for node in list_nodes(node_ids=node_ids, tags=tags)]
-    
     if not node_ids:
         return []
 
@@ -55,7 +52,6 @@ def pause_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]:
 def execute_playbook(playbook_file: str, node_ids: List[str], extra_args: Dict[str, str] = None) -> Dict[str, bool]:
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = [node.node_id for node in list_nodes(node_ids=node_ids, tags=None)]
-    
     return  multi_instance.execute_playbook_in_nodes(playbook_file, node_ids, extra_args)
 
 def get_ssh_connections(node_ids: List[str], *args, **kwargs) -> Dict[str, SSHClient]:

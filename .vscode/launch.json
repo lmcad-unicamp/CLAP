@@ -88,7 +88,15 @@
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "cluster", "start", "/home/napoli/cluster1.yml"],
+            "args": ["cluster", "start", "cluster-legal", "--extra", "x=ola"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Setup cluster-0",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "setup", "cluster-0", "--extra", "x=ola"],
             "console": "integratedTerminal"
         }
 

@@ -22,7 +22,7 @@ class SortingHelpFormatter(argparse.HelpFormatter):
 
 
 def get_known_arguments_parser(add_help=False):
-    parser = argparse.ArgumentParser(prog='clap', description='CLAP starts and manages applications on clouds',
+    parser = argparse.ArgumentParser(description='CLAP starts and manages applications on clouds',
                                      formatter_class=SortingHelpFormatter, add_help=add_help)
     parser.add_argument('--platform-db', '-p', action='store', default=Defaults.PLATFORM_REPOSITORY,
                         help='Platform database to be used (default: `{}`)'.format(Defaults.PLATFORM_REPOSITORY))

@@ -353,13 +353,12 @@ class MultiInstanceAPI:
     def get_nodes_with_tags(self, tags: Dict[str, str]) -> List[NodeInfo]:
         tagged_nodes = []
         for node in self.__repository_operations.get_all_nodes():
-            to_add = True
+            add_node = True
             for tag, val in tags.items():
-                if tag not in node.tags or node.tags[tag] != val:
-                    to_add = False
+                if tag not in node.tags or val not in node.tags[tag]:
+                    add_node = False
                     break
-
-            if to_add:
+            if add_node:
                 tagged_nodes.append(node)
 
         return tagged_nodes
@@ -375,7 +374,16 @@ class MultiInstanceAPI:
 
         added_nodes = []
         for node in self.get_nodes(node_ids):
-            node.tags.update(tags)
+            for tag, val in tags.items():
+                if tag in node.tags:
+                    # TODO remove
+                    if type(node.tags[tag]) is str:
+                        node.tags[tag] = [node.tags[tag], val]
+                    else:
+                        node.tags[tag].append(val)
+                else:
+                    node.tags[tag] = [val]
+
             self.__repository_operations.write_node_info(node, create=False)
             added_nodes.append(node.node_id)
         return added_nodes
@@ -627,14 +635,3 @@ class MultiInstanceAPI:
             self.__repository_operations.write_node_info(node)
 
         return node_ids
-
-    # --------------------------------------------------------------------------------
-    # ########################### Save/Restore operations ##############################
-    # The following perform group operations 
-    # --------------------------------------------------------------------------------
-
-    def export_platform(self, output_filename: str):
-        pass
-
-    def import_platform(self, zip_filename: str):
-        pass

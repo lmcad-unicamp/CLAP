@@ -5,37 +5,32 @@ from clap.common.cluster_repository import NodeInfo
 from clap.common.utils import log
 
 
-def add_group_to_node(node_ids: List[str], group: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]:
+def add_group_to_node(  node_ids: List[str], group: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None, 
+                        re_add_to_group: bool = True) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = set(node_ids)
-
     if tags:
-        try:
-            for k, v in tags.items():
-                node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags({k: v})]))
-        except Exception as e:
-            log.error(e)
-            raise
-
+        node_ids.update([node.node_id for node in multi_instance.get_nodes_with_tags(tags)])
     if not node_ids:
         return []
 
     node_ids = list(node_ids)
-    added_nodes = multi_instance.add_nodes_to_group(node_ids, group, group_args=group_args)
-    return added_nodes
+    already_added_nodes = []
+
+    if not re_add_to_group:
+        already_added_nodes = list(set([node.node_id for node in multi_instance.get_nodes(node_ids) if group in node.groups]))
+        node_ids = list(set([node.node_id for node in multi_instance.get_nodes(node_ids) if group not in node.groups]))
+        if not node_ids:
+            return already_added_nodes
+
+    return multi_instance.add_nodes_to_group(node_ids, group, group_args=group_args) + already_added_nodes
 
 
 def execute_group_action(node_ids: List[str], group: str, action: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = set(node_ids)
-
     if tags:
-        try:
-            for k, v in tags.items():
-                node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags({k: v})]))
-        except Exception as e:
-            log.error(e)
-            raise
+        node_ids.update([node.node_id for node in multi_instance.get_nodes_with_tags(tags)])
 
     actioned_nodes = multi_instance.execute_group_action(group, action, group_args=group_args, node_ids=node_ids)
     return actioned_nodes
