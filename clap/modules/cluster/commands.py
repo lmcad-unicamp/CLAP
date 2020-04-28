@@ -5,7 +5,7 @@ from typing import List
 
 from clap.common.module import AbstractParser
 from clap.common.utils import log, path_extend
-from .module import cluster_create, cluster_setup, list_clusters
+from .module import cluster_create, cluster_setup, list_clusters, add_nodes_to_cluster
 from .conf import ClusterDefaults
 
 def __is_valid_file__(fpath):
@@ -44,13 +44,28 @@ class ClusterParser(AbstractParser):
         cluster_subcom_parser = commands_parser.add_parser('setup', help='Setup an existing cluster')
         cluster_subcom_parser.add_argument('cluster_id', action='store', 
                 help='Id of the cluster to perform setup')
+        cluster_subcom_parser.add_argument('--nodes', action='store_true', default=False,
+                help='Setup only determined nodes of the cluster')
         cluster_subcom_parser.add_argument('--readd-group', action='store_true', default=False,
                 help='Add nodes to the groups even if the nodes already belonging to it (default: False)')
         cluster_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
                 help="Keyworded (format: x=y) Arguments to be passed to the actions")
         cluster_subcom_parser.set_defaults(func=self.command_setup_cluster)
 
-        cluster_subcom_parser = commands_parser.add_parser('list', help='List  clusters')
+        cluster_subcom_parser = commands_parser.add_parser('add', help='Add more nodes to the cluster')
+        cluster_subcom_parser.add_argument('cluster_id', action='store', 
+                help='Id of the cluster to perform add nodes')
+        cluster_subcom_parser.add_argument(
+            'nodes', action='store', nargs='+', metavar='node_type:num',
+            help='Type of the nodes to be instantiated (based on the cluster template). Format is <node_type>:<num>, '
+                'if num is not provided, default is 1')
+        cluster_subcom_parser.add_argument('--existing', '-e', action='store_true', default=False,
+                help='Add existing nodes instead of instantiate new ones')
+        cluster_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
+                help="Keyworded (format: x=y) Arguments to be passed to the actions")
+        cluster_subcom_parser.set_defaults(func=self.command_add_more_nodes)
+
+        cluster_subcom_parser = commands_parser.add_parser('list', help='List clusters')
         cluster_subcom_parser.add_argument('--id', action='store',
                 help='List only the cluster with desired id')
         cluster_subcom_parser.set_defaults(func=self.command_list_clusters)
@@ -85,6 +100,21 @@ class ClusterParser(AbstractParser):
         print("Cluster `{}` successfully setup".format(cluster_id))
         return 0
     
+    def command_add_more_nodes(self, namespace: argparse.Namespace):
+        cluster_id = namespace.cluster_id
+        existing = namespace.existing
+        extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+        if not existing:
+            # Mount parameters
+            nodes = {}
+            for node in namespace.nodes:
+                splited_values = node.split(':')
+                nodes[splited_values[0]] = 1 if len(splited_values) == 1 else int(splited_values[1])
+            add_nodes_to_cluster(cluster_id, nodes)
+        else:
+            pass
+        return 0
+
     def command_list_clusters(self, namespace: argparse.Namespace):
         cluster_id = namespace.id if namespace.id else None
         #list_clusters(cluster_id)

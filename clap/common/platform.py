@@ -376,11 +376,7 @@ class MultiInstanceAPI:
         for node in self.get_nodes(node_ids):
             for tag, val in tags.items():
                 if tag in node.tags:
-                    # TODO remove
-                    if type(node.tags[tag]) is str:
-                        node.tags[tag] = [node.tags[tag], val]
-                    else:
-                        node.tags[tag].append(val)
+                    node.tags[tag].append(val)
                 else:
                     node.tags[tag] = [val]
 
@@ -388,14 +384,33 @@ class MultiInstanceAPI:
             added_nodes.append(node.node_id)
         return added_nodes
 
-    def remove_tags_from_nodes(self, node_ids: List[str], tags: List[str]) -> List[str]:
+    def remove_tags_from_nodes(self, node_ids: List[str], tags: Dict[str, str]) -> List[str]:
+        if not node_ids:
+            return []
+        
+        removed_nodes = []
+        for node in self.get_nodes(node_ids):
+            for tag, value in tags.items():
+                if tag in node.tags and value in node.tags[tag]:
+                    tag_vals = node.tags[tag]
+                    tag_vals.remove(value)
+                    if not tag_vals:
+                        node.tags.pop(tag)
+                    else:
+                        node.tags[tag] = tag_vals
+                    self.__repository_operations.write_node_info(node)
+                    removed_nodes.append(node.node_id)
+
+        return removed_nodes
+
+    def remove_tags_from_nodes_by_key(self, node_ids: List[str], tags: List[str]) -> List[str]:
         if not node_ids:
             return []
         
         removed_nodes = []
         for node in self.get_nodes(node_ids):
             for tag in tags:
-                if tag in list(node.tags.keys()):
+                if tag in node.tags:
                     node.tags.pop(tag)
                     self.__repository_operations.write_node_info(node)
                     removed_nodes.append(node.node_id)

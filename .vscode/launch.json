@@ -98,6 +98,14 @@
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
             "args": ["-vv", "cluster", "setup", "cluster-0", "--extra", "x=ola"],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Add nodes to cluster-3",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "add", "cluster-3", "node-type-master:1", "--extra", "x=ola"],
+            "console": "integratedTerminal"
         }
 
     ]

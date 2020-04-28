@@ -13,6 +13,10 @@ from .conf import ClusterDefaults
 class ConfigurationError(Exception):
     pass
 
+class ClusterState:
+    CLUSTER_RUNNING = 'running'
+    CLUSTER_PAUSED = 'paused'
+
 def __check_if_in_or_default__(data: dict, key: str, default: str, valids: tuple):
     if key not in data:
         if default is not None:
@@ -273,6 +277,7 @@ def get_cluster_data(cluster_files: List[str], cluster_name: str, extra_args: Di
     return cluster_data
 
 def cluster_create(cluster_files: List[str], cluster_name: str, extra_args: Dict[str, str] = None, no_setup: bool = False) -> Tuple[ClusterData, List[NodeInfo]]:
+    # TODO start cluster with 0 nodes
     node_module = PlatformFactory.get_module_interface().get_module('node')
     tag_module = PlatformFactory.get_module_interface().get_module('tag')
 
@@ -379,11 +384,11 @@ def cluster_create(cluster_files: List[str], cluster_name: str, extra_args: Dict
         tag_module.node_add_tag([node.node_id for node in node_vals['nodes']], tags)
 
     if not no_setup:
-        cluster_setup(cluster.cluster_id, extra_args)
+        cluster_setup(cluster.cluster_id)
 
     return cluster, node_module.list_nodes(tags={'clusters': cluster.cluster_id})
 
-def cluster_setup(cluster_id: str, extra_args: Dict[str, str] = None, re_add_to_group: bool = False):
+def cluster_setup(cluster_id: str, re_add_to_group: bool = False, nodes_type: Dict[str, List[str]] = None):
     node_module = PlatformFactory.get_module_interface().get_module('node')
     group_module = PlatformFactory.get_module_interface().get_module('group')
     repository = ClusterRepositoryOperations()
@@ -401,13 +406,21 @@ def cluster_setup(cluster_id: str, extra_args: Dict[str, str] = None, re_add_to_
         for setup in node_vals['setups']:
             for setup_name, setup_vals in setup.items():
                 for group in setup_vals['groups']:
-                    log.info("Adding nodes `{}` from cluster `{}` to group `{}` from setup: `{}` (extra: {})".format(
-                        node_name, cluster.cluster_id, group['name'], setup_name, group['extra']))
-                    final_nodes = group_module.add_group_to_node([], group['name'], group['extra'], tags, re_add_to_group=re_add_to_group)
-                    if not final_nodes:
-                        raise Exception("No nodes was of type `{}` added to group `{}`".format(node_name, group['name']))
+                    if not nodes_type:
+                        log.info("Adding nodes `{}` from cluster `{}` to group `{}` from setup: `{}` (extra: {})".format(
+                            node_name, cluster.cluster_id, group['name'], setup_name, group['extra']))
+                        final_nodes = group_module.add_group_to_node([], group['name'], group['extra'], tags, re_add_to_group=re_add_to_group)
+                        if not final_nodes:
+                            raise Exception("No nodes was of type `{}` added to group `{}`".format(node_name, group['name']))
+                    elif node_name in nodes_type:
+                        log.info("Adding nodes `{}` from cluster `{}` to group `{}` from setup: `{}` (extra: {})".format(
+                            node_name, cluster.cluster_id, group['name'], setup_name, group['extra']))
+                        final_nodes = group_module.add_group_to_node(nodes_type[node_name], group['name'], group['extra'], re_add_to_group=re_add_to_group)
+                        if not final_nodes:
+                            raise Exception("No nodes was of type `{}` added to group `{}`".format(node_name, group['name']))
+                    else:
+                        log.info("Skipping node type `{}`. No match".format(node_name))
 
-        
         # Setup OK for nodes XXXX
         pass
     
@@ -423,26 +436,54 @@ def cluster_setup(cluster_id: str, extra_args: Dict[str, str] = None, re_add_to_
             for setup_name, setup_vals in setup.items():
                 for action in setup_vals['actions']:
                     if action['type'] == 'action':
-                        log.info("Performing `{}` group's action `{}` (setup: `{}`) on nodes `{}` from cluster `{}` (extra: {})".format(
-                            action['group'], action['name'], setup_name, node_name, cluster.cluster_id, action['extra']))
-                        ret = group_module.execute_group_action([], action['group'], action['name'], action['extra'], tags)
-                        # TODO False not?
-                        if False:
-                            raise Exception("Some `{}` nodes from cluster `{}` does not successfully executed action `{}` from group `{}`".format(
-                                node_name, cluster.cluster_id, action['name'], action['group']))
+                        if not nodes_type:
+                            log.info("Performing `{}` group's action `{}` (setup: `{}`) on nodes `{}` from cluster `{}` (extra: {})".format(
+                                action['group'], action['name'], setup_name, node_name, cluster.cluster_id, action['extra']))
+                            ret = group_module.execute_group_action([], action['group'], action['name'], action['extra'], tags)
+                            # TODO False not?
+                            if False:
+                                raise Exception("Some `{}` nodes from cluster `{}` does not successfully executed action `{}` from group `{}`".format(
+                                    node_name, cluster.cluster_id, action['name'], action['group']))
+                        elif node_name in nodes_type:
+                            log.info("Performing `{}` group's action `{}` (setup: `{}`) on nodes `{}` from cluster `{}` (extra: {})".format(
+                                action['group'], action['name'], setup_name, node_name, cluster.cluster_id, action['extra']))
+                            ret = group_module.execute_group_action(nodes_type[node_name], action['group'], action['name'], action['extra'])
+                            # TODO False not?
+                            if False:
+                                raise Exception("Some `{}` nodes from cluster `{}` does not successfully executed action `{}` from group `{}`".format(
+                                    node_name, cluster.cluster_id, action['name'], action['group']))
+                        else:
+                            log.info("Skipping node type `{}`. No match".format(node_name))
 
                     elif action['type'] == 'playbook':
-                        log.info("Running playbook `{}` on nodes `{}` (setup: `{}`) from cluster `{}` (extra:{})".format(
-                            action['playbook'], node_name, setup_name, cluster.cluster_id, action['extra']))
-                        ret = run_playbook_in_nodes(action['playbook'], node_module.list_nodes(tags=tags), action['extra'])
-                        if not all(ret.values()):
-                            raise Exception("Some `{}` nodes from cluster `{}` does not successfully executed the playbook `{}`".format(
-                                node_name, cluster.cluster_id, action['playbook']))
+                        if not nodes_type:
+                            log.info("Running playbook `{}` on nodes `{}` (setup: `{}`) from cluster `{}` (extra:{})".format(
+                                action['playbook'], node_name, setup_name, cluster.cluster_id, action['extra']))
+                            ret = run_playbook_in_nodes(action['playbook'], node_module.list_nodes(tags=tags), action['extra'])
+                            if not all(ret.values()):
+                                raise Exception("Some `{}` nodes from cluster `{}` does not successfully executed the playbook `{}`".format(
+                                    node_name, cluster.cluster_id, action['playbook']))
+                        elif node_name in nodes_type: 
+                            log.info("Running playbook `{}` on nodes `{}` (setup: `{}`) from cluster `{}` (extra:{})".format(
+                                action['playbook'], node_name, setup_name, cluster.cluster_id, action['extra']))
+                            ret = run_playbook_in_nodes(action['playbook'], node_module.list_nodes(nodes_type[node_name]), action['extra'])
+                            if not all(ret.values()):
+                                raise Exception("Some `{}` nodes from cluster `{}` does not successfully executed the playbook `{}`".format(
+                                    node_name, cluster.cluster_id, action['playbook']))
+                        else:
+                            log.info("Skipping node type `{}`. No match".format(node_name))
 
                     elif action['type'] == 'command':
-                        log.info("Executing command `{}` (setup: `{}`) in nodes `{}` of cluster `{}`".format(
-                            action['command'], setup_name, node_name, cluster.cluster_id))
-                        run_command(node_module.list_nodes(tags=tags), action['command'])
+                        if not nodes_type:
+                            log.info("Executing command `{}` (setup: `{}`) in nodes `{}` of cluster `{}`".format(
+                                action['command'], setup_name, node_name, cluster.cluster_id))
+                            run_command(node_module.list_nodes(tags=tags), action['command'])
+                        elif node_name in nodes_type:
+                            log.info("Executing command `{}` (setup: `{}`) in nodes `{}` of cluster `{}`".format(
+                                action['command'], setup_name, node_name, cluster.cluster_id))
+                            run_command(node_module.list_nodes(nodes_type[node_name]), action['command'])
+                        else:
+                            log.info("Skipping node type `{}`. No match".format(node_name))
 
                     else:
                         raise ValueError("Invalid action type `{}`".format(action['type']))
@@ -450,13 +491,132 @@ def cluster_setup(cluster_id: str, extra_args: Dict[str, str] = None, re_add_to_
         # Setup OK for nodes XXXX
         pass
 
-def add_node_to_cluster(cluster_id: str, node_type: Dict[str, int]):
+def update_cluster_config(cluster_files: List[str], cluster_id: str, extra_args: Dict[str, str] = None) -> ClusterData:
+    repository = ClusterRepositoryOperations()
+    cluster = repository.get_cluster(cluster_id)
+    cluster_data = get_cluster_data(cluster_files, cluster.cluster_name, extra_args)
+    cluster.cluster_config = cluster_data
+    repository.update_cluster(cluster_data)
+    return cluster
+
+def add_nodes_to_cluster(cluster_id: str, node_types: Dict[str, int]) -> List[NodeInfo]:
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+    tag_module = PlatformFactory.get_module_interface().get_module('tag')
+
+    repository = ClusterRepositoryOperations()
+    cluster = repository.get_cluster(cluster_id)
+    for node_name, qtde in node_types.items():
+        if node_name not in cluster.cluster_config['nodes']:
+            raise ValueError("Invalid node `{}` for cluster `{}`".format(node_name, cluster.cluster_name)) 
+        if qtde < 1:
+            raise ValueError("Invalid quantity of `{}` nodes: {}".format(node_name, qtde))
+
+    created_nodes = []
+    nodes_of_cluster_type = {}
+    # TODO more smart, starting same instance types instead of node types 
+    for node_name, qtde in node_types.items():
+        node_type = cluster.cluster_config['nodes'][node_name]
+        nodes = node_module.start_nodes({node_type['type']: qtde})
+        created_nodes += nodes
+        if len(nodes) != qtde:
+            log.error("Not all `{}` could be started. Undoing the operation and stopping the nodes {}".format(node_name, created_nodes))
+            node_module.stop_nodes([node.node_id for node in created_nodes])
+            raise Exception("Could not start nodes")
+
+        nodes_of_cluster_type[node_name] = [node.node_id for node in nodes]
+
+    # Tag them
+    for node_type, node_vals in nodes_of_cluster_type.items():
+        tags = {
+            'clusters': cluster_id,
+            'cluster_node_type': "{}:{}".format(cluster_id, node_type)
+        }
+        
+        tag_module.node_add_tag(node_vals, tags)
+
+    cluster_setup(cluster_id, nodes_type=nodes_of_cluster_type)
+    return node_module.list_nodes([node.node_id for node in created_nodes])
+
+def add_existing_nodes_to_cluster(cluster_id: str, node_types: Dict[str, List[str]]):
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+    tag_module = PlatformFactory.get_module_interface().get_module('tag')
+
+    repository = ClusterRepositoryOperations()
+    cluster = repository.get_cluster(cluster_id)
+    nodes_of_cluster_type = {}
+
+    for node_name, qtde in node_types.items():
+        if node_name not in cluster.cluster_config['nodes']:
+            raise ValueError("Invalid node `{}` for cluster `{}`".format(node_name, cluster.cluster_name))
+        if qtde < 1:
+            raise ValueError("Invalid quantity of `{}` nodes: {}".format(node_name, qtde))
+
+    for node_name, list_nodes in node_types.items():
+        nodes_of_cluster_type[node_name] = [node.node_id for node in node_module.list_nodes(list_nodes)]
+    
+    # Tag them
+    for node_type, node_vals in nodes_of_cluster_type.items():
+        tags = {
+            'clusters': cluster_id,
+            'cluster_node_type': "{}:{}".format(cluster_id, node_type)
+        }
+        
+        tag_module.node_add_tag(node_vals, tags)
+
+    cluster_setup(cluster_id, nodes_type=nodes_of_cluster_type)
+
+def remove_nodes_from_cluster(cluster_id: str, node_ids: List[str], do_not_stop: bool = False) -> Tuple[List[str], List[str]]:
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+    tag_module = PlatformFactory.get_module_interface().get_module('tag')
+
+    repository = ClusterRepositoryOperations()
+    cluster = repository.get_cluster(cluster_id)
+
+    nodes = node_module.list_nodes(node_ids)
+    for node in nodes:
+        if 'clusters' not in node.tags:
+            raise Exception("Node `{}` does not belong to cluster `{}`".format(node.node_id, cluster_id))
+        if cluster_id not in node.tags['cluster']:
+            raise Exception("Node `{}` does not belong to cluster `{}`".format(node.node_id, cluster_id))
+
+    node_types = ["{}:{}".format(cluster_id, node_name) for node_name in list(cluster.cluster_config['nodes'].keys())]
+    tag_module.node_remove_tag(node_ids, {'clusters': cluster_id})
+    for node_type in node_types:
+        tag_module.node_remove_tag(node_ids, {'cluster_node_type': node_type})
+    
+    if do_not_stop:
+        return [node.node_id for node in nodes], None
+    
+    to_stop_nodes = []
+    to_not_stop_nodes = []
+ 
+    for node in node_module.list_nodes(node_ids):
+        if 'clusters' not in node.tags:
+            to_stop_nodes.append(node.node_id)
+        else:
+            to_not_stop_nodes.append(node.node_id)
+
+    log.info("Stopping nodes `{}`...".format(', '.join(sorted(to_stop_nodes))))
+    node_module.stop_nodes(to_stop_nodes)
+
+    return to_stop_nodes, to_not_stop_nodes
+
+def cluster_stop(cluster_id: str) -> Tuple[List[str], List[str]]:
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+    nodes = node_module.list_nodes(tags={'clusters': cluster_id})
+    stopped_nodes, do_not_stopped = remove_nodes_from_cluster(cluster_id, [node.node_id for node in nodes])
+    
+    repository = ClusterRepositoryOperations()
+    repository.remove_cluster(cluster_id)
+
+    return stopped_nodes, do_not_stopped
+
+
+def cluster_pause(cluster_id: str):
     pass
 
-def add_existing_node_to_cluster(cluster_id: str, node_types: Dict[str, List[str]]):
+def cluster_resume(cluster_id: str):
     pass
-
-
 
 def list_clusters(cluster_id: str = None) -> dict:
     node_module = PlatformFactory.get_module_interface().get_module('node')
@@ -477,8 +637,8 @@ def list_clusters(cluster_id: str = None) -> dict:
 
     return cluster_node_dict
 
-
-
+def list_templates():
+    pass
 
 def run_playbook_in_nodes(playbook_path: str, node_ids: List[str], extra_args: Dict[str, str]) -> Dict[str, bool]:
     multi_instance = PlatformFactory.get_instance_api()
@@ -498,4 +658,3 @@ def run_command(node_ids: List[str], command_string: str):
         print('-' * 80)
 
         ssh.close()
-

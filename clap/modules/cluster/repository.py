@@ -21,7 +21,9 @@ class ClusterData(AbstractEntry):
         self.cluster_id = None
         self.cluster_name = None
         self.creation_time = time.time()
+        self.update_time = self.creation_time
         self.cluster_config = None
+        self.cluster_state = None
         super(ClusterData, self).__init__(**kwargs)
 
 class ClusterRepositoryOperations:
@@ -49,7 +51,7 @@ class ClusterRepositoryOperations:
                 repository.create_element('control', ClusterControlData())
             check_and_create_table(self.repository, 'clusters', exists)
 
-    def new_cluster(self, cluster_name, cluster_config) -> ClusterData:
+    def new_cluster(self, cluster_name, cluster_config, state: str = 'running') -> ClusterData:
         with get_repository_connection(self.repository) as repository:
             control = next(iter(generic_read_entry(ClusterControlData, repository, 'control')))
             index = control.cluster_index
@@ -59,7 +61,8 @@ class ClusterRepositoryOperations:
             cluster_data = ClusterData(
                 cluster_id="{}-{}".format(self.cluster_prefix, index),
                 cluster_name=cluster_name,
-                cluster_config=cluster_config
+                cluster_config=cluster_config,
+                cluster_state=state
             )
 
             generic_write_entry(cluster_data, repository, 'clusters', create=True)
