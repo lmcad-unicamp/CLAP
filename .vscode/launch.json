@@ -88,7 +88,7 @@
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["cluster", "start", "cluster-legal", "--extra", "x=ola"],
+            "args": ["cluster", "start", "spits-cluster", "--extra", "x=ola"],
             "console": "integratedTerminal"
         },
         {
@@ -105,6 +105,38 @@
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
             "args": ["-vv", "cluster", "add", "cluster-3", "node-type-master:1", "--extra", "x=ola"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Stop cluster-2",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "stop", "cluster-2"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Alive cluster-3",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "alive", "cluster-3"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pause cluster-3",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "pause", "cluster-3"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Resume cluster-3",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "resume", "cluster-3"],
             "console": "integratedTerminal"
         }
 

@@ -1,6 +1,7 @@
 import os
 
 from typing import List, Dict, Tuple
+from jinja2 import Template, StrictUndefined
 
 from clap.common.factory import PlatformFactory
 from clap.common.cluster_repository import NodeInfo
@@ -16,6 +17,7 @@ class ConfigurationError(Exception):
 class ClusterState:
     CLUSTER_RUNNING = 'running'
     CLUSTER_PAUSED = 'paused'
+
 
 def __check_if_in_or_default__(data: dict, key: str, default: str, valids: tuple):
     if key not in data:
@@ -42,145 +44,266 @@ def __check_if_list_is_valid(list_data: list, valids: List[str], at: str = None)
             raise ConfigurationError("Invalid value `{}` at {}. Choose from {}".format(data, at, valids))
     return list_data
 
-def __check_setup__(config_dict: dict, valid_groups: Dict[str, List[str]], extra_args: Dict[str, str]) -> dict:
-    setups = dict()
-
+def __get_setups__(config_dict: dict) -> dict:
     if 'setups' not in config_dict:
         return {}
 
-    for setup_name, group_actions_values in config_dict['setups'].items():
+    setups = dict()
+
+    def __get_extra__(depth_keys: List[str], extra_dict: dict) -> dict:
+        extra = {}
+        if type(extra_dict) is not dict:
+            raise ConfigurationError("Error in setup `{}`. Extra must be a dictionary".format('.'.join(depth_keys)))
+        if not extra_dict:
+            raise ConfigurationError("Error in setup `{}`. Extra dictionary must not be empty (omit extra instead)".format('.'.join(depth_keys)))
+        for key, val in extra_dict.items():
+            val_type = type(val)
+            if val_type is not str and val_type is not int and val_type is not float:
+                raise ConfigurationError("Error in setup `{}`. Extra values must be a string, integer or float".format('.'.join(depth_keys)))
+            extra[key] = val
+        
+        return extra
+
+    def __get_groups__(depth_keys: List[str], group_list: List[dict]) -> List[dict]:
         in_use_groups = []
+
+        for group_values in group_list:
+            extra = {}
+            # Check if group has a name and is a valid str
+            if 'name' not in group_values:
+                raise ConfigurationError("Error in setup `{}`. All groups must have the name key (group name)".format('.'.join(depth_keys)))
+            if not group_values['name'] or type(group_values['name']) is not str:
+                raise ConfigurationError("Error in setup `{}`. Invalid string for group name: `{}`".format('.'.join(depth_keys), group_values['name']))
+            
+            # If extra exists, check extra
+            if 'extra' in group_values:
+                extra = __get_extra__(depth_keys+[group_values['name']], group_values['extra'])
+
+            in_use_groups.append({'name': group_values['name'], 'extra': extra})
+
+        return in_use_groups
+
+    def __check_valid_group_action__(depth_keys: List[str], action_dict: dict) -> dict:
+        extra = {}
+        # Check if action has a name and is a valid str
+        if 'name' not in action_dict:
+            raise ConfigurationError("Error in setup `{}`. All group actions must have the name key (action name)".format('.'.join(depth_keys)))
+        if not action_dict['name'] or type(action_dict['name']) is not str:
+            raise ConfigurationError("Error in setup `{}`. Invalid string for action name: `{}`".format('.'.join(depth_keys), action_dict['name']))
+        # Check if action has a group and is a valid str
+        if 'group' not in action_dict:
+            raise ConfigurationError("Error in setup `{}`. All group actions must have the group key (group that will perform the action)".format('.'.join(depth_keys)))
+        if not action_dict['group'] or type(action_dict['group']) is not str:
+            raise ConfigurationError("Error in setup `{}`. Invalid string for group name: `{}`".format('.'.join(depth_keys), action_dict['group']))
+        # If extra exists, check extra
+        if 'extra' in action_dict:
+            extra = __get_extra__(depth_keys+[action_dict['name']], action_dict['extra'])
+        return {'name': action_dict['name'], 'group': action_dict['group'], 'type': 'action', 'extra': extra}
+
+    def __check_valid_command_action__(depth_keys: List[str], action_dict: dict) -> dict:
+        # Check if action has a command and is a valid str
+        if 'commmand' not in action_dict:
+            raise ConfigurationError("Error in setup `{}`. All command actions must have the command key (command to execute)".format('.'.join(depth_keys)))
+        if not action_dict['commmand'] or type(action_dict['commmand']) is not str:
+            raise ConfigurationError("Error in setup `{}`. Invalid string for command: `{}`".format('.'.join(depth_keys), action_dict['commmand']))
+        return {'name': action_dict['name'], 'type': 'command', 'command': action_dict['command']}
+
+    def __check_valid_playbook_action__(depth_keys: List[str], action_dict: dict) -> dict:
+        extra = {}
+        # Check if action has a name and is a valid str
+        if 'path' not in action_dict:
+            raise ConfigurationError("Error in setup `{}`. All playbook actions must have the path key (representing the playbook path)".format('.'.join(depth_keys)))
+        if not action_dict['path'] or type(action_dict['path']) is not str:
+            raise ConfigurationError("Error in setup `{}`. Invalid string for playbook: `{}`".format('.'.join(depth_keys), action_dict['path']))
+            # If extra exists, check extra
+        if 'extra' in action_dict:
+            extra = __get_extra__(depth_keys+[action_dict['path']], action_dict['extra'])
+        return {'path': action_dict['path'], 'type': 'playbook', 'extra': extra} 
+    
+    def __get_actions__(depth_keys: List[str], action_list: List[dict]) -> List[dict]:
         in_use_actions = []
+        valid_action_types = ['action', 'playbook', 'command']
 
-        __check_if_list_is_valid(list(group_actions_values.keys()), ['actions', 'groups'], setup_name)
-
-        # Check if 'groups' exists in the template
-        if 'groups' in group_actions_values:
-            for group_values in group_actions_values['groups']:
-                if 'name' not in group_values:
-                    raise ConfigurationError("Error in setup `{}`.groups. All groups must have a name key".format(setup_name))
-                if type(group_values['name']) is not str:
-                    raise ConfigurationError("Error in setup `{}`.groups. Name values must be a str".format(setup_name))
+        for action_values in action_list:
+            action = {}
+            # Check the action type: action, playbook or command
+            if 'type' not in action_values:
+                raise ConfigurationError("Error in setup `{}`. All actions must have the type key (action type)".format('.'.join(depth_keys)))
+            if not action_values['type'] or type(action_values['type']) is not str:
+                raise ConfigurationError("Error in setup `{}`. Invalid string for action type: `{}`".format('.'.join(depth_keys), action_values['type']))
                 
-                extra = {}
-                if 'extra' in group_values:
-                    if type(group_values['extra']) is not dict:
-                        raise ConfigurationError("Error in setup `{}`.groups. Extra values must be a dict".format(setup_name))
-                
-                    # Jinja substitutions
-                    for key, value in group_values['extra'].items():
-                        if type(value) is str: 
-                            value = value.strip()
-                            if value.startswith('{{') and value.endswith('}}'):
-                                value_jinja =  value[2:-2].strip()
-                                if value_jinja not in extra_args:
-                                    raise ConfigurationError("Invalid substituition at extra setup `{}.groups`. Missing dynamic value for key: `{}`".format(setup_name, value_jinja))
-                                extra[key] = extra_args[value_jinja]
-                            else:
-                                extra[key] = value
-                        else:
-                            extra[key] = value
+            if action_values['type'] == 'action':
+                in_use_actions.append(__check_valid_group_action__('.'.join(depth_keys+[action['name']]), action_values))
+            elif action_values['type'] == 'command':
+                in_use_actions.append(__check_valid_command_action__('.'.join(depth_keys+[action['name']]), action_values))
+            elif action_values['type'] == 'playbook':
+                in_use_actions.append(__check_valid_playbook_action__('.'.join(depth_keys+[action['name']]), action_values))
+            else:
+                raise ConfigurationError("Error in setup `{}`. Invalid action type: `{}` (choose from {}) ".format(
+                    '.'.join(depth_keys), action_values['type'], ', '.join(valid_action_types)))
 
-                in_use_groups.append({'name': group_values['name'], 'extra': extra})
-        
-        # Check if all group names are valid
-        __check_if_list_is_valid([g['name'] for g in in_use_groups], list(valid_groups.keys()), '{}.groups'.format(setup_name))
-        
-        # Check if 'actions' exists in the template
-        if 'actions' in group_actions_values:
-            for action_values in group_actions_values['actions']:
-                if 'type' not in action_values:
-                    raise ConfigurationError("Error in setup `{}`.actions. All actions must have a type key".format(setup_name))
-                if type(action_values['type']) is not str or not action_values['type']:
-                    raise ConfigurationError("Error in setup `{}`.actions. Action type value must be a str".format(setup_name))
-                # Check if type is valid 
-                __check_if_list_is_valid([action_values['type']], ['action', 'playbook', 'command'], "{}.actions".format(setup_name))
-                
-                # action type is an action?
-                if action_values['type'] == 'action':
-                    if 'group' not in action_values:
-                        raise ConfigurationError("Error in actions of setup `{}`. All actions type must have a group key".format(setup_name))
-                    if type(action_values['group']) is not str or not action_values['group']:
-                        raise ConfigurationError("Error in setup `{}`.actions. Action group value must be a str".format(setup_name))
-
-                    if 'name' not in action_values:
-                        raise ConfigurationError("Error in actions of setup `{}`. All actions type must have a name key".format(setup_name))
-                    if type(action_values['group']) is not str or not action_values['group']:
-                        raise ConfigurationError("Error in setup `{}`.actions. Action name value must be a str".format(setup_name))
-
-                    extra = {}
-                    if 'extra' in action_values:
-                        if type(action_values['extra']) is not dict:
-                            raise ConfigurationError("Error in setup `{}`.action. Extra values must be a dict".format(setup_name))
-                
-                        # Jinja substitutions
-                        for key, value in action_values['extra'].items():
-                            if type(value) is str: 
-                                value = value.strip()
-                                if value.startswith('{{') and value.endswith('}}'):
-                                    value_jinja =  value[2:-2].strip()
-                                    if value_jinja not in extra_args:
-                                        raise ConfigurationError("Invalid substituition at extra setup `{}.groups`. Missing dynamic value for key: `{}`".format(setup_name, value_jinja))
-                                    extra[key] = extra_args[value_jinja]
-                                else:
-                                    extra[key] = value
-                            else:
-                                extra[key] = value
-                    
-                    # Check if group is valid for a group
-                    __check_if_list_is_valid([action_values['group']], [g['name'] for g in in_use_groups], '{}.actions.group'.format(setup_name))
-                    # Check if action name is valid
-                    __check_if_list_is_valid([action_values['name']], valid_groups[action_values['group']], '{}.actions.{}.name'.format(setup_name, action_values['group']))
-                    
-                    # OK append!
-                    action_values['extra'] = extra
-                    in_use_actions.append(action_values)
-                
-                # Playbook type
-                elif action_values['type'] == 'playbook':
-                    if 'path' not in action_values:
-                        raise ConfigurationError("Error in actions of setup `{}`. All playbooks type must have a path key".format(setup_name))
-                    if type(action_values['path']) is not str or not action_values['path']:
-                        raise ConfigurationError("Error in setup `{}`.actions. Playbook path value must be a str".format(setup_name))
-                    if not os.path.exists(action_values['path']):
-                        raise ConfigurationError("Error in setup `{}`.actions. Playbook path `{}` does not exists ".format(setup_name, action_values['path']))
-                    if not os.path.isfile(action_values['path']):
-                        raise ConfigurationError("Error in setup `{}`.actions. Playbook path `{}` is not a valid file ".format(setup_name, action_values['path']))
-
-                    extra = {}
-                    if 'extra' in action_values: 
-                        if type(action_values['extra']) is not dict:
-                            raise ConfigurationError("Error in setup `{}`.action. Extra values must be a dict".format(setup_name))
-                                        
-                        # Jinja substitutions
-                        for key, value in action_values['extra'].items():
-                            if type(value) is str: 
-                                value = value.strip()
-                                if value.startswith('{{') and value.endswith('}}'):
-                                    value_jinja =  value[2:-2].strip()
-                                    if value_jinja not in extra_args:
-                                        raise ConfigurationError("Invalid substituition at extra setup `{}.groups`. Missing dynamic value for key: `{}`".format(setup_name, value_jinja))
-                                    extra[key] = extra_args[value_jinja]
-                                else:
-                                    extra[key] = value
-                            else:
-                                extra[key] = value
-                    
-                    action_values['extra'] = extra
-                    in_use_actions.append(action_values)
-
-                # Command type
-                elif action_values['type'] == 'command':
-                    if 'command' not in action_values:
-                        raise ConfigurationError("Error in actions of setup `{}`. All commands type must have a command key".format(setup_name))
-                    if type(action_values['command']) is not str or not action_values['command']:
-                        raise ConfigurationError("Error in setup `{}`.actions. Command must be a str".format(setup_name))
-
-                    in_use_actions.append(action_values)
-
-        setups[setup_name] = {'groups': in_use_groups, 'actions': in_use_actions}
+        return in_use_actions
+    
+    for setup_name, setup_values in config_dict['setups'].items():
+        groups, actions = [], []
+        if 'groups' in setup_values:
+            groups = __get_groups__([setup_name], setup_values['groups'])
+        if 'actions' in setup_values:
+            actions = __get_groups__([setup_name], setup_values['actions'])
+        setups[setup_name] = {'groups': groups, 'actions': actions}
 
     return setups
+
+def __get_clusters__(config_dict: dict) -> dict:
+    if 'clusters' not in config_dict:
+        return {}
+
+    clusters = dict()
+
+    def __get_options__(depth_keys: List[str], options_dict: dict, cluster_nodes: dict) -> dict:
+        options = {}
+        if 'ssh_to' not in options_dict:
+            options['ssh_to'] = ''
+        else:
+            if options_dict['ssh_to'] not in cluster_nodes:
+                raise ConfigurationError("Error in cluster configuration `{}`. Option ssh_to must have a valid node".format('.'.join(depth_keys)))
+            options['ssh_to'] = options_dict['ssh_to']
+        
+        if 'before' not in options_dict:
+            options['before'] = []
+        else:
+            if type(options_dict['before']) is not list:
+                raise ConfigurationError("Error in cluster configuration `{}`. Before option takes a list".format('.'.join(depth_keys)))
+            options['before'] = []
+            for before in options_dict['before']:
+                if not before or type(before) is not str:
+                    raise ConfigurationError("Error in cluster configuration `{}`. All before values must be string".format('.'.join(depth_keys)))
+                options['before'].append(before)
+
+        if 'after' not in options_dict:
+            options['after'] = []
+        else:
+            if type(options_dict['after']) is not list:
+                raise ConfigurationError("Error in cluster configuration `{}`. After option takes a list".format('.'.join(depth_keys)))
+            options['after'] = []
+            for after in options_dict['after']:
+                if not after or type(after) is not str:
+                    raise ConfigurationError("Error in cluster configuration `{}`. All after values must be string".format('.'.join(depth_keys)))
+                options['after'].append(after)
+
+        return options
+
+    def __get_nodes__(depth_keys: List[str], nodes_dict: dict) -> dict:
+        nodes = {}
+        for node_name, node_vals in nodes_dict.items():
+            min_count = 1
+            setups = []
+
+            if 'type' not in node_vals:
+                raise ConfigurationError("Error in cluster configuration `{}`. All cluster nodes must have a type".format('.'.join(depth_keys+[node_name])))
+            if type(node_vals['type']) is not str or not node_vals['type']:
+                raise ConfigurationError("Error in cluster configuration `{}`. Invalid node type (must be a string)".format('.'.join(depth_keys+[node_name])))
+            
+            if 'count' not in node_vals:
+                raise ConfigurationError("Error in cluster configuration `{}`. All cluster nodes must have a count".format('.'.join(depth_keys+[node_name])))
+            if type(node_vals['count']) is not int or node_vals['count'] < 1:
+                raise ConfigurationError("Error in cluster configuration `{}`. Invalid count number {} (must be a positive integer)".format(
+                    '.'.join(depth_keys+[node_name]), node_vals['count']))
+            
+            if 'min_count' not in node_vals:
+                min_count = node_vals['count']
+            elif type(node_vals['min_count']) is not int or node_vals['min_count'] > node_vals['count']:
+                raise ConfigurationError("Error in cluster configuration `{}`. Invalid min_count number {} (must be a positive integer and less then count)".format(
+                    '.'.join(depth_keys+[node_name]), node_vals['min_count']))
+            else:
+                min_count = node_vals['min_count']
+
+            if 'setups' in node_vals:
+                if type(node_vals['setups']) is not list:
+                    raise ConfigurationError("Error in cluster configuration `{}`. Setups must be a list".format('.'.join(depth_keys+[node_name])))
+                for setup_name in node_vals['setups']:
+                    if not setup_name and type(setup_name) is not str:
+                        raise ConfigurationError("Error in cluster configuration `{}`. All setups must be strings".format('.'.join(depth_keys+[node_name])))
+                    setups.append(setup_name)
+            nodes[node_name] = {'type': node_vals['type'], 'count': node_vals['count'], 'min_count': min_count, 'setups': setups}
+        return nodes
+
+    for cluster_name, cluster_values in config_dict['clusters'].items():
+        if 'nodes' not in cluster_values:
+            raise ConfigurationError("Cluster `{}` does not have any node".format(cluster_name))
+        nodes = __get_nodes__([cluster_name], cluster_values['nodes'])
+        options = __get_options__([cluster_name], cluster_values['options'] if 'options' in cluster_values else {}, nodes)
+        clusters[cluster_name] = {'options': options, 'nodes': nodes}
+        
+    return clusters
+
+def __validate_cluster_setups__(cluster_name: str, cluster_dict: dict, setups: dict) -> dict:
+    befores, afters = [], []
+    for before in cluster_dict['options']['before']:
+        if before not in setups:
+            raise ConfigurationError("Error in cluster configuration `{}` (options before). Setup `{}` was not found".format(cluster_name, before))
+        befores.append(setups[before])
+    
+    for after in cluster_dict['options']['after']:
+        if after not in setups:
+            raise ConfigurationError("Error in cluster configuration `{}` (options after). Setup `{}` was not found".format(cluster_name, after))
+        afters.append(setups[after])
+
+    cluster_dict['options']['before'] = befores
+    cluster_dict['options']['after'] = afters
+
+    for node_name, node_vals in cluster_dict['nodes'].items():
+        setups_vals = []
+        for setup in node_vals['setups']:
+            if setup not in setups:
+                raise ConfigurationError("Error in cluster configuration `{}.{}`. Setup `{}` was not found".format(cluster_name, node_name, setup))
+            setups_vals.append(setups[setup])
+        cluster_dict['nodes'][node_name]['setups'] = setups_vals
+        
+    return cluster_dict
+
+def __perform_replacements__(config, extra_args: Dict[str, str]):
+    if type(config) is str:
+        return Template(config, undefined=StrictUndefined).render(**extra_args)
+    elif type(config) is list or type(config) is tuple:
+        return [__perform_replacements__(val, extra_args) for val in config]
+    elif type(config) is dict:
+        return {__perform_replacements__(k, extra_args): __perform_replacements__(v, extra_args) for k, v in config.items()}
+    return config
+
+
+def _get_cluster_data(cluster_files: List[str], cluster_name: str, extra_args: Dict[str, str] = None):
+    group_module = PlatformFactory.get_module_interface().get_module('group')
+    template_module = PlatformFactory.get_module_interface().get_module('template')
+
+    setups = dict()
+    clusters = dict()
+    extra_args = extra_args if extra_args else {}
+
+    cluster_datas = [yaml_load(f) for f in cluster_files]
+
+    # Read setup information
+    for cluster_data in cluster_datas:
+        setups.update(__get_setups__(cluster_data))
+    # Read cluster information
+    for cluster_data in cluster_datas:
+        clusters.update(__get_clusters__(cluster_data))
+
+    # Cluster name is not a valid one?
+    if cluster_name not in clusters:
+        raise KeyError("Cluster `{}` not found in configuration files".format(cluster_name))
+
+    # Get the cluster configuration
+    cluster_data = clusters[cluster_name]
+    
+    # Check cluster configuration
+    cluster_data = __validate_cluster_setups__(cluster_name, cluster_data, setups)
+
+    # Perform jinja substitutions
+    cluster_data = __perform_replacements__(cluster_data, extra_args)
+
+    return cluster_data
+
 
 def __check_clusters__(config_dict: dict, valid_instance_types: List[str], valid_setups: List[str]) -> dict:
     clusters = dict()
@@ -283,7 +406,7 @@ def cluster_create(cluster_files: List[str], cluster_name: str, extra_args: Dict
 
     # Create a new repository 
     repository = ClusterRepositoryOperations()
-    cluster_data = get_cluster_data(cluster_files, cluster_name, extra_args)
+    cluster_data = _get_cluster_data(cluster_files, cluster_name, extra_args)
     
     # To nodes dict has instance type as key and holds the following information:
     # * [minimum] The minimum number of each instance type
@@ -329,7 +452,7 @@ def cluster_create(cluster_files: List[str], cluster_name: str, extra_args: Dict
                     instance_type, ', '.join(instance_vals['names']), cluster_name))
             log.error("Terminating all instantiated cluster nodes: {}".format(', '.join([node.node_id for node in created_nodes])))
             node_module.stop_nodes([node.node_id for node in created_nodes])
-            return []
+            return None, []
 
         # Filter non-reachable nodes and replace the instantiateds of this type only with reachable ones
         non_reachable_nodes += [node for node in instance_vals['instantiateds'] if node.status != Codes.NODE_STATUS_REACHABLE]
@@ -518,8 +641,8 @@ def add_nodes_to_cluster(cluster_id: str, node_types: Dict[str, int]) -> List[No
         node_type = cluster.cluster_config['nodes'][node_name]
         nodes = node_module.start_nodes({node_type['type']: qtde})
         created_nodes += nodes
-        if len(nodes) != qtde:
-            log.error("Not all `{}` could be started. Undoing the operation and stopping the nodes {}".format(node_name, created_nodes))
+        if len(nodes) != qtde or len([node for node in nodes if node.status != Codes.NODE_STATUS_REACHABLE]) != qtde:
+            log.error("Not all `{}` could be started and reachable. Undoing the operation and stopping the nodes {}".format(node_name, created_nodes))
             node_module.stop_nodes([node.node_id for node in created_nodes])
             raise Exception("Could not start nodes")
 
@@ -572,11 +695,14 @@ def remove_nodes_from_cluster(cluster_id: str, node_ids: List[str], do_not_stop:
     repository = ClusterRepositoryOperations()
     cluster = repository.get_cluster(cluster_id)
 
+    if not node_ids:
+        return [], []
+
     nodes = node_module.list_nodes(node_ids)
     for node in nodes:
         if 'clusters' not in node.tags:
             raise Exception("Node `{}` does not belong to cluster `{}`".format(node.node_id, cluster_id))
-        if cluster_id not in node.tags['cluster']:
+        if cluster_id not in node.tags['clusters']:
             raise Exception("Node `{}` does not belong to cluster `{}`".format(node.node_id, cluster_id))
 
     node_types = ["{}:{}".format(cluster_id, node_name) for node_name in list(cluster.cluster_config['nodes'].keys())]
@@ -597,6 +723,8 @@ def remove_nodes_from_cluster(cluster_id: str, node_ids: List[str], do_not_stop:
             to_not_stop_nodes.append(node.node_id)
 
     log.info("Stopping nodes `{}`...".format(', '.join(sorted(to_stop_nodes))))
+    if to_not_stop_nodes:
+        log.info("Nodes `{}` belong to other clusters and will not be stopped".format(', '.join(sorted(to_not_stop_nodes))))
     node_module.stop_nodes(to_stop_nodes)
 
     return to_stop_nodes, to_not_stop_nodes
@@ -611,12 +739,58 @@ def cluster_stop(cluster_id: str) -> Tuple[List[str], List[str]]:
 
     return stopped_nodes, do_not_stopped
 
+def cluster_alive(cluster_id: str) -> Dict[str, bool]:
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+    repository = ClusterRepositoryOperations()
+    cluster = repository.get_cluster(cluster_id)
 
-def cluster_pause(cluster_id: str):
-    pass
+    alive_nodes = node_module.is_alive([], tags={'clusters': cluster_id})
+    if all(alive_nodes.values()):
+        cluster.cluster_state = ClusterState.CLUSTER_RUNNING
+    else:
+        cluster.cluster_state = ClusterState.CLUSTER_PAUSED
+    repository.update_cluster(cluster)
 
-def cluster_resume(cluster_id: str):
-    pass
+    return alive_nodes
+
+def cluster_pause(cluster_id: str) -> Tuple[List[str], List[str]]:
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+    repository = ClusterRepositoryOperations()
+    cluster = repository.get_cluster(cluster_id)
+
+    pause_nodes, not_pause_nodes = [], []
+    nodes = node_module.list_nodes(tags={'clusters': cluster_id})
+
+    for node in nodes:
+        not_paused_other_clusters = [other_cluster for other_cluster in node.tags['clusters'] 
+                if other_cluster != cluster_id and repository.get_cluster(other_cluster).cluster_state != ClusterState.CLUSTER_PAUSED]
+        if not_paused_other_clusters:
+            not_pause_nodes.append(node.node_id)
+        else:
+            pause_nodes.append(node.node_id)
+
+    log.info("Pausing nodes `{}`".format(', '.join(sorted(pause_nodes))))
+    if not_pause_nodes:
+        log.info("Nodes `{}` belong to other clusters that are not paused. These nodes will not be paused".format(
+                ', '.join(sorted(not_pause_nodes))))
+
+    if pause_nodes:
+        paused_nodes = node_module.pause_nodes(pause_nodes)
+
+    cluster.cluster_state = ClusterState.CLUSTER_PAUSED
+    repository.update_cluster(cluster)
+    return pause_nodes, not_pause_nodes
+
+    
+def cluster_resume(cluster_id: str) -> List[str]:
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+    repository = ClusterRepositoryOperations()
+    cluster = repository.get_cluster(cluster_id)
+    resumed_nodes =  node_module.resume_nodes([], tags={'clusters': cluster_id})
+    cluster.cluster_state = ClusterState.CLUSTER_RUNNING
+    repository.update_cluster(cluster)
+    return resumed_nodes
+
 
 def list_clusters(cluster_id: str = None) -> dict:
     node_module = PlatformFactory.get_module_interface().get_module('node')
@@ -633,7 +807,7 @@ def list_clusters(cluster_id: str = None) -> dict:
             }
             nodes[node_name] = [node.node_id for node in node_module.list_nodes(tags=tags)]
 
-        cluster_node_dict[cluster.cluster_id] = {'cluster': cluster.cluster_id, 'nodes': nodes}
+        cluster_node_dict[cluster.cluster_id] = {'cluster': cluster, 'nodes': nodes}
 
     return cluster_node_dict
 

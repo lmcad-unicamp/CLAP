@@ -28,11 +28,11 @@ def add_group_to_node(  node_ids: List[str], group: str, group_args: Dict[str, s
 
 def execute_group_action(node_ids: List[str], group: str, action: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
-    node_ids = set(node_ids)
+    node_ids = set(node_ids) if node_ids else set()
     if tags:
         node_ids.update([node.node_id for node in multi_instance.get_nodes_with_tags(tags)])
 
-    actioned_nodes = multi_instance.execute_group_action(group, action, group_args=group_args, node_ids=node_ids)
+    actioned_nodes = multi_instance.execute_group_action(group, action, group_args=group_args, node_ids=list(node_ids))
     return actioned_nodes
 
 

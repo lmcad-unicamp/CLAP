@@ -53,7 +53,7 @@ class GroupsParser(AbstractParser):
         added_nodes = add_group_to_node(namespace.node_ids, namespace.group, group_args=extra_args, tags=tag)
 
         if added_nodes:
-            print("Nodes `{}` were successfully added to group `{}`".format(', '.join(added_nodes), namespace.group))
+            print("Nodes `{}` were successfully added to group `{}`".format(', '.join(sorted(added_nodes)), namespace.group))
         else:
             log.error("No nodes were added to group `{}`".format(namespace.group))
 
@@ -80,7 +80,7 @@ class GroupsParser(AbstractParser):
 
         if actioned_nodes:
             print("Nodes `{}` successfully performed action `{}` from group `{}`".format(
-                ', '.join(actioned_nodes), namespace.action, namespace.group))
+                ', '.join(sorted(actioned_nodes)), namespace.action, namespace.group))
         else:
             log.error("No nodes successcully performed action `{}` from group `{}`".format(namespace.action, namespace.group))
 

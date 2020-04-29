@@ -428,7 +428,7 @@ class AnsibleInterface(AbstractInstanceInterface):
             log.info("Executing playbook: `{}`".format(playbook_path))
             extra_args.update(self.__create_extra_vars__(dir, list(all_nodes)))
             ret = ansible_runner.run(private_data_dir=dir, inventory=inventory_filepath, playbook=playbook_path, 
-                                    verbosity=Defaults.verbosity, extravars=extra_args)
+                                    verbosity=Defaults.verbosity, extravars=extra_args, debug=True if Defaults.verbosity>3 else False)
 
             status_event = [e for e in ret.events if e['event'] == 'playbook_on_stats'][-1]['event_data']
             

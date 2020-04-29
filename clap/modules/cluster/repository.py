@@ -71,7 +71,10 @@ class ClusterRepositoryOperations:
 
     def get_cluster(self, cluster_id: str) -> ClusterData:
         with get_repository_connection(self.repository) as repository:
-            return next(iter(generic_read_entry(ClusterData, repository, 'clusters', cluster_id=cluster_id)), None)
+            cluster = next(iter(generic_read_entry(ClusterData, repository, 'clusters', cluster_id=cluster_id)), None)
+            if not cluster:
+                raise Exception("Invalid cluster with id `{}`".format(cluster_id))
+            return cluster
 
     def get_all_clusters(self) -> List[ClusterData]:
         with get_repository_connection(self.repository) as repository:
@@ -79,6 +82,7 @@ class ClusterRepositoryOperations:
 
     def update_cluster(self, cluster_data: ClusterData) -> str:
         with get_repository_connection(self.repository) as repository:
+            cluster_data.update_time = time.time()
             generic_write_entry(cluster_data, repository, 'clusters', create=False, cluster_id=cluster_data.cluster_id)
 
     def remove_cluster(self, cluster_id) -> str:

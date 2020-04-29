@@ -4,6 +4,7 @@ import os.path
 import yaml
 import tempfile
 import shutil
+import time
 from contextlib import contextmanager
 from collections.abc import MutableMapping
 
@@ -94,3 +95,7 @@ def get_file_checksum(file_path: str) -> str:
 def yaml_load(filename: str) -> dict:
     with open(filename, 'r') as file:
         return yaml.load(file, Loader=yaml.FullLoader)
+
+
+def float_time_to_string(timespec: float):
+    return time.strftime("%d-%m-%y %H:%M:%S", time.localtime(timespec))

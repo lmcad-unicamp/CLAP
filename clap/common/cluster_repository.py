@@ -3,6 +3,8 @@ import time
 import datetime
 from datetime import datetime
 from typing import List
+
+from clap.common.utils import float_time_to_string
 from clap.common.repository import AbstractEntry, AbstractRepository, RepositoryFactory, get_repository_connection
 
 
@@ -46,7 +48,7 @@ class ClusterInfo(AbstractEntry):
 
     def __repr__(self):
         return 'Cluster(id=`{}`, provider=`{}`, driver=`{}`, creation_time=`{}`)'.format(
-            self.cluster_id, self.provider_id, self.login_id, datetime.fromtimestamp(self.creation_time))
+            self.cluster_id, self.provider_id, self.login_id, float_time_to_string(self.creation_time))
 
 
 class NodeInfo(AbstractEntry):
@@ -88,7 +90,7 @@ class NodeInfo(AbstractEntry):
         return 'Node(id=`{}`, type=`{}`, status=`{}`, public_ip=`{}`, groups=`{}`, tags=`{}`, last_update=`{}`'.format(
             self.node_id, self.instance_type, self.status, self.ip,
             ', '.join(list(self.groups.keys())), '; '.join(["{}={}".format(k, ','.join(v)) for k, v in self.tags.items()]),
-            time.strftime("%d-%m-%y %H:%M:%S", time.localtime(self.update_time)))
+            float_time_to_string(self.update_time))
 
 
 class RepositoryOperations:
