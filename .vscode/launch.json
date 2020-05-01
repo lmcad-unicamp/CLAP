@@ -84,11 +84,11 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Create cluster",
+            "name": "Create spits-cluster",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["cluster", "start", "spits-cluster", "--extra", "x=ola"],
+            "args": ["-vv", "cluster", "start", "spits-cluster", "--extra", "jobid=jobpi", "spits_bin=/home/napoli/Documents/Doutorado/Projects/CEPETRO/spits-2.0/examples/spits-pi/bin/spits-pi-module", "spits_args=1000000 10"],
             "console": "integratedTerminal"
         },
         {
@@ -96,7 +96,7 @@
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "cluster", "setup", "cluster-0", "--extra", "x=ola"],
+            "args": ["-vv", "cluster", "setup", "cluster-0"],
             "console": "integratedTerminal"
         },
         {

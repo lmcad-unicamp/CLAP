@@ -25,7 +25,6 @@ def add_group_to_node(  node_ids: List[str], group: str, group_args: Dict[str, s
 
     return multi_instance.add_nodes_to_group(node_ids, group, group_args=group_args) + already_added_nodes
 
-
 def execute_group_action(node_ids: List[str], group: str, action: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = set(node_ids) if node_ids else set()

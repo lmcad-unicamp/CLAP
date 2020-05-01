@@ -86,7 +86,7 @@ Using paths:
     try:
         return args.func(args)
     except Exception as e:
-        if args.verbose >= 2:
+        if Defaults.verbosity >= 1:
             traceback.print_exc()
 
         log.error("{}: {}".format(e.__class__.__name__, e))

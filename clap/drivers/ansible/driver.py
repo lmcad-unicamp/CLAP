@@ -379,7 +379,7 @@ class AnsibleInterface(AbstractInstanceInterface):
             if 'open_shell' in kwargs:
                 ssh_binary = kwargs.get("ssh_binary", 'ssh')
                 ssh_port = kwargs.get('ssh_port', 22)
-                ssh_verbose = "-{}".format('v'*Defaults.verbosity if Defaults.verbosity > 1 else "")
+                ssh_verbose = "-{}".format('v'*Defaults.verbosity) if Defaults.verbosity > 1 else ""
 
                 ssh_command = '{} -t {} -o "Port={}" -o StrictHostKeyChecking=no -o "User={}" -i "{}" {}'.format(
                             ssh_binary, ssh_verbose, ssh_port, user, key_file, connection_ip)

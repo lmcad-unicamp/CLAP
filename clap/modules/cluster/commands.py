@@ -25,6 +25,18 @@ def __is_valid_directory__(fpath):
     else:
         return fpath
 
+# TODO cluster update
+# TODO cluster group XX
+# TODO cluster action XX
+# TODO cluster connect YY
+# TODO cluster execute
+# TODO cluster playbook
+# TODO cluster copy --all-nodes
+# TODO cluster fetch --all-nodes
+# TODO cluster setup --at=after_all, --nodes=xxx
+# TODO cluster resume --setup --at=after_all
+
+
 class ClusterParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         cluster_subcom_parser = commands_parser.add_parser('start', help='Start cluster given a cluster configuration file')
@@ -49,8 +61,6 @@ class ClusterParser(AbstractParser):
                 help='Setup only determined nodes of the cluster')
         cluster_subcom_parser.add_argument('--readd-group', action='store_true', default=False,
                 help='Add nodes to the groups even if the nodes already belonging to it (default: False)')
-        cluster_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
-                help="Keyworded (format: x=y) Arguments to be passed to the actions")
         cluster_subcom_parser.set_defaults(func=self.command_setup_cluster)
 
         cluster_subcom_parser = commands_parser.add_parser('add', help='Add more nodes to the cluster')
@@ -93,9 +103,14 @@ class ClusterParser(AbstractParser):
                 help='Id of the cluster to perform add nodes')
         cluster_subcom_parser.set_defaults(func=self.command_stop_cluster)
 
+        cluster_subcom_parser = commands_parser.add_parser('update', help='Update cluster configuration')
+        cluster_subcom_parser.add_argument('cluster_id', action='store', 
+                help='Id of the cluster to update the configuration')
+        cluster_subcom_parser.set_defaults(func=self.command_stop_cluster)
+
 
     def command_start_cluster(self, namespace: argparse.Namespace):
-        cluser_name = namespace.cluster_name
+        cluster_name = namespace.cluster_name
         extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
         
         files = []
@@ -106,10 +121,7 @@ class ClusterParser(AbstractParser):
                 files += [path_extend(namespace.directory, f) for ftype in ClusterDefaults.CLUSTER_DEFAULT_FLETYPES 
                     if f.endswith(ftype)]
 
-        cluster, nodes_info = cluster_create(files, 
-        cluser_name, 
-        extra, 
-        no_setup=namespace.no_setup)
+        cluster, nodes_info = cluster_create(files, cluster_name, extra, no_setup=namespace.no_setup)
 
         print("Created cluster with id `{}`. The cluster have {} node(s)".format(cluster.cluster_id, len(nodes_info)))
         for node_info in nodes_info:
@@ -118,8 +130,7 @@ class ClusterParser(AbstractParser):
 
     def command_setup_cluster(self, namespace: argparse.Namespace):
         cluster_id = namespace.cluster_id
-        extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
-        cluster_setup(cluster_id, extra, namespace.readd_group)
+        cluster_setup(cluster_id, nodes_type=None, re_add_to_group=namespace.readd_group)
         print("Cluster `{}` successfully setup".format(cluster_id))
         return 0
     
@@ -188,4 +199,28 @@ class ClusterParser(AbstractParser):
         raise NotImplementedError
 
     def commands_list_templates(self, namespace: argparse.Namespace):
+        raise NotImplementedError
+
+    def commands_update_cluster(self, namespace: argparse.Namespace):
+        raise NotImplementedError
+
+    def commands_group_add(self, namespace: argparse.Namespace):
+        raise NotImplementedError
+
+    def commands_group_action(self, namespace: argparse.Namespace):
+        raise NotImplementedError
+
+    def commands_connect(self, namespace: argparse.Namespace):
+        raise NotImplementedError
+
+    def commands_execute(self, namespace: argparse.Namespace):
+        raise NotImplementedError
+
+    def commands_playbook(self, namespace: argparse.Namespace):
+        raise NotImplementedError
+
+    def commands_copy(self, namespace: argparse.Namespace):
+        raise NotImplementedError
+
+    def commands_fetch(self, namespace: argparse.Namespace):
         raise NotImplementedError

@@ -27,7 +27,7 @@ class ClusterData(AbstractEntry):
         super(ClusterData, self).__init__(**kwargs)
 
 class ClusterRepositoryOperations:
-    def __init__(self, repository_name: str = 'cluster.db', repository_type: str = Defaults.REPOSITORY_TYPE, cluster_prefix = 'cluster'):
+    def __init__(self, repository_name: str = 'cluster.json', repository_type: str = Defaults.REPOSITORY_TYPE, cluster_prefix = 'cluster'):
         repository_dir = ClusterDefaults.CLUSTER_REPOSITORY_DIR
 
         if os.path.exists(repository_dir):

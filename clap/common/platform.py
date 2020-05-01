@@ -451,7 +451,7 @@ class MultiInstanceAPI:
                     #             for group, host_list in hosts.items():
                     log.error("Error executing setup playbook `{}` in nodes `{}`. Ignoring these nodes...".format(
                         action, ', '.join(error_nodes)))
-                    raise Exception("Not handling ignore...")
+                    raise Exception
 
         return list(executeds.keys())
 
@@ -590,7 +590,7 @@ class MultiInstanceAPI:
         if not hosts_map:
             raise Exception("No nodes to perform action `{}` from group `{}`".format(action, group_name))
 
-        log.info("Executing action `{}` of group `{}` in nodes `{}`".format(action, group_name, ', '.join(node_ids)))
+        log.info("Executing action `{}` of group `{}` in nodes `{}`".format(action, group_name, ', '.join(sorted(node_ids))))
         group_args['action'] = action
         node_ids = self.__execute_group_action_sequence(hosts_map, [group_playbook], Defaults.groups_path,
                                                         group_args, error_action)
