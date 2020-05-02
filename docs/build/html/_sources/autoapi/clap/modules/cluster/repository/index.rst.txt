@@ -1,0 +1,51 @@
+:mod:`clap.modules.cluster.repository`
+======================================
+
+.. py:module:: clap.modules.cluster.repository
+
+
+Module Contents
+---------------
+
+
+.. py:class:: ClusterControlData(**kwargs)
+
+   Bases: :class:`clap.common.repository.AbstractEntry`
+
+
+.. py:class:: ClusterData(**kwargs)
+
+   Bases: :class:`clap.common.repository.AbstractEntry`
+
+
+.. py:class:: ClusterRepositoryOperations(repository_name: str = 'cluster.json', repository_type: str = Defaults.REPOSITORY_TYPE, cluster_prefix='cluster')
+
+   .. method:: exists_platform_db(self)
+
+
+
+   .. method:: create_repository(self, exists: str = 'pass')
+
+
+
+   .. method:: new_cluster(self, cluster_name, cluster_config, state: str = 'running')
+
+
+
+   .. method:: get_cluster(self, cluster_id: str)
+
+
+
+   .. method:: get_all_clusters(self)
+
+
+
+   .. method:: update_cluster(self, cluster_data: ClusterData)
+
+
+
+   .. method:: remove_cluster(self, cluster_id)
+
+
+
+

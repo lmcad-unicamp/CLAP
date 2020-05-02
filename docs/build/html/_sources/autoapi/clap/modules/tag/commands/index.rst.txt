@@ -1,0 +1,27 @@
+:mod:`clap.modules.tag.commands`
+================================
+
+.. py:module:: clap.modules.tag.commands
+
+
+Module Contents
+---------------
+
+
+.. py:class:: TagsParser
+
+   Bases: :class:`clap.common.module.AbstractParser`
+
+   .. method:: add_parser(self, commands_parser: argparse._SubParsersAction)
+
+
+
+   .. method:: command_node_add_tag(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: command_node_remove_tag(self, namespace: argparse.Namespace)
+
+
+
+

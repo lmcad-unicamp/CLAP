@@ -7,6 +7,7 @@
 Module Contents
 ---------------
 
+
 .. py:class:: AbstractInstanceInterface(repository_operator: RepositoryOperations)
 
    Abstract class implementing the interface between the driver and the clap objects.
@@ -65,7 +66,7 @@ Module Contents
        
 
    .. attribute:: NODE_STATUS_INIT
-      :annotation: = initialized
+      :annotation: = started
 
       
 

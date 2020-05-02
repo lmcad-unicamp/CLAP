@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>clap.common.exceptions &mdash; CLoud Application Platform 0.1.0 documentation</title>
+  <title>clap.common.exceptions &mdash; CLoud Application Platform 0.2.0 documentation</title>
   
 
   
@@ -33,6 +33,7 @@
   
   <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="clap.common.factory" href="../factory/index.html" />
@@ -59,6 +60,10 @@
           
             
             
+              <div class="version">
+                0.2.0
+              </div>
+            
           
 
           
@@ -80,38 +85,17 @@
               
             
             
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html">Basic Configuration Setup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#cloud-provider-configuration">Cloud provider configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#login-provider-configuration">Login provider configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#instance-templates-configuration">Instance templates configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html">Groups</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#working-groups-in-clap">Working Groups in CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-commands">Group Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-hosts">Group Hosts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#special-variables-tips">Special variables tips</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../shared_groups.html">Groups shared with CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pythonapi.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../cluster_repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.cluster_repository</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.commands</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.config</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../driver/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.driver</span></code></a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.exceptions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../factory/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.factory</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../platform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.platform</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.repository</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.utils</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -190,42 +174,42 @@
 <span id="clap-common-exceptions"></span><h1><a class="reference internal" href="#module-clap.common.exceptions" title="clap.common.exceptions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.exceptions</span></code></a><a class="headerlink" href="#module-clap.common.exceptions" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
-<dl class="exception">
+<dl class="py exception">
 <dt id="clap.common.exceptions.RepositoryError">
 <em class="property">exception </em><code class="sig-prename descclassname">clap.common.exceptions.</code><code class="sig-name descname">RepositoryError</code><a class="headerlink" href="#clap.common.exceptions.RepositoryError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="clap.common.exceptions.TableAlreadyExists">
-<em class="property">exception </em><code class="sig-prename descclassname">clap.common.exceptions.</code><code class="sig-name descname">TableAlreadyExists</code><span class="sig-paren">(</span><em class="sig-param">table_name: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.exceptions.TableAlreadyExists" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><code class="sig-prename descclassname">clap.common.exceptions.</code><code class="sig-name descname">TableAlreadyExists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.exceptions.TableAlreadyExists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#clap.common.exceptions.RepositoryError" title="clap.common.exceptions.RepositoryError"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.exceptions.RepositoryError</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.exceptions.TableAlreadyExists.__str__">
-<code class="sig-name descname">__str__</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.exceptions.TableAlreadyExists.__str__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__str__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.exceptions.TableAlreadyExists.__str__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="clap.common.exceptions.ModuleError">
 <em class="property">exception </em><code class="sig-prename descclassname">clap.common.exceptions.</code><code class="sig-name descname">ModuleError</code><a class="headerlink" href="#clap.common.exceptions.ModuleError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="clap.common.exceptions.ValueNotFound">
 <em class="property">exception </em><code class="sig-prename descclassname">clap.common.exceptions.</code><code class="sig-name descname">ValueNotFound</code><a class="headerlink" href="#clap.common.exceptions.ValueNotFound" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#clap.common.exceptions.RepositoryError" title="clap.common.exceptions.RepositoryError"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.exceptions.RepositoryError</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="clap.common.exceptions.ClusterError">
 <em class="property">exception </em><code class="sig-prename descclassname">clap.common.exceptions.</code><code class="sig-name descname">ClusterError</code><a class="headerlink" href="#clap.common.exceptions.ClusterError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="clap.common.exceptions.ClusterCreationError">
 <em class="property">exception </em><code class="sig-prename descclassname">clap.common.exceptions.</code><code class="sig-name descname">ClusterCreationError</code><a class="headerlink" href="#clap.common.exceptions.ClusterCreationError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#clap.common.exceptions.ClusterError" title="clap.common.exceptions.ClusterError"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.exceptions.ClusterError</span></code></a></p>

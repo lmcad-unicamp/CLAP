@@ -360,7 +360,6 @@ class AnsibleInterface(AbstractInstanceInterface):
     def get_connection_to_nodes(self, node_ids: List[str], *args, **kwargs) -> Dict[str, paramiko.SSHClient]:
         shells = {}
         for node in self.repository_operator.get_nodes(node_ids):
-            node = self.repository_operator.get_node(node_ids[0])
             cluster = self.repository_operator.get_cluster(node.cluster_id)
             login = self.reader.get_login(cluster.login_id)
 
@@ -389,6 +388,8 @@ class AnsibleInterface(AbstractInstanceInterface):
                     log.info("SSH session to {} finalized!".format(connection_ip))
                 except subprocess.CalledProcessError:
                     log.error("Invalid connection ip for node `{}`. Try checking if `{}` is alive first...".format(node.node_id, node.node_id))
+                
+                return {}
         
             else:
                 client = paramiko.SSHClient()

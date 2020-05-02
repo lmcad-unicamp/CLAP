@@ -11,11 +11,11 @@ Submodules
    :maxdepth: 1
 
    cluster_repository/index.rst
-   commands/index.rst
    config/index.rst
    driver/index.rst
    exceptions/index.rst
    factory/index.rst
+   module/index.rst
    platform/index.rst
    repository/index.rst
    utils/index.rst

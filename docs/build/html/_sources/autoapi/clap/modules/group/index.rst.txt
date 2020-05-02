@@ -1,0 +1,159 @@
+:mod:`clap.modules.group`
+=========================
+
+.. py:module:: clap.modules.group
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   commands/index.rst
+   module/index.rst
+
+
+Package Contents
+----------------
+
+
+.. py:class:: AbstractParser
+
+   .. method:: add_parser(self, commands_parser: argparse._SubParsersAction)
+      :abstractmethod:
+
+
+
+
+.. data:: log
+   
+
+   
+
+.. function:: add_group_to_node(node_ids: List[str], group: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None, re_add_to_group: bool = True) -> List[str]
+
+
+.. function:: execute_group_action(node_ids: List[str], group: str, action: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]
+
+
+.. function:: list_groups() -> List[Dict[str, Any]]
+
+
+.. function:: remove_group_from_node()
+
+
+.. py:class:: GroupsParser
+
+   Bases: :class:`clap.common.module.AbstractParser`
+
+   .. method:: add_parser(self, commands_parser: argparse._SubParsersAction)
+
+
+
+   .. method:: command_add_group_to_node(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: command_execute_group_action(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: command_list_groups(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: command_remove_group_from_node(self, namespace: argparse.Namespace)
+      :abstractmethod:
+
+
+
+
+.. py:class:: PlatformFactory
+
+   .. attribute:: __multi_instance_api__
+      
+
+      
+
+   .. attribute:: __module_iface__
+      
+
+      
+
+   .. method:: get_module_interface()
+      :staticmethod:
+
+
+      Get the default ModuleInterface used to pick clap modules
+
+      :return: The modules interface
+      :rtype: ModuleInterface
+
+
+   .. method:: get_instance_api(platform_db: str = Defaults.PLATFORM_REPOSITORY, repository_type: str = Defaults.REPOSITORY_TYPE, default_driver: str = Defaults.DRIVER_ID)
+      :staticmethod:
+
+
+      Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers
+
+      :return: The MultiInstanceAPI object to manipulate cluster, nodes and modules
+      :rtype: MultiInstanceAPI
+
+
+
+.. py:class:: NodeInfo(**kwargs)
+
+   Bases: :class:`clap.common.repository.AbstractEntry`
+
+   This class holds information about a node that is stored in the repository and used by several interfaces
+   Each node is unique and is composed by the following elements:
+       * node_id: The unique identification of the node, used to perform operations across modules and instance interfaces
+       * node_name: The name of the node used by the driver object that controls it
+       * cluster_id: ID of the cluster that this node is attached to
+       * flavor: Instance flavor (e.g., t2.micro in aws)
+       * status: Last known status of the node (see PlatformCodes)
+       * ip: IP address used to connect to this node (address used to perform SSH)
+       * driver_id: ID of the driver that controls this node
+       * driver_version: Version of the driver used by this node
+       * keypair: The name of the keypair used to connect to the machines created in the node cluster
+       * key: The private key file used to perform SSH and connect to machines
+       * tags: Additional user tags for node identification
+
+   .. method:: __repr__(self)
+
+
+
+
+.. data:: log
+   
+
+   
+
+.. function:: add_group_to_node(node_ids: List[str], group: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None, re_add_to_group: bool = True) -> List[str]
+
+
+.. function:: execute_group_action(node_ids: List[str], group: str, action: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]
+
+
+.. function:: list_groups() -> List[Dict[str, Any]]
+
+
+.. function:: remove_group_from_node()
+
+
+.. data:: __module_name__
+   :annotation: = group
+
+   
+
+.. data:: __module_description__
+   :annotation: = Group operation in nodes
+
+   
+
+.. data:: __module_dependencies__
+   :annotation: = []
+
+   
+

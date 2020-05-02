@@ -1,0 +1,34 @@
+:mod:`clap.modules.node.module`
+===============================
+
+.. py:module:: clap.modules.node.module
+
+
+Module Contents
+---------------
+
+
+.. function:: start_nodes(node_ids: Dict[str, int]) -> List[NodeInfo]
+
+
+.. function:: list_nodes(node_ids: List[str] = None, tags: Dict[str, str] = None) -> List[NodeInfo]
+
+
+.. function:: is_alive(node_ids: List[str], tags: Dict[str, str] = None) -> Dict[str, bool]
+
+
+.. function:: stop_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]
+
+
+.. function:: resume_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]
+
+
+.. function:: pause_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]
+
+
+.. function:: execute_playbook(playbook_file: str, node_ids: List[str], extra_args: Dict[str, str] = None) -> Dict[str, bool]
+
+
+.. function:: get_ssh_connections(node_ids: List[str], *args, **kwargs) -> Dict[str, SSHClient]
+
+

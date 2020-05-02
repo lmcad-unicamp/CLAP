@@ -7,12 +7,16 @@
 Module Contents
 ---------------
 
+
 .. data:: log
    
 
    
 
-.. function:: setup_log(log_name: str = None, verbosity_level: int = logging.INFO, filename: str = '')
+.. function:: tmpdir(suffix=None, prefix='clap.', dir=None)
+
+
+.. function:: setup_log(log_name: str = None, verbosity_level: int = 0, filename: str = '')
 
 
 .. py:class:: Struct(initializer=None, **kwargs)
@@ -57,5 +61,8 @@ Module Contents
 
 
 .. function:: yaml_load(filename: str) -> dict
+
+
+.. function:: float_time_to_string(timespec: float)
 
 

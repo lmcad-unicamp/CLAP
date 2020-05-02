@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>clap.common.factory &mdash; CLoud Application Platform 0.1.0 documentation</title>
+  <title>clap.common.factory &mdash; CLoud Application Platform 0.2.0 documentation</title>
   
 
   
@@ -33,9 +33,10 @@
   
   <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="clap.common.platform" href="../platform/index.html" />
+    <link rel="next" title="clap.common.module" href="../module/index.html" />
     <link rel="prev" title="clap.common.exceptions" href="../exceptions/index.html" /> 
 </head>
 
@@ -59,6 +60,10 @@
           
             
             
+              <div class="version">
+                0.2.0
+              </div>
+            
           
 
           
@@ -80,38 +85,17 @@
               
             
             
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html">Basic Configuration Setup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#cloud-provider-configuration">Cloud provider configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#login-provider-configuration">Login provider configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#instance-templates-configuration">Instance templates configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html">Groups</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#working-groups-in-clap">Working Groups in CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-commands">Group Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-hosts">Group Hosts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#special-variables-tips">Special variables tips</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../shared_groups.html">Groups shared with CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pythonapi.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../cluster_repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.cluster_repository</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.commands</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.config</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../driver/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.driver</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../exceptions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.exceptions</span></code></a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.factory</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../platform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.platform</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.repository</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.utils</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -190,20 +174,20 @@
 <span id="clap-common-factory"></span><h1><a class="reference internal" href="#module-clap.common.factory" title="clap.common.factory"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.factory</span></code></a><a class="headerlink" href="#module-clap.common.factory" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="clap.common.factory.PlatformFactory">
 <em class="property">class </em><code class="sig-prename descclassname">clap.common.factory.</code><code class="sig-name descname">PlatformFactory</code><a class="headerlink" href="#clap.common.factory.PlatformFactory" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="attribute">
+<dd><dl class="py attribute">
 <dt id="clap.common.factory.PlatformFactory.__multi_instance_api__">
 <code class="sig-name descname">__multi_instance_api__</code><a class="headerlink" href="#clap.common.factory.PlatformFactory.__multi_instance_api__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="clap.common.factory.PlatformFactory.__module_iface__">
 <code class="sig-name descname">__module_iface__</code><a class="headerlink" href="#clap.common.factory.PlatformFactory.__module_iface__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.factory.PlatformFactory.get_module_interface">
 <em class="property">static </em><code class="sig-name descname">get_module_interface</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.factory.PlatformFactory.get_module_interface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the default ModuleInterface used to pick clap modules</p>
@@ -217,9 +201,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.factory.PlatformFactory.get_instance_api">
-<em class="property">static </em><code class="sig-name descname">get_instance_api</code><span class="sig-paren">(</span><em class="sig-param">platform_db: str = Defaults.PLATFORM_REPOSITORY</em>, <em class="sig-param">repository_type: str = Defaults.REPOSITORY_TYPE</em>, <em class="sig-param">default_driver: str = Defaults.DRIVER_ID</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.factory.PlatformFactory.get_instance_api" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">get_instance_api</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">platform_db</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.PLATFORM_REPOSITORY</span></em>, <em class="sig-param"><span class="n">repository_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.REPOSITORY_TYPE</span></em>, <em class="sig-param"><span class="n">default_driver</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.DRIVER_ID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.factory.PlatformFactory.get_instance_api" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -244,7 +228,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../platform/index.html" class="btn btn-neutral float-right" title="clap.common.platform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../module/index.html" class="btn btn-neutral float-right" title="clap.common.module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../exceptions/index.html" class="btn btn-neutral float-left" title="clap.common.exceptions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

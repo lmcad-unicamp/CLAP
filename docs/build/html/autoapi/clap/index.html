@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>clap &mdash; CLoud Application Platform 0.1.0 documentation</title>
+  <title>clap &mdash; CLoud Application Platform 0.2.0 documentation</title>
   
 
   
@@ -33,6 +33,7 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="clap.common" href="common/index.html" />
@@ -59,6 +60,10 @@
           
             
             
+              <div class="version">
+                0.2.0
+              </div>
+            
           
 
           
@@ -80,27 +85,17 @@
               
             
             
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Basic Configuration Setup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../configuration.html#cloud-provider-configuration">Cloud provider configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../configuration.html#login-provider-configuration">Login provider configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../configuration.html#instance-templates-configuration">Instance templates configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../groups.html">Groups</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../groups.html#working-groups-in-clap">Working Groups in CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../groups.html#group-commands">Group Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../groups.html#group-hosts">Group Hosts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../groups.html#special-variables-tips">Special variables tips</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../shared_groups.html">Groups shared with CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pythonapi.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -179,19 +174,55 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="common/cluster_repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.cluster_repository</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="common/commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.commands</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="common/config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.config</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="common/driver/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.driver</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="common/exceptions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.exceptions</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="common/factory/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.factory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="common/module/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.module</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="common/platform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.platform</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="common/repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.repository</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="common/utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.utils</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="drivers/ansible/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers.ansible</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="drivers/ansible/aws_operations/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers.ansible.aws_operations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="drivers/ansible/driver/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers.ansible.driver</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="drivers/elasticluster/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers.elasticluster</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="drivers/elasticluster/driver/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers.elasticluster.driver</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/cluster/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.cluster</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/cluster/commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.cluster.commands</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/cluster/conf/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.cluster.conf</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/cluster/module/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.cluster.module</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/cluster/repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.cluster.repository</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/group/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.group</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/group/commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.group.commands</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/group/module/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.group.module</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/node/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.node</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/node/commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.node.commands</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/node/interactive/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.node.interactive</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/node/module/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.node.module</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/tag/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.tag</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/tag/commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.tag.commands</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/tag/module/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.tag.module</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/template/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.template</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/template/commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.template.commands</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/template/module/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.template.module</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -29,31 +29,33 @@ def stop_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = [node.node_id for node in list_nodes(node_ids=node_ids, tags=tags)]
     if not node_ids:
-        return []
-
+        raise Exception("No nodes provided")
     return multi_instance.stop_nodes(list(node_ids))
 
 def resume_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = [node.node_id for node in list_nodes(node_ids=node_ids, tags=tags)]
     if not node_ids:
-        return []
-
+        raise Exception("No nodes provided")
     return multi_instance.resume_nodes(list(node_ids))
 
 def pause_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = [node.node_id for node in list_nodes(node_ids=node_ids, tags=tags)]
     if not node_ids:
-        return []
-
+        raise Exception("No nodes provided")
     return multi_instance.pause_nodes(list(node_ids))
 
-def execute_playbook(playbook_file: str, node_ids: List[str], extra_args: Dict[str, str] = None) -> Dict[str, bool]:
+def execute_playbook(playbook_file: str, node_ids: List[str], tags: Dict[str, str] = None, extra_args: Dict[str, str] = None) -> Dict[str, bool]:
     multi_instance = PlatformFactory.get_instance_api()
-    node_ids = [node.node_id for node in list_nodes(node_ids=node_ids, tags=None)]
+    node_ids = [node.node_id for node in list_nodes(node_ids=node_ids, tags=tags)]
+    if not node_ids:
+        raise Exception("No nodes provided")
     return  multi_instance.execute_playbook_in_nodes(playbook_file, node_ids, extra_args)
 
-def get_ssh_connections(node_ids: List[str], *args, **kwargs) -> Dict[str, SSHClient]:
+def get_ssh_connections(node_ids: List[str], tags: Dict[str, str] = None, *args, **kwargs) -> Dict[str, SSHClient]:
     multi_instance = PlatformFactory.get_instance_api()
+    node_ids = [node.node_id for node in list_nodes(node_ids=node_ids, tags=tags)]
+    if not node_ids:
+        raise Exception("No nodes provided")
     return multi_instance.get_connection_to_nodes(node_ids, *args, **kwargs)

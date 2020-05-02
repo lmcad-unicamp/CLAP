@@ -7,7 +7,8 @@
 Module Contents
 ---------------
 
-.. py:class:: ModuleInterface
+
+.. py:class:: ModuleInterface(module_paths: List[str] = None, force=False)
 
    Interface to get clap modules from the modules repository
        
@@ -17,7 +18,12 @@ Module Contents
 
       
 
-   .. method:: __find_modules()
+   .. method:: __check_dependencies__()
+      :staticmethod:
+
+
+
+   .. method:: __find_modules__(module_paths: List[str] = None, force: bool = False)
       :staticmethod:
 
 
@@ -38,8 +44,8 @@ Module Contents
 
       Get the module package
 
-      :return: List of modules
-      :rtype: List[module]
+      :return: Dictionaty with modules information
+      :rtype: Dict[str, Any]
 
 
    .. method:: get_module_names(self)
@@ -105,9 +111,39 @@ Module Contents
    .. method:: start_nodes(self, instances_num: Dict[str, int])
 
 
+      Start instances based on the configuration values
+
+      :param instances_num: Dictionary containing the instance name as key and number of instances as value]
+      :type instances_num: Dict[str, int]
+      :return: List of created nodes 
+      :rtype: List[NodeInfo]
+
 
    .. method:: stop_nodes(self, node_ids: List[str])
 
+
+      Stop started nodes based on their node ids
+
+      :param node_ids: List of node ids to stop
+      :type node_ids: List[str]
+
+
+   .. method:: pause_nodes(self, node_ids: List[str])
+
+
+      Pause started nodes based on their node ids
+
+      :param node_ids: List of node ids to pause
+      :type node_ids: List[str]
+
+
+   .. method:: resume_nodes(self, node_ids: List[str])
+
+
+      Resume paused nodes based on their node ids
+
+      :param node_ids: List of node ids to resume
+      :type node_ids: List[str]
 
 
    .. method:: check_nodes_alive(self, node_ids: List[str])
@@ -138,7 +174,11 @@ Module Contents
 
 
 
-   .. method:: remove_tags_from_nodes(self, node_ids: List[str], tags: List[str])
+   .. method:: remove_tags_from_nodes(self, node_ids: List[str], tags: Dict[str, str])
+
+
+
+   .. method:: remove_tags_from_nodes_by_key(self, node_ids: List[str], tags: List[str])
 
 
 
@@ -171,14 +211,6 @@ Module Contents
 
 
    .. method:: remove_nodes_from_group(self, group_name: str, node_ids: List[str] = None, remove_action: str = None, group_args: Dict = None)
-
-
-
-   .. method:: export_platform(self, output_filename: str)
-
-
-
-   .. method:: import_platform(self, zip_filename: str)
 
 
 

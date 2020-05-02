@@ -7,7 +7,13 @@
 Module Contents
 ---------------
 
+
 .. py:class:: Defaults
+
+   .. attribute:: verbosity
+      :annotation: = 0
+
+      
 
    .. attribute:: log_level
       
@@ -25,7 +31,7 @@ Module Contents
       
 
    .. attribute:: DRIVER_ID
-      :annotation: = elasticluster
+      :annotation: = ansible
 
       
 
@@ -60,6 +66,11 @@ Module Contents
       
 
    .. attribute:: modules_path
+      
+
+      
+
+   .. attribute:: modules_data
       
 
       

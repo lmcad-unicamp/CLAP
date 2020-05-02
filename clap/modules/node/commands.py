@@ -9,6 +9,8 @@ from .interactive import interactive_shell
 from .module import (start_nodes, list_nodes, is_alive, stop_nodes, 
                     resume_nodes, pause_nodes, execute_playbook, get_ssh_connections)
 
+# TODO force removal of nodes
+
 class NodeParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         node_subcom_parser = commands_parser.add_parser('start', help='Start nodes in the cluster (based on the template)')
@@ -42,26 +44,28 @@ class NodeParser(AbstractParser):
         node_subcom_parser.set_defaults(func=self.command_node_stop)
 
         node_subcom_parser = commands_parser.add_parser('pause', help='Pause nodes')
-        node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be paused')
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be paused')
         node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         node_subcom_parser.set_defaults(func=self.command_node_pause)
         
         node_subcom_parser = commands_parser.add_parser('resume', help='Resume nodes')
-        node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be resumed')
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be resumed')
         node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         node_subcom_parser.set_defaults(func=self.command_node_resume)
 
         node_subcom_parser = commands_parser.add_parser('playbook', help='Execute playbook in nodes')
         node_subcom_parser.add_argument('playbook_file', action='store', help='Playbook file to be executed')
-        node_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be stopped')
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be stopped')
+        node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         node_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
                                         help="Keyworded (format: x=y) Arguments to be passed to the playbook")
         node_subcom_parser.set_defaults(func=self.command_node_playbook)
 
         node_subcom_parser = commands_parser.add_parser('execute', help='Execute a command in the node (via SSH)')
-        node_subcom_parser.add_argument('node_id', action='store', help='ID of the node to get an SSH connection')
-        node_subcom_parser.add_argument('cmd', nargs=argparse.REMAINDER, metavar='"cmd"',
-                                        help='Command to be executed')
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be execute the SSH command')
+        node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
+        node_subcom_parser.add_argument('--command', '-c',  action='store', required=True, metavar='command',
+                                        help='Command string to be executed')
         node_subcom_parser.set_defaults(func=self.command_node_exec_command)
 
         node_subcom_parser = commands_parser.add_parser('connect', help='Connect via SSH to a node')
@@ -98,9 +102,10 @@ class NodeParser(AbstractParser):
         if not nodes_info:
             raise Exception("No nodes could be started")
 
-        print("Started {} node(s)".format(len(nodes_info)))
         for node_info in nodes_info:
             print('* ', node_info)
+        
+        print("Started {} node(s)".format(len(nodes_info)))
 
         if namespace.tag:
             try:
@@ -205,6 +210,9 @@ class NodeParser(AbstractParser):
         else:
             tag = {}
 
+        if not node_ids and not tag:
+            raise Exception("No nodes provided")
+
         node_ids = stop_nodes(node_ids=node_ids, tags=tag)
 
         if not node_ids:
@@ -225,6 +233,9 @@ class NodeParser(AbstractParser):
                                 "Please check the tag parameters passed")
         else:
             tag = {}
+        
+        if not node_ids and not tag:
+            raise Exception("No nodes provided")
 
         node_ids = resume_nodes(node_ids=node_ids, tags=tag)
 
@@ -246,6 +257,9 @@ class NodeParser(AbstractParser):
                                 "Please check the tag parameters passed")
         else:
             tag = {}
+        
+        if not node_ids and not tag:
+            raise Exception("No nodes provided")
 
         node_ids = pause_nodes(node_ids=node_ids, tags=tag)
 
@@ -259,35 +273,71 @@ class NodeParser(AbstractParser):
     def command_node_playbook(self, namespace: argparse.Namespace):
         node_ids = list(set(namespace.node_ids))
 
+        if namespace.tag:
+            try:
+                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+            except Exception:
+                raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
+                                "Please check the tag parameters passed")
+        else:
+            tag = {}
+
         try:
             extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
         except Exception:
             raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
                             "Please check the tag parameters passed")
 
-        execute_playbook(namespace.playbook_file, node_ids, extra_args=extra)
+        if not node_ids and not tag:
+            raise Exception("No nodes provided")
+
+        execute_playbook(namespace.playbook_file, node_ids, tags=tag, extra_args=extra)
 
         return 0
 
     def command_node_exec_command(self, namespace: argparse.Namespace):
-        command = ' '.join(namespace.cmd)
-        ssh_client = get_ssh_connections([namespace.node_id])
+        node_ids = list(set(namespace.node_ids))
+        command = namespace.command
 
-        if not ssh_client:
-            raise Exception("Connection to `{}` was unsuccessful. "
-                            "Check you internet connection or if the node is up and alive".format(namespace.node_id))
+        if namespace.tag:
+            try:
+                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+            except Exception:
+                raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
+                                "Please check the tag parameters passed")
+        else:
+            tag = {}
 
-        print('Executing in node `{}` the command (via SSH): `{}`'.format(namespace.node_id, command))
+        if not node_ids and not tag:
+            raise Exception("No nodes provided")
 
-        ssh_client = ssh_client[namespace.node_id]
-        _, stdout, stderr = ssh_client.exec_command(command)
-        print("{} STD OUTPUT {}".format('-'*40, '-'*40))
-        print(''.join(stdout.readlines()))
-        print("{} ERR OUTPUT {}".format('-'*40, '-'*40))
-        print(''.join(stderr.readlines()))
-        print('-' * 80)
+        ssh_clients = get_ssh_connections(node_ids, tags=tag)
 
-        ssh_client.close()
+        valid_ssh_clients = {}
+        for node_id, ssh in ssh_clients.items():
+            if not ssh:
+                log.error("Connection to `{}` was unsucessful. Check node connection. -- Ignoring it --".format(node_id))
+                continue
+            
+            valid_ssh_clients[node_id] = ssh
+        
+        if not valid_ssh_clients:
+            raise Exception("Connections were unsuccessful. Check you internet connection or if the node is up and alive")
+
+        for node_id, ssh in valid_ssh_clients.items():
+            try:
+                print('Executing command `{}` in node `{}`'.format(command, node_id))
+                _, stdout, stderr = ssh.exec_command(command)
+                print("{} STD OUTPUT for node `{}` {}".format('-'*40, node_id, '-'*40))
+                print(''.join(stdout.readlines()))
+                print("{} ERR OUTPUT for node `{}` {}".format('-'*40, node_id, '-'*40))
+                print(''.join(stderr.readlines()))
+                print('-' * 80)
+                print('\n')
+                ssh.close()
+            except Exception as e:
+                log.error("Error executing command in node `{}`: {}".format(node_id, e))
+                continue
 
         return 0
 

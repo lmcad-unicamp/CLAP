@@ -7,6 +7,7 @@
 Module Contents
 ---------------
 
+
 .. py:class:: PlatformControlInfo(*args, **kwargs)
 
    Bases: :class:`clap.common.repository.AbstractEntry`
@@ -92,22 +93,12 @@ Module Contents
       :rtype: AbstractRepository
 
 
-   .. method:: write_platform_control_info(self, control: PlatformControlInfo)
+   .. method:: get_and_increment_node_index(self)
 
 
-      Helper function to write Platform Control information on the correct table in the repository
 
-      :param control: Control information to be written
-      :type control: PlatformControlInfo
-      :return: None
+   .. method:: get_and_increment_cluster_index(self)
 
-
-   .. method:: read_platform_control_info(self)
-
-
-      Helper function to read Platform control information from the correct table in the repository
-
-      :return: PlatformControlInfo
 
 
    .. method:: write_cluster_info(self, cluster: ClusterInfo, create: bool = False)
@@ -159,10 +150,6 @@ Module Contents
 
 
    .. method:: _delete_nodes_info(self, **where)
-
-
-
-   .. method:: get_platform_control(self)
 
 
 

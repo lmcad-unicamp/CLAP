@@ -1,0 +1,28 @@
+:mod:`clap.drivers.ansible.aws_operations.operations`
+=====================================================
+
+.. py:module:: clap.drivers.ansible.aws_operations.operations
+
+
+Module Contents
+---------------
+
+
+.. function:: __get_ec2_common_template__(provider_conf: dict, node_infos: List[NodeInfo], task_check_name: str, state: str)
+
+
+.. function:: stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]
+
+
+.. function:: pause_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]
+
+
+.. function:: resume_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]
+
+
+.. function:: check_instance_status(queue, repository: RepositoryOperations, provider_conf, node_infos: List[NodeInfo])
+
+
+.. function:: start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: ClusterInfo, provider_conf: dict, login_conf: dict, instance_name: str, instance_conf: dict, count: int, driver_id: str, instance_wait_timeout: int = 600, node_prefix: str = 'node', additional_ansible_kwargs: dict = None, instance_tags: dict = None) -> List[str]
+
+

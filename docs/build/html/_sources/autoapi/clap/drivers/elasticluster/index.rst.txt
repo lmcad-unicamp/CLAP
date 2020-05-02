@@ -16,6 +16,7 @@ Submodules
 Package Contents
 ----------------
 
+
 .. py:class:: ElasticlusterInterface(repository_operator: RepositoryOperations)
 
    Bases: :class:`clap.common.driver.AbstractInstanceInterface`
@@ -46,6 +47,7 @@ Package Contents
 
 
    .. method:: pause_nodes(self, node_ids: List[str])
+      :abstractmethod:
 
 
 
@@ -66,9 +68,4 @@ Package Contents
 
 
 
-
-.. data:: interface
-   
-
-   
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>clap.common.repository &mdash; CLoud Application Platform 0.1.0 documentation</title>
+  <title>clap.common.repository &mdash; CLoud Application Platform 0.2.0 documentation</title>
   
 
   
@@ -33,6 +33,7 @@
   
   <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="clap.common.utils" href="../utils/index.html" />
@@ -59,6 +60,10 @@
           
             
             
+              <div class="version">
+                0.2.0
+              </div>
+            
           
 
           
@@ -80,38 +85,17 @@
               
             
             
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html">Basic Configuration Setup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#cloud-provider-configuration">Cloud provider configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#login-provider-configuration">Login provider configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#instance-templates-configuration">Instance templates configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html">Groups</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#working-groups-in-clap">Working Groups in CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-commands">Group Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-hosts">Group Hosts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#special-variables-tips">Special variables tips</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../shared_groups.html">Groups shared with CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pythonapi.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../cluster_repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.cluster_repository</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../commands/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.commands</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.config</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../driver/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.driver</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../exceptions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.exceptions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../factory/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.factory</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../platform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.platform</span></code></a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.repository</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.utils</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -190,40 +174,50 @@
 <span id="clap-common-repository"></span><h1><a class="reference internal" href="#module-clap.common.repository" title="clap.common.repository"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.repository</span></code></a><a class="headerlink" href="#module-clap.common.repository" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="clap.common.repository.AbstractEntry">
-<em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">AbstractEntry</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">AbstractEntry</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../utils/index.html#clap.common.utils.Struct" title="clap.common.utils.Struct"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.utils.Struct</span></code></a></p>
 <p>This class represent a single entry in the Repository. Basically its a dictionary that is a serializable and
 is a generic container for a data format. Implementations derived from this class represent specific element types in a repository.
 Objects (variables) inside this class can be accessed using <cite>element[‘variable’]</cite> or <cite>element.variable</cite> notations</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="clap.common.repository.AbstractRepository">
-<em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">AbstractRepository</code><span class="sig-paren">(</span><em class="sig-param">repository: str</em>, <em class="sig-param">create_repository: bool</em>, <em class="sig-param">storage_type: str = None</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">AbstractRepository</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">repository</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">create_repository</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">storage_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for implementing repositories and their operations. The repository is similar to tabled data models.
 The elements are every object inherited from <code class="docutils literal notranslate"><span class="pre">AbstractEntry</span></code> class, which are basically, dictionary types.
 Tables hold a set of elements of the same type and must be created before adding elements.
 The repository then, implement a set of methods to create, retrieve, update and delete elements and tables from the database.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="clap.common.repository.AbstractRepository.__repository_id__">
 <code class="sig-name descname">__repository_id__</code><em class="property"> = abstractrepository</em><a class="headerlink" href="#clap.common.repository.AbstractRepository.__repository_id__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="clap.common.repository.AbstractRepository.__repository_name__">
 <code class="sig-name descname">__repository_name__</code><em class="property"> = Abstract Repository</em><a class="headerlink" href="#clap.common.repository.AbstractRepository.__repository_name__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="clap.common.repository.AbstractRepository.__repository_version__">
 <code class="sig-name descname">__repository_version__</code><em class="property"> = 0.0.1</em><a class="headerlink" href="#clap.common.repository.AbstractRepository.__repository_version__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="clap.common.repository.AbstractRepository.open_connection">
+<em class="property">abstract </em><code class="sig-name descname">open_connection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.open_connection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.repository.AbstractRepository.close_connection">
+<em class="property">abstract </em><code class="sig-name descname">close_connection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.close_connection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="clap.common.repository.AbstractRepository.create_table">
-<em class="property">abstract </em><code class="sig-name descname">create_table</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.create_table" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">create_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.create_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a table in the repository  (a container to hold elements of the same type)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -239,9 +233,9 @@ The repository then, implement a set of methods to create, retrieve, update and 
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.AbstractRepository.retrieve_tables">
-<em class="property">abstract </em><code class="sig-name descname">retrieve_tables</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.retrieve_tables" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">retrieve_tables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.retrieve_tables" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve tables from the repository.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -253,9 +247,9 @@ The repository then, implement a set of methods to create, retrieve, update and 
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.AbstractRepository.exists_table">
-<em class="property">abstract </em><code class="sig-name descname">exists_table</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.exists_table" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">exists_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.exists_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a table exists in the repsitory</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -274,9 +268,9 @@ The repository then, implement a set of methods to create, retrieve, update and 
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.AbstractRepository.drop_tables">
-<em class="property">abstract </em><code class="sig-name descname">drop_tables</code><span class="sig-paren">(</span><em class="sig-param">self, tables: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.drop_tables" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">drop_tables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">tables</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.drop_tables" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete tables from the repository</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -292,9 +286,9 @@ The repository then, implement a set of methods to create, retrieve, update and 
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.AbstractRepository.create_element">
-<em class="property">abstract </em><code class="sig-name descname">create_element</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">obj: AbstractEntry</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.create_element" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">create_element</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">obj</span><span class="p">:</span> <span class="n">AbstractEntry</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.create_element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert a new element in the table</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -311,9 +305,9 @@ The repository then, implement a set of methods to create, retrieve, update and 
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.AbstractRepository.retrieve_elements">
-<em class="property">abstract </em><code class="sig-name descname">retrieve_elements</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">cast_to: type</em>, <em class="sig-param">**where</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.retrieve_elements" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">retrieve_elements</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">cast_to</span><span class="p">:</span> <span class="n">type</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">where</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.retrieve_elements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve elements from a table in the database, basing on a simle keyworded query</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -333,9 +327,9 @@ Elements that match the conditions will be retrieved (e.g. person_id=’person1�
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.AbstractRepository.update_element">
-<em class="property">abstract </em><code class="sig-name descname">update_element</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">obj: AbstractEntry</em>, <em class="sig-param">**where</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.update_element" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">update_element</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">obj</span><span class="p">:</span> <span class="n">AbstractEntry</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">where</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.update_element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update an element from the database table with another one, matching a criteria</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -352,9 +346,9 @@ Elements that match the conditions will be retrieved (e.g. person_id=’person1�
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.AbstractRepository.drop_elements">
-<em class="property">abstract </em><code class="sig-name descname">drop_elements</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">**where</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.drop_elements" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">drop_elements</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">where</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.AbstractRepository.drop_elements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete elements from a database table that matches a criteria</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -373,39 +367,49 @@ Elements that match the conditions will be retrieved (e.g. person_id=’person1�
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="clap.common.repository.TinyDBRepository">
-<em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">TinyDBRepository</code><span class="sig-paren">(</span><em class="sig-param">repository_path: str</em>, <em class="sig-param">create_repository: bool</em>, <em class="sig-param">storage_type: str = DEFAULT_STORAGE_TYPE</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">TinyDBRepository</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">repository_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">create_repository</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">storage_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">DEFAULT_STORAGE_TYPE</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#clap.common.repository.AbstractRepository" title="clap.common.repository.AbstractRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.repository.AbstractRepository</span></code></a></p>
 <p>Repository implementation using the tinydb, document-oriented database.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="clap.common.repository.TinyDBRepository.__repository_id__">
 <code class="sig-name descname">__repository_id__</code><em class="property"> = tinydb</em><a class="headerlink" href="#clap.common.repository.TinyDBRepository.__repository_id__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="clap.common.repository.TinyDBRepository.__repository_name__">
 <code class="sig-name descname">__repository_name__</code><em class="property"> = TinyDB Repository</em><a class="headerlink" href="#clap.common.repository.TinyDBRepository.__repository_name__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="clap.common.repository.TinyDBRepository.__repository_version__">
 <code class="sig-name descname">__repository_version__</code><em class="property"> = 0.1.0</em><a class="headerlink" href="#clap.common.repository.TinyDBRepository.__repository_version__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="clap.common.repository.TinyDBRepository.DEFAULT_STORAGE_TYPE">
 <code class="sig-name descname">DEFAULT_STORAGE_TYPE</code><em class="property"> = json</em><a class="headerlink" href="#clap.common.repository.TinyDBRepository.DEFAULT_STORAGE_TYPE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="clap.common.repository.TinyDBRepository.__storage_types_map">
 <code class="sig-name descname">__storage_types_map</code><a class="headerlink" href="#clap.common.repository.TinyDBRepository.__storage_types_map" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="clap.common.repository.TinyDBRepository.open_connection">
+<code class="sig-name descname">open_connection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.open_connection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.repository.TinyDBRepository.close_connection">
+<code class="sig-name descname">close_connection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.close_connection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="clap.common.repository.TinyDBRepository.create_table">
-<code class="sig-name descname">create_table</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.create_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.create_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new table in the database</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -424,9 +428,9 @@ Elements that match the conditions will be retrieved (e.g. person_id=’person1�
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.TinyDBRepository.retrieve_tables">
-<code class="sig-name descname">retrieve_tables</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.retrieve_tables" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">retrieve_tables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.retrieve_tables" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the names of all tables in the database</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -438,9 +442,9 @@ Elements that match the conditions will be retrieved (e.g. person_id=’person1�
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.TinyDBRepository.exists_table">
-<code class="sig-name descname">exists_table</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.exists_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">exists_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.exists_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a table already exists in database</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -459,9 +463,9 @@ Elements that match the conditions will be retrieved (e.g. person_id=’person1�
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.TinyDBRepository.drop_tables">
-<code class="sig-name descname">drop_tables</code><span class="sig-paren">(</span><em class="sig-param">self, tables: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.drop_tables" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">drop_tables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">tables</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.drop_tables" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete tables from the database</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -477,9 +481,9 @@ Elements that match the conditions will be retrieved (e.g. person_id=’person1�
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.TinyDBRepository.create_element">
-<code class="sig-name descname">create_element</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">obj: AbstractEntry</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.create_element" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_element</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">obj</span><span class="p">:</span> <span class="n">AbstractEntry</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.create_element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert elements in a database table</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -499,9 +503,9 @@ Elements that match the conditions will be retrieved (e.g. person_id=’person1�
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.TinyDBRepository.retrieve_elements">
-<code class="sig-name descname">retrieve_elements</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">cast_to: type = dict</em>, <em class="sig-param">**where</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.retrieve_elements" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">retrieve_elements</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">cast_to</span><span class="p">:</span> <span class="n">type</span> <span class="o">=</span> <span class="default_value">dict</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">where</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.retrieve_elements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve elements from the database that match a criteria</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -525,9 +529,9 @@ If no conditions are passed all elements are retrieved</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.TinyDBRepository.update_element">
-<code class="sig-name descname">update_element</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">obj: AbstractEntry</em>, <em class="sig-param">**where</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.update_element" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_element</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">obj</span><span class="p">:</span> <span class="n">AbstractEntry</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">where</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.update_element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update an element (or elements) matching some creiterias, replacing it with another one.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -548,9 +552,9 @@ If no conditions are the first retrived element in the table will be updated</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.TinyDBRepository.drop_elements">
-<code class="sig-name descname">drop_elements</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">table: str</em>, <em class="sig-param">**where</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.drop_elements" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">drop_elements</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">where</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.TinyDBRepository.drop_elements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove elements from a table</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -572,9 +576,9 @@ A clause must be specified!</p></li>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="clap.common.repository.generic_read_entry">
-<code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">generic_read_entry</code><span class="sig-paren">(</span><em class="sig-param">info_type: type</em>, <em class="sig-param">repository: AbstractRepository</em>, <em class="sig-param">table: str</em>, <em class="sig-param">**where</em><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#clap.common.repository.generic_read_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">generic_read_entry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">info_type</span><span class="p">:</span> <span class="n">type</span></em>, <em class="sig-param"><span class="n">repository</span><span class="p">:</span> <span class="n">AbstractRepository</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">where</span></em><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#clap.common.repository.generic_read_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper method to read an entry from a repository</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -594,9 +598,9 @@ A clause must be specified!</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="clap.common.repository.generic_write_entry">
-<code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">generic_write_entry</code><span class="sig-paren">(</span><em class="sig-param">info: AbstractEntry</em>, <em class="sig-param">repository: AbstractRepository</em>, <em class="sig-param">table: str</em>, <em class="sig-param">create: bool = False</em>, <em class="sig-param">**where</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.generic_write_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">generic_write_entry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">info</span><span class="p">:</span> <span class="n">AbstractEntry</span></em>, <em class="sig-param"><span class="n">repository</span><span class="p">:</span> <span class="n">AbstractRepository</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">create</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">where</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.generic_write_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper method to write an entry in a repository</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -611,16 +615,15 @@ A clause must be specified!</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="clap.common.repository.check_and_create_table">
-<code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">check_and_create_table</code><span class="sig-paren">(</span><em class="sig-param">repository: AbstractRepository</em>, <em class="sig-param">table_name: str</em>, <em class="sig-param">exists: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#clap.common.repository.check_and_create_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">check_and_create_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">repository</span><span class="p">:</span> <span class="n">AbstractRepository</span></em>, <em class="sig-param"><span class="n">table_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">exists</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#clap.common.repository.check_and_create_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if table exists and creates table based on <cite>exists</cite> variable policy. The table is always created if it does not exists</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>repository</strong> (<a class="reference internal" href="#clap.common.repository.AbstractRepository" title="clap.common.repository.AbstractRepository"><em>AbstractRepository</em></a>) – Repository that the table will be created</p></li>
-<li><p><strong>table_name</strong> – Name of the table to be created</p></li>
-<li><p><strong>table_name</strong> – str</p></li>
+<li><p><strong>table_name</strong> (<em>str</em>) – Name of the table to be created</p></li>
 <li><p><strong>exists</strong> – Policy taken when the table already exists. This parameter can be:
 ‘pass’ (default): will do nothing
 ‘fail’: will raise <cite>TableAlreadyExists</cite> exception
@@ -644,12 +647,17 @@ A clause must be specified!</p></li>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py function">
+<dt id="clap.common.repository.get_repository_connection">
+<code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">get_repository_connection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">repository</span><span class="p">:</span> <span class="n">AbstractRepository</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.get_repository_connection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
 <dt id="clap.common.repository.RepositoryFactory">
 <em class="property">class </em><code class="sig-prename descclassname">clap.common.repository.</code><code class="sig-name descname">RepositoryFactory</code><a class="headerlink" href="#clap.common.repository.RepositoryFactory" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><dl class="py method">
 <dt id="clap.common.repository.RepositoryFactory.get_repository">
-<em class="property">static </em><code class="sig-name descname">get_repository</code><span class="sig-paren">(</span><em class="sig-param">repository: str</em>, <em class="sig-param">repository_type: str = Defaults.REPOSITORY_TYPE</em>, <em class="sig-param">storage_type: str = None</em>, <em class="sig-param">create_new: bool = True</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.RepositoryFactory.get_repository" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">get_repository</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">repository</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">repository_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.REPOSITORY_TYPE</span></em>, <em class="sig-param"><span class="n">storage_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">create_new</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.RepositoryFactory.get_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a repository, based on a implementation of the <code class="docutils literal notranslate"><span class="pre">AbstractRepository</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -672,9 +680,9 @@ A clause must be specified!</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.common.repository.RepositoryFactory.exists_repository">
-<em class="property">static </em><code class="sig-name descname">exists_repository</code><span class="sig-paren">(</span><em class="sig-param">repository: str</em>, <em class="sig-param">repository_type=Defaults.REPOSITORY_TYPE</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.RepositoryFactory.exists_repository" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">exists_repository</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">repository</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">repository_type</span><span class="o">=</span><span class="default_value">Defaults.REPOSITORY_TYPE</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.repository.RepositoryFactory.exists_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a repository already exists</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

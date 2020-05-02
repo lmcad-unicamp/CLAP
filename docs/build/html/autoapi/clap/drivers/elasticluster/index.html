@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>clap.drivers.elasticluster &mdash; CLoud Application Platform 0.1.0 documentation</title>
+  <title>clap.drivers.elasticluster &mdash; CLoud Application Platform 0.2.0 documentation</title>
   
 
   
@@ -33,10 +33,11 @@
   
   <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="clap.drivers.elasticluster.driver" href="driver/index.html" />
-    <link rel="prev" title="clap.drivers" href="../index.html" /> 
+    <link rel="prev" title="clap.drivers.ansible.driver" href="../ansible/driver/index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -59,6 +60,10 @@
           
             
             
+              <div class="version">
+                0.2.0
+              </div>
+            
           
 
           
@@ -80,28 +85,15 @@
               
             
             
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html">Basic Configuration Setup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#cloud-provider-configuration">Cloud provider configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#login-provider-configuration">Login provider configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html#instance-templates-configuration">Instance templates configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html">Groups</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#working-groups-in-clap">Working Groups in CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-commands">Group Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#group-hosts">Group Hosts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../groups.html#special-variables-tips">Special variables tips</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../shared_groups.html">Groups shared with CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pythonapi.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../../common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers.elasticluster</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -190,71 +182,66 @@
 </div>
 <div class="section" id="package-contents">
 <h2>Package Contents<a class="headerlink" href="#package-contents" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface">
-<em class="property">class </em><code class="sig-prename descclassname">clap.drivers.elasticluster.</code><code class="sig-name descname">ElasticlusterInterface</code><span class="sig-paren">(</span><em class="sig-param">repository_operator: RepositoryOperations</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">clap.drivers.elasticluster.</code><code class="sig-name descname">ElasticlusterInterface</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">repository_operator</span><span class="p">:</span> <span class="n">RepositoryOperations</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../common/driver/index.html#clap.common.driver.AbstractInstanceInterface" title="clap.common.driver.AbstractInstanceInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.driver.AbstractInstanceInterface</span></code></a></p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface.__interface_id__">
 <code class="sig-name descname">__interface_id__</code><em class="property"> = elasticluster</em><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.__interface_id__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface.__get_updated_cluster">
-<code class="sig-name descname">__get_updated_cluster</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_id: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.__get_updated_cluster" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__get_updated_cluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.__get_updated_cluster" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface.__get_or_create_cluster">
-<code class="sig-name descname">__get_or_create_cluster</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cloud_conf: str</em>, <em class="sig-param">login_conf: str</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.__get_or_create_cluster" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__get_or_create_cluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">cloud_conf</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">login_conf</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.__get_or_create_cluster" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface.__stop_cluster">
-<code class="sig-name descname">__stop_cluster</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cluster_id: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.__stop_cluster" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__stop_cluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.__stop_cluster" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface.start_nodes">
-<code class="sig-name descname">start_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, instances_num: Dict[str, int]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.start_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">start_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">instances_num</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.start_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface.stop_nodes">
-<code class="sig-name descname">stop_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.stop_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">stop_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.stop_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface.pause_nodes">
-<code class="sig-name descname">pause_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.pause_nodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">pause_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.pause_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface.resume_nodes">
-<em class="property">abstract </em><code class="sig-name descname">resume_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.resume_nodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">resume_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.resume_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface.check_nodes_alive">
-<code class="sig-name descname">check_nodes_alive</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.check_nodes_alive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_nodes_alive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.check_nodes_alive" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface.get_connection_to_nodes">
-<code class="sig-name descname">get_connection_to_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, node_ids: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.get_connection_to_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_connection_to_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.get_connection_to_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="clap.drivers.elasticluster.ElasticlusterInterface.execute_playbook_in_nodes">
-<code class="sig-name descname">execute_playbook_in_nodes</code><span class="sig-paren">(</span><em class="sig-param">self, playbook_path: str, group_hosts_map: Dict[str, List[str]], extra_args: Dict[str, str] = None, group_vars: Dict[str, Dict[str, str]] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.execute_playbook_in_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">execute_playbook_in_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">playbook_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">group_hosts_map</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_vars</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.drivers.elasticluster.ElasticlusterInterface.execute_playbook_in_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
-
-<dl class="data">
-<dt id="clap.drivers.elasticluster.interface">
-<code class="sig-prename descclassname">clap.drivers.elasticluster.</code><code class="sig-name descname">interface</code><a class="headerlink" href="#clap.drivers.elasticluster.interface" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </div>
 </div>
@@ -270,7 +257,7 @@
         <a href="driver/index.html" class="btn btn-neutral float-right" title="clap.drivers.elasticluster.driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../index.html" class="btn btn-neutral float-left" title="clap.drivers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../ansible/driver/index.html" class="btn btn-neutral float-left" title="clap.drivers.ansible.driver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

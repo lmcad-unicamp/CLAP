@@ -7,6 +7,7 @@
 Module Contents
 ---------------
 
+
 .. py:class:: AbstractEntry(*args, **kwargs)
 
    Bases: :class:`clap.common.utils.Struct`
@@ -37,6 +38,16 @@ Module Contents
       :annotation: = 0.0.1
 
       
+
+   .. method:: open_connection(self, *args, **kwargs)
+      :abstractmethod:
+
+
+
+   .. method:: close_connection(self, *args, **kwargs)
+      :abstractmethod:
+
+
 
    .. method:: create_table(self, table: str, *args, **kwargs)
       :abstractmethod:
@@ -183,6 +194,14 @@ Module Contents
       
 
       
+
+   .. method:: open_connection(self, *args, **kwargs)
+
+
+
+   .. method:: close_connection(self, *args, **kwargs)
+
+
 
    .. method:: create_table(self, table: str, *args, **kwargs)
 
@@ -334,7 +353,7 @@ Module Contents
    :param repository: Repository that the table will be created
    :type repository: AbstractRepository
    :param table_name: Name of the table to be created
-   :param table_name: str
+   :type table_name: str
    :param exists: Policy taken when the table already exists. This parameter can be:
        'pass' (default): will do nothing
        'fail': will raise `TableAlreadyExists` exception
@@ -346,6 +365,9 @@ Module Contents
        If table already exists and 'fail' parameter is passed
    ValueError
        If exists parameter is invalid
+
+
+.. function:: get_repository_connection(repository: AbstractRepository, *args, **kwargs)
 
 
 .. py:class:: RepositoryFactory

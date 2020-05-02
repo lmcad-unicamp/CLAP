@@ -23,7 +23,8 @@ copyright = u'2020, Otávio Napoli'
 author = u'Otávio Napoli'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+version = '0.2.0'
+release = '0.2.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -32,7 +33,7 @@ release = '0.1.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [ 
-    'autoapi.extension',
+    #'autoapi.extension',
     'sphinx_rtd_theme',
     'sphinx.ext.viewcode'
 ]
@@ -62,3 +63,5 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 source_encoding = 'utf-8'
+
+htmlhelp_basename = 'clapdoc'

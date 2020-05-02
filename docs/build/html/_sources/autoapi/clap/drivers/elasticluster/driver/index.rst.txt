@@ -7,6 +7,7 @@
 Module Contents
 ---------------
 
+
 .. py:class:: ElasticCreator
 
    .. method:: create_cluster_obj(cluster_name: str, provider_config: dict, login_config: dict, instances: dict, login_name: str, provider_name: str, storage_path: str = Defaults.elasticluster_storage_path, storage_type: str = Defaults.DEFAULT_CONF_TYPE)
@@ -122,6 +123,7 @@ Module Contents
 
 
    .. method:: pause_nodes(self, node_ids: List[str])
+      :abstractmethod:
 
 
 
