@@ -1,7 +1,7 @@
-.. _tutorials:
+.. _shared modules:
 
 ==========================
-Tutorials
+Modules shared with CLAP
 ==========================
 
-Sorry, to be written...
+pass

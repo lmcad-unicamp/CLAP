@@ -4,16 +4,16 @@
 Basic Configuration Setup
 ============================
 
-In order to create compute nodes and interact with them you will need provide some information about how to connect to the cloud provider (providers configuration), how to the login into the machines (logins configuration) and details about the cloud's instances used (instances configuration). The following sections will show how to configurate these sections and the valid values for each one. All configuration files use the `YAML File Format <https://yaml.org/>`_ as default type.
+In order to create compute nodes and interact with them you will need provide some information about how to connect to the cloud provider (:ref:`providers configuration <cloud configuration>`), how to the login into the machines (:ref:`logins configuration <login configuration>`) and details about the cloud's instances that can be used (:ref:`instances configuration <instance configuration>`). The following sections will show how to configurate these sections and the valid values for each one. All configuration files use the `YAML File Format <https://yaml.org/>`_ as default format.
 
 
 .. note::
 
-    YAML use spaces instead of tabs. Be careful messing this up
+    YAML use spaces instead of tabs. Be careful to do not messing this up!
 
 .. _cloud configuration:
 
-Cloud provider configuration
+Cloud Provider Configuration
 -------------------------------
 
 The ``~/.clap/configs/providers.yaml`` file defines all properties needed to connect to a specific cloud provider, such as the region, access keys, among others. In this file you can define multiple provider configurations that is used by other configurations. 
@@ -49,23 +49,23 @@ The valid values for a provider configuration showed in the table below.
         - **Description**
 
     *   - **provider**
-        - 'aws'
+        - **valid values**: aws
         - Name of the cloud provider to be used
 
     *   - **access_keyfile**
-        - <filename>
+        - **type**: filename
         - **Name of the file** containing the AWS access key ID. The file must be at ``~/.clap/private`` and this field must be filled only with the name of file, not the whole path.
 
     *   - **secret_access_keyfile**
-        - <filename>
+        - **type**: filename
         - **Name of the file** containing the AWS Secret Access Key (access ID). The file must be at ``~/.clap/private`` and this field must be filled only with the name of file, not the whole path. 
 
     *   - **region**
-        - <string>
+        - **type**: string
         - The availability zone you want to use (e.g. ``us-east-1``)
 
     *   - **vpc (optional)**
-        - <string>
+        - **type**: string
         - Name or ID of the AWS Virtual Private Cloud to provision resources in.
 
 
@@ -83,8 +83,9 @@ So you must place your access key ID string inside a file in the ``~/.clap/priva
 
 .. _login configuration:
 
-Login provider configuration
+Login Configuration
 -------------------------------
+
 
 The ``~/.clap/configs/logins.yaml`` defines all properties needed to access the instances started in the cloud via SSH, such as login user name, SSH key file used to access, etc. In this file you can define multiple login information that is used by other configurations.
 An example ``logins.yaml`` file is shown below.
@@ -117,27 +118,27 @@ The valid values for a login configuration are:
         - **Description**
 
     *   - **user**
-        - <string>
+        - **type**: string
         - Name of the user used to perform SSH into the virtual machine
 
     *   - **keypair_name (optional)**
-        - <string>
+        - **type**: string
         - Name of the keypair used on the cloud provider
 
     *   - **keypair_public_file (optional)**
-        - <filename>
+        - **type**: filename
         - Name of the file in the ``~/.clap/private`` directory containing the RSA/DSA public key corresponding to the private key file
 
     *   - **keypair_private_file (optional)**
-        - <filename>
+        - **type**: filename
         - Name of the file in the ``~/.clap/private`` directory containing a valid SSH private key to be used to connect to the virtual machine
 
     *   - **sudo**
-        - <boolean>
+        - **type**: boolean
         - True if the sudo user can execute commands as root by running the sudo command.
 
     *   - **sudo_user (optional)**
-        - <string>
+        - **type**: string
         - Optional login name of the super user (default is root)
 
 The keypair is used to login to the machine without password (and perform SSH). If no keypair_name is provided (which is preferable) CLAP will try to create a new one and store at ``~/clap/private`` directory. Also, CLAP will register the created keypair at the cloud provider. 
@@ -159,7 +160,7 @@ The generated public key must be saved to a file and placed at ``~/.clap/private
 
 .. _instance configuration:
 
-Instance templates configuration
+Instance Templates Configuration
 ----------------------------------
 
 To start virtual machines in a cloud, you must first setup some instance templates in the ``~/.clap/configs/instances.yaml`` file.
@@ -200,44 +201,44 @@ The valid values for the instance templates are:
         - **Description**
 
     *   - **provider**
-        - <string>
+        - **type**: string
         - The ID of the provider configuration to be used for this instance. The ID must match the provider ID at ``providers.yaml``
 
     *   - **login**
-        - <string>
+        - **type**: string
         - The ID of the login configuration to be used for this instance. The ID must match the login ID at ``logins.yaml``
 
     *   - **flavor**
-        - <string>
+        - **type**: string
         - The provider instance type to use (e.g. ``t2.micro``, ``c5.large``, etc)
 
     *   - **image_id**
-        - <string>
+        - **type**: string
         - Disk image ID to use in the VM (basically the OS to be used). Amazon EC2 uses IDs like ``ami-123456``. Note that the image_id is dependent of the provider region and a error may be raised if an invalid AMI id is specified
 
     *   - **security_group (optional)**
-        - <string>
+        - **type**: string
         - Name of security group to use when starting the instance
 
     *   - **boot_disk_size (optional)**
-        - <string>
+        - **type**: string
         - Size of the instance’s root filesystem volume, in Gibibytes (GiB)
 
     *   - **boot_disk_device (optional)**
-        - <string>
+        - **type**: string
         - Device name of the instance’s root file system in the block device mapping. For AWS, see `block device mapping docs <http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html>`_ for more information
 
     *   - **boot_disk_type (optional)**
-        - <string>
+        - **type**: string
         - Root filesystem volume storage type, one of gp2 (general purpose SSD), io1 (provisioned IOPS SSD), or standard (default). See `Root filesystem volume storage type <http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html>`_ for more information
 
     *   - **placement_group (optional)**
-        - <string>
+        - **type**: string
         - Placement group to enable low-latency networking between compute nodes. See `placement groups <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html>`_ for more information
 
     *   - **network_ids (optional)**
-        - <string>
+        - **type**: string
         - Subnet ID that the nodes of the cluster will be connected to
 
 
-If you do not provide a security group, CLAP will automatically create a new security group with the inbound rules for port 22 (SSH).
+If you do not provide a security group, CLAP will automatically create a new security group with the inbound rules for port 22 (SSH), 80 (HTTP) and 443 (HTTPS).

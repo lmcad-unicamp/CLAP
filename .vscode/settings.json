@@ -2,5 +2,24 @@
     "python.pythonPath": "clap-env/bin/python",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
-    "restructuredtext.confPath": "${workspaceFolder}/docs/source"
+    "restructuredtext.confPath": "${workspaceFolder}/docs/source",
+    "cSpell.enableFiletypes": [
+        "!c",
+        "!cpp",
+        "!csharp",
+        "!css",
+        "!javascript",
+        "!javascriptreact"
+    ],
+    "cSpell.words": [
+        "clapp",
+        "jobmanager",
+        "workdir"
+    ],
+    "spellright.language": [],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ]
 }

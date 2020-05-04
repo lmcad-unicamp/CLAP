@@ -93,6 +93,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Basic Configuration Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shared_groups.html">Groups shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shared_modules.html">Modules shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
 
             
@@ -205,9 +211,7 @@ Inside the <code class="docutils literal notranslate"><span class="pre">clap</sp
 <p>To use CLAP you will first need to provide some information about how to launch instances in the cloud. By default, CLAP holds all information about configurations in the <code class="docutils literal notranslate"><span class="pre">~/.clap/configs</span></code> directory. The <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/providers.yaml</span></code> file describes how to connect to the cloud provider, the <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/logins.yaml</span></code> file describes how to login into machines and the <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/instances.yaml</span></code> describe the instances that can be used with CLAP.
 The <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration section</span></a> will guide you to write all these configuration sections easily.</p>
 <p>Once configurations written, the <a class="reference internal" href="usage.html#usage"><span class="std std-ref">usage section</span></a> will show you how to execute CLAP commands based on the configurations written.
-CLAP can be used to start, configure and manage single or multiple cloud’s instances using the &lt;NODE&gt; module as well as entire compute clusters using the &lt;CLUSTER&gt; module.</p>
-<p>&lt;TUTORIALS&gt;</p>
-<p>&lt;EXAMPLES&gt;</p>
+CLAP can be used to start, configure and manage single or multiple cloud’s instances using the <a class="reference internal" href="usage.html#node-section"><span class="std std-ref">node module</span></a> as well as entire compute clusters using the &lt;CLUSTER&gt; module.</p>
 </div>
 <div class="section" id="quicly-clap-directory-architecture-description">
 <span id="clap-directory-archtecture"></span><h2>Quicly CLAP directory architecture description<a class="headerlink" href="#quicly-clap-directory-architecture-description" title="Permalink to this headline">¶</a></h2>
@@ -233,9 +237,9 @@ CLAP can be used to start, configure and manage single or multiple cloud’s ins
 <li><p>The <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/providers.yaml</span></code> <a class="reference external" href="https://yaml.org/">YAML</a> file inside the <code class="docutils literal notranslate"><span class="pre">~/.clap/configs</span></code> directory holds the information about the cloud provider and how to connect to it.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/logins.yaml</span></code> file holds information about how to connect to an instance (e.g. login user, keyfile, etc)</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/instances.yaml</span></code> holds the information about the instances to launch, i.e. the instance templates.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">groups</span></code> directory store groups file and actions, used to perform action in several nodes. More detailed information about groups and actions will be presented at <a class="reference internal" href="groups.html"><span class="doc">groups section</span></a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">groups</span></code> directory store groups file and actions, used to perform action in several nodes. More detailed information about groups and actions will be presented at &lt;GROUPS&gt;</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">modules</span></code> directory store module files, used to extend CLAP.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">private</span></code> stores keys and passwords files used to connect to the cloud provider and to the instance itself. Every key/secret files needed in the configuration sections must be placed inside this directory.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">private</span></code> stores keys and passwords files used to connect to the cloud provider and to the instance itself. Every key/secret files needed in the configuration sections must be placed inside this directory (usually with 0400 permissions).</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">storage</span></code> directory store metadata information used by CLAP.</p></li>
 </ul>
 </div>

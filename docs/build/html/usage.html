@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Groups shared with CLAP" href="shared_groups.html" />
     <link rel="prev" title="Basic Configuration Setup" href="configuration.html" /> 
 </head>
 
@@ -100,10 +101,30 @@
 <li class="toctree-l3"><a class="reference internal" href="#command-node-playbook">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">playbook</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#tags-module">Tags Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#group-module">Group Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tags-module">Tags Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#command-tag-add">Command <code class="docutils literal notranslate"><span class="pre">tag</span> <span class="pre">add</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-tag-remove">Command <code class="docutils literal notranslate"><span class="pre">tag</span> <span class="pre">remove</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#group-module">Group Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clap-s-groups-and-actions">CLAP’s groups and actions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#group-description-file">Group description file</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#command-group-list">Command <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">list</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-group-add">Command <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">add</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-group-action">Command <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">action</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-group-remove">Command <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">remove</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shared_groups.html">Groups shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shared_modules.html">Modules shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
 
             
@@ -172,9 +193,9 @@
 <span id="usage"></span><h1>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
 <p>CLAP is a platform to start, stop and manage cloud’s instances (called CLAP nodes or simply ,nodes) at different cloud providers transparently, based on configuration files. Also, it offers mechanisms to perform actions via SSH commands or Ansible playboks in single nodes or in a set of nodes in a row.
 To provide this, in a modular way, CLAP provides modules to allow performing several operations (see &lt;ARCH&gt; section for more information about the CLAP architecture). You can use <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">--help</span></code> command to list the available modules or <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">-v</span> <span class="pre">--show-all</span></code> to show all available commands that can be used.</p>
-<p>The most common modules are: <code class="docutils literal notranslate"><span class="pre">node</span></code>, <code class="docutils literal notranslate"><span class="pre">tags</span></code> and <code class="docutils literal notranslate"><span class="pre">groups</span></code>, described in next sections.</p>
+<p>The most common modules are: <code class="docutils literal notranslate"><span class="pre">node</span></code>, <code class="docutils literal notranslate"><span class="pre">tags</span></code> and <code class="docutils literal notranslate"><span class="pre">groups</span></code>.</p>
 <div class="section" id="node-module">
-<span id="nodes-section"></span><h2>Node Module<a class="headerlink" href="#node-module" title="Permalink to this headline">¶</a></h2>
+<span id="node-section"></span><h2>Node Module<a class="headerlink" href="#node-module" title="Permalink to this headline">¶</a></h2>
 <p>The node module provides mechanisms to create, manage and interact with cloud’s instances. It provides the following features:</p>
 <ul class="simple">
 <li><p>Start nodes based on the instance templates with the <code class="docutils literal notranslate"><span class="pre">start</span></code> command</p></li>
@@ -323,9 +344,157 @@ The <code class="docutils literal notranslate"><span class="pre">--command</span
 </div>
 <div class="section" id="tags-module">
 <span id="tags-section"></span><h2>Tags Module<a class="headerlink" href="#tags-module" title="Permalink to this headline">¶</a></h2>
+<p>The tags module provides mechanisms to add and remove tags at CLAP’s nodes. Tags are efficient ways to select CLAP nodes. For instance, several comamands from <code class="docutils literal notranslate"><span class="pre">node</span></code> module has support to select nodes to limit to nodes which it will actuate.
+A tag is just a key (string) which have its list of values (list of strings), thus you can have multiple values for same key.</p>
+<div class="section" id="command-tag-add">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">tag</span> <span class="pre">add</span></code><a class="headerlink" href="#command-tag-add" title="Permalink to this headline">¶</a></h3>
+<p>This <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">tag</span> <span class="pre">add</span></code> command adds a tag to a set of nodes and has the following sintax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp tag add [-h] tag node_ids [node_ids ...]
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">tag</span></code> parameter must be a keyword value in the format <code class="docutils literal notranslate"><span class="pre">key=value</span></code>. You can add as many tags to a node as you want. If you add more than one tag with same key, the values are appended to the key. An example of adding tags is shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp tag add x=y node-0 node-1
+</pre></div>
+</div>
+<p>Where tag <code class="docutils literal notranslate"><span class="pre">x=y</span></code> is added to nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and <code class="docutils literal notranslate"><span class="pre">node-1</span></code>. If you add another tag, <code class="docutils literal notranslate"><span class="pre">x=z</span></code> to same nodes, for instance, each node will have tags: <code class="docutils literal notranslate"><span class="pre">x=y,z</span></code>.</p>
+</div>
+<div class="section" id="command-tag-remove">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">tag</span> <span class="pre">remove</span></code><a class="headerlink" href="#command-tag-remove" title="Permalink to this headline">¶</a></h3>
+<p>This <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">tag</span> <span class="pre">remove</span></code> command removes a tag from a set of nodes and has the following sintax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp tag remove [-h] tag node_ids [node_ids ...]
+</pre></div>
+</div>
+<p>If the <code class="docutils literal notranslate"><span class="pre">tag</span></code> is a keyword value, such as <code class="docutils literal notranslate"><span class="pre">x=y</span></code>, the value <code class="docutils literal notranslate"><span class="pre">y</span></code> will be removed from tag <code class="docutils literal notranslate"><span class="pre">x</span></code> from the speficied nodes. If the <code class="docutils literal notranslate"><span class="pre">tag</span></code> keyword is not a keyword value, such as simply <code class="docutils literal notranslate"><span class="pre">x</span></code>, all values from tag <code class="docutils literal notranslate"><span class="pre">x</span></code> will be removed (and also the tag <code class="docutils literal notranslate"><span class="pre">x</span></code>) from specified nodes.</p>
+</div>
 </div>
 <div class="section" id="group-module">
 <span id="group-section"></span><h2>Group Module<a class="headerlink" href="#group-module" title="Permalink to this headline">¶</a></h2>
+<p>The group module allows to perform pre-defined actions to a set of nodes that belongs to a group. When a node is added to a group, it is said that this node plays a role in that group.
+Thus, each group defines their set of specific actions that can be performed to nodes that belongs to that particular group.</p>
+<p>In this way, the group module consists of three steps:</p>
+<ol class="arabic simple">
+<li><p>Add nodes to a group.</p></li>
+<li><p>Perform group’s action to nodes that belongs to a group.</p></li>
+<li><p>Optionally, remove nodes from the group.</p></li>
+</ol>
+<div class="section" id="clap-s-groups-and-actions">
+<h3>CLAP’s groups and actions<a class="headerlink" href="#clap-s-groups-and-actions" title="Permalink to this headline">¶</a></h3>
+<p>Group’s actions are <a class="reference external" href="https://www.ansible.com/">Ansible playbooks</a> that are executed when an action is invoked (using <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">action</span></code> command, described below). By default CLAP’s groups are stored in the <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/</span></code> directory and each group consists in at minimum of two files: (1) a python file describing the group and its actions and; (2) the Ansible Playbook called when each action is invoked.
+By default, when each action is invoked a variable called <code class="docutils literal notranslate"><span class="pre">action</span></code> is passed to the Ansible Playbook with the name of the invoked action.
+You can see some groups shared with CLAP and their requirements at <a class="reference internal" href="shared_groups.html#shared-groups"><span class="std std-ref">Groups shared with CLAP</span></a> section.</p>
+<div class="section" id="group-description-file">
+<h4>Group description file<a class="headerlink" href="#group-description-file" title="Permalink to this headline">¶</a></h4>
+<p>The group’s description files are python files placed at <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/groups</span></code> directory. The name of the python file defines the group’s name.
+Each group’s python file defines three variables:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">playbook</span></code>: A string, with the name of the path of playbook to be executed (the path can be relative to <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/</span></code> directory)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">actions</span></code>: A list of string, defining each group’s action name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hosts</span></code>: Optionally, a list of strings defining the hosts used in Ansible Playbooks can be defined. Hosts is used for Ansible to segment the execution of the playbook to specific nodes. If no hosts is defined, the Ansible Playbook must use <code class="docutils literal notranslate"><span class="pre">hosts:</span> <span class="pre">all</span></code>, to perform the operation at all nodes belonging to the group.</p></li>
+</ul>
+<p>An example of a group called <code class="docutils literal notranslate"><span class="pre">example-1</span></code>, placed at <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/groups/example-1.py</span></code> is shown below. The <code class="docutils literal notranslate"><span class="pre">~/clap/groups/roles/example1.yml</span></code> will be executed and the group has three actions: <code class="docutils literal notranslate"><span class="pre">setup</span></code>, <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">terminate</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># example-1 group</span>
+<span class="n">playbook</span> <span class="o">=</span> <span class="s1">&#39;roles/example1.yml&#39;</span>
+<span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;terminate&#39;</span><span class="p">]</span>
+
+<span class="c1"># Optionally, playbook can specify hosts e.g. master and slaves</span>
+<span class="c1"># hosts = [&#39;master&#39;, &#39;slaves&#39;]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">setup</span></code> action is <strong>always</strong> called when a node is added to a group.</p></li>
+<li><p>The Ansible Playbook may perform the desired action by inspecting the <code class="docutils literal notranslate"><span class="pre">action</span></code> variable.</p></li>
+</ul>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">setup</span></code> action is <strong>always</strong> required. So a minimal group’s description file must contains the variable: <code class="docutils literal notranslate"><span class="pre">actions</span> <span class="pre">=</span> <span class="pre">['setup']</span></code>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="command-group-list">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">list</span></code><a class="headerlink" href="#command-group-list" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">group</span> <span class="pre">list</span></code> command can be used to list all available groups and their respective actions and hosts. An example of output is shown below, for a group called <code class="docutils literal notranslate"><span class="pre">spits</span></code>, which has actions <code class="docutils literal notranslate"><span class="pre">add-nodes</span></code>, <code class="docutils literal notranslate"><span class="pre">job-copy</span></code>, <code class="docutils literal notranslate"><span class="pre">job-create</span></code>, <code class="docutils literal notranslate"><span class="pre">setup</span></code> and <code class="docutils literal notranslate"><span class="pre">start</span></code>. Besides that, the nodes from this group can be segmented in <code class="docutils literal notranslate"><span class="pre">jobmanager</span></code> and <code class="docutils literal notranslate"><span class="pre">taskmanager</span></code> hosts.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>* spits (roles/spits.yml)
+    actions: add-nodes, job-copy, job-create, job-status, setup, start
+    hosts: jobmanager, taskmanager
+Listed 1 groups
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-group-add">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">add</span></code><a class="headerlink" href="#command-group-add" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">group</span> <span class="pre">add</span></code> command can be used to execute add a node to a group. The sintax is shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group add [-h] [--tag TAG] [--extra ...] group [node_ids [node_ids ...]]
+</pre></div>
+</div>
+<p>One or more node ids can be supplied to the command in order to add all of them to the group. Optionally you can filter nodes to add to the group based in their tags. Some group’s actions may require some additional variables to be passed to the playbook (similar to Ansible’s extra parameter). Additional keyword variables can be passed via <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter.</p>
+<p>For instance, the command below, adds nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and <code class="docutils literal notranslate"><span class="pre">node-1</span></code> to group <code class="docutils literal notranslate"><span class="pre">example</span></code> and pass the variables <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">a</span></code>, with values <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code>, respectively, to the <code class="docutils literal notranslate"><span class="pre">example</span></code> group’s <code class="docutils literal notranslate"><span class="pre">setup</span></code> action.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group add example node-0 node-1 --extra &quot;x=y&quot; &quot;a=1&quot;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>When a node is added to a group, the group’s setup action is automatically executed.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter <strong>must be the last</strong> parameter.</p></li>
+</ul>
+</div>
+<p>When a group specify hosts, you can add nodes to a group being a defined host using the <code class="docutils literal notranslate"><span class="pre">/</span></code> succeeded the group’s name. For instance the command below adds the node <code class="docutils literal notranslate"><span class="pre">node-0</span></code> to the group <code class="docutils literal notranslate"><span class="pre">spits</span></code> being a <code class="docutils literal notranslate"><span class="pre">jobmanager</span></code> host.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group add spits/jobmanager node-0
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a group has defined hosts but you do not specify which host of the group the node is being added, then the node will be added to all available hosts of that group.</p>
+</div>
+</div>
+<div class="section" id="command-group-action">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">action</span></code><a class="headerlink" href="#command-group-action" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">group</span> <span class="pre">action</span></code> command can be used to perform an action in all nodes belonging to the group. The sintax is shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action [-h] [--nodes NODES [NODES ...]] [--tag TAG] [--extra ...] group_name action_name
+</pre></div>
+</div>
+<p>If no nodes is specified, the group’s action will be performed in all CLAP’s nodes that belongs to the group. You can limit the action to nodes that belongs to the group using the <code class="docutils literal notranslate"><span class="pre">nodes</span></code> parameter (which can be supplied with node ids) or <code class="docutils literal notranslate"><span class="pre">tag</span></code> parameter (which can be supplied with tags). Some examples is shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action spits start
+clapp group action spits/jobmanager start
+clapp group action spits start --nodes node-0 node-4 --tags &quot;x=y&quot; --extra &quot;a=1&quot;
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The first example above performs action <code class="docutils literal notranslate"><span class="pre">start``from</span> <span class="pre">group</span> <span class="pre">``spits</span></code> in all CLAP’s nodes belonging to <code class="docutils literal notranslate"><span class="pre">spits</span></code> group.</p></li>
+<li><p>The second example above performs action <code class="docutils literal notranslate"><span class="pre">start``from</span> <span class="pre">group</span> <span class="pre">``spits</span></code> in all CLAP’s nodes belonging to <code class="docutils literal notranslate"><span class="pre">spits</span></code> group being <code class="docutils literal notranslate"><span class="pre">jobmanager</span></code> host.</p></li>
+<li><p>The third example above performs action <code class="docutils literal notranslate"><span class="pre">start``from</span> <span class="pre">group</span> <span class="pre">``spits</span></code> in CLAP’s nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code>, <code class="docutils literal notranslate"><span class="pre">node-4</span></code> and nodes with <code class="docutils literal notranslate"><span class="pre">x=y</span></code> tag.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When performing a group action, all nodes must belong to the group that the action will be performed (even when filtering nodes). Thus, the <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">add</span></code> command is always required before performing an action.</p>
+</div>
+</div>
+<div class="section" id="command-group-remove">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">remove</span></code><a class="headerlink" href="#command-group-remove" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">group</span> <span class="pre">remove</span></code> command removes nodes from a specified group. The sintax is shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group remove [-h] [--extra ...] group node_ids [node_ids ...]
+</pre></div>
+</div>
+<p>Similarly to <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">add</span></code> command, you can the node from being a host from a group using the <code class="docutils literal notranslate"><span class="pre">/</span></code> succeeded by the group name. Some examples is shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group remove spits node-0 node-1
+clapp group remove spits/jobmanager node-0
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The first example above, remove <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and <code class="docutils literal notranslate"><span class="pre">node-1</span></code> from group <code class="docutils literal notranslate"><span class="pre">spits</span></code></p></li>
+<li><p>The second example above, remove <code class="docutils literal notranslate"><span class="pre">node-0</span></code> from being host <code class="docutils literal notranslate"><span class="pre">jobmanager</span></code> at the group <code class="docutils literal notranslate"><span class="pre">spits</span></code></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>If a group has hosts and no host is specified when removing it from the group, the node is removed from being all hosts that it belongs to that group</p></li>
+<li><p>If a group has hosts and the node is removed from all hosts from that group, the node does not belong to the group anymore</p></li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 
@@ -336,6 +505,8 @@ The <code class="docutils literal notranslate"><span class="pre">--command</span
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="shared_groups.html" class="btn btn-neutral float-right" title="Groups shared with CLAP" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="configuration.html" class="btn btn-neutral float-left" title="Basic Configuration Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

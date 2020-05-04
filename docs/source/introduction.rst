@@ -55,14 +55,7 @@ To use CLAP you will first need to provide some information about how to launch 
 The :ref:`configuration section <configuration>` will guide you to write all these configuration sections easily.
 
 Once configurations written, the :ref:`usage section <usage>` will show you how to execute CLAP commands based on the configurations written.
-CLAP can be used to start, configure and manage single or multiple cloud's instances using the <NODE> module as well as entire compute clusters using the <CLUSTER> module.
-
-
-
-<TUTORIALS>
-
-<EXAMPLES>
-
+CLAP can be used to start, configure and manage single or multiple cloud's instances using the :ref:`node module <node section>` as well as entire compute clusters using the <CLUSTER> module.
 
 
 .. _clap directory archtecture:
@@ -96,10 +89,10 @@ By default, CLAP holds all of it information inside the ``~/.clap`` directory (w
 
 - The ``~/.clap/configs/instances.yaml`` holds the information about the instances to launch, i.e. the instance templates.
 
-- The ``groups`` directory store groups file and actions, used to perform action in several nodes. More detailed information about groups and actions will be presented at :doc:`groups section <groups>`
+- The ``groups`` directory store groups file and actions, used to perform action in several nodes. More detailed information about groups and actions will be presented at <GROUPS>
 
 - The ``modules`` directory store module files, used to extend CLAP.
 
-- The ``private`` stores keys and passwords files used to connect to the cloud provider and to the instance itself. Every key/secret files needed in the configuration sections must be placed inside this directory.
+- The ``private`` stores keys and passwords files used to connect to the cloud provider and to the instance itself. Every key/secret files needed in the configuration sections must be placed inside this directory (usually with 0400 permissions).
 
 - The ``storage`` directory store metadata information used by CLAP.

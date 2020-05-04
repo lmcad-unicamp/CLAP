@@ -4,6 +4,10 @@ from clap.common.module import AbstractParser
 from clap.common.utils import log
 from .module import add_group_to_node, execute_group_action, list_groups, remove_group_from_node
 
+# TODO add even with invalid ip
+# TODO remove group
+# TODO remove extra from group remove
+
 class GroupsParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         group_subcom_parser = commands_parser.add_parser('add', help='Add nodes to a group')

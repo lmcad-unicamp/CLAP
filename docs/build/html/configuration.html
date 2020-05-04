@@ -87,18 +87,24 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Basic Configuration Setup</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#cloud-provider-configuration">Cloud provider configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cloud-provider-configuration">Cloud Provider Configuration</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#note-for-aws-provider">Note for AWS provider</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#login-provider-configuration">Login provider configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#login-configuration">Login Configuration</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#note-for-aws-users">Note for AWS users</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#instance-templates-configuration">Instance templates configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#instance-templates-configuration">Instance Templates Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shared_groups.html">Groups shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shared_modules.html">Modules shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
 
             
@@ -165,13 +171,13 @@
             
   <div class="section" id="basic-configuration-setup">
 <span id="configuration"></span><h1>Basic Configuration Setup<a class="headerlink" href="#basic-configuration-setup" title="Permalink to this headline">¶</a></h1>
-<p>In order to create compute nodes and interact with them you will need provide some information about how to connect to the cloud provider (providers configuration), how to the login into the machines (logins configuration) and details about the cloud’s instances used (instances configuration). The following sections will show how to configurate these sections and the valid values for each one. All configuration files use the <a class="reference external" href="https://yaml.org/">YAML File Format</a> as default type.</p>
+<p>In order to create compute nodes and interact with them you will need provide some information about how to connect to the cloud provider (<a class="reference internal" href="#cloud-configuration"><span class="std std-ref">providers configuration</span></a>), how to the login into the machines (<a class="reference internal" href="#login-configuration"><span class="std std-ref">logins configuration</span></a>) and details about the cloud’s instances that can be used (<a class="reference internal" href="#instance-configuration"><span class="std std-ref">instances configuration</span></a>). The following sections will show how to configurate these sections and the valid values for each one. All configuration files use the <a class="reference external" href="https://yaml.org/">YAML File Format</a> as default format.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>YAML use spaces instead of tabs. Be careful messing this up</p>
+<p>YAML use spaces instead of tabs. Be careful to do not messing this up!</p>
 </div>
 <div class="section" id="cloud-provider-configuration">
-<span id="cloud-configuration"></span><h2>Cloud provider configuration<a class="headerlink" href="#cloud-provider-configuration" title="Permalink to this headline">¶</a></h2>
+<span id="cloud-configuration"></span><h2>Cloud Provider Configuration<a class="headerlink" href="#cloud-provider-configuration" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/providers.yaml</span></code> file defines all properties needed to connect to a specific cloud provider, such as the region, access keys, among others. In this file you can define multiple provider configurations that is used by other configurations.
 An example <code class="docutils literal notranslate"><span class="pre">providers.yaml</span></code> file is shown below.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">aws-east-1-config</span><span class="p">:</span>                              <span class="c1"># Name of the provider configuration ID</span>
@@ -194,8 +200,8 @@ An example <code class="docutils literal notranslate"><span class="pre">provider
 <p>The YAML dictionary keys (<code class="docutils literal notranslate"><span class="pre">aws-east-1-config</span></code>, <code class="docutils literal notranslate"><span class="pre">my-cool-config-2</span></code> and <code class="docutils literal notranslate"><span class="pre">my-cool-config-3</span></code> in the above example) are the provider configuration names (provider IDs) that can be referenced in other files. The values for each provider ID are specific cloud provider information.
 You can define as many provider configurations as you want just adding a new provider ID and the values for it. Note that each provider ID must be unique.
 The valid values for a provider configuration showed in the table below.</p>
-<table class="docutils align-default" id="id1">
-<caption><span class="caption-text">Valid cloud provider configuration key and values</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Valid cloud provider configuration key and values</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -209,23 +215,23 @@ The valid values for a provider configuration showed in the table below.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><strong>provider</strong></p></td>
-<td><p>‘aws’</p></td>
+<td><p><strong>valid values</strong>: aws</p></td>
 <td><p>Name of the cloud provider to be used</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>access_keyfile</strong></p></td>
-<td><p>&lt;filename&gt;</p></td>
+<td><p><strong>type</strong>: filename</p></td>
 <td><p><strong>Name of the file</strong> containing the AWS access key ID. The file must be at <code class="docutils literal notranslate"><span class="pre">~/.clap/private</span></code> and this field must be filled only with the name of file, not the whole path.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>secret_access_keyfile</strong></p></td>
-<td><p>&lt;filename&gt;</p></td>
+<td><p><strong>type</strong>: filename</p></td>
 <td><p><strong>Name of the file</strong> containing the AWS Secret Access Key (access ID). The file must be at <code class="docutils literal notranslate"><span class="pre">~/.clap/private</span></code> and this field must be filled only with the name of file, not the whole path.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>region</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>The availability zone you want to use (e.g. <code class="docutils literal notranslate"><span class="pre">us-east-1</span></code>)</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>vpc (optional)</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>Name or ID of the AWS Virtual Private Cloud to provision resources in.</p></td>
 </tr>
 </tbody>
@@ -240,8 +246,8 @@ The valid values for a provider configuration showed in the table below.</p>
 So you must place your access key ID string inside a file in the <code class="docutils literal notranslate"><span class="pre">~/.clap/private/</span></code>. For instance, copy and paste access key ID in a file and save at <code class="docutils literal notranslate"><span class="pre">~/.clap/private/ec2_access_key.pub</span></code>, or other filename and the same for the secret access key.</p>
 </div>
 </div>
-<div class="section" id="login-provider-configuration">
-<span id="login-configuration"></span><h2>Login provider configuration<a class="headerlink" href="#login-provider-configuration" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="login-configuration">
+<span id="id1"></span><h2>Login Configuration<a class="headerlink" href="#login-configuration" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/logins.yaml</span></code> defines all properties needed to access the instances started in the cloud via SSH, such as login user name, SSH key file used to access, etc. In this file you can define multiple login information that is used by other configurations.
 An example <code class="docutils literal notranslate"><span class="pre">logins.yaml</span></code> file is shown below.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ubuntu-login</span><span class="p">:</span>                                       <span class="c1"># Name of the login config (Login ID)</span>
@@ -260,8 +266,8 @@ An example <code class="docutils literal notranslate"><span class="pre">logins.y
 <p>The YAML dictionary keys (<code class="docutils literal notranslate"><span class="pre">ubuntu-login</span></code> and <code class="docutils literal notranslate"><span class="pre">example-centos</span></code> in the above example) are login’s configuration name (also called login ID). The values are the specific information about that configuration.
 You can define as many login configurations as you want just adding a new login ID and the values for it. Note that each login ID must be unique.
 The valid values for a login configuration are:</p>
-<table class="docutils align-default" id="id2">
-<caption><span class="caption-text">Valid login configuration key and values</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Valid login configuration key and values</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -275,27 +281,27 @@ The valid values for a login configuration are:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><strong>user</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>Name of the user used to perform SSH into the virtual machine</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>keypair_name (optional)</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>Name of the keypair used on the cloud provider</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>keypair_public_file (optional)</strong></p></td>
-<td><p>&lt;filename&gt;</p></td>
+<td><p><strong>type</strong>: filename</p></td>
 <td><p>Name of the file in the <code class="docutils literal notranslate"><span class="pre">~/.clap/private</span></code> directory containing the RSA/DSA public key corresponding to the private key file</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>keypair_private_file (optional)</strong></p></td>
-<td><p>&lt;filename&gt;</p></td>
+<td><p><strong>type</strong>: filename</p></td>
 <td><p>Name of the file in the <code class="docutils literal notranslate"><span class="pre">~/.clap/private</span></code> directory containing a valid SSH private key to be used to connect to the virtual machine</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>sudo</strong></p></td>
-<td><p>&lt;boolean&gt;</p></td>
+<td><p><strong>type</strong>: boolean</p></td>
 <td><p>True if the sudo user can execute commands as root by running the sudo command.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>sudo_user (optional)</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>Optional login name of the super user (default is root)</p></td>
 </tr>
 </tbody>
@@ -314,7 +320,7 @@ The generated public key must be saved to a file and placed at <code class="docu
 </div>
 </div>
 <div class="section" id="instance-templates-configuration">
-<span id="instance-configuration"></span><h2>Instance templates configuration<a class="headerlink" href="#instance-templates-configuration" title="Permalink to this headline">¶</a></h2>
+<span id="instance-configuration"></span><h2>Instance Templates Configuration<a class="headerlink" href="#instance-templates-configuration" title="Permalink to this headline">¶</a></h2>
 <p>To start virtual machines in a cloud, you must first setup some instance templates in the <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/instances.yaml</span></code> file.
 The template contains information about the virtual machine to start, including its flavor (i.e. instance type, for instance <code class="docutils literal notranslate"><span class="pre">t2.micro</span></code> on AWS clouds), security group information, AMI used, the disk size and others.
 The instance template references the provider configuration and login configuration by its ID.
@@ -341,8 +347,8 @@ An example of <code class="docutils literal notranslate"><span class="pre">insta
 You can define as many instance templates configurations as you want just adding a new instance template ID and the values for it. Note that each instance template ID must be unique.
 Commands will use the instance template ID to start instances based on this information.
 The valid values for the instance templates are:</p>
-<table class="docutils align-default" id="id3">
-<caption><span class="caption-text">Valid instance template key and values</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">Valid instance template key and values</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -356,48 +362,48 @@ The valid values for the instance templates are:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><strong>provider</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>The ID of the provider configuration to be used for this instance. The ID must match the provider ID at <code class="docutils literal notranslate"><span class="pre">providers.yaml</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>login</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>The ID of the login configuration to be used for this instance. The ID must match the login ID at <code class="docutils literal notranslate"><span class="pre">logins.yaml</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>flavor</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>The provider instance type to use (e.g. <code class="docutils literal notranslate"><span class="pre">t2.micro</span></code>, <code class="docutils literal notranslate"><span class="pre">c5.large</span></code>, etc)</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>image_id</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>Disk image ID to use in the VM (basically the OS to be used). Amazon EC2 uses IDs like <code class="docutils literal notranslate"><span class="pre">ami-123456</span></code>. Note that the image_id is dependent of the provider region and a error may be raised if an invalid AMI id is specified</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>security_group (optional)</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>Name of security group to use when starting the instance</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>boot_disk_size (optional)</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>Size of the instance’s root filesystem volume, in Gibibytes (GiB)</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>boot_disk_device (optional)</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>Device name of the instance’s root file system in the block device mapping. For AWS, see <a class="reference external" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html">block device mapping docs</a> for more information</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>boot_disk_type (optional)</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>Root filesystem volume storage type, one of gp2 (general purpose SSD), io1 (provisioned IOPS SSD), or standard (default). See <a class="reference external" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">Root filesystem volume storage type</a> for more information</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>placement_group (optional)</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>Placement group to enable low-latency networking between compute nodes. See <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html">placement groups</a> for more information</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>network_ids (optional)</strong></p></td>
-<td><p>&lt;string&gt;</p></td>
+<td><p><strong>type</strong>: string</p></td>
 <td><p>Subnet ID that the nodes of the cluster will be connected to</p></td>
 </tr>
 </tbody>
 </table>
-<p>If you do not provide a security group, CLAP will automatically create a new security group with the inbound rules for port 22 (SSH).</p>
+<p>If you do not provide a security group, CLAP will automatically create a new security group with the inbound rules for port 22 (SSH), 80 (HTTP) and 443 (HTTPS).</p>
 </div>
 </div>
 

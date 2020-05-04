@@ -7,11 +7,11 @@ Basic Usage
 CLAP is a platform to start, stop and manage cloud's instances (called CLAP nodes or simply ,nodes) at different cloud providers transparently, based on configuration files. Also, it offers mechanisms to perform actions via SSH commands or Ansible playboks in single nodes or in a set of nodes in a row.
 To provide this, in a modular way, CLAP provides modules to allow performing several operations (see <ARCH> section for more information about the CLAP architecture). You can use ``clapp --help`` command to list the available modules or ``clapp -v --show-all`` to show all available commands that can be used. 
 
-The most common modules are: ``node``, ``tags`` and ``groups``, described in next sections.
+The most common modules are: ``node``, ``tags`` and ``groups``.
 
 .. One of the most common modules is the ``node`` module which can be used to perform operations with single or multiple instances in a row. The commands of this module is detailed in the next section. Other modules such as ``cluster``, can be used to manage entire clusters (see section <CLUSTER> for more details).
 
-.. _nodes section:
+.. _node section:
 
 Node Module
 ---------------------
@@ -214,6 +214,37 @@ An example is shwon below. The playbook ``playbook.yml`` is executed in nodes ``
 Tags Module 
 -------------------
 
+The tags module provides mechanisms to add and remove tags at CLAP's nodes. Tags are efficient ways to select CLAP nodes. For instance, several comamands from ``node`` module has support to select nodes to limit to nodes which it will actuate.
+A tag is just a key (string) which have its list of values (list of strings), thus you can have multiple values for same key.
+
+Command ``tag add``
++++++++++++++++++++++
+
+This ``clapp tag add`` command adds a tag to a set of nodes and has the following sintax:
+
+.. code-block:: none
+
+    clapp tag add [-h] tag node_ids [node_ids ...]
+
+The ``tag`` parameter must be a keyword value in the format ``key=value``. You can add as many tags to a node as you want. If you add more than one tag with same key, the values are appended to the key. An example of adding tags is shown below:
+
+.. code-block:: none
+
+    clapp tag add x=y node-0 node-1
+
+Where tag ``x=y`` is added to nodes ``node-0`` and ``node-1``. If you add another tag, ``x=z`` to same nodes, for instance, each node will have tags: ``x=y,z``.
+
+
+Command ``tag remove``
+++++++++++++++++++++++++
+
+This ``clapp tag remove`` command removes a tag from a set of nodes and has the following sintax:
+
+.. code-block:: none
+
+    clapp tag remove [-h] tag node_ids [node_ids ...]
+
+If the ``tag`` is a keyword value, such as ``x=y``, the value ``y`` will be removed from tag ``x`` from the speficied nodes. If the ``tag`` keyword is not a keyword value, such as simply ``x``, all values from tag ``x`` will be removed (and also the tag ``x``) from specified nodes. 
 
 
 .. _group section:
@@ -221,80 +252,153 @@ Tags Module
 Group Module 
 -------------------
 
+The group module allows to perform pre-defined actions to a set of nodes that belongs to a group. When a node is added to a group, it is said that this node plays a role in that group.
+Thus, each group defines their set of specific actions that can be performed to nodes that belongs to that particular group.
+
+In this way, the group module consists of three steps:
+
+1. Add nodes to a group.
+2. Perform group's action to nodes that belongs to a group.
+3. Optionally, remove nodes from the group.
+
+.. The next section describes how groups can be implemented. You can see the groups commands at section 
 
 
+CLAP's groups and actions
+++++++++++++++++++++++++++++++
+
+Group's actions are `Ansible playbooks <https://www.ansible.com/>`_ that are executed when an action is invoked (using ``group action`` command, described below). By default CLAP's groups are stored in the ``~/.clap/groups/`` directory and each group consists in at minimum of two files: (1) a python file describing the group and its actions and; (2) the Ansible Playbook called when each action is invoked. 
+By default, when each action is invoked a variable called ``action`` is passed to the Ansible Playbook with the name of the invoked action. 
+You can see some groups shared with CLAP and their requirements at :ref:`shared groups` section.
 
 
-.. Executing and Connecting
-.. ++++++++++++++++++++++++++
+Group description file
+^^^^^^^^^^^^^^^^^^^^^^^
 
-.. CLAP provides three simple commands to interact directly with the nodes.
+The group's description files are python files placed at ``~/.clap/groups/groups`` directory. The name of the python file defines the group's name.
+Each group's python file defines three variables: 
 
-.. * The ``node connect`` command can be used to get an SSH shell to the desired node, as shown in the command below:
+- ``playbook``: A string, with the name of the path of playbook to be executed (the path can be relative to ``~/.clap/groups/`` directory)
+- ``actions``: A list of string, defining each group's action name.
+- ``hosts``: Optionally, a list of strings defining the hosts used in Ansible Playbooks can be defined. Hosts is used for Ansible to segment the execution of the playbook to specific nodes. If no hosts is defined, the Ansible Playbook must use ``hosts: all``, to perform the operation at all nodes belonging to the group.
 
-.. .. code-block:: none
-
-..     clapp node connect node-1
-
-.. The ``node execute`` command can be used to execute an shell script command in a node and print the respective ``stdout`` and ``stderr`` outputs.
-.. An example is shown below, used to execute the command ``echo ola`` in the node ``node-0`` and retrieve its outputs.
-
-.. .. code-block:: none
-
-..     clapp node execute node-0 'echo ola'
-
-.. The ``node playbook`` command allows to execute an `Ansible playbook <https://www.ansible.com/>`_ in several nodes in a row.
-.. An example is shown below, used to execute the playbook ``example.yml`` in three nodes (``node-0``, ``node-1`` and ``node-2``)
-
-.. .. code-block:: none
-
-..     clapp node playbook example.yml node-0 node-1 node-2
-
-.. And if your playbook contains variables that must be passed from the command line, you can use the ``extra`` parameter.
-.. The below example shows how to pass a keyworded value to a variable in the playbook.
-
-..   .. code-block:: none
-
-..     clapp node playbook example.yml node-0 node-1 node-2 --extra variable1="any value" variable2="another value"
-
-.. Where the ``variable1`` and ``variable2`` are passed to the playbook in your execution.
+An example of a group called ``example-1``, placed at ``~/.clap/groups/groups/example-1.py`` is shown below. The ``~/clap/groups/roles/example1.yml`` will be executed and the group has three actions: ``setup``, ``start`` and ``terminate``.
 
 
-.. .. note::
+.. code-block:: python
 
-..   * The ``extra`` parameter must be the last one in the ``node playbook`` command
-..   * You may want to set a higher verbosity level to see Ansible outputs (not just errors). For that, use the ``-v`` parameter, just after ``clapp`` command.
-
-
-.. .. tag section:
-
-.. Tagging Nodes
-.. ----------------
-
-.. Tags is a (key, value) pair that can be associated to nodes aiming to easily select it when needed.
-.. Almost every command that you must supply nodes as input may have options to select nodes by tag (will be shown later).
-
-.. You can use the command below to added a tag to some nodes:
-
-.. .. code-block:: none
-
-..     clapp tag add "key=value" node-0 node-1
-
-.. Where the tag must be a string in the format (``"key=value"``) and the nodes must be specified after.
-
-.. To remove tags, you can use the ``tag remove`` command, similarly to the ``tag add`` command, as shown below:
-
-.. .. code-block:: none
-
-..     clapp tag remove "key=value" node-0 node-1
-
-.. Where the tag must be a string in the format (``"key=value"``).
-
-.. Finally, you can also start nodes and tag them right after its creation, by using the below command:
-
-.. .. code-block:: none
-
-..     clapp -v node start ubuntu-instance-aws:4 --tag "key=value"
+    # example-1 group
+    playbook = 'roles/example1.yml'
+    actions = ['setup', 'start', 'terminate']
     
-.. The above command instantiates 4 ``ubuntu-instance-aws`` machines and tags them with tag ``"key=value"``, after its creation.
+    # Optionally, playbook can specify hosts e.g. master and slaves
+    # hosts = ['master', 'slaves']
 
+.. note::
+
+    - The ``setup`` action is **always** called when a node is added to a group.
+    - The Ansible Playbook may perform the desired action by inspecting the ``action`` variable.
+
+.. warning::
+
+    The ``setup`` action is **always** required. So a minimal group's description file must contains the variable: ``actions = ['setup']``.
+
+
+Command ``group list``
++++++++++++++++++++++++++++
+
+The ``clapp group list`` command can be used to list all available groups and their respective actions and hosts. An example of output is shown below, for a group called ``spits``, which has actions ``add-nodes``, ``job-copy``, ``job-create``, ``setup`` and ``start``. Besides that, the nodes from this group can be segmented in ``jobmanager`` and ``taskmanager`` hosts.
+
+.. code-block:: none
+
+    * spits (roles/spits.yml)
+        actions: add-nodes, job-copy, job-create, job-status, setup, start
+        hosts: jobmanager, taskmanager
+    Listed 1 groups
+
+
+Command ``group add``
++++++++++++++++++++++++++++
+
+The ``clapp group add`` command can be used to execute add a node to a group. The sintax is shown below:
+
+.. code-block:: none
+
+    clapp group add [-h] [--tag TAG] [--extra ...] group [node_ids [node_ids ...]]
+
+
+One or more node ids can be supplied to the command in order to add all of them to the group. Optionally you can filter nodes to add to the group based in their tags. Some group's actions may require some additional variables to be passed to the playbook (similar to Ansible's extra parameter). Additional keyword variables can be passed via ``extra`` parameter.
+
+For instance, the command below, adds nodes ``node-0`` and ``node-1`` to group ``example`` and pass the variables ``x`` and ``a``, with values ``y`` and ``1``, respectively, to the ``example`` group's ``setup`` action.
+
+.. code-block:: none
+
+    clapp group add example node-0 node-1 --extra "x=y" "a=1"
+
+
+.. note::
+
+    * When a node is added to a group, the group's setup action is automatically executed.
+    * The ``extra`` parameter **must be the last** parameter.
+
+
+When a group specify hosts, you can add nodes to a group being a defined host using the ``/`` succeeded the group's name. For instance the command below adds the node ``node-0`` to the group ``spits`` being a ``jobmanager`` host.
+
+.. code-block:: none
+
+    clapp group add spits/jobmanager node-0
+
+.. note::
+
+    If a group has defined hosts but you do not specify which host of the group the node is being added, then the node will be added to all available hosts of that group.
+
+
+Command ``group action``
++++++++++++++++++++++++++++
+
+The ``clapp group action`` command can be used to perform an action in all nodes belonging to the group. The sintax is shown below:
+
+.. code-block:: none
+
+    clapp group action [-h] [--nodes NODES [NODES ...]] [--tag TAG] [--extra ...] group_name action_name
+
+If no nodes is specified, the group's action will be performed in all CLAP's nodes that belongs to the group. You can limit the action to nodes that belongs to the group using the ``nodes`` parameter (which can be supplied with node ids) or ``tag`` parameter (which can be supplied with tags). Some examples is shown below:
+
+.. code-block:: none
+
+    clapp group action spits start
+    clapp group action spits/jobmanager start
+    clapp group action spits start --nodes node-0 node-4 --tags "x=y" --extra "a=1"
+
+- The first example above performs action ``start``from group ``spits`` in all CLAP's nodes belonging to ``spits`` group.
+- The second example above performs action ``start``from group ``spits`` in all CLAP's nodes belonging to ``spits`` group being ``jobmanager`` host.
+- The third example above performs action ``start``from group ``spits`` in CLAP's nodes ``node-0``, ``node-4`` and nodes with ``x=y`` tag.
+
+
+.. note::
+
+    When performing a group action, all nodes must belong to the group that the action will be performed (even when filtering nodes). Thus, the ``group add`` command is always required before performing an action.
+
+
+Command ``group remove``
++++++++++++++++++++++++++++
+
+The ``clapp group remove`` command removes nodes from a specified group. The sintax is shown below:
+
+.. code-block:: none
+
+    clapp group remove [-h] [--extra ...] group node_ids [node_ids ...]
+
+Similarly to ``group add`` command, you can the node from being a host from a group using the ``/`` succeeded by the group name. Some examples is shown below:
+
+.. code-block:: none
+
+    clapp group remove spits node-0 node-1
+    clapp group remove spits/jobmanager node-0
+
+- The first example above, remove ``node-0`` and ``node-1`` from group ``spits``
+- The second example above, remove ``node-0`` from being host ``jobmanager`` at the group ``spits``
+
+.. note::
+    - If a group has hosts and no host is specified when removing it from the group, the node is removed from being all hosts that it belongs to that group
+    - If a group has hosts and the node is removed from all hosts from that group, the node does not belong to the group anymore

@@ -10,6 +10,8 @@ from .module import (start_nodes, list_nodes, is_alive, stop_nodes,
                     resume_nodes, pause_nodes, execute_playbook, get_ssh_connections)
 
 # TODO force removal of nodes
+# TODO validate extra
+# TODO validate tag
 
 class NodeParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):

@@ -87,6 +87,12 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Basic Configuration Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shared_groups.html">Groups shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shared_modules.html">Modules shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
 
             
@@ -155,17 +161,16 @@
 <h1>Welcome to CLoud Application Platform Documentation!<a class="headerlink" href="#welcome-to-cloud-application-platform-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>CLoud Application Platform (CLAP) provides a interface to manage, interact and deploy HPC applications hosted in different cloud providers.
-CLAP is firstly inspired on  <a class="reference external" href="https://github.com/elasticluster/elasticluster">elasticluster</a>. project, a tool that allows automated setup of compute clusters (MPI, Spark/Hadoop, etc) and their management and <a class="reference external" href="https://www.ansible.com/integrations/cloud">Ansible</a>, a framework used for automation.
-CLAP provide user-friendly command line tool to create, manage and interact with individual nodes or a set of nodes hosted in public cloud providers (such as AWS, Google Cloud and Microsoft Azure), as well as easily create, manages, resize and interact with computer clusters hosted in public cloud providers.
-The main features of CLAP includes:</p>
+<p>CLoud Aplication Provider (CLAP) provides a user-friendly command line tool to create, manage and interact with individual instances or a set of instances hosted in public cloud providers (such as AWS, Google Cloud and Microsoft Azure), as well as easily create, manages, resize and interact with computer clusters hosted in public cloud providers.
+It was firstly inspired on <a class="reference external" href="https://github.com/elasticluster/elasticluster">elasticluster</a> project, a tool that allows automated setup of compute clusters (MPI, Spark/Hadoop, etc) and <a class="reference external" href="https://www.ansible.com/integrations/cloud">Ansible</a>, a framework used for automation.</p>
+<p>Its main features includes:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://yaml.org/">YAML-Style</a>. configuration files to define nodes, logins and cloud configurations</p></li>
-<li><p>User-friendly interface to create, setup, manage, interact and stop multiple computing nodes on different cloud providers at the same time</p></li>
-<li><p>Easy and fast creation and configuration of multiple compute clusters hosted in public cloud providers at same time</p></li>
-<li><p>Growing and shrinking a running cluster</p></li>
-<li><p>Group system to easily perform actions in different heterogeneous nodes via <a class="reference external" href="https://ansible.com/">Ansible</a>. playbooks</p></li>
-<li><p>Easy-to-use python API to bring nodes up and configure them (via ansible or SSH commands)</p></li>
+<li><p><a class="reference external" href="https://yaml.org/">YAML-Style</a> configuration files to define nodes, logins and cloud configurations.</p></li>
+<li><p>User-friendly interface to create, setup, manage, interact and stop multiple instances hosted different cloud providersat the same time, trnasparently.</p></li>
+<li><p>Easy and fast creation and configuration of multiple compute clusters hosted in public cloud providers at same time.</p></li>
+<li><p>Growing and shrinking a running cluster size.</p></li>
+<li><p>Group system to easily perform actions in different heterogeneous nodes via <a class="reference external" href="https://ansible.com/">Ansible</a>. playbooks.</p></li>
+<li><p>Easy-to-use python API to bring nodes up and configure them (via ansible or SSH commands).</p></li>
 </ul>
 </div>
 <div class="section" id="contents">
@@ -179,9 +184,9 @@ The main features of CLAP includes:</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Basic Configuration Setup</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html#cloud-provider-configuration">Cloud provider configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html#login-provider-configuration">Login provider configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html#instance-templates-configuration">Instance templates configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#cloud-provider-configuration">Cloud Provider Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#login-configuration">Login Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#instance-templates-configuration">Instance Templates Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Basic Usage</a><ul>
@@ -190,6 +195,18 @@ The main features of CLAP includes:</p>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#group-module">Group Module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="shared_groups.html">Groups shared with CLAP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shared_groups.html#commands-common">Commands common</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shared_groups.html#ec2-common">EC2 Common</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shared_groups.html#ec2-efs">EC2 EFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shared_groups.html#docker">Docker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shared_modules.html">Modules shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
 </div>
 </div>

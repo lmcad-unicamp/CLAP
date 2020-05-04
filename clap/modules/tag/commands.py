@@ -4,6 +4,8 @@ from clap.common.module import AbstractParser
 from clap.common.utils import log
 from .module import node_add_tag, node_remove_tag
 
+# TODO if x=z remove value z from tag x. If x, remove tag x with all values 
+
 class TagsParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         tag_subcom_parser = commands_parser.add_parser('add', help='Add tags to nodes')
@@ -13,7 +15,7 @@ class TagsParser(AbstractParser):
 
         tag_subcom_parser = commands_parser.add_parser('remove', help='Remove tags to nodes')
         tag_subcom_parser.add_argument('tag', action='store', help='List of tags to remove (just key names)')
-        tag_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be added to the group')
+        tag_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be added to the group')
         tag_subcom_parser.set_defaults(func=self.command_node_remove_tag)
 
 

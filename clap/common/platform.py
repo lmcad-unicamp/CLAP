@@ -17,6 +17,8 @@ from clap.common.cluster_repository import RepositoryOperations, NodeInfo
 from clap.common.utils import path_extend, log, yaml_load
 
 
+# TODO tag values must be a set
+
 class ModuleInterface:
     """ Interface to get clap modules from the modules repository
     """

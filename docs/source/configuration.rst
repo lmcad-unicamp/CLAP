@@ -4,16 +4,16 @@
 Basic Configuration Setup
 ============================
 
-In order to create compute nodes and interact with them you will need provide some information about how to connect to the cloud provider (providers configuration), how to the login into the machines (logins configuration) and details about the cloud's instances used (instances configuration). The following sections will show how to configurate these sections and the valid values for each one. All configuration files use the `YAML File Format <https://yaml.org/>`_ as default type.
+In order to create compute nodes and interact with them you will need provide some information about how to connect to the cloud provider (:ref:`providers configuration <cloud configuration>`), how to the login into the machines (:ref:`logins configuration <login configuration>`) and details about the cloud's instances that can be used (:ref:`instances configuration <instance configuration>`). The following sections will show how to configurate these sections and the valid values for each one. All configuration files use the `YAML File Format <https://yaml.org/>`_ as default format.
 
 
 .. note::
 
-    YAML use spaces instead of tabs. Be careful messing this up
+    YAML use spaces instead of tabs. Be careful to do not messing this up!
 
 .. _cloud configuration:
 
-Cloud provider configuration
+Cloud Provider Configuration
 -------------------------------
 
 The ``~/.clap/configs/providers.yaml`` file defines all properties needed to connect to a specific cloud provider, such as the region, access keys, among others. In this file you can define multiple provider configurations that is used by other configurations. 
@@ -49,7 +49,7 @@ The valid values for a provider configuration showed in the table below.
         - **Description**
 
     *   - **provider**
-        - **valids**: aws
+        - **valid values**: aws
         - Name of the cloud provider to be used
 
     *   - **access_keyfile**
@@ -83,8 +83,9 @@ So you must place your access key ID string inside a file in the ``~/.clap/priva
 
 .. _login configuration:
 
-Login provider configuration
+Login Configuration
 -------------------------------
+
 
 The ``~/.clap/configs/logins.yaml`` defines all properties needed to access the instances started in the cloud via SSH, such as login user name, SSH key file used to access, etc. In this file you can define multiple login information that is used by other configurations.
 An example ``logins.yaml`` file is shown below.
@@ -159,7 +160,7 @@ The generated public key must be saved to a file and placed at ``~/.clap/private
 
 .. _instance configuration:
 
-Instance templates configuration
+Instance Templates Configuration
 ----------------------------------
 
 To start virtual machines in a cloud, you must first setup some instance templates in the ``~/.clap/configs/instances.yaml`` file.
