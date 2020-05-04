@@ -1,0 +1,16 @@
+:mod:`clap.drivers`
+===================
+
+.. py:module:: clap.drivers
+
+
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   ansible/index.rst
+   elasticluster/index.rst
+
+

@@ -33,6 +33,7 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Modules shared with CLAP" href="shared_modules.html" />
@@ -89,35 +90,100 @@
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Basic Configuration Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Basic Usage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Groups shared with CLAP</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#commands-common">Commands common</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#copy-action-variables">copy action variables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fetch-action-variables">fetch action variables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reboot-action-variables">reboot action variables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#run-command-action-variables">run-command action variables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#run-script-action-variables">run-script action variables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#update-packages-action-variables">update-packages action variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#group-commands-common">Group <code class="docutils literal notranslate"><span class="pre">commands-common</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hosts">Hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#action-commands-common-copy">Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">copy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#required-variables">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#ec2-common">EC2 Common</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pause-action-and-variables">Pause action and variables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#resume-action-and-variables">Resume action and variables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#list-volumes-action-and-variables">List volumes action and variables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#attach-ebs-volumes-action-and-variables">Attach EBS volumes action and variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#action-commands-common-fetch">Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">fetch</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Examples</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#ec2-efs">EC2 EFS</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#setup-action-variables">Setup action variables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#umount-action-variables">Umount action variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#action-commands-common-reboot">Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">reboot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Examples</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#docker">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#action-commands-common-run-command">Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">run-command</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#action-commands-common-run-script">Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">run-script</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#action-commands-common-update-packages">Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">update-packages</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id9">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#group-docker">Group <code class="docutils literal notranslate"><span class="pre">docker</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Hosts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#group-ec2-efs">Group <code class="docutils literal notranslate"><span class="pre">ec2-efs</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#action-ec2-efs-setup">Action <code class="docutils literal notranslate"><span class="pre">ec2-efs</span> <span class="pre">setup</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id13">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id14">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#action-ec2-efs-umount">Action <code class="docutils literal notranslate"><span class="pre">ec2-efs</span> <span class="pre">umount</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id15">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id16">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#group-spits">Group <code class="docutils literal notranslate"><span class="pre">spits</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id17">Hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#typical-workflow">Typical Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#action-spits-add-nodes">Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">add-nodes</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id18">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id19">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#action-spits-job-copy">Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-copy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id20">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id21">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#action-spits-job-create">Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-create</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id22">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id23">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#action-spits-job-status">Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-status</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id24">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id25">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#action-spits-setup">Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">setup</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id26">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id27">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#action-spits-start">Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">start</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id28">Required Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id29">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="shared_modules.html">Modules shared with CLAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
 
             
@@ -184,65 +250,102 @@
             
   <div class="section" id="groups-shared-with-clap">
 <span id="shared-groups"></span><h1>Groups shared with CLAP<a class="headerlink" href="#groups-shared-with-clap" title="Permalink to this headline">¶</a></h1>
-<p>Here are some groups shared with CLAP. Setup action is <strong>always</strong> executed when adding a node to a group.
-Also, the <code class="docutils literal notranslate"><span class="pre">--nodes</span></code> and <code class="docutils literal notranslate"><span class="pre">--tag</span></code> parameters can be passed to the <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">group</span> <span class="pre">action</span></code> command to selectively select nodes inside the group that will execute the action, else the action will be performed in all nodes belonging to a group.</p>
-<div class="section" id="commands-common">
-<h2>Commands common<a class="headerlink" href="#commands-common" title="Permalink to this headline">¶</a></h2>
+<p>Here are some groups shared by default with CLAP. Setup action is <strong>always</strong> executed when adding a node to a group. Also, variables needed by actions must be passed via <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter, as keyword value (see <a class="reference internal" href="usage.html#group-section"><span class="std std-ref">Group Module</span></a>).</p>
+<div class="section" id="group-commands-common">
+<h2>Group <code class="docutils literal notranslate"><span class="pre">commands-common</span></code><a class="headerlink" href="#group-commands-common" title="Permalink to this headline">¶</a></h2>
 <p>This group provide means to execute common known commands in several machines in the group, such as: reboot, copy files to nodes, copy and execute shell scripts, among others.
-Consider add instances to this group to quickly perform common commands in several nodes in a row.</p>
-<p>No hosts are needed for this group.</p>
-<p>Variables and examples for each action is shown below</p>
-<div class="section" id="copy-action-variables">
-<h3>copy action variables<a class="headerlink" href="#copy-action-variables" title="Permalink to this headline">¶</a></h3>
-<p>The following variables must be informed when running the <code class="docutils literal notranslate"><span class="pre">copy</span></code> action (via <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter)</p>
-<p>Examples of the group’s <code class="docutils literal notranslate"><span class="pre">copy</span></code> action is showed below:</p>
+Consider add nodes to this group to quickly perform common commands in several nodes in a row.</p>
+<p>The following actions is provided by this group:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">copy</span></code>: Copy a file from the localhost to the remote nodes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fetch</span></code>: Fetch files from the remote nodes to the localhost</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setup</span></code>: Does nothing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reboot</span></code>: Reboot a machine and waits it to become available</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run-command</span></code>: Execute a shell command in the remote hosts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run-script</span></code>: Transfer a script from localhost to remote nodes and execute it in the remote hosts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">update-packages</span></code>: Update packages in the remote hosts</p></li>
+</ul>
+<div class="section" id="hosts">
+<h3>Hosts<a class="headerlink" href="#hosts" title="Permalink to this headline">¶</a></h3>
+<p>No host must be specified by this group.</p>
+</div>
+<div class="section" id="action-commands-common-copy">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">copy</span></code><a class="headerlink" href="#action-commands-common-copy" title="Permalink to this headline">¶</a></h3>
+<p>Copy a file from the localhost to the remote nodes</p>
+<div class="section" id="required-variables">
+<h4>Required Variables<a class="headerlink" href="#required-variables" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="examples">
+<h4>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action commands-common copy --extra src=&quot;/home/ubuntu/file&quot; dest=&quot;~&quot;
 </pre></div>
 </div>
 <p>The above command copy the file at <code class="docutils literal notranslate"><span class="pre">/home/ubuntu/file</span></code> (localhost) the the <code class="docutils literal notranslate"><span class="pre">~</span></code> directory of the remote hosts</p>
-<p>Or, you can use filters such as <code class="docutils literal notranslate"><span class="pre">--nodes</span></code> and <code class="docutils literal notranslate"><span class="pre">--tag</span></code> to the <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">group</span> <span class="pre">action</span></code> command to selectively specify which nodes inside the group the action will be executed</p>
+<p>Or, you can use filters such as <code class="docutils literal notranslate"><span class="pre">--nodes</span></code> and <code class="docutils literal notranslate"><span class="pre">--tag</span></code> to the <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">group</span> <span class="pre">action</span></code> command to selectively specify which nodes inside the group the action will be executed.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action commands-common copy --nodes node-0  node-1 --extra src=&quot;/home/ubuntu/file&quot; dest=&quot;~&quot;
 clapp group action commands-common copy --tag &#39;x=y&#39; --extra src=&quot;/home/ubuntu/file&quot; dest=&quot;~&quot;
 </pre></div>
 </div>
-<p>The above (first one) command copy the file at <code class="docutils literal notranslate"><span class="pre">/home/ubuntu/file</span></code> (localhost) the the <code class="docutils literal notranslate"><span class="pre">~</span></code> directory of the nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and <code class="docutils literal notranslate"><span class="pre">node-1</span></code></p>
-<p>The above (second one) command copy the file at <code class="docutils literal notranslate"><span class="pre">/home/ubuntu/file</span></code> (localhost) the the <code class="docutils literal notranslate"><span class="pre">~</span></code> directory of all nodes in the belonging to the <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> group, tagged with <code class="docutils literal notranslate"><span class="pre">x=y</span></code></p>
+<ul class="simple">
+<li><p>The first above example copy the file at <code class="docutils literal notranslate"><span class="pre">/home/ubuntu/file</span></code> (localhost) the the <code class="docutils literal notranslate"><span class="pre">~</span></code> directory of the nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and <code class="docutils literal notranslate"><span class="pre">node-1</span></code></p></li>
+<li><p>The second above example copy the file at <code class="docutils literal notranslate"><span class="pre">/home/ubuntu/file</span></code> (localhost) the the <code class="docutils literal notranslate"><span class="pre">~</span></code> directory of all nodes in the belonging to the <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> group, tagged with <code class="docutils literal notranslate"><span class="pre">x=y</span></code></p></li>
+</ul>
 </div>
-<div class="section" id="fetch-action-variables">
-<h3>fetch action variables<a class="headerlink" href="#fetch-action-variables" title="Permalink to this headline">¶</a></h3>
-<p>The following variables must be informed when running the <code class="docutils literal notranslate"><span class="pre">fetch</span></code> action (via <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter)</p>
-<p>Examples of the group <code class="docutils literal notranslate"><span class="pre">fetch</span></code> action is showed below:</p>
+</div>
+<div class="section" id="action-commands-common-fetch">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">fetch</span></code><a class="headerlink" href="#action-commands-common-fetch" title="Permalink to this headline">¶</a></h3>
+<p>Fetch files from the remote nodes to the localhost</p>
+<div class="section" id="id1">
+<h4>Required Variables<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id2">
+<h4>Examples<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action commands-common fetch --extra src=&quot;~/file&quot; dest=&quot;/home/ubuntu/fetched_files/&quot;
 </pre></div>
 </div>
 <p>The above command fetch a file at <code class="docutils literal notranslate"><span class="pre">~/file</span></code> directory from the nodes and place at the  <code class="docutils literal notranslate"><span class="pre">/home/ubuntu/fetched_files/</span></code> directory of the localhost</p>
 </div>
-<div class="section" id="reboot-action-variables">
-<h3>reboot action variables<a class="headerlink" href="#reboot-action-variables" title="Permalink to this headline">¶</a></h3>
-<p>This action does not require any additional variable to be passed</p>
+</div>
+<div class="section" id="action-commands-common-reboot">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">reboot</span></code><a class="headerlink" href="#action-commands-common-reboot" title="Permalink to this headline">¶</a></h3>
+<p>Reboot a machine and waits it to become available</p>
+<div class="section" id="id3">
+<h4>Required Variables<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>This action does not require any additional variable to be passed.</p>
+</div>
+<div class="section" id="id4">
+<h4>Examples<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action commands-common reboot
 clapp group action commands-common reboot --nodes node-0
 clapp group action commands-common reboot --tag &#39;x=y&#39;
 </pre></div>
 </div>
-<p>The first command reboot all machines belonging to the <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> group.</p>
-<p>The second one reboot the <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and the third one reboot the machines belonging to the group and tagged with <code class="docutils literal notranslate"><span class="pre">'x=y'</span></code></p>
+<p>The first command reboot all machines belonging to the <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> group, the second one reboot the <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and the third one reboot the machines belonging to the group and tagged with <code class="docutils literal notranslate"><span class="pre">'x=y'</span></code></p>
 </div>
-<div class="section" id="run-command-action-variables">
-<h3>run-command action variables<a class="headerlink" href="#run-command-action-variables" title="Permalink to this headline">¶</a></h3>
-<p>The following variables must be informed when running the <code class="docutils literal notranslate"><span class="pre">run-command</span></code> action (via <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter)</p>
-<p>Examples of the group <code class="docutils literal notranslate"><span class="pre">run-command</span></code> action is showed below:</p>
+</div>
+<div class="section" id="action-commands-common-run-command">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">run-command</span></code><a class="headerlink" href="#action-commands-common-run-command" title="Permalink to this headline">¶</a></h3>
+<p>Execute a shell command in the remote hosts</p>
+<div class="section" id="id5">
+<h4>Required Variables<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id6">
+<h4>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action commands-common run-command --extra cmd=&quot;ls&quot;
 clapp group action commands-common run-command --extra cmd=&quot;ls&quot; workdir=&quot;/bin&quot;
 </pre></div>
 </div>
-<p>The above command (first one) runs the command <code class="docutils literal notranslate"><span class="pre">ls</span></code> in the remote nodes</p>
-<p>The above command (second one) runs the command <code class="docutils literal notranslate"><span class="pre">ls</span></code> in the remote nodes, after changing to the “/bin” directory</p>
+<p>In the above command (first one) runs the command <code class="docutils literal notranslate"><span class="pre">ls</span></code> in the remote nodes, the second one runs the command <code class="docutils literal notranslate"><span class="pre">ls</span></code> in the remote nodes, after changing to the “/bin” directory</p>
 </div>
-<div class="section" id="run-script-action-variables">
-<h3>run-script action variables<a class="headerlink" href="#run-script-action-variables" title="Permalink to this headline">¶</a></h3>
-<p>The following variables must be informed when running the <code class="docutils literal notranslate"><span class="pre">run-script</span></code> action (via <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter).</p>
-<p>Examples of the group <code class="docutils literal notranslate"><span class="pre">run-script</span></code> action is showed below:</p>
+</div>
+<div class="section" id="action-commands-common-run-script">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">run-script</span></code><a class="headerlink" href="#action-commands-common-run-script" title="Permalink to this headline">¶</a></h3>
+<p>Transfer a script from localhost to remote nodes and execute it in the remote hosts</p>
+<div class="section" id="id7">
+<h4>Required Variables<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id8">
+<h4>Examples<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action commands-common run-script --extra src=&quot;/home/ubuntu/echo.sh&quot;
 clapp group action commands-common run-script --extra src=&quot;/home/ubuntu/echo.sh&quot; args=&quot;1 2 3&quot;
 clapp group action commands-common run-script --extra src=&quot;/home/ubuntu/echo.sh&quot; args=&quot;1 2 3&quot; workdir=&quot;/home&quot;
@@ -252,104 +355,210 @@ clapp group action commands-common run-script --extra src=&quot;/home/ubuntu/ech
 <p>The above command (second one) will copy the <code class="docutils literal notranslate"><span class="pre">/home/ubuntu/echo.sh</span></code> script from localhost to the remote nodes and execute it using the arguments “1 2 3” (similar to run <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">-c</span> <span class="pre">echo.sh</span> <span class="pre">1</span> <span class="pre">2</span> <span class="pre">3</span></code> in the hosts).</p>
 <p>The above command (third one) is similar to the second one but will execute the script in the <code class="docutils literal notranslate"><span class="pre">/home</span></code> directory.</p>
 </div>
-<div class="section" id="update-packages-action-variables">
-<h3>update-packages action variables<a class="headerlink" href="#update-packages-action-variables" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="action-commands-common-update-packages">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">update-packages</span></code><a class="headerlink" href="#action-commands-common-update-packages" title="Permalink to this headline">¶</a></h3>
+<p>Update packages in the remote hosts</p>
+<div class="section" id="id9">
+<h4>Required Variables<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 <p>This action does not require any additional variable to be passed</p>
+</div>
+<div class="section" id="id10">
+<h4>Examples<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action commands-common update-packages
 </pre></div>
 </div>
 <p>The above command will update the package list from remote hosts (similar to <code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">update</span></code> command)</p>
 </div>
 </div>
-<div class="section" id="ec2-common">
-<h2>EC2 Common<a class="headerlink" href="#ec2-common" title="Permalink to this headline">¶</a></h2>
-<p>This group provide means to interact with AWS EC2 instances, such as pausing and resuming nodes</p>
-<p>The actions for the group is listed below (the <code class="docutils literal notranslate"><span class="pre">setup</span></code> action is automatically executed when the node is added to the group).
-No hosts are needed for this group.</p>
+</div>
+<div class="section" id="group-docker">
+<h2>Group <code class="docutils literal notranslate"><span class="pre">docker</span></code><a class="headerlink" href="#group-docker" title="Permalink to this headline">¶</a></h2>
+<p>This group installs docker-ce in debian and red-hat based systems. The following actions are provided by this group.</p>
 <ul class="simple">
-<li><p>Adding nodes to the group</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setup</span></code>: Install docker-ce and start the service</p></li>
 </ul>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group add ec2-common node-0
-</pre></div>
-</div>
-<p>The above command add <code class="docutils literal notranslate"><span class="pre">node-0</span></code> to the EC2 Common group</p>
-<p>Other variables and commands for each action are shown in sections below.</p>
-<div class="section" id="pause-action-and-variables">
-<h3>Pause action and variables<a class="headerlink" href="#pause-action-and-variables" title="Permalink to this headline">¶</a></h3>
-<p>This action does not require any additional variable to be passed.
-To pause instances (not destroy), use te following commands</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action ec2-common pause
-clapp group action ec2-common pause --nodes node-0 node-1
-clapp group action ec2-common pause --tag &quot;x=y&quot;
-</pre></div>
-</div>
-<p>For the above commands, the first one pause (stop) all EC2 instances belonging tho the EC2 Common group
-and the second one pause only the nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and <code class="docutils literal notranslate"><span class="pre">node-1</span></code>.
-The third one pause instances of the group tagged with “x=y”</p>
-</div>
-<div class="section" id="resume-action-and-variables">
-<h3>Resume action and variables<a class="headerlink" href="#resume-action-and-variables" title="Permalink to this headline">¶</a></h3>
-<p>This action does not require any additional variable to be passed.
-To resume paused instances, use te following commands</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action ec2-common resume
-clapp group action ec2-common resume --nodes node-0 node-1
-clapp group action ec2-common resume --tag &quot;x=y&quot;
-</pre></div>
-</div>
-<p>For the above commands, the first one resume all EC2 instances belonging tho the EC2 Common group
-and the second one resume only the nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and <code class="docutils literal notranslate"><span class="pre">node-1</span></code>.
-The third one resume instances of the group tagged with “x=y”</p>
-<p><strong>NOTE</strong>: When instances are resumed their public IP may change. Use the <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">node</span> <span class="pre">alive</span></code> command to refresh the nodes and their respective IPs!</p>
-</div>
-<div class="section" id="list-volumes-action-and-variables">
-<h3>List volumes action and variables<a class="headerlink" href="#list-volumes-action-and-variables" title="Permalink to this headline">¶</a></h3>
-<p>This action does not require any additional variable to be passed.
-To list mounted volumes of isntances, use the commands below:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action ec2-common list-vols
-</pre></div>
-</div>
-<p>The command outputs the volumes attached to each instance in the ec2-common group</p>
-</div>
-<div class="section" id="attach-ebs-volumes-action-and-variables">
-<h3>Attach EBS volumes action and variables<a class="headerlink" href="#attach-ebs-volumes-action-and-variables" title="Permalink to this headline">¶</a></h3>
-<p>The following variables must be informed when running the <code class="docutils literal notranslate"><span class="pre">attach-ebs</span></code> action (via <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter). Only one EBS can be mounted per instance.</p>
-<p>Examples of the group <code class="docutils literal notranslate"><span class="pre">attach-ebs</span></code> action is showed below:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action ec2-common attach-ebs --nodes node-2 --extra ebs_device_name=&quot;/dev/sdf&quot; ebs_volume_id=&quot;vol-0c4b1c38682bd9903&quot;
-</pre></div>
-</div>
-<p>The above example attach the EBS volume <code class="docutils literal notranslate"><span class="pre">vol-0c4b1c38682bd9903</span></code> on <code class="docutils literal notranslate"><span class="pre">node-2</span></code> in the <code class="docutils literal notranslate"><span class="pre">/dev/sdf</span></code> (note, you must format and mount the volume yet)</p>
+<div class="section" id="id11">
+<h3>Hosts<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>No host must be specified by this group.</p>
 </div>
 </div>
-<div class="section" id="ec2-efs">
-<h2>EC2 EFS<a class="headerlink" href="#ec2-efs" title="Permalink to this headline">¶</a></h2>
-<p>This group setup and mount an network EFS filesystem on AWS provider.</p>
-<p>The actions for the group is listed below (the <code class="docutils literal notranslate"><span class="pre">setup</span></code> action is automatically executed when the node is added to the group).
-No hosts are needed for this group.</p>
-<div class="section" id="setup-action-variables">
-<h3>Setup action variables<a class="headerlink" href="#setup-action-variables" title="Permalink to this headline">¶</a></h3>
-<p>The following variables must be informed when running the <code class="docutils literal notranslate"><span class="pre">setup</span></code> action (via <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter)</p>
-<p>An example of the command would be:</p>
+<div class="section" id="group-ec2-efs">
+<h2>Group <code class="docutils literal notranslate"><span class="pre">ec2-efs</span></code><a class="headerlink" href="#group-ec2-efs" title="Permalink to this headline">¶</a></h2>
+<p>This group setup and mount an network EFS filesystem on AWS provider. The following actions are provided by the group.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">setup</span></code>: Install nfs client and mount EC2 file system</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">umount</span></code>: Unmount EC2 File System</p></li>
+</ul>
+<div class="section" id="id12">
+<h3>Hosts<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<p>No host must be specified by this group.</p>
+</div>
+<div class="section" id="action-ec2-efs-setup">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">ec2-efs</span> <span class="pre">setup</span></code><a class="headerlink" href="#action-ec2-efs-setup" title="Permalink to this headline">¶</a></h3>
+<p>Install nfs client and mount EC2 file system. This action is executed when nodes are added to the group.</p>
+<div class="section" id="id13">
+<h4>Required Variables<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id14">
+<h4>Examples<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group add ec2-efs node-0 --extra efs_mount_point=&quot;/efs&quot; user=&quot;ubuntu&quot; group=&quot;ubuntu&quot; mount_ip=&quot;192.168.0.1&quot; mount_permissions=&quot;0644&quot;
 </pre></div>
 </div>
 <p>The above command will install EC2 EFS filesystem on <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and mount the EFS Filesystem from <code class="docutils literal notranslate"><span class="pre">192.168.0.1</span></code> it at <code class="docutils literal notranslate"><span class="pre">/efs</span></code> with <code class="docutils literal notranslate"><span class="pre">0644</span></code> permissions (read-write for user and read-only for others).</p>
 </div>
-<div class="section" id="umount-action-variables">
-<h3>Umount action variables<a class="headerlink" href="#umount-action-variables" title="Permalink to this headline">¶</a></h3>
-<p>The following variables must be informed when running the <code class="docutils literal notranslate"><span class="pre">umount</span></code> action (via <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter)</p>
-<p>An example of the command would be:</p>
+</div>
+<div class="section" id="action-ec2-efs-umount">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">ec2-efs</span> <span class="pre">umount</span></code><a class="headerlink" href="#action-ec2-efs-umount" title="Permalink to this headline">¶</a></h3>
+<p>Unmount the EC2 File System</p>
+<div class="section" id="id15">
+<h4>Required Variables<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id16">
+<h4>Examples<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action ec2-efs umount --nodes node-0 --extra efs_mount_point=&quot;/efs&quot;
 </pre></div>
 </div>
 <p>The above command will unmount EC2 EFS filesystem from <code class="docutils literal notranslate"><span class="pre">node-0</span></code></p>
 </div>
 </div>
-<div class="section" id="docker">
-<h2>Docker<a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
-<p>This group installs docker-ce in debian and red-hat based systems</p>
-<p>The actions for the group is listed below (the <code class="docutils literal notranslate"><span class="pre">setup</span></code> action is automatically executed when the node is added to the group).
-No hosts are needed for this group.</p>
-<p>No additional variables is needed for the group</p>
+</div>
+<div class="section" id="group-spits">
+<h2>Group <code class="docutils literal notranslate"><span class="pre">spits</span></code><a class="headerlink" href="#group-spits" title="Permalink to this headline">¶</a></h2>
+<p>Install <a class="reference external" href="https://github.com/lmcad-unicamp/spits-2.0/">spits runtime for the SPITS programming model</a> in nodes, deploy SPITS applications and collect results from execution. The following actions are provided by this group.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">add-nodes</span></code>: If no shared filesystem is being used, this action informs to the job manager node, the address of all task managers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">job-copy</span></code>: Copy the results (job directory) from the job manager to the localhost.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">job-create</span></code>: Create a SPITS job in nodes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">job-status</span></code>: Query job manager nodes the status and the metrics of a running SPITS job</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setup</span></code>: Install SPITS runtime and its dependencies at nodes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: Start a SPITS job at job manager and task manager nodes</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For now, shared filesystem is <strong>not supported</strong> for SPITS runtime.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>SPITS application are started using random TCP ports. For now, your security group must allows the communication from/to random IP addresses and ports. So, set inbound and outbound rules from you security group to allow the communication from anywhere to anywhere at any port.</p>
+</div>
+<div class="section" id="id17">
+<h3>Hosts<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<p>This group defines two host types:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">spits/jobmanager</span></code>: Nodes where job manager will be executed for a job</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spits/taskmanager</span></code>: Nodes where task manager will be executed for a job</p></li>
+</ul>
+</div>
+<div class="section" id="typical-workflow">
+<h3>Typical Workflow<a class="headerlink" href="#typical-workflow" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">spits</span></code> group is used to run SPITS applications. For each SPITS application to run, you must create a SPITS job, with an unique Job ID. One node can execute multiple SPITS jobs.</p>
+<p>Thus, a typical workflow for usage is:</p>
+<ol class="arabic simple">
+<li><p>Add job manager desired nodes to <code class="docutils literal notranslate"><span class="pre">spits/jobmanager</span></code> group and task manager desired nodes to <code class="docutils literal notranslate"><span class="pre">spits/taskmanager</span></code></p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">job-create</span></code> action the create a new SPITS job in all machines belonging to <code class="docutils literal notranslate"><span class="pre">spits</span></code> group (filter nodes if you want to create a job at selected nodes only).</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">start</span></code> action to start the SPITS job manager and SPITS task manager at nodes to run the SPITS job</p></li>
+<li><p>If you are not using a shared filesystem, use the <code class="docutils literal notranslate"><span class="pre">add-nodes</span></code> action to copy addresses from task manager nodes to the job manager node.</p></li>
+<li><p>Optionally, check the job status using the <code class="docutils literal notranslate"><span class="pre">job-status</span></code> action.</p></li>
+<li><p>When job is finished, use <code class="docutils literal notranslate"><span class="pre">job-copy</span></code> action to get the results.</p></li>
+</ol>
+</div>
+<div class="section" id="action-spits-add-nodes">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">add-nodes</span></code><a class="headerlink" href="#action-spits-add-nodes" title="Permalink to this headline">¶</a></h3>
+<p>If no shared filesystem is being used, this action informs to the job manager node, the address of all task managers.</p>
+<div class="section" id="id18">
+<h4>Required Variables<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id19">
+<h4>Examples<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action spits add-nodes --extra &quot;jobid=my-job-123&quot;
+</pre></div>
+</div>
+<p>The above example will add all task manager addresses, from nodes belonging to the <code class="docutils literal notranslate"><span class="pre">spits/taskmanager</span></code> group to the <code class="docutils literal notranslate"><span class="pre">spits/jobmanager</span></code> nodes at job <code class="docutils literal notranslate"><span class="pre">my-job-123</span></code>. At this point, the job manager nodes recognizes all task managers.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>This action is not needed if job manager and task managers are running at same node</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="action-spits-job-copy">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-copy</span></code><a class="headerlink" href="#action-spits-job-copy" title="Permalink to this headline">¶</a></h3>
+<p>Copy the results (job directory) from the job manager to the localhost</p>
+<div class="section" id="id20">
+<h4>Required Variables<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id21">
+<h4>Examples<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action spits job-copy --extra &quot;jobid=my-job-123&quot; &quot;outputdir=/home/app-output&quot;
+</pre></div>
+</div>
+<p>The above example will copy the entire job folder (including logs/results) to the localhost and put at <code class="docutils literal notranslate"><span class="pre">/home/app-output</span></code> directory.</p>
+</div>
+</div>
+<div class="section" id="action-spits-job-create">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-create</span></code><a class="headerlink" href="#action-spits-job-create" title="Permalink to this headline">¶</a></h3>
+<p>Create a SPITS job in nodes to run an SPITS application.</p>
+<div class="section" id="id22">
+<h4>Required Variables<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id23">
+<h4>Examples<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action spits job-create --extra &quot;jobid=my-job-123&quot; &quot;spits_binary=/home/xxx/spits-app&quot; &quot;spits_args=foo bar 10&quot;
+</pre></div>
+</div>
+<p>The above example create the a job called <code class="docutils literal notranslate"><span class="pre">my-job-123</span></code> in all nodes belonging to the <code class="docutils literal notranslate"><span class="pre">spits</span></code> group. The job will execute the SPITS runtime with the binary <code class="docutils literal notranslate"><span class="pre">/home/xxx/spits-app</span></code> (that will be copied from localhost to nodes) with arguments <code class="docutils literal notranslate"><span class="pre">foo</span> <span class="pre">bar</span> <span class="pre">10</span></code>.</p>
+</div>
+</div>
+<div class="section" id="action-spits-job-status">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-status</span></code><a class="headerlink" href="#action-spits-job-status" title="Permalink to this headline">¶</a></h3>
+<p>Query job manager nodes the status and the metrics of a running SPITS job</p>
+<div class="section" id="id24">
+<h4>Required Variables<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id25">
+<h4>Examples<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action spits job-status --extra &quot;jobid=my-job-123&quot;
+</pre></div>
+</div>
+<p>The above example query the status of a SPITS job with ID <code class="docutils literal notranslate"><span class="pre">my-job-123</span></code> from nodes belonging to <code class="docutils literal notranslate"><span class="pre">spits/jobmanager</span></code> group. The job status will be displayed at the command output (in green).</p>
+</div>
+</div>
+<div class="section" id="action-spits-setup">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">setup</span></code><a class="headerlink" href="#action-spits-setup" title="Permalink to this headline">¶</a></h3>
+<p>Install SPITS runtime and its dependencies at nodes</p>
+<div class="section" id="id26">
+<h4>Required Variables<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h4>
+<p>This action does not require any additional variable to be passed. Optional variables can be passed.</p>
+</div>
+<div class="section" id="id27">
+<h4>Examples<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group add spits/jobmanager node-0
+clapp group add spits/taskmanager node-1 node-2
+</pre></div>
+</div>
+<p>The above examples install SPITS runtime at <code class="docutils literal notranslate"><span class="pre">node-0</span></code>, <code class="docutils literal notranslate"><span class="pre">node-1</span></code> and <code class="docutils literal notranslate"><span class="pre">node-2</span></code>. <code class="docutils literal notranslate"><span class="pre">node-0</span></code> is set as job manager host and nodes <code class="docutils literal notranslate"><span class="pre">node-1</span></code> and <code class="docutils literal notranslate"><span class="pre">node-2</span></code> are set as task manager host.</p>
+</div>
+</div>
+<div class="section" id="action-spits-start">
+<h3>Action <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">start</span></code><a class="headerlink" href="#action-spits-start" title="Permalink to this headline">¶</a></h3>
+<p>Start a SPITS job at job manager and task manager nodes</p>
+<div class="section" id="id28">
+<h4>Required Variables<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id29">
+<h4>Examples<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp group action spits start --extra &quot;jobid=my-job-123&quot; &quot;jm_args=-vv&quot;
+</pre></div>
+</div>
+<p>The above example starts job managers and task managers for job <code class="docutils literal notranslate"><span class="pre">my-job-123</span></code> in nodes belonging to <code class="docutils literal notranslate"><span class="pre">spits</span></code> group. Also, job managers SPITS runtime are executed passing the <code class="docutils literal notranslate"><span class="pre">-vv</span></code> parameter.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">job-create</span></code> action must be used before to create the SPITS job at nodes belonging to <code class="docutils literal notranslate"><span class="pre">spits</span></code> group.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 

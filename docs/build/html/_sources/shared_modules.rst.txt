@@ -4,4 +4,7 @@
 Modules shared with CLAP
 ==========================
 
-pass
+Cluster Module
+-------------------
+
+The cluster module.....

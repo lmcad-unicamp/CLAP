@@ -1,0 +1,103 @@
+:mod:`clap.modules.template`
+============================
+
+.. py:module:: clap.modules.template
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   commands/index.rst
+   module/index.rst
+
+
+Package Contents
+----------------
+
+
+.. py:class:: AbstractParser
+
+   .. method:: add_parser(self, commands_parser: argparse._SubParsersAction)
+      :abstractmethod:
+
+
+
+
+.. data:: log
+   
+
+   
+
+.. function:: list_templates() -> Dict[str, Any]
+
+
+.. py:class:: TagsParser
+
+   Bases: :class:`clap.common.module.AbstractParser`
+
+   .. method:: add_parser(self, commands_parser: argparse._SubParsersAction)
+
+
+
+   .. method:: commands_list_templates(self, namespace: argparse.Namespace)
+
+
+
+
+.. py:class:: PlatformFactory
+
+   .. attribute:: __multi_instance_api__
+      
+
+      
+
+   .. attribute:: __module_iface__
+      
+
+      
+
+   .. method:: get_module_interface()
+      :staticmethod:
+
+
+      Get the default ModuleInterface used to pick clap modules
+
+      :return: The modules interface
+      :rtype: ModuleInterface
+
+
+   .. method:: get_instance_api(platform_db: str = Defaults.PLATFORM_REPOSITORY, repository_type: str = Defaults.REPOSITORY_TYPE, default_driver: str = Defaults.DRIVER_ID)
+      :staticmethod:
+
+
+      Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers
+
+      :return: The MultiInstanceAPI object to manipulate cluster, nodes and modules
+      :rtype: MultiInstanceAPI
+
+
+
+.. function:: list_templates() -> Dict[str, Any]
+
+
+.. function:: list_instance_types() -> List[str]
+
+
+.. data:: __module_name__
+   :annotation: = template
+
+   
+
+.. data:: __module_description__
+   :annotation: = Templates information
+
+   
+
+.. data:: __module_dependencies__
+   :annotation: = []
+
+   
+

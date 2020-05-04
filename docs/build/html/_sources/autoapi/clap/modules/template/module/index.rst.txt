@@ -1,0 +1,16 @@
+:mod:`clap.modules.template.module`
+===================================
+
+.. py:module:: clap.modules.template.module
+
+
+Module Contents
+---------------
+
+
+.. function:: list_templates() -> Dict[str, Any]
+
+
+.. function:: list_instance_types() -> List[str]
+
+

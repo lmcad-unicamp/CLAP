@@ -31,7 +31,6 @@ Contents
     shared_groups
     shared_modules
     architecture
-    pythonapi
     tutorials
     troubleshooting
     autoapi/index

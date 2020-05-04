@@ -1,0 +1,107 @@
+:mod:`clap.modules.cluster.commands`
+====================================
+
+.. py:module:: clap.modules.cluster.commands
+
+
+Module Contents
+---------------
+
+
+.. function:: __is_valid_file__(fpath)
+
+
+.. function:: __is_valid_directory__(fpath)
+
+
+.. py:class:: ClusterParser
+
+   Bases: :class:`clap.common.module.AbstractParser`
+
+   .. method:: add_parser(self, commands_parser: argparse._SubParsersAction)
+
+
+
+   .. method:: command_start_cluster(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: command_setup_cluster(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: command_add_more_nodes(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: command_list_clusters(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: command_stop_cluster(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: command_alive_cluster_nodes(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: command_resume_cluster(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: command_pause_cluster(self, namespace: argparse.Namespace)
+
+
+
+   .. method:: commands_show_cluster(self, namespace: argparse.Namespace)
+      :abstractmethod:
+
+
+
+   .. method:: commands_list_templates(self, namespace: argparse.Namespace)
+      :abstractmethod:
+
+
+
+   .. method:: commands_update_cluster(self, namespace: argparse.Namespace)
+      :abstractmethod:
+
+
+
+   .. method:: commands_group_add(self, namespace: argparse.Namespace)
+      :abstractmethod:
+
+
+
+   .. method:: commands_group_action(self, namespace: argparse.Namespace)
+      :abstractmethod:
+
+
+
+   .. method:: commands_connect(self, namespace: argparse.Namespace)
+      :abstractmethod:
+
+
+
+   .. method:: commands_execute(self, namespace: argparse.Namespace)
+      :abstractmethod:
+
+
+
+   .. method:: commands_playbook(self, namespace: argparse.Namespace)
+      :abstractmethod:
+
+
+
+   .. method:: commands_copy(self, namespace: argparse.Namespace)
+      :abstractmethod:
+
+
+
+   .. method:: commands_fetch(self, namespace: argparse.Namespace)
+      :abstractmethod:
+
+
+
+

@@ -1,0 +1,18 @@
+:mod:`clap.common.module`
+=========================
+
+.. py:module:: clap.common.module
+
+
+Module Contents
+---------------
+
+
+.. py:class:: AbstractParser
+
+   .. method:: add_parser(self, commands_parser: argparse._SubParsersAction)
+      :abstractmethod:
+
+
+
+

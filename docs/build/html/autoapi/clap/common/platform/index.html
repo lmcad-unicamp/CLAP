@@ -1,0 +1,493 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>clap.common.platform &mdash; CLoud Application Platform 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="clap.common.repository" href="../repository/index.html" />
+    <link rel="prev" title="clap.common.module" href="../module/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../shared_groups.html">Groups shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../shared_modules.html">Modules shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a> &raquo;</li>
+        
+          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.platform</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../../_sources/autoapi/clap/common/platform/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-clap.common.platform">
+<span id="clap-common-platform"></span><h1><a class="reference internal" href="#module-clap.common.platform" title="clap.common.platform"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common.platform</span></code></a><a class="headerlink" href="#module-clap.common.platform" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="clap.common.platform.ModuleInterface">
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.platform.</code><code class="sig-name descname">ModuleInterface</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module_paths</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.ModuleInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface to get clap modules from the modules repository</p>
+<dl class="py attribute">
+<dt id="clap.common.platform.ModuleInterface.__modules_map__">
+<code class="sig-name descname">__modules_map__</code><a class="headerlink" href="#clap.common.platform.ModuleInterface.__modules_map__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.ModuleInterface.__check_dependencies__">
+<em class="property">static </em><code class="sig-name descname">__check_dependencies__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.ModuleInterface.__check_dependencies__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.ModuleInterface.__find_modules__">
+<em class="property">static </em><code class="sig-name descname">__find_modules__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module_paths</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.ModuleInterface.__find_modules__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.ModuleInterface.get_module">
+<code class="sig-name descname">get_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">module_name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.ModuleInterface.get_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the module package</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>module_name</strong> (<em>str</em>) – Name of the clap module</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The module</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Module</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.ModuleInterface.get_modules">
+<code class="sig-name descname">get_modules</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.ModuleInterface.get_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the module package</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionaty with modules information</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.ModuleInterface.get_module_names">
+<code class="sig-name descname">get_module_names</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.ModuleInterface.get_module_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of all the modules in the clap modules repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List containing the module names</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.common.platform.GroupInterface">
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.platform.</code><code class="sig-name descname">GroupInterface</code><a class="headerlink" href="#clap.common.platform.GroupInterface" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="clap.common.platform.GroupInterface.__groups_actions_map__">
+<code class="sig-name descname">__groups_actions_map__</code><a class="headerlink" href="#clap.common.platform.GroupInterface.__groups_actions_map__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.common.platform.GroupInterface.GROUP_SCHEMA">
+<code class="sig-name descname">GROUP_SCHEMA</code><a class="headerlink" href="#clap.common.platform.GroupInterface.GROUP_SCHEMA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.GroupInterface.__find_groups">
+<em class="property">static </em><code class="sig-name descname">__find_groups</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.GroupInterface.__find_groups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.GroupInterface.get_group">
+<code class="sig-name descname">get_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">group_name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.GroupInterface.get_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.GroupInterface.get_group_names">
+<code class="sig-name descname">get_group_names</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.GroupInterface.get_group_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.common.platform.MultiInstanceAPI">
+<em class="property">class </em><code class="sig-prename descclassname">clap.common.platform.</code><code class="sig-name descname">MultiInstanceAPI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">platform_db</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">repository_type</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">default_driver</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>API used to manage and perform operations in cluster and nodes from different driver implementations,
+and cloud providers in a transparently manner.</p>
+<dl class="py attribute">
+<dt id="clap.common.platform.MultiInstanceAPI.__interfaces_map__">
+<code class="sig-name descname">__interfaces_map__</code><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.__interfaces_map__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.__find_ifaces">
+<em class="property">static </em><code class="sig-name descname">__find_ifaces</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.__find_ifaces" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI._get_instance_iface">
+<code class="sig-name descname">_get_instance_iface</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">driver_id</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI._get_instance_iface" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.get_instance_templates">
+<em class="property">static </em><code class="sig-name descname">get_instance_templates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_instance_templates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.start_nodes">
+<code class="sig-name descname">start_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">instances_num</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.start_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start instances based on the configuration values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>instances_num</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – Dictionary containing the instance name as key and number of instances as value]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of created nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../cluster_repository/index.html#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.stop_nodes">
+<code class="sig-name descname">stop_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.stop_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop started nodes based on their node ids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to stop</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.pause_nodes">
+<code class="sig-name descname">pause_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.pause_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pause started nodes based on their node ids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to pause</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.resume_nodes">
+<code class="sig-name descname">resume_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.resume_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resume paused nodes based on their node ids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to resume</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.check_nodes_alive">
+<code class="sig-name descname">check_nodes_alive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.check_nodes_alive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.execute_playbook_in_nodes">
+<code class="sig-name descname">execute_playbook_in_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">playbook_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">hosts</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">()</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.execute_playbook_in_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.get_connection_to_nodes">
+<code class="sig-name descname">get_connection_to_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_connection_to_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.get_node">
+<code class="sig-name descname">get_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.get_nodes">
+<code class="sig-name descname">get_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.get_nodes_with_tags">
+<code class="sig-name descname">get_nodes_with_tags</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_nodes_with_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.add_tags_to_nodes">
+<code class="sig-name descname">add_tags_to_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.add_tags_to_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.remove_tags_from_nodes">
+<code class="sig-name descname">remove_tags_from_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.remove_tags_from_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.remove_tags_from_nodes_by_key">
+<code class="sig-name descname">remove_tags_from_nodes_by_key</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.remove_tags_from_nodes_by_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.get_groups">
+<code class="sig-name descname">get_groups</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_groups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.__execute_group_action_sequence">
+<code class="sig-name descname">__execute_group_action_sequence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">hosts</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">actions</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">group_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">error_action</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'error'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.__execute_group_action_sequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.__check_nodes_in_group">
+<code class="sig-name descname">__check_nodes_in_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">group</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.__check_nodes_in_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.add_nodes_to_group">
+<code class="sig-name descname">add_nodes_to_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">group_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error_action</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'error'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.add_nodes_to_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.__add_nodes_to_group">
+<code class="sig-name descname">__add_nodes_to_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">group_hosts_map</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>Union<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error_action</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'error'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.__add_nodes_to_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.execute_group_action">
+<code class="sig-name descname">execute_group_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">group_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error_action</span><span class="o">=</span><span class="default_value">'ignore'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.execute_group_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.__execute_group_action">
+<code class="sig-name descname">__execute_group_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">group_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error_action</span><span class="o">=</span><span class="default_value">'error'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.__execute_group_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.common.platform.MultiInstanceAPI.remove_nodes_from_group">
+<code class="sig-name descname">remove_nodes_from_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">group_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">remove_action</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.remove_nodes_from_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../repository/index.html" class="btn btn-neutral float-right" title="clap.common.repository" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../module/index.html" class="btn btn-neutral float-left" title="clap.common.module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Otávio Napoli
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

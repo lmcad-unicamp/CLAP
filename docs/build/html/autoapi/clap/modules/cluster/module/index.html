@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>clap.modules.cluster.module &mdash; CLoud Application Platform 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="clap.modules.cluster.repository" href="../repository/index.html" />
+    <link rel="prev" title="clap.modules.cluster.conf" href="../conf/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../shared_groups.html">Groups shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../shared_modules.html">Modules shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.common</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../drivers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.drivers</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a> &raquo;</li>
+        
+          <li><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules</span></code></a> &raquo;</li>
+        
+          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.cluster</span></code></a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.cluster.module</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../../../_sources/autoapi/clap/modules/cluster/module/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-clap.modules.cluster.module">
+<span id="clap-modules-cluster-module"></span><h1><a class="reference internal" href="#module-clap.modules.cluster.module" title="clap.modules.cluster.module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.modules.cluster.module</span></code></a><a class="headerlink" href="#module-clap.modules.cluster.module" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="py exception">
+<dt id="clap.modules.cluster.module.ConfigurationError">
+<em class="property">exception </em><code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">ConfigurationError</code><a class="headerlink" href="#clap.modules.cluster.module.ConfigurationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.modules.cluster.module.ClusterState">
+<em class="property">class </em><code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">ClusterState</code><a class="headerlink" href="#clap.modules.cluster.module.ClusterState" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="clap.modules.cluster.module.ClusterState.CLUSTER_RUNNING">
+<code class="sig-name descname">CLUSTER_RUNNING</code><em class="property"> = running</em><a class="headerlink" href="#clap.modules.cluster.module.ClusterState.CLUSTER_RUNNING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.modules.cluster.module.ClusterState.CLUSTER_PAUSED">
+<code class="sig-name descname">CLUSTER_PAUSED</code><em class="property"> = paused</em><a class="headerlink" href="#clap.modules.cluster.module.ClusterState.CLUSTER_PAUSED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.__get_setups__">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">__get_setups__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_dict</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#clap.modules.cluster.module.__get_setups__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.__get_clusters__">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">__get_clusters__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_dict</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#clap.modules.cluster.module.__get_clusters__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.__validate_cluster_setups__">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">__validate_cluster_setups__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">cluster_dict</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">setups</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#clap.modules.cluster.module.__validate_cluster_setups__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.__perform_replacements__">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">__perform_replacements__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.cluster.module.__perform_replacements__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.__validate_nodes__">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">__validate_nodes__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">cluster_data</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">valid_instances</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#clap.modules.cluster.module.__validate_nodes__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.__validate_groups_and_actions__">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">__validate_groups_and_actions__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">cluster_data</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">valid_groups</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#clap.modules.cluster.module.__validate_groups_and_actions__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.get_cluster_config">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">get_cluster_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_files</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">cluster_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.cluster.module.get_cluster_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.__add_nodes_to_cluster__">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">__add_nodes_to_cluster__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster</span><span class="p">:</span> <span class="n">ClusterData</span></em>, <em class="sig-param"><span class="n">node_types</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#clap.modules.cluster.module.__add_nodes_to_cluster__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.cluster_create">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">cluster_create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_files</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">cluster_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_setup</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>ClusterData<span class="p">, </span>List<span class="p">[</span>NodeInfo<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#clap.modules.cluster.module.cluster_create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.add_nodes_to_cluster">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">add_nodes_to_cluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">node_types</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_setup</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>ClusterData<span class="p">, </span>List<span class="p">[</span>NodeInfo<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#clap.modules.cluster.module.add_nodes_to_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.cluster_setup">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">cluster_setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">nodes_type</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">re_add_to_group</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.cluster.module.cluster_setup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.update_cluster_config">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">update_cluster_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_files</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; ClusterData<a class="headerlink" href="#clap.modules.cluster.module.update_cluster_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.add_existing_nodes_to_cluster">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">add_existing_nodes_to_cluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">node_types</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.cluster.module.add_existing_nodes_to_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.__get_nodes_from_cluster__">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">__get_nodes_from_cluster__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#clap.modules.cluster.module.__get_nodes_from_cluster__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.cluster_stop">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">cluster_stop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">do_not_stop</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#clap.modules.cluster.module.cluster_stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.cluster_alive">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">cluster_alive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>bool<span class="p">]</span><a class="headerlink" href="#clap.modules.cluster.module.cluster_alive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.cluster_pause">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">cluster_pause</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#clap.modules.cluster.module.cluster_pause" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.cluster_resume">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">cluster_resume</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.cluster.module.cluster_resume" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.list_clusters">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">list_clusters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#clap.modules.cluster.module.list_clusters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.list_templates">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">list_templates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.cluster.module.list_templates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.run_playbook_in_nodes">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">run_playbook_in_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">playbook_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>bool<span class="p">]</span><a class="headerlink" href="#clap.modules.cluster.module.run_playbook_in_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.modules.cluster.module.run_command">
+<code class="sig-prename descclassname">clap.modules.cluster.module.</code><code class="sig-name descname">run_command</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">command_string</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.cluster.module.run_command" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../repository/index.html" class="btn btn-neutral float-right" title="clap.modules.cluster.repository" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../conf/index.html" class="btn btn-neutral float-left" title="clap.modules.cluster.conf" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Otávio Napoli
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
