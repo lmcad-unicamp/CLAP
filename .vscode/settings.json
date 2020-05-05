@@ -9,7 +9,8 @@
         "!csharp",
         "!css",
         "!javascript",
-        "!javascriptreact"
+        "!javascriptreact",
+        "!python"
     ],
     "cSpell.words": [
         "clapp",

@@ -127,8 +127,7 @@ def pause_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_con
                 node.ip = None
                 node.status = Codes.NODE_STATUS_PAUSED
                 node.update_time = time.time()
-
-                repository.write_node_info(node)
+                repository.update_node(node)
                 log.info("Node `{}` has been already paused!".format(node.node_id))
                 paused_nodes.append(node.node_id)
 
@@ -145,7 +144,7 @@ def pause_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_con
             node.status = Codes.NODE_STATUS_PAUSED
             node.update_time = time.time()
             # Remove node with instance id
-            repository.write_node_info(node)
+            repository.update_node(node)
             log.info("Node `{}` has been paused!".format(node.node_id))
             paused_nodes.append(node.node_id)
         
@@ -218,7 +217,7 @@ def resume_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_co
             node.update_time = time.time()
 
             # Remove node with instance id
-            repository.write_node_info(node)
+            repository.update_node(node)
             log.info("Node `{}` has been resumed!".format(node.node_id))
             resumed_nodes.append(node.node_id)
         
@@ -300,7 +299,7 @@ def check_instance_status(queue, repository: RepositoryOperations, provider_conf
                 'vpc_id': instance['vpc_id'],
                 'subnet_id': instance['subnet_id']
             }
-            repository.write_node_info(node)
+            repository.update_node(node)
 
             stated_nodes.append(node)
         
@@ -339,14 +338,6 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
             'CreatedWith': 'CLAP'
         }
     }
-
-    node_names = []
-    # Create vector with node names to instance
-    for i in range(0, count):
-        # Create a new node id
-        node_idx = repository.get_and_increment_node_index()
-        node_id = "{}-{}".format(node_prefix, node_idx)
-        node_names.append(node_id)
 
     if not 'keypair_name' in login_conf:
         key_destination = path_extend(Defaults.private_path, "{}.pem".format(keypair_name))
@@ -429,25 +420,18 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
         created_instances = instance_event['event_data']['res']['instances']
 
         id_name_map_list = []
-        
-        for instance, node_id in zip(created_instances, node_names):
-            node_name = "{}-{}-{}-{}".format(driver_id, cluster.login_id, cluster.provider_id, node_id)
-            id_name_map_list.append({'id': instance['id'], 'name': node_name})
+
+        for instance in created_instances:
             # Create a new CLAP node
-            node_info = NodeInfo(
-                node_id=node_id,
+            node_info = repository.new_node(
                 cluster_id=cluster['cluster_id'],
-                eclust_node_name=node_name,
-                provider_id=None,
-                login_id=None,
                 instance_type=instance_name,
-                instance_conf=None,
                 status=Codes.NODE_STATUS_INIT,
-                ip=instance['public_ip'],
-                keypair=None,
-                key=None,
                 driver_id=driver_id,
+                ip=instance['public_ip'],
+                instance_id=instance['id'],
                 tags={},
+                groups={},
                 extra={
                     'instance_id': instance['id'],
                     'private_ip': instance['private_ip'],
@@ -460,16 +444,15 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
                 }
             )
 
-            # Store the fresh created clap node
-            repository.write_node_info(node_info, create=True)
             created_nodes.append(node_info.node_id)
-            print("Created node: `{}` (instance-id: `{}`)".format(node_id, instance['id']))
+            node_name = "{}-{}-{}-{}".format(driver_id, cluster.login_id, cluster.provider_id, node_info.node_id)
+            id_name_map_list.append({'id': node_info.instance_id, 'name': node_name})
+            log.info("Created node: `{}` (instance-id: `{}` - instance-name: `{}`)".format(node_info.node_id, node_info.instance_id, node_name))
         
         # Security group newly created?
         if secgroup_name:
             cluster.extra['default_security_group'] = secgroup_name
-            repository.write_cluster_info(cluster)
-
+            repository.update_cluster(cluster)
 
         # Tag EC2 instances
         ec2_tag_instances = {

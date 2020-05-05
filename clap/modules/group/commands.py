@@ -44,12 +44,12 @@ class GroupsParser(AbstractParser):
 
         if namespace.tag:
             try:
-                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
             except Exception:
                 raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
 
         try:
-            extra_args = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+            extra_args = {arg.split('=')[0]: '='.join(arg.split('=')[1:]) for arg in namespace.extra} if namespace.extra else {}
         except Exception:
             raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
                             "Please check the extra parameters passed")
@@ -70,12 +70,12 @@ class GroupsParser(AbstractParser):
 
         if namespace.tag:
             try:
-                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
             except Exception:
                 raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
 
         try:
-            extra_args = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+            extra_args = {arg.split('=')[0]: '='.join(arg.split('=')[1:]) for arg in namespace.extra} if namespace.extra else {}
         except Exception:
             raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
                             "Please check the extra parameters passed")

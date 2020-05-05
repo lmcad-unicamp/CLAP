@@ -52,7 +52,8 @@ class ModuleInterface:
                         'name': mod.__module_name__ if '__module_name__' in mod.__dict__ else pkg_name,
                         'description': mod.__module_description__ if '__module_description__' in mod.__dict__ else '',
                         'dependencies': mod.__module_dependencies__ if '__module_dependencies__' in mod.__dict__ else [],
-                        'module': mod
+                        'module': mod,
+                        'loaded time': time.time()
                     }
                     ModuleInterface.__modules_map__[mod_values['name']] = mod_values
                 except Exception as e:
@@ -93,7 +94,6 @@ class ModuleInterface:
         """
 
         return list(self.__modules_map__.keys())
-
 
 
 class GroupInterface:
@@ -212,10 +212,7 @@ class MultiInstanceAPI:
 
         :param node_ids: List of node ids to stop
         :type node_ids: List[str]
-        """
-        if not node_ids:
-            return []
-        
+        """      
         nodes = self.get_nodes(node_ids)
         stopped_nodes = []
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
@@ -229,9 +226,6 @@ class MultiInstanceAPI:
         :param node_ids: List of node ids to pause
         :type node_ids: List[str]
         """
-        if not node_ids:
-            return []
-
         nodes = self.get_nodes(node_ids)
         paused_nodes = []
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
@@ -245,9 +239,6 @@ class MultiInstanceAPI:
         :param node_ids: List of node ids to resume
         :type node_ids: List[str]
         """
-        if not node_ids:
-            return []
-        
         nodes = self.get_nodes(node_ids)
         resumed_nodes = []
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
@@ -256,9 +247,6 @@ class MultiInstanceAPI:
         return resumed_nodes
 
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
-        if not node_ids:
-            return {}
-
         nodes = self.get_nodes(node_ids)
         checked_nodes = dict()
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
@@ -291,13 +279,13 @@ class MultiInstanceAPI:
             for group, node_list in hosts.items():
                 node_ids = [node.node_id for node in self.__repository_operations.get_nodes(node_list)
                             if node.cluster_id == cluster.cluster_id]
-                invalids = [node.node_id for node in self.__repository_operations.get_nodes(node_ids) if not node.ip]
-                if invalids:
-                    log.error("Nodes `{}` do not have a valid connection ip. Discarding it!".format(', '.join(invalids)))
-                    for invalid in invalids:
-                        executed_nodes[invalid] = False
+                # invalids = [node.node_id for node in self.__repository_operations.get_nodes(node_ids) if not node.ip]
+                # if invalids:
+                #     log.error("Nodes `{}` do not have a valid connection ip. Discarding it!".format(', '.join(invalids)))
+                #     for invalid in invalids:
+                #         executed_nodes[invalid] = False
 
-                    node_ids = list(set(node_ids).difference(set(invalids)))
+                #     node_ids = list(set(node_ids).difference(set(invalids)))
 
                 if len(node_ids) == 0:
                     log.error("Discarding group `{}` because there is no nodes".format(group))
@@ -319,9 +307,6 @@ class MultiInstanceAPI:
         return executed_nodes
 
     def get_connection_to_nodes(self, node_ids: List[str], *args, **kwargs) -> Dict[str, SSHClient]:
-        if not node_ids:
-            return []
-
         nodes = self.get_nodes(node_ids)
         connections = dict()
         for cluster in self.__repository_operations.get_clusters(list({node.cluster_id for node in nodes})):
@@ -333,24 +318,20 @@ class MultiInstanceAPI:
     # ########################### Operations with repository ##########################
     # The following operations directly uses the reporitory
     # --------------------------------------------------------------------------------
-
-    def get_node(self, node_id: str) -> NodeInfo:
-        try:
-            return self.__repository_operations.get_node(node_id)
-        except Exception:
-            raise Exception("Invalid node with id `{}`".format(node_id))
-
-    def get_nodes(self, node_ids: List[str] = None) -> List[NodeInfo]:
+    def get_nodes(self, node_ids: List[str]) -> List[NodeInfo]:
         if not node_ids:
-            return self.__repository_operations.get_all_nodes()
+            raise Exception("No nodes informed")
 
         node_set = set(node_ids)
         nodes = self.__repository_operations.get_nodes(list(node_set))
         if len(nodes) != len(node_set):
-            raise Exception("Some nodes are invalid: `{}`".format(', '.join(
-                node_set.difference([node.node_id for node in nodes]))))
+            raise Exception("Some nodes are invalid: `{}`".format(', '.join(sorted(
+                node_set.difference([node.node_id for node in nodes])))))
 
         return nodes
+    
+    def get_all_nodes(self):
+        return self.__repository_operations.get_all_nodes()
 
     def get_nodes_with_tags(self, tags: Dict[str, str]) -> List[NodeInfo]:
         tagged_nodes = []
@@ -371,25 +352,23 @@ class MultiInstanceAPI:
     # --------------------------------------------------------------------------------
 
     def add_tags_to_nodes(self, node_ids: List[str], tags: Dict[str, str]) -> List[str]:
-        if not node_ids:
-            return []
-
         added_nodes = []
         for node in self.get_nodes(node_ids):
             for tag, val in tags.items():
                 if tag in node.tags:
-                    node.tags[tag].append(val)
+                    if val not in node.tags[tag]:
+                        node.tags[tag].append(val)
                 else:
                     node.tags[tag] = [val]
 
-            self.__repository_operations.write_node_info(node, create=False)
-            added_nodes.append(node.node_id)
-        return added_nodes
+            added_nodes.append(node)
+
+        for node in added_nodes:
+            self.__repository_operations.update_node(node)
+
+        return [node.node_id for node in added_nodes]
 
     def remove_tags_from_nodes(self, node_ids: List[str], tags: Dict[str, str]) -> List[str]:
-        if not node_ids:
-            return []
-        
         removed_nodes = []
         for node in self.get_nodes(node_ids):
             for tag, value in tags.items():
@@ -400,24 +379,26 @@ class MultiInstanceAPI:
                         node.tags.pop(tag)
                     else:
                         node.tags[tag] = tag_vals
-                    self.__repository_operations.write_node_info(node)
-                    removed_nodes.append(node.node_id)
+                    removed_nodes.append(node)
 
-        return removed_nodes
+        for node in removed_nodes:
+             self.__repository_operations.update_node(node)
+        
+        return [node.node_id for node in removed_nodes]
 
     def remove_tags_from_nodes_by_key(self, node_ids: List[str], tags: List[str]) -> List[str]:
-        if not node_ids:
-            return []
-        
         removed_nodes = []
         for node in self.get_nodes(node_ids):
             for tag in tags:
                 if tag in node.tags:
                     node.tags.pop(tag)
-                    self.__repository_operations.write_node_info(node)
-                    removed_nodes.append(node.node_id)
+                    self.__repository_operations.update_node(node)
+                    removed_nodes.append(node)
 
-        return removed_nodes
+        for node in removed_nodes:
+             self.__repository_operations.update_node(node)
+        
+        return [node.node_id for node in removed_nodes]
 
     # --------------------------------------------------------------------------------
     # ########################### Operations with groups ###############################
@@ -513,14 +494,14 @@ class MultiInstanceAPI:
             for host_name, host_list in hosts.items():
                 for node_id in node_ids:
                     if node_id in host_list:
-                        node = self.__repository_operations.get_node(node_id)
+                        node = self.__repository_operations.get_nodes(node_id)[0]
                         # TODO update or replace?
                         if host_name == '__default__':
                             node.groups[group_name] = time.time()
                         else:
                             node.groups["{}/{}".format(group_name, host_name)] = time.time()
 
-                        self.__repository_operations.write_node_info(node)
+                        self.__repository_operations.update_node(node)
 
         return node_ids
 
@@ -638,7 +619,7 @@ class MultiInstanceAPI:
                     ', '.join(set(node_ids).difference(set(removeds))), remove_action))
 
         for node_id in node_ids:
-            node = self.__repository_operations.get_node(node_id)
+            node = self.__repository_operations.get_nodes(node_id)[0]
 
             if len(split_vals) > 1:
                 node.groups.pop(group_name)
@@ -649,6 +630,6 @@ class MultiInstanceAPI:
                         node.groups.pop(gname)
                     # else:
                     #    raise Exception()
-            self.__repository_operations.write_node_info(node)
+            self.__repository_operations.update_node(node)
 
         return node_ids

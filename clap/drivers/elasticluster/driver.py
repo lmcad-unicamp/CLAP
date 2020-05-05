@@ -965,7 +965,7 @@ class ElasticlusterInterface(AbstractInstanceInterface):
             host_set = {host for group, _hosts in group_hosts_map.items() for host in _hosts}
             nodeid_groups_map = {host: [group for group, _hosts in group_hosts_map.items() if host in _hosts] for host in host_set}
             for nodeid, groups, in nodeid_groups_map.items():
-                node = ElasticCreator.get_node_from_cluster(cluster_id, self.repository_operator.get_node(nodeid).eclust_node_name)
+                node = ElasticCreator.get_node_from_cluster(cluster_id, self.repository_operator.get_nodes(nodeid)[0].eclust_node_name)
                 node.kind = nodeid
                 ecc_nodes.append(node)
 

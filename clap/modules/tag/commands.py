@@ -28,17 +28,20 @@ class TagsParser(AbstractParser):
         addeds = node_add_tag(namespace.node_ids, tag)
 
         if addeds:
-            print("Tag `{}` added to nodes `{}`".format(namespace.tag, ', '.join(addeds)))
+            print("Tag `{}` added to nodes `{}`".format(namespace.tag, ', '.join(sorted(addeds))))
         else:
             log.error("Tag `{}` were not added to any node!".format(namespace.tag))
             
         return 0
 
     def command_node_remove_tag(self, namespace: argparse.Namespace):
-        removeds =  node_remove_tag(namespace.node_ids, namespace.tag) 
+        tag = namespace.tag
+        if '=' in tag:
+            tag = {tag.split('=')[0]: '='.join(tag.split('=')[1:])}
+        removeds =  node_remove_tag(namespace.node_ids, tag) 
 
         if removeds: 
-            print("Tag `{}` removed from nodes `{}`".format(namespace.tag, ', '.join(removeds)))
+            print("Tag `{}` removed from nodes `{}`".format(namespace.tag, ', '.join(sorted(removeds))))
         else:
             log.error("Tag `{}` were not removed from any node!".format(namespace.tag))
         return 0

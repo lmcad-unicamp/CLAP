@@ -47,7 +47,7 @@ def node_alive(node_ids: List[str] = None, tag: Dict[str, str] = None, **kwargs)
     multi_instance = __get_instance_api(**kwargs)
 
     if not node_ids:
-        node_ids = [n.node_id for n in multi_instance.get_nodes()]
+        node_ids = [n.node_id for n in multi_instance.get_all_nodes()]
     elif tag:
         node_ids = set(node_ids)
         node_ids.update(set([node.node_id for node in multi_instance.get_nodes_with_tags(tag)]))
@@ -60,10 +60,9 @@ def node_get(node_ids: List[str] = None, tags: Dict[str, str] = None, **kwargs) 
     multi_instance = __get_instance_api(**kwargs)
 
     if not node_ids:
-        return multi_instance.get_nodes(node_ids) if not tags else multi_instance.get_nodes_with_tags(tags)
+        return multi_instance.get_all_nodes() if not tags else multi_instance.get_nodes_with_tags(tags)
 
     nodes = multi_instance.get_nodes(node_ids)
-
     if tags:
         nodes += multi_instance.get_nodes_with_tags(tags)
 
@@ -72,9 +71,6 @@ def node_get(node_ids: List[str] = None, tags: Dict[str, str] = None, **kwargs) 
 
 def node_add_tag(tags: Dict[str, str], node_ids: List[str] = None, **kwargs):
     multi_instance = __get_instance_api(**kwargs)
-
-    if node_ids:
-        node_ids = [node.node_id for node in multi_instance.get_nodes()]
 
     for key, val in tags.items():
         nodes = multi_instance.add_tags_to_nodes(node_ids, {key: val})
@@ -85,7 +81,7 @@ def node_remove_tag(tags: List[str], node_ids: List[str] = None, **kwargs):
     multi_instance = __get_instance_api(**kwargs)
 
     if not node_ids:
-        node_ids = [node.node_id for node in multi_instance.get_nodes()]
+        node_ids = [node.node_id for node in multi_instance.get_all_nodes()]
 
     for tag in tags:
         nodes = multi_instance.remove_tags_from_nodes(node_ids, [tag])

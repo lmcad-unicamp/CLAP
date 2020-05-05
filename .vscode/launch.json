@@ -5,140 +5,36 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run clapp server",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp_server",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Start type-a node",
+            "name": "Node start type-a",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "node", "start", "type-a:1"],
+            "args": ["-vv", "node", "start", "type-a"],
             "console": "integratedTerminal"
         },
         {
-            "name": "Start type-b node",
+            "name": "Node stop node-0",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["node", "start", "type-b:1"],
+            "args": ["-vv", "node", "stop", "node-0"],
             "console": "integratedTerminal"
         },
         {
-            "name": "Start 2xtype-a and 2xtype-b node",
+            "name": "Node pause node-1",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["node", "start", "type-a:2", "type-b:2"],
+            "args": ["-vv", "node", "pause", "node-1"],
             "console": "integratedTerminal"
         },
         {
-            "name": "Stop node-30",
+            "name": "Node resume node-1",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "node", "stop", "node-30"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Alive node-31",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "node", "alive", "node-31"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Run sleep playbook in node-4",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["node", "playbook", "/home/napoli/temp/sleep.yml", "node-4", "--extra", "output_file='hello'"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Resume node-31",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "node", "resume", "node-31"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Pause node-30",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vvvv", "node", "pause", "node-30"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Request help",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vvvv", "-h"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Create spits-cluster",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "cluster", "start", "spits-cluster", "--extra", "jobid=jobpi", "spits_bin=/home/napoli/Documents/Doutorado/Projects/CEPETRO/spits-2.0/examples/spits-pi/bin/spits-pi-module", "spits_args=1000000 10"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Setup cluster-0",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "cluster", "setup", "cluster-0"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Add nodes to cluster-3",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "cluster", "add", "cluster-3", "node-type-master:1", "--extra", "x=ola"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Stop cluster-2",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "cluster", "stop", "cluster-2"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Alive cluster-3",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "cluster", "alive", "cluster-3"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Pause cluster-3",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "cluster", "pause", "cluster-3"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Resume cluster-3",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
-            "args": ["-vv", "cluster", "resume", "cluster-3"],
+            "args": ["-vv", "node", "resume", "node-1"],
             "console": "integratedTerminal"
         }
-
     ]
 }

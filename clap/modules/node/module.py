@@ -18,7 +18,7 @@ def list_nodes(node_ids: List[str] = None, tags: Dict[str, str] = None) -> List[
         else:
             return nodes
     else:
-        return multi_instance.get_nodes(node_ids)
+        return multi_instance.get_nodes(node_ids) if node_ids else multi_instance.get_all_nodes()
 
 def is_alive(node_ids: List[str], tags: Dict[str, str] = None) -> Dict[str, bool]:
     multi_instance = PlatformFactory.get_instance_api()

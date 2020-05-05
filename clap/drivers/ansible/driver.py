@@ -29,9 +29,6 @@ class AnsibleInterface(AbstractInstanceInterface):
     def __init__(self, repository_operator: RepositoryOperations):
         super(AnsibleInterface, self).__init__(repository_operator)
         self.reader = ConfigReader(Defaults.cloud_conf, Defaults.login_conf, Defaults.instances_conf)
-        self.cluster_prefix = 'clap'
-        self.node_prefix = 'node'
-        
 
     def __create_hosts_inventory__(self, group_hosts_map: Dict[str, List[str]], group_vars: Dict[str, Dict[str, str]]):
         inventory = dict()
@@ -42,7 +39,7 @@ class AnsibleInterface(AbstractInstanceInterface):
 
         for group, host_list in group_hosts_map.items():
             for node in self.repository_operator.get_nodes(host_list):
-                cluster = self.repository_operator.get_cluster(node.cluster_id)
+                cluster = self.repository_operator.get_clusters(node.cluster_id)[0]
                 login = self.reader.get_login(cluster.login_id)
 
                 if 'keypair_name' in login:
@@ -67,7 +64,7 @@ class AnsibleInterface(AbstractInstanceInterface):
 
         return inventory
 
-    def __cluster_nodes_map__(self, node_ids: List[NodeInfo]) -> Dict[str, List[NodeInfo]]:
+    def __cluster_nodes_map__(self, node_ids: List[str]) -> Dict[str, List[NodeInfo]]:
         cluster_nodes_map = dict()
 
         for node in self.repository_operator.get_nodes(node_ids):
@@ -94,7 +91,7 @@ class AnsibleInterface(AbstractInstanceInterface):
         }
 
         for cluster_name, list_nodes in clusters_hosts_map.items():
-            cluster = self.repository_operator.get_cluster(cluster_name)
+            cluster = self.repository_operator.get_clusters(cluster_name)[0]
             provider_conf = self.reader.get_provider(cluster.provider_id)
             login_conf = self.reader.get_login(cluster.login_id)
 
@@ -122,7 +119,7 @@ class AnsibleInterface(AbstractInstanceInterface):
         cluster_instance_map = dict()
         for iname, iconf in instances.items():
             # Get cluster name
-            name = "{}-{}-{}-{}".format(self.__interface_id__, self.cluster_prefix, iconf['provider'], iconf['login'])
+            name = "{}-{}-{}-{}".format(self.__interface_id__, 'clap', iconf['provider'], iconf['login'])
 
             # Append the instance to the cluster name
             if name in cluster_instance_map:
@@ -133,13 +130,13 @@ class AnsibleInterface(AbstractInstanceInterface):
         # Let's create new clusters or pass if already exists...
         clusters = dict()
         for cluster_name, list_iname_iconf_num in cluster_instance_map.items():
-            cluster = self.repository_operator.get_cluster(cluster_name)
+            cluster = self.repository_operator.get_clusters(cluster_name)
             # Does cluster not exists yet?
             if not cluster:
                 # Get instance configuration...
                 conf = list_iname_iconf_num[0][1]
                 # Create a new cluster
-                cluster = ClusterInfo(
+                cluster = self.repository_operator.new_cluster(
                     cluster_id=cluster_name,
                     provider_id=conf['provider'],
                     login_id=conf['login'],
@@ -147,9 +144,9 @@ class AnsibleInterface(AbstractInstanceInterface):
                     extra=dict(default_keyname='key-{}-{}'.format(
                         cluster_name, str(random.random())[2:]))
                 )
-                # Create the cluster in the repository
-                self.repository_operator.write_cluster_info(cluster, create=True)
-            
+            else:
+                cluster = cluster[0]
+                
             # Add cluster object to the map
             clusters[cluster_name] = cluster
         
@@ -198,7 +195,7 @@ class AnsibleInterface(AbstractInstanceInterface):
             return []
 
         # Check SSH connection
-        alive_nodes = self.check_nodes_alive(created_nodes, retries=3, retry_timeout=20)
+        alive_nodes = self.check_nodes_alive(created_nodes, retries=10, retry_timeout=15)
 
         # Return last updated nodes
         return self.repository_operator.get_nodes(list(alive_nodes.keys()))
@@ -210,7 +207,7 @@ class AnsibleInterface(AbstractInstanceInterface):
         removed_nodes = []
         q = Queue()
         for cluster_id, list_nodes in cluster_nodes_map.items():
-            cluster = self.repository_operator.get_cluster(cluster_id)
+            cluster = self.repository_operator.get_clusters(cluster_id)[0]
             provider_conf = self.reader.get_provider(cluster['provider_id'])
 
             if provider_conf['provider'] == 'aws':
@@ -225,10 +222,6 @@ class AnsibleInterface(AbstractInstanceInterface):
                     return removed_nodes
                 removed_nodes += q.get()
 
-            #if len(self.repository_operator.get_nodes_from_cluster(cluster_id)) == 0:
-            #    log.debug("Removing cluster `{}` because there is no node assigned to it")
-            #    self.repository_operator.remove_cluster(cluster_id)
-
         return removed_nodes
 
     def pause_nodes(self, node_ids: List[str]) -> List[str]:
@@ -238,7 +231,7 @@ class AnsibleInterface(AbstractInstanceInterface):
         paused_nodes = []
         q = Queue()
         for cluster_id, list_nodes in cluster_nodes_map.items():
-            cluster = self.repository_operator.get_cluster(cluster_id)
+            cluster = self.repository_operator.get_clusters(cluster_id)[0]
             provider_conf = self.reader.get_provider(cluster['provider_id'])
 
             if provider_conf['provider'] == 'aws':
@@ -262,7 +255,7 @@ class AnsibleInterface(AbstractInstanceInterface):
         resumed_nodes = []
         q = Queue()
         for cluster_id, list_nodes in cluster_nodes_map.items():
-            cluster = self.repository_operator.get_cluster(cluster_id)
+            cluster = self.repository_operator.get_clusters(cluster_id)[0]
             provider_conf = self.reader.get_provider(cluster['provider_id'])
 
             if provider_conf['provider'] == 'aws':
@@ -282,7 +275,7 @@ class AnsibleInterface(AbstractInstanceInterface):
             return []
 
         # Check SSH connection
-        alive_nodes = self.check_nodes_alive(resumed_nodes, retries=3, retry_timeout=30)
+        alive_nodes = self.check_nodes_alive(resumed_nodes, retries=10, retry_timeout=15)
 
         # Return last updated nodes
         return list(alive_nodes.keys())
@@ -292,13 +285,13 @@ class AnsibleInterface(AbstractInstanceInterface):
         cluster_nodes_map = self.__cluster_nodes_map__(node_ids)
         
         for retry in range(1, retries+1):
-            log.info("Checking if node are alive (retry: {}/{})".format(retry, retries))
+            log.info("Checking if nodes are alive (retry: {}/{})".format(retry, retries))
 
             q = Queue()
             # Iterate over all nodes of the cluters
             for cluster_id, list_nodes in cluster_nodes_map.items():
                 # Get cluster
-                cluster = self.repository_operator.get_cluster(cluster_id)
+                cluster = self.repository_operator.get_clusters(cluster_id)[0]
                 provider_conf = self.reader.get_provider(cluster['provider_id'])
 
                 if provider_conf['provider'] == 'aws':
@@ -345,7 +338,7 @@ class AnsibleInterface(AbstractInstanceInterface):
 
                     # Update node information
                     node.update_time = time.time()
-                    self.repository_operator.write_node_info(node)
+                    self.repository_operator.update_node(node)
 
                 
                 # All nodes alive?
@@ -360,7 +353,7 @@ class AnsibleInterface(AbstractInstanceInterface):
     def get_connection_to_nodes(self, node_ids: List[str], *args, **kwargs) -> Dict[str, paramiko.SSHClient]:
         shells = {}
         for node in self.repository_operator.get_nodes(node_ids):
-            cluster = self.repository_operator.get_cluster(node.cluster_id)
+            cluster = self.repository_operator.get_clusters(node.cluster_id)[0]
             login = self.reader.get_login(cluster.login_id)
 
             if 'keypair_name' in login:

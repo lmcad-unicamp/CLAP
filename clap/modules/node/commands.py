@@ -85,7 +85,7 @@ class NodeParser(AbstractParser):
         # Mount tags:
         if namespace.tag:
             try:
-                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
             except Exception:
                 raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
                                 "Please check the tag parameters passed")
@@ -93,7 +93,7 @@ class NodeParser(AbstractParser):
         # Mount namespace
         if namespace.group:
             try:
-                extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+                extra = {arg.split('=')[0]: '='.join(arg.split('=')[1:]) for arg in namespace.extra} if namespace.extra else {}
             except Exception:
                 raise Exception("Error mounting group's extra parameters. Are you putting spaces after `=`? "
                                 "Please check the extra parameters passed")
@@ -140,7 +140,7 @@ class NodeParser(AbstractParser):
     def command_node_list(self, namespace: argparse.Namespace):
         if namespace.tag:
             try:
-                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
             except Exception:
                 raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
                                 "Please check the tag parameters passed")
@@ -161,7 +161,7 @@ class NodeParser(AbstractParser):
 
         if namespace.tag:
             try:
-                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
             except Exception:
                 raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
                                 "Please check the tag parameters passed")
@@ -183,7 +183,7 @@ class NodeParser(AbstractParser):
 
         if namespace.tag:
             try:
-                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
             except Exception:
                 raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
                                 "Please check the tag parameters passed")
@@ -205,7 +205,7 @@ class NodeParser(AbstractParser):
 
         if namespace.tag:
             try:
-                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
             except Exception:
                 raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
                                 "Please check the tag parameters passed")
@@ -220,7 +220,7 @@ class NodeParser(AbstractParser):
         if not node_ids:
             print("No nodes were stopped")
         else:
-            print("Nodes `{}` stopped".format(', '.join(node_ids)))
+            print("Nodes `{}` stopped".format(', '.join(sorted(node_ids))))
 
         return 0
 
@@ -229,7 +229,7 @@ class NodeParser(AbstractParser):
 
         if namespace.tag:
             try:
-                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
             except Exception:
                 raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
                                 "Please check the tag parameters passed")
@@ -244,7 +244,7 @@ class NodeParser(AbstractParser):
         if not node_ids:
             print("No nodes were resumed")
         else:
-            print("Nodes `{}` resumed".format(', '.join(node_ids)))
+            print("Nodes `{}` resumed".format(', '.join(sorted(node_ids))))
 
         return 0
 
@@ -253,7 +253,7 @@ class NodeParser(AbstractParser):
 
         if namespace.tag:
             try:
-                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
             except Exception:
                 raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
                                 "Please check the tag parameters passed")
@@ -268,7 +268,7 @@ class NodeParser(AbstractParser):
         if not node_ids:
             print("No nodes were paused")
         else:
-            print("Nodes `{}` paused".format(', '.join(node_ids)))
+            print("Nodes `{}` paused".format(', '.join(sorted(node_ids))))
 
         return 0
 
@@ -277,7 +277,7 @@ class NodeParser(AbstractParser):
 
         if namespace.tag:
             try:
-                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
             except Exception:
                 raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
                                 "Please check the tag parameters passed")
@@ -285,7 +285,7 @@ class NodeParser(AbstractParser):
             tag = {}
 
         try:
-            extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+            extra = {arg.split('=')[0]: '='.join(arg.split('=')[1:]) for arg in namespace.extra} if namespace.extra else {}
         except Exception:
             raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
                             "Please check the tag parameters passed")
@@ -303,7 +303,7 @@ class NodeParser(AbstractParser):
 
         if namespace.tag:
             try:
-                tag = {namespace.tag.split('=')[0]: namespace.tag.split('=')[1]}
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
             except Exception:
                 raise Exception("Error mounting tag parameters. Are you putting spaces after `=`? "
                                 "Please check the tag parameters passed")
@@ -326,13 +326,14 @@ class NodeParser(AbstractParser):
         if not valid_ssh_clients:
             raise Exception("Connections were unsuccessful. Check you internet connection or if the node is up and alive")
 
-        for node_id, ssh in valid_ssh_clients.items():
+        for node_id in sorted(valid_ssh_clients.keys()):
+            ssh = valid_ssh_clients[node_id]
             try:
                 print('Executing command `{}` in node `{}`'.format(command, node_id))
                 _, stdout, stderr = ssh.exec_command(command)
-                print("{} STD OUTPUT for node `{}` {}".format('-'*40, node_id, '-'*40))
+                print("{} STD OUTPUT for node `{}` {}".format('-'*20, node_id, '-'*20))
                 print(''.join(stdout.readlines()))
-                print("{} ERR OUTPUT for node `{}` {}".format('-'*40, node_id, '-'*40))
+                print("{} ERR OUTPUT for node `{}` {}".format('-'*20, node_id, '-'*20))
                 print(''.join(stderr.readlines()))
                 print('-' * 80)
                 print('\n')

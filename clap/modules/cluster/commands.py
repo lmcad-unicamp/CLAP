@@ -111,7 +111,7 @@ class ClusterParser(AbstractParser):
 
     def command_start_cluster(self, namespace: argparse.Namespace):
         cluster_name = namespace.cluster_name
-        extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+        extra = {arg.split('=')[0]: '='.join(arg.split('=')[1:]) for arg in namespace.extra} if namespace.extra else {}
         
         files = []
         if namespace.file:
@@ -137,7 +137,7 @@ class ClusterParser(AbstractParser):
     def command_add_more_nodes(self, namespace: argparse.Namespace):
         cluster_id = namespace.cluster_id
         existing = namespace.existing
-        extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
+        extra = {arg.split('=')[0]: '='.join(arg.split('=')[1:]) for arg in namespace.extra} if namespace.extra else {}
         if not existing:
             # Mount parameters
             nodes = {}
