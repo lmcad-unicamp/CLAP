@@ -170,7 +170,7 @@ An example of ``instances.yaml`` file is shown below.
 
 .. code-block:: yaml
 
-    ubuntu-instance-aws                     # Name of the instance template (instance template ID)
+    ubuntu-instance-aws:                    # Name of the instance template (instance template ID)
         provider: aws-east-1-config         # Provider configuration ID
         login: ubuntu-login                 # Login configuration ID
         flavor: t2.medium                   # The VM "size" to use. Different cloud providers call it differently: could be "instance type", "instance size" or "flavor".

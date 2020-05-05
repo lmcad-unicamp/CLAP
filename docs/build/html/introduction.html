@@ -33,7 +33,6 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Basic Configuration Setup" href="configuration.html" />
@@ -89,7 +88,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation-guide">Installation Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#quickly-clap-usage-description">Quickly CLAP usage description</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#quicly-clap-directory-architecture-description">Quicly CLAP directory architecture description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quickly-clap-directory-architecture-description">Quickly CLAP directory architecture description</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Basic Configuration Setup</a></li>
@@ -99,7 +98,6 @@
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
 
             
@@ -212,10 +210,10 @@ Inside the <code class="docutils literal notranslate"><span class="pre">clap</sp
 <p>To use CLAP you will first need to provide some information about how to launch instances in the cloud. By default, CLAP holds all information about configurations in the <code class="docutils literal notranslate"><span class="pre">~/.clap/configs</span></code> directory. The <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/providers.yaml</span></code> file describes how to connect to the cloud provider, the <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/logins.yaml</span></code> file describes how to login into machines and the <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/instances.yaml</span></code> describe the instances that can be used with CLAP.
 The <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration section</span></a> will guide you to write all these configuration sections easily.</p>
 <p>Once configurations written, the <a class="reference internal" href="usage.html#usage"><span class="std std-ref">usage section</span></a> will show you how to execute CLAP commands based on the configurations written.
-CLAP can be used to start, configure and manage single or multiple cloud’s instances using the <a class="reference internal" href="usage.html#node-section"><span class="std std-ref">node module</span></a> as well as entire compute clusters using the &lt;CLUSTER&gt; module.</p>
+CLAP can be used to start, configure and manage single or multiple cloud’s instances using the <a class="reference internal" href="usage.html#node-section"><span class="std std-ref">node module</span></a> as well as entire compute clusters using the <a class="reference internal" href="shared_modules.html#cluster-module"><span class="std std-ref">cluster module</span></a>.</p>
 </div>
-<div class="section" id="quicly-clap-directory-architecture-description">
-<span id="clap-directory-archtecture"></span><h2>Quicly CLAP directory architecture description<a class="headerlink" href="#quicly-clap-directory-architecture-description" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="quickly-clap-directory-architecture-description">
+<span id="clap-directory-archtecture"></span><h2>Quickly CLAP directory architecture description<a class="headerlink" href="#quickly-clap-directory-architecture-description" title="Permalink to this headline">¶</a></h2>
 <p>By default, CLAP holds all of it information inside the <code class="docutils literal notranslate"><span class="pre">~/.clap</span></code> directory (where <code class="docutils literal notranslate"><span class="pre">~</span></code> stands for the user home directory). The minimal structure of <code class="docutils literal notranslate"><span class="pre">~/.clap</span></code> directory is shown below:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~/ (home directory)
 └── .clap/

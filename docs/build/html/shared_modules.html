@@ -33,7 +33,6 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Architecture" href="architecture.html" />
@@ -91,13 +90,22 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="shared_groups.html">Groups shared with CLAP</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Modules shared with CLAP</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#cluster-module">Cluster Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Cluster Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cluster-configuration">Cluster Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-configuration-sections">Setup Configuration Sections</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#groups-key-at-an-setups-configuration">Groups key at an setups configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#actions-key-at-an-setups-configuration">Actions key at an setups configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cluster-configuration-sections">Cluster Configuration Sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-start">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">start</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
 
             
@@ -164,9 +172,128 @@
             
   <div class="section" id="modules-shared-with-clap">
 <span id="shared-modules"></span><h1>Modules shared with CLAP<a class="headerlink" href="#modules-shared-with-clap" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="cluster-module">
-<h2>Cluster Module<a class="headerlink" href="#cluster-module" title="Permalink to this headline">¶</a></h2>
-<p>The cluster module…..</p>
+<div class="section" id="id1">
+<h2>Cluster Module<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The cluster module allows CLAP to work with cluster, which is a set of CLAP’s nodes tagged with a specific tag. A CLAP’s cluster is created taking as input configuration files, in YAML format, which will create nodes and setup each of them properly. After created, the cluster can be resized (adding or removing nodes), paused, resumed, stopped, among other things.
+By default, the CLAP’s cluster module will find configurations inside <code class="docutils literal notranslate"><span class="pre">~/clap/configs/clusters</span></code> directory. At next sections, we will assume that files will be created inside this directory (in <code class="docutils literal notranslate"><span class="pre">.yml</span></code> format).</p>
+<p>The next section will guide you to write a cluster configuration and then, module’s commands will be presented.</p>
+<div class="section" id="cluster-configuration">
+<h3>Cluster Configuration<a class="headerlink" href="#cluster-configuration" title="Permalink to this headline">¶</a></h3>
+<p>To create a CLAP’s cluster you will need to write:</p>
+<ul class="simple">
+<li><p><strong>Setup configuration sections</strong>: which define a series of groups and actions that must be performed.</p></li>
+<li><p><strong>Cluster configuration sections</strong>: which define a set of nodes that must be created and the setups that must be performed in each node.</p></li>
+</ul>
+<p>Setups and cluster section may be written in multiple different files, as CLAP’s cluster modules will read all files (and setups and clusters configurations, respectively) inside the cluster’s directory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Cluster’s configuration files accepts <a class="reference external" href="https://jinja.palletsprojects.com">Jinja-like variables</a> that can be populated using <code class="docutils literal notranslate"><span class="pre">--extra</span></code> parameters at each cluster’s commands. Any part of the configuration can use Jinja-like variables.</p>
+</div>
+</div>
+<div class="section" id="setup-configuration-sections">
+<h3>Setup Configuration Sections<a class="headerlink" href="#setup-configuration-sections" title="Permalink to this headline">¶</a></h3>
+<p>Setup configuration sections define a series of groups and/or actions that must be performed cluster’s nodes. An example of a setup configuration section is shown below.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setup configurations must be declared inside setups key</span>
+<span class="nt">setups</span><span class="p">:</span>
+
+    <span class="c1"># This is a setup configuration called setup-common</span>
+    <span class="nt">setup-common</span><span class="p">:</span>
+        <span class="nt">groups</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">commands-common</span>     <span class="c1"># Add nodes to commands-common group</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">example-group</span>       <span class="c1"># Add nodes to example-group group</span>
+
+        <span class="nt">actions</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">action</span>              <span class="c1"># Perform action update-packages from group commands-common at nodes</span>
+          <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">update-packages</span>
+          <span class="nt">group</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">commands-common</span>
+
+    <span class="c1"># This is a setup configuration called setup-spits-jobmanager</span>
+    <span class="nt">setup-spits-jobmanager</span><span class="p">:</span>
+        <span class="nt">groups</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">spits/jobmanager</span>   <span class="c1"># Add nodes to spits/jobmanager group</span>
+
+    <span class="c1"># This is a setup configuration called setup-spits-taskmanager</span>
+    <span class="nt">setup-spits-taskmanager</span><span class="p">:</span>
+        <span class="nt">groups</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">spits/taskmanager</span>   <span class="c1"># Add nodes to spits/taskmanager group</span>
+</pre></div>
+</div>
+<p>Setup configurations must be written inside <code class="docutils literal notranslate"><span class="pre">setups</span></code> YAML-dictionary. You can define as many setup configurations as you want, even at different files (since inside the <code class="docutils literal notranslate"><span class="pre">setups</span></code> YAML-dictionary), but each one must have a unique name.
+Inside the <code class="docutils literal notranslate"><span class="pre">setups</span></code> section, each dictionary represents a setup configuration. The dictionary key (<code class="docutils literal notranslate"><span class="pre">setup-common</span></code>, <code class="docutils literal notranslate"><span class="pre">setup-spits-jobmanager</span></code> and <code class="docutils literal notranslate"><span class="pre">setup-spits-taskmanager</span></code> in above example) represent the setup configuration ID.</p>
+<p>Each setup configuration may contain two dictionaries: <code class="docutils literal notranslate"><span class="pre">groups</span></code> and <code class="docutils literal notranslate"><span class="pre">actions</span></code> (both are optional). Both sections, for a setup configuration is described in the next two subsections.</p>
+<div class="section" id="groups-key-at-an-setups-configuration">
+<h4>Groups key at an setups configuration<a class="headerlink" href="#groups-key-at-an-setups-configuration" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">groups</span></code> section inside a setup configuration tells to add nodes, which perform this setup, to the defined groups. The <code class="docutils literal notranslate"><span class="pre">groups</span></code> section contains a <strong>list</strong> describing each group that the nodes must be added. Also, the groups is always added in the order defined in the list.</p>
+<p>Each element of the list must have a <code class="docutils literal notranslate"><span class="pre">name</span></code> key, which describe the name of the group that the node must be added.
+For instance, the <code class="docutils literal notranslate"><span class="pre">setup-common</span></code> at above example, defines two groups which nodes that perform this setup must be added: <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> and <code class="docutils literal notranslate"><span class="pre">example-group</span></code> (in this order).</p>
+<p>Optionally an <code class="docutils literal notranslate"><span class="pre">extra</span></code> key can be defined by each group, as a dictionary. The key and values is passed as <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter to the <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">add</span></code> module command.
+For instance, the setup below, will add nodes that perform this setup (<code class="docutils literal notranslate"><span class="pre">setup-common-2</span></code>) to group <code class="docutils literal notranslate"><span class="pre">example-group</span></code> passing variables, <code class="docutils literal notranslate"><span class="pre">foo</span></code> and <code class="docutils literal notranslate"><span class="pre">another_var</span></code> with values <code class="docutils literal notranslate"><span class="pre">bar</span></code> and <code class="docutils literal notranslate"><span class="pre">10</span></code>, respectively.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setup configurations must be declared inside setups key</span>
+<span class="nt">setups</span><span class="p">:</span>
+
+    <span class="c1"># This is a setup configuration called setup-common</span>
+    <span class="nt">setup-common-2</span><span class="p">:</span>
+        <span class="nt">groups</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">example-group</span>     <span class="c1"># Add nodes to example-group group</span>
+          <span class="nt">extra</span><span class="p">:</span>
+            <span class="nt">foo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bar</span>
+            <span class="nt">another_var</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="actions-key-at-an-setups-configuration">
+<h4>Actions key at an setups configuration<a class="headerlink" href="#actions-key-at-an-setups-configuration" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">actions</span></code> section inside a setup configuration tells to perform actions at nodes which perform this setup. The <code class="docutils literal notranslate"><span class="pre">actions</span></code> section contains a <strong>list</strong> describing each action that must be performed (in order). Each element of the action list must have a type.
+A type may have three values:</p>
+<ul class="simple">
+<li><p><strong>action</strong>: will perform an group action. Thus, the <code class="docutils literal notranslate"><span class="pre">group</span></code> and <code class="docutils literal notranslate"><span class="pre">name</span></code> key must be informed. The <code class="docutils literal notranslate"><span class="pre">group</span></code> key will tell the name of the group and the <code class="docutils literal notranslate"><span class="pre">name</span></code> key will tell which action from that group which will be performed. Optionally, an <code class="docutils literal notranslate"><span class="pre">extra</span></code> dictionary can be informed to pass keyword variables to the group’s action.</p></li>
+<li><p><strong>playbook</strong>: will execute an Ansible Playbook. Thus, the <code class="docutils literal notranslate"><span class="pre">path</span></code> key must be informed, telling the absolute path of the playbook that will be executed. Optionally an <code class="docutils literal notranslate"><span class="pre">extra</span></code> dictionary can be informed to pass keyword variables to the playbook.</p></li>
+<li><p><strong>command</strong>: will execute a shell command. Thus, the <code class="docutils literal notranslate"><span class="pre">command</span></code> key must be informed, telling which shell command must be executed.</p></li>
+</ul>
+<p>Some actions example are briefly shown below:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setup configurations must be declared inside setups key</span>
+<span class="nt">setups</span><span class="p">:</span>
+
+    <span class="c1"># This is a setup configuration called setup-common</span>
+    <span class="nt">another-setup-example</span><span class="p">:</span>
+        <span class="nt">actions</span><span class="p">:</span>
+
+        <span class="c1"># Perform mount action from group nfs-client, passing the variable mount_path with value /mnt</span>
+        <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">action</span>
+          <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mount</span>
+          <span class="nt">group</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-client</span>
+          <span class="nt">extra</span><span class="p">:</span>
+            <span class="nt">mount_path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/mnt</span>
+
+        <span class="c1"># Execute the playbook /home/my-cool-ansible-playbook with an variable foo with value bar</span>
+        <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">playbook</span>
+          <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/home/my-cool-ansible-playbook</span>
+          <span class="nt">extra</span><span class="p">:</span>
+            <span class="nt">foo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bar</span>
+
+        <span class="c1"># Execute a shell command: hostname</span>
+        <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">command</span>
+          <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hostname</span>
+
+        <span class="c1"># Perform reboot action from commands-common group</span>
+        <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">action</span>
+          <span class="nt">group</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">commands-common</span>
+          <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">reboot</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a setup configuration contains both <code class="docutils literal notranslate"><span class="pre">groups</span></code> and <code class="docutils literal notranslate"><span class="pre">actions</span></code> sections, commands at <code class="docutils literal notranslate"><span class="pre">groups</span></code> section will <strong>always</strong> be executed before <code class="docutils literal notranslate"><span class="pre">actions</span></code>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="cluster-configuration-sections">
+<h3>Cluster Configuration Sections<a class="headerlink" href="#cluster-configuration-sections" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="command-cluster-start">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">start</span></code><a class="headerlink" href="#command-cluster-start" title="Permalink to this headline">¶</a></h3>
+<p>After</p>
+</div>
 </div>
 </div>
 

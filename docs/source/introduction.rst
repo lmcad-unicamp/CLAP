@@ -55,12 +55,12 @@ To use CLAP you will first need to provide some information about how to launch 
 The :ref:`configuration section <configuration>` will guide you to write all these configuration sections easily.
 
 Once configurations written, the :ref:`usage section <usage>` will show you how to execute CLAP commands based on the configurations written.
-CLAP can be used to start, configure and manage single or multiple cloud's instances using the :ref:`node module <node section>` as well as entire compute clusters using the <CLUSTER> module.
+CLAP can be used to start, configure and manage single or multiple cloud's instances using the :ref:`node module <node section>` as well as entire compute clusters using the :ref:`cluster module <cluster module>`.
 
 
 .. _clap directory archtecture:
 
-Quicly CLAP directory architecture description
+Quickly CLAP directory architecture description
 -----------------------------------------------
 By default, CLAP holds all of it information inside the ``~/.clap`` directory (where ``~`` stands for the user home directory). The minimal structure of ``~/.clap`` directory is shown below:
 

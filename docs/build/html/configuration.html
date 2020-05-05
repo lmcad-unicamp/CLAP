@@ -33,7 +33,6 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Basic Usage" href="usage.html" />
@@ -105,7 +104,6 @@
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
 
             
@@ -326,7 +324,7 @@ The generated public key must be saved to a file and placed at <code class="docu
 The template contains information about the virtual machine to start, including its flavor (i.e. instance type, for instance <code class="docutils literal notranslate"><span class="pre">t2.micro</span></code> on AWS clouds), security group information, AMI used, the disk size and others.
 The instance template references the provider configuration and login configuration by its ID.
 An example of <code class="docutils literal notranslate"><span class="pre">instances.yaml</span></code> file is shown below.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ubuntu-instance-aws</span>                     <span class="c1"># Name of the instance template (instance template ID)</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ubuntu-instance-aws</span><span class="p">:</span>                    <span class="c1"># Name of the instance template (instance template ID)</span>
     <span class="nt">provider</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">aws-east-1-config</span>         <span class="c1"># Provider configuration ID</span>
     <span class="nt">login</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ubuntu-login</span>                 <span class="c1"># Login configuration ID</span>
     <span class="nt">flavor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">t2.medium</span>                   <span class="c1"># The VM &quot;size&quot; to use. Different cloud providers call it differently: could be &quot;instance type&quot;, &quot;instance size&quot; or &quot;flavor&quot;.</span>
