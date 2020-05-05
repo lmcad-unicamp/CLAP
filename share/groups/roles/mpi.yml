@@ -14,8 +14,9 @@
   tasks:
      - include_role:
           name: 'mpi'
-          tasks_from: setup
-       when: action in ['setup']
+          tasks_from: "{{ action }}"
+       #when: action in ['setup']
+       when: false
 
      - include_role:
             #become_user: "ubuntu"
@@ -23,8 +24,16 @@
             tasks_from: main
        when: action in ['setup']
 
+     - include_role:
+            name: 'zabbix'
+            tasks_from: setup
+       when: action in ['setup']
 
-
+    #Dispatch to the zabbix task
+     - include_role:
+            name: 'zabbix'
+            tasks_from: "{{  action.split('/')[1]  }}"
+       when: action in ['zabbix/pause', 'zabbix/resume' ]
 
 
 #Arguments: app_name -> Name of the app (HelloWorld.c -> HelloWorld)

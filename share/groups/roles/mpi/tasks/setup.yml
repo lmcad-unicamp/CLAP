@@ -2,13 +2,26 @@
 # (either as argument or in the correct folder)
 
 
+#  Refactored
+# - name: passing key
+#   copy:
+#     src: ~/.clap/private/{{ elasticluster.nodes[inventory_hostname].user_key_name }}.pem #Key should be here
+#     dest: ~{{ user }}/.ssh/id_rsa
+#     mode: '0644'
+#   register: kk
+
+- name: Get pem
+  shell: cat ~/.clap/private/{{ elasticluster.nodes[inventory_hostname].user_key_name }}.pem
+  delegate_to: localhost
+  register: rsaKey
+
 
 - name: passing key
-  copy:
-    src: ~/.clap/private/{{ elasticluster.nodes[inventory_hostname].user_key_name }}.pem #Key should be here
-    dest: ~{{ user }}/.ssh/id_rsa
-    mode: '0644'
-  register: kk
+  blockinfile:
+      path:  ~{{ user }}/.ssh/id_rsa
+      insertafter: EOF
+      block: "{rsaKey}"
+
 
 
 - name: testing env variables
