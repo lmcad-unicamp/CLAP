@@ -2,26 +2,28 @@
 # (either as argument or in the correct folder)
 
 
-#  Refactored
-# - name: passing key
-#   copy:
-#     src: ~/.clap/private/{{ elasticluster.nodes[inventory_hostname].user_key_name }}.pem #Key should be here
-#     dest: ~{{ user }}/.ssh/id_rsa
-#     mode: '0644'
-#   register: kk
-
-- name: Get pem
-  shell: cat ~/.clap/private/{{ elasticluster.nodes[inventory_hostname].user_key_name }}.pem
-  delegate_to: localhost
-  register: rsaKey
-
-
 - name: passing key
-  blockinfile:
-      path:  ~{{ user }}/.ssh/id_rsa
-      insertafter: EOF
-      block: "{rsaKey}"
+  copy:
+    src: ~/.clap/private/{{ elasticluster.nodes[inventory_hostname].user_key_name }}.pem #Key should be here
+    dest: ~{{ user }}/.ssh/clusterKey
+    mode: '0644'
 
+
+
+
+
+- name: Ensure id_rsa exists
+  file:
+    path:  ~{{ user }}/.ssh/id_rsa
+    state: touch
+
+
+  #Blockinfile in ansible adds undisireble marker
+- name: Append key to id_rsa
+  become: yes
+  shell: |
+        cd ~{{ user }}/.ssh/
+        cat clusterKey >> ~{{ user }}/.ssh/id_rsa
 
 
 - name: testing env variables

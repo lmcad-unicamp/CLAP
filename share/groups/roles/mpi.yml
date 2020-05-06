@@ -16,7 +16,6 @@
           name: 'mpi'
           tasks_from: "{{ action }}"
        #when: action in ['setup']
-       when: false
 
      - include_role:
             #become_user: "ubuntu"
@@ -29,15 +28,11 @@
             tasks_from: setup
        when: action in ['setup']
 
-    #Dispatch to the zabbix task
-     - include_role:
-            name: 'zabbix'
-            tasks_from: "{{  action.split('/')[1]  }}"
-       when: action in ['zabbix/pause', 'zabbix/resume' ]
+
 
 
 #Arguments: app_name -> Name of the app (HelloWorld.c -> HelloWorld)
-#        
+#
 
 - name: MPI  Playbook for master
   hosts: master
