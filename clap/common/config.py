@@ -21,7 +21,7 @@ class Defaults:
     configs_path = path_extend('$CLAP_PATH', 'configs')
     private_path = path_extend('$CLAP_PATH', 'private')
     storage_path = path_extend('$CLAP_PATH', 'storage')
-    execution_playbook = path_extend('$CLAP_PATH', 'groups', 'main.yml')
+   # execution_playbook = path_extend('$CLAP_PATH', 'groups', 'main.yml')
     groups_path = path_extend('$CLAP_PATH', 'groups')
     modules_path = path_extend('$CLAP_PATH', 'modules')
     modules_data = path_extend(storage_path, 'modules')

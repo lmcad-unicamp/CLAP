@@ -35,6 +35,14 @@
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
             "args": ["-vv", "node", "resume", "node-1"],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "SPITS job create at jobmanager",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "group", "action", "spits/jobmanager", "job-create", "--extra", "jobid=my-job-123", "spits_binary=/home/napoli/Documents/Doutorado/Projects/CEPETRO/spits-2.0/examples/spits-pi/bin/spits-pi-module", "spits_args=100000 1000", "SPITS_JOB_PATH=/home/ubuntu/efs/spits-jobs"],
+            "console": "integratedTerminal"
         }
     ]
 }

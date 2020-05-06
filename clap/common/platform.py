@@ -421,8 +421,8 @@ class MultiInstanceAPI:
         for action in actions:
             # log.info("Setting up nodes `{}` with setup playbook: `{}`".format(', '.join(node_ids),
             #                                                                  path_extend(group_path, action)))
-            extra_args['playbook_path'] = path_extend(group_path, action)
-            executeds = self.execute_playbook_in_nodes(Defaults.execution_playbook, hosts, extra_args=extra_args)
+            # extra_args['playbook_path'] = path_extend(group_path, action)
+            executeds = self.execute_playbook_in_nodes(path_extend(group_path, action), hosts, extra_args=extra_args)
             error_nodes = [node_id for node_id, status in executeds.items() if not status]
 
             if error_nodes:
@@ -442,7 +442,10 @@ class MultiInstanceAPI:
         nodes = self.__repository_operations.get_nodes(node_ids) if node_ids else self.__repository_operations.get_all_nodes()
         members = []
         for node in nodes:
-            if group in {group_name.split('/')[0] for group_name in list(node.groups.keys())}:
+            if '/' in group:
+                if group in node.groups:
+                    members.append(node.node_id)
+            elif group in {group_name.split('/')[0] for group_name in list(node.groups.keys())}:
                 members.append(node.node_id)
 
         return members
@@ -512,12 +515,12 @@ class MultiInstanceAPI:
             raise Exception("Invalid group and hosts `{}`".format(group_name))
 
         if node_ids:
-            node_with_group = self.__check_nodes_in_group(split_vals[0], node_ids)
+            node_with_group = self.__check_nodes_in_group(group_name, node_ids)
             if len(node_ids) != len(node_with_group):
                 raise Exception("Nodes `{}` are not members of group `{}`".format(
-                    ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
+                    ', '.join(sorted(set(node_ids).difference(set(node_with_group)))), group_name))
         else:
-            node_ids = self.__check_nodes_in_group(split_vals[0])
+            node_ids = self.__check_nodes_in_group(group_name)
 
         if not node_ids:
             raise Exception("No nodes in group `{}` to perform action `{}`".format(group_name, action))
@@ -530,7 +533,7 @@ class MultiInstanceAPI:
 
             if len(node_ids) != len(node_with_group):
                 raise Exception("Nodes `{}` are not members of group `{}`".format(
-                    ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
+                    ', '.join(sorted(set(node_ids).difference(set(node_with_group)))), group_name))
 
         return self.__execute_group_action(node_ids, group_name, action, group_args, error_action)
 
@@ -592,12 +595,12 @@ class MultiInstanceAPI:
             raise Exception("Invalid group and hosts `{}`".format(group_name))
 
         if node_ids:
-            node_with_group = self.__check_nodes_in_group(split_vals[0], node_ids)
+            node_with_group = self.__check_nodes_in_group(split_vals, node_ids)
             if len(node_ids) != len(node_with_group):
                 raise Exception("Nodes `{}` are not members of group `{}`".format(
                     ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
         else:
-            node_ids = self.__check_nodes_in_group(split_vals[0])
+            node_ids = self.__check_nodes_in_group(split_vals)
 
         if not node_ids:
             raise Exception("No nodes in group `{}`".format(group_name))
