@@ -6,7 +6,7 @@ from typing import List
 
 from clap.common.module import AbstractParser
 from clap.common.utils import log, path_extend, float_time_to_string
-from .module import cluster_create, cluster_setup, list_clusters, add_nodes_to_cluster, cluster_stop, cluster_alive, cluster_pause, cluster_resume
+from .module import *
 from .conf import ClusterDefaults
 
 def __is_valid_file__(fpath):
@@ -25,20 +25,21 @@ def __is_valid_directory__(fpath):
     else:
         return fpath
 
-# TODO cluster update
-# TODO cluster group XX
-# TODO cluster action XX
-# TODO cluster connect YY
-# TODO cluster execute
-# TODO cluster playbook
-# TODO cluster copy --all-nodes
-# TODO cluster fetch --all-nodes
-# TODO cluster setup --at=after_all, --nodes=xxx
+# TODO >cluster group XX
+# TODO >cluster action XX
+# TODO >cluster connect YY
+# TODO >cluster execute
+# TODO >cluster playbook
+# TODO >cluster copy --all-nodes
+# TODO >cluster fetch --all-nodes
+# TODO cluster setup --at=after_all, --nodes=xxx, --existing-nodes
 # TODO cluster resume --setup --at=after_all
 
 
 class ClusterParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):
+        
+        # cluster start commands 
         cluster_subcom_parser = commands_parser.add_parser('start', help='Start cluster given a cluster configuration file')
         cluster_subcom_parser.add_argument('cluster_name', action='store', 
                 help='Name of the cluster to create')
@@ -54,13 +55,14 @@ class ClusterParser(AbstractParser):
                 help="Keyworded (format: x=y) Arguments to be passed to the actions")
         cluster_subcom_parser.set_defaults(func=self.command_start_cluster)
 
+        # cluster setup commands
         cluster_subcom_parser = commands_parser.add_parser('setup', help='Setup an existing cluster')
         cluster_subcom_parser.add_argument('cluster_id', action='store', 
                 help='Id of the cluster to perform setup')
-        cluster_subcom_parser.add_argument('--nodes', action='store_true', default=False,
-                help='Setup only determined nodes of the cluster')
         cluster_subcom_parser.add_argument('--readd-group', action='store_true', default=False,
                 help='Add nodes to the groups even if the nodes already belonging to it (default: False)')
+        cluster_subcom_parser.add_argument('--at', nargs='?', action='store', const='before_all',
+                help='Start setup at desired phase (the pipeline is: before_all, before, node, after, after_all)')
         cluster_subcom_parser.set_defaults(func=self.command_setup_cluster)
 
         cluster_subcom_parser = commands_parser.add_parser('add', help='Add more nodes to the cluster')
@@ -106,8 +108,13 @@ class ClusterParser(AbstractParser):
         cluster_subcom_parser = commands_parser.add_parser('update', help='Update cluster configuration')
         cluster_subcom_parser.add_argument('cluster_id', action='store', 
                 help='Id of the cluster to update the configuration')
+        cluster_subcom_parser.add_argument('--file', '-f', action='store', 
+                type=lambda path: __is_valid_file__(path),
+                help='File of the cluster configuration template (this option replaces the --directory option')
+        cluster_subcom_parser.add_argument('--directory', '-d', default=ClusterDefaults.CLUSTER_SEARCH_PATH, 
+                type=lambda path: __is_valid_directory__(path),
+                help='Directory to search for cluster templates (Default is: `{}`)'.format(ClusterDefaults.CLUSTER_SEARCH_PATH))
         cluster_subcom_parser.set_defaults(func=self.command_stop_cluster)
-
 
     def command_start_cluster(self, namespace: argparse.Namespace):
         cluster_name = namespace.cluster_name
@@ -121,16 +128,18 @@ class ClusterParser(AbstractParser):
                 files += [path_extend(namespace.directory, f) for ftype in ClusterDefaults.CLUSTER_DEFAULT_FLETYPES 
                     if f.endswith(ftype)]
 
-        cluster, nodes_info = cluster_create(files, cluster_name, extra, no_setup=namespace.no_setup)
+        cluster, nodes_info, is_setup = cluster_create(files, cluster_name, extra, no_setup=namespace.no_setup)
 
         print("Created cluster with id `{}`. The cluster have {} node(s)".format(cluster.cluster_id, len(nodes_info)))
         for node_info in nodes_info:
             print('* ', node_info)
+        print("Cluster `{}` was {} setup.".format(cluster.cluster_id, "sucessfully" if is_setup else "not"))
         return 0
 
     def command_setup_cluster(self, namespace: argparse.Namespace):
         cluster_id = namespace.cluster_id
-        cluster_setup(cluster_id, nodes_type=None, re_add_to_group=namespace.readd_group)
+        at = namespace.at
+        cluster_setup(cluster_id, nodes_type=None, re_add_to_group=namespace.readd_group, at=at)
         print("Cluster `{}` successfully setup".format(cluster_id))
         return 0
     
@@ -202,7 +211,21 @@ class ClusterParser(AbstractParser):
         raise NotImplementedError
 
     def commands_update_cluster(self, namespace: argparse.Namespace):
-        raise NotImplementedError
+        cluster_id = namespace.cluster_id
+        extra = {arg.split('=')[0]: '='.join(arg.split('=')[1:]) for arg in namespace.extra} if namespace.extra else {}
+
+        files = []
+        if namespace.file:
+            files = [path_extend(namespace.file)]
+        else:
+            for f in os.listdir(namespace.directory):
+                files += [path_extend(namespace.directory, f) for ftype in ClusterDefaults.CLUSTER_DEFAULT_FLETYPES 
+                    if f.endswith(ftype)]
+
+        cluster = update_cluster_config(files, cluster_id, extra)
+        print("Updated configuration for cluster `{}`".format(cluster.cluster_id))
+        return 0
+
 
     def commands_group_add(self, namespace: argparse.Namespace):
         raise NotImplementedError

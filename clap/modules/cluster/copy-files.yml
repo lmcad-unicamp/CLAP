@@ -1,0 +1,9 @@
+- name: Copy files playbook
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: Ansible copy files from local to remote host
+    become: no
+    copy:
+        src: "{{ src }}"
+        dest: "{{ dest }}"

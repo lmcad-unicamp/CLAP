@@ -6,7 +6,7 @@ from clap.common.factory import PlatformFactory
 from clap.common.module import AbstractParser
 from clap.common.utils import log
 from .interactive import interactive_shell
-from .module import (start_nodes, list_nodes, is_alive, stop_nodes, 
+from .module import (start_nodes, list_nodes, is_alive, stop_nodes, connect_to_node,
                     resume_nodes, pause_nodes, execute_playbook, get_ssh_connections)
 
 # TODO force removal of nodes
@@ -346,21 +346,6 @@ class NodeParser(AbstractParser):
 
     def command_node_connect(self, namespace: argparse.Namespace):
         print('Connecting to node `{}` (via SSH)'.format(namespace.node_id))
-
-        # Not the best way...
-        if list_nodes([namespace.node_id])[0].driver_id == 'ansible':
-            get_ssh_connections([namespace.node_id], open_shell=True)
-
-        else:
-            ssh_client = get_ssh_connections([namespace.node_id])[namespace.node_id]
-            if not ssh_client:
-                raise Exception("Connection to `{}` was unsuccessful. "
-                                "Check you internet connection or if the node is up and alive".format(namespace.node_id))
-            channel = ssh_client.get_transport().open_session()
-            channel.get_pty()
-            channel.invoke_shell()
-            interactive_shell(channel)
-            ssh_client.close()
-        
+        connect_to_node(namespace.node_id)
         print("Connection to `{}` closed".format(namespace.node_id))
         return 0

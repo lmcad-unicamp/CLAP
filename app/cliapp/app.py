@@ -91,7 +91,7 @@ Using paths:
 
         log.error("{}: {}".format(e.__class__.__name__, e))
         # log.error("Error executing `{} {}`".format(sys.argv[0], ' '.join(arguments)))
-        return 1
+        return 2
 
 
 if __name__ == '__main__':

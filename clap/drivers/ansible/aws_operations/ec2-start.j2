@@ -64,6 +64,7 @@
 {% if device_name is defined %}
       volumes:
       - device_name: {{ device_name }}
+        delete_on_termination: true
         volume_type: {{ volume_type }}
 {% if volume_size is defined %}
         volume_size: {{ volume_size }}

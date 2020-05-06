@@ -1,0 +1,9 @@
+- name: Fetch files playbook
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: Ansible fetch files from remote host to local
+    become: no
+    fetch:
+      src: "{{ src }}"
+      dest: "{{ dest }}"

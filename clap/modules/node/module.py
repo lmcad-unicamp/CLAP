@@ -1,6 +1,7 @@
 from typing import List, Dict
 from paramiko import SSHClient
 
+from .interactive import interactive_shell
 from clap.common.factory import PlatformFactory
 from clap.common.cluster_repository import NodeInfo
 
@@ -59,3 +60,19 @@ def get_ssh_connections(node_ids: List[str], tags: Dict[str, str] = None, *args,
     if not node_ids:
         raise Exception("No nodes provided")
     return multi_instance.get_connection_to_nodes(node_ids, *args, **kwargs)
+
+def connect_to_node(node_id: str):
+    # Not the best way...
+    if list_nodes([node_id])[0].driver_id == 'ansible':
+        get_ssh_connections([node_id], open_shell=True)
+
+    else:
+        ssh_client = get_ssh_connections([node_id])[node_id]
+        if not ssh_client:
+            raise Exception("Connection to `{}` was unsuccessful. "
+                            "Check you internet connection or if the node is up and alive".format(node_id))
+        channel = ssh_client.get_transport().open_session()
+        channel.get_pty()
+        channel.invoke_shell()
+        interactive_shell(channel)
+        ssh_client.close()
