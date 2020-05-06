@@ -101,7 +101,7 @@ class GroupsParser(AbstractParser):
             if group_dict['hosts']:
                 print(' ' * 4 + 'hosts: ' + ', '.join(sorted(group_dict['hosts'])))
 
-        print("Listed {} groups".format(len(groups)))
+        print("Listed {} group(s)".format(len(groups)))
 
         return 0
 

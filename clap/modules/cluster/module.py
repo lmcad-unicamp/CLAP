@@ -491,11 +491,11 @@ def get_cluster_config(cluster_files: List[str], cluster_name: str, extra_args: 
     # Get the cluster configuration
     cluster_data = clusters[cluster_name]
     
-    # Check cluster configuration
-    cluster_data = __validate_cluster_setups__(cluster_name, cluster_data, setups)
-
     # Perform jinja substitutions
     cluster_data = __perform_replacements__(cluster_data, extra_args)
+
+    # Check cluster configuration
+    cluster_data = __validate_cluster_setups__(cluster_name, cluster_data, setups)
 
     # Validate nodes
     valid_instances = template_module.list_instance_types()
@@ -535,34 +535,30 @@ def cluster_create( cluster_files: List[str], cluster_name: str, extra_args: Dic
     node_ids = set([node.node_id for node_name, node_list in created_nodes.items() for node in node_list])
     return cluster, node_module.list_nodes(list(node_ids)), is_setup
 
-def add_nodes_to_cluster(cluster_id: str, node_types: Dict[str, int] = None, no_setup: bool = False) -> Tuple[ClusterData, List[NodeInfo]]:
+def add_nodes_to_cluster(cluster_id: str, node_types: Dict[str, int] = None, no_setup: bool = False, re_add_to_group: bool = False, at: str = 'before_all') -> Tuple[ClusterData, List[NodeInfo]]:
     node_module = PlatformFactory.get_module_interface().get_module('node')
     cluster = ClusterRepositoryOperations().get_cluster(cluster_id)
     created_nodes = __add_nodes_to_cluster__(cluster, {node_type: (qtde, qtde) for node_type, qtde in node_types.items()})
     if not no_setup:
-        cluster_setup(cluster_id, nodes_type=created_nodes)
+        cluster_setup(cluster_id, nodes_type=created_nodes, re_add_to_group=re_add_to_group, at=at)
     node_ids = set([node for node_name, node_list in created_nodes.items() for node in node_list])
     return cluster, node_module.list_nodes(list(node_ids))
 
-def add_existing_nodes_to_cluster(cluster_id: str, node_types: Dict[str, List[str]]):
+def add_existing_nodes_to_cluster(cluster_id: str, node_types: Dict[str, List[str]], no_setup: bool = False, re_add_to_group: bool = False, at: str = 'before_all'):
     node_module = PlatformFactory.get_module_interface().get_module('node')
     tag_module = PlatformFactory.get_module_interface().get_module('tag')
 
     repository = ClusterRepositoryOperations()
     cluster = repository.get_cluster(cluster_id)
-    nodes_of_cluster_type = {}
+    node_ids = []
 
-    for node_name, qtde in node_types.items():
+    for node_name, node_list in node_types.items():
         if node_name not in cluster.cluster_config['nodes']:
             raise ValueError("Invalid node `{}` for cluster `{}`".format(node_name, cluster.cluster_name))
-        if qtde < 1:
-            raise ValueError("Invalid quantity of `{}` nodes: {}".format(node_name, qtde))
-
-    for node_name, list_nodes in node_types.items():
-        nodes_of_cluster_type[node_name] = [node.node_id for node in node_module.list_nodes(list_nodes)]
+        node_ids += node_list
     
     # Tag them
-    for node_type, node_vals in nodes_of_cluster_type.items():
+    for node_type, node_vals in node_types.items():
         tags = {
             'clusters': cluster_id,
             'cluster_node_type': "{}:{}".format(cluster_id, node_type)
@@ -570,7 +566,8 @@ def add_existing_nodes_to_cluster(cluster_id: str, node_types: Dict[str, List[st
         
         tag_module.node_add_tag(node_vals, tags)
 
-    cluster_setup(cluster_id, nodes_type=nodes_of_cluster_type)
+    if not no_setup:
+        cluster_setup_in_specific_nodes(cluster_id, node_ids=node_ids, re_add_to_group=re_add_to_group, at=at)
 
 def cluster_setup(  cluster_id: str, nodes_type: Dict[str, List[str]] = None, re_add_to_group: bool = False, 
                     at: str = 'before_all'):
@@ -617,7 +614,7 @@ def cluster_setup(  cluster_id: str, nodes_type: Dict[str, List[str]] = None, re
     #tag_module.node_add_tag(all_nodes, tags)
 
 def cluster_setup_in_specific_nodes( cluster_id: str, node_ids: List[str] = None, 
-                            re_add_to_group: bool = False, at: str = 'before_all'):
+                                     re_add_to_group: bool = False, at: str = 'before_all'):
     node_module = PlatformFactory.get_module_interface().get_module('node')
     cluster = ClusterRepositoryOperations().get_cluster(cluster_id)
 
@@ -626,13 +623,16 @@ def cluster_setup_in_specific_nodes( cluster_id: str, node_ids: List[str] = None
     if invalid_nodes:
         raise Exception("Nodes `{}` does not belong to cluster `{}`".format(sorted(invalid_nodes), cluster_id))
 
-    nodes_type = {}
-    for node_name in cluster.cluster_config['nodes'].keys():
-        tags = {'cluster_node_type': "{}:{}".format(cluster.cluster_id, node_name)}
-        nodes = [node.node_id for node in node_module.list_nodes(tags=tags)]
-        nodes_type[node_name] = [node_id for node_id in node_ids if node_id in nodes]
+    if node_ids:
+        cluster_setup(cluster_id, nodes_type=None, re_add_to_group=re_add_to_group, at=at)
+    else:
+        nodes_type = {}
+        for node_name in cluster.cluster_config['nodes'].keys():
+            tags = {'cluster_node_type': "{}:{}".format(cluster.cluster_id, node_name)}
+            nodes = [node.node_id for node in node_module.list_nodes(tags=tags)]
+            nodes_type[node_name] = [node_id for node_id in node_ids if node_id in nodes]
 
-    cluster_setup(cluster_id, nodes_type=nodes_type, re_add_to_group=re_add_to_group, at=at)
+        cluster_setup(cluster_id, nodes_type=nodes_type, re_add_to_group=re_add_to_group, at=at)
 
 def update_cluster_config(cluster_files: List[str], cluster_id: str, extra_args: Dict[str, str] = None) -> ClusterData:
     repository = ClusterRepositoryOperations()
@@ -696,13 +696,17 @@ def cluster_pause(cluster_id: str) -> Tuple[List[str], List[str]]:
     repository.update_cluster(cluster)
     return pause_nodes, not_pause_nodes
 
-def cluster_resume(cluster_id: str) -> List[str]:
+def cluster_resume(cluster_id: str, setup: bool = False, at='before_all') -> List[str]:
     node_module = PlatformFactory.get_module_interface().get_module('node')
     repository = ClusterRepositoryOperations()
     cluster = repository.get_cluster(cluster_id)
     resumed_nodes =  node_module.resume_nodes([], tags={'clusters': cluster_id})
     cluster.cluster_state = ClusterState.CLUSTER_RUNNING
     repository.update_cluster(cluster)
+
+    if setup:
+        cluster_setup(cluster_id, nodes_type=None, re_add_to_group=False, at=at)
+
     return resumed_nodes
 
 def list_clusters(cluster_id: str = None) -> dict:
@@ -724,8 +728,21 @@ def list_clusters(cluster_id: str = None) -> dict:
 
     return cluster_node_dict
 
-def list_templates():
-    pass
+def list_templates(cluster_files: List[str]) -> Tuple[dict, dict]:
+    setups = dict()
+    clusters = dict()
+
+    cluster_datas = [yaml_load(f) for f in cluster_files]
+
+    # Read setup information
+    for cluster_data in cluster_datas:
+        setups.update(__get_setups__(cluster_data))
+    # Read cluster information
+    for cluster_data in cluster_datas:
+        clusters.update(__get_clusters__(cluster_data))
+    
+    # Get the cluster configuration
+    return clusters, setups
 
 def cluster_group_add(cluster_id: str, group_name: str, node_ids: List[str] = None, re_add_to_group: bool = False, extra_args: Dict[str, str] = None) -> List[str]:
     node_module = PlatformFactory.get_module_interface().get_module('node')
@@ -744,7 +761,7 @@ def cluster_group_add(cluster_id: str, group_name: str, node_ids: List[str] = No
     group = {'name': group_name, 'extra': extra_args}
     return __add_to_group__(cluster.cluster_name, group, node_ids=node_ids, re_add_to_group=re_add_to_group)
 
-def perform_group_action(cluster_id: str, group_name: str, action_name: str, node_ids: List[str] = None, re_add_to_group: bool = False, extra_args: Dict[str, str] = None) -> List[str]:
+def perform_group_action(cluster_id: str, group_name: str, action_name: str, node_ids: List[str] = None, extra_args: Dict[str, str] = None) -> List[str]:
     node_module = PlatformFactory.get_module_interface().get_module('node')
     repository = ClusterRepositoryOperations()
     cluster = repository.get_cluster(cluster_id)
@@ -813,7 +830,7 @@ def cluster_connect(cluster_id: str, node_id: str = None):
     if node_id:
         all_cluster_nodes = [node.node_id for node in node_module.list_nodes(tags={'clusters': "{}".format(cluster_id)})]
         if node_id not in all_cluster_nodes:
-            raise Exception("Node `{}` does not belong to cluster `{}`".format(cluster_id))
+            raise Exception("Node `{}` does not belong to cluster `{}`".format(node_id, cluster_id))
         connect_to_node(node_id)
     else:
         ssh_nodes = [node.node_id for node in node_module.list_nodes(tags={
