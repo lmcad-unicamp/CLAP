@@ -1,0 +1,11 @@
+- name: Resume EC2 Instances
+  ec2:
+    instance_ids: "{{ elasticluster.nodes[item].instance_id }}"
+    aws_access_key: "{{ elasticluster.cloud.aws_access_key_id }}"
+    aws_secret_key: "{{ elasticluster.cloud.aws_secret_access_key }}"
+    region: "{{ elasticluster.cloud.aws_region }}"
+    state: running
+    wait: False
+    assign_public_ip: yes
+  with_items: "{{ elasticluster.nodes | list }}"
+

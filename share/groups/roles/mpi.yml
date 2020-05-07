@@ -14,8 +14,8 @@
   tasks:
      - include_role:
           name: 'mpi'
-          tasks_from: setup
-       when: action in ['setup']
+          tasks_from: "{{ action }}"
+       #when: action in ['setup']
 
      - include_role:
             #become_user: "ubuntu"
@@ -23,12 +23,16 @@
             tasks_from: main
        when: action in ['setup']
 
+     - include_role:
+            name: 'zabbix'
+            tasks_from: setup
+       when: action in ['setup']
 
 
 
 
 #Arguments: app_name -> Name of the app (HelloWorld.c -> HelloWorld)
-#        
+#
 
 - name: MPI  Playbook for master
   hosts: master
