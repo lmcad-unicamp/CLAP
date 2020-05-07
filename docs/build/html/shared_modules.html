@@ -103,6 +103,23 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#command-cluster-start">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">start</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-setup">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">setup</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-add">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">add</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-add-existing">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">add-existing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-list">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">list</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-alive">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">alive</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-resume">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">resume</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-pause">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">pause</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-stop">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">stop</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-list-templates">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">list-templates</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-update">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">update</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-group">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">group</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-action">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">action</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-connect">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">connect</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-execute">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">execute</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-playbook">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">playbook</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-copy">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">copy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-fetch">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">fetch</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -188,7 +205,7 @@ By default, the CLAP’s cluster module will find configurations inside <code cl
 <li><p><strong>Setup configuration sections</strong>: which define a series of groups and actions that must be performed.</p></li>
 <li><p><strong>Cluster configuration sections</strong>: which define a set of nodes that must be created and the setups that must be performed in each node.</p></li>
 </ul>
-<p>Setups and cluster section may be written in multiple different files, as CLAP’s cluster modules will read all files (and setups and clusters configurations, respectively) inside the cluster’s directory.</p>
+<p>Setups and cluster section may be written in multiple different files (or at the same file), as CLAP’s cluster modules will read all files (and setups and clusters configurations, respectively) inside the cluster’s directory.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Cluster’s configuration files accepts <a class="reference external" href="https://jinja.palletsprojects.com">Jinja-like variables</a> that can be populated using <code class="docutils literal notranslate"><span class="pre">--extra</span></code> parameters at each cluster’s commands. Any part of the configuration can use Jinja-like variables.</p>
@@ -318,8 +335,8 @@ A type may have three values:</p>
 </pre></div>
 </div>
 <p>Clusters must have the <code class="docutils literal notranslate"><span class="pre">nodes</span></code> section, which defines the nodes that must be created when the cluster is instantiated. As example above, each cluster’s node have a name (<code class="docutils literal notranslate"><span class="pre">master-node</span></code> and <code class="docutils literal notranslate"><span class="pre">slave-node</span></code>) and values, that specify the cluster’s node characteristics. Each node may have the values listed in is table below.</p>
-<table class="docutils align-default" id="id2">
-<caption><span class="caption-text">code-block:: none Cluster’s nodes valid parameters</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">code-block:: none Cluster’s nodes valid parameters</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -356,8 +373,8 @@ A type may have three values:</p>
 <h4>Controlling cluster’s setups execution phases<a class="headerlink" href="#controlling-cluster-s-setups-execution-phases" title="Permalink to this headline">¶</a></h4>
 <p>CLAP’s cluster module also offers some other facilities to configure the cluster. By default the cluster module create nodes and run the setup from each node type. You can control the flow of the setup execution using some optional keys at your cluster configuration. The keys: <code class="docutils literal notranslate"><span class="pre">before_all</span></code>, <code class="docutils literal notranslate"><span class="pre">before</span></code>, <code class="docutils literal notranslate"><span class="pre">after</span></code> and <code class="docutils literal notranslate"><span class="pre">after_all</span></code> can be plugged into a cluster’s configuration, in order to execute setups in different set of nodes, before and after the nodes setups. These keys takes a list of setups to execute.
 CLAP’s setup phases are executed in the order, as shown in table bellow.</p>
-<table class="docutils align-default" id="id3">
-<caption><span class="caption-text">code-block:: none Cluster’s setups execution phases (in order)</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">code-block:: none Cluster’s setups execution phases (in order)</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -443,8 +460,8 @@ CLAP’s setup phases are executed in the order, as shown in table bellow.</p>
 <div class="section" id="other-cluster-s-setups-optional-keys">
 <h4>Other cluster’s setups optional keys<a class="headerlink" href="#other-cluster-s-setups-optional-keys" title="Permalink to this headline">¶</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> key can be plugged at a cluster configuration allowing some special options to cluster. The <code class="docutils literal notranslate"><span class="pre">options</span></code> key may have the following parameters:</p>
-<table class="docutils align-default" id="id4">
-<caption><span class="caption-text">code-block:: none Cluster’s options keys</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<table class="docutils align-default" id="id5">
+<caption><span class="caption-text">code-block:: none Cluster’s options keys</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -493,9 +510,263 @@ CLAP’s setup phases are executed in the order, as shown in table bellow.</p>
 </div>
 <div class="section" id="command-cluster-start">
 <h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">start</span></code><a class="headerlink" href="#command-cluster-start" title="Permalink to this headline">¶</a></h3>
-<p>Start a cluster given a cluster configuration name.</p>
+<p>Start a cluster given a cluster configuration name. The syntax of the command is shown below</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster start [-h] [--file FILE] [--directory DIRECTORY] [--no-setup] [--extra ...] cluster_name
 </pre></div>
+</div>
+<p>By default, the CLAP’s cluster module search for configurations at all <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files inside <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/clusters</span></code> directory. This can be changed with <code class="docutils literal notranslate"><span class="pre">--directory</span></code> parameter. Or if you want to search for the cluster configuration at only one file, use the <code class="docutils literal notranslate"><span class="pre">--file</span></code> parameter.
+After the cluster is created, the setups are automatically executed. You can omit this phase by using the <code class="docutils literal notranslate"><span class="pre">--no-setup</span></code> option.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--extra</span></code> parameter performs Jinja variable replacements at the cluster configuration files.</p>
+<p>An example of the command is shown below, which starts and instantiate nodes from a cluster called <code class="docutils literal notranslate"><span class="pre">my-cool-cluster-1</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster start my-cool-cluster-1
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>After the cluster’s creation a new <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code> will be assigned to it. Thus, multiple clusters with same cluster configuration can be launched Also, all commands will reference to <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code> to perform their actions.</p></li>
+<li><p>When a cluster is started its initial configuration is copied to cluster metadata. If you update the cluster configuration while having already started clusters use the <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">cluster</span> <span class="pre">update</span></code> command to update the cluster configuration.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="command-cluster-setup">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">setup</span></code><a class="headerlink" href="#command-cluster-setup" title="Permalink to this headline">¶</a></h3>
+<p>Setup an existing cluster. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster setup [-h] [--readd-group] [--nodes NODES] [--at [AT]] cluster_id
+</pre></div>
+</div>
+<p>Given the <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code>, the command will execute all setup phases in all cluster nodes. Some phases of the setup pipeline can be skipped informing at which phase the setup must begin with the <code class="docutils literal notranslate"><span class="pre">at</span></code> parameter. Also, if you want to execute the setup only in selected nodes of the cluster you can use the <code class="docutils literal notranslate"><span class="pre">nodes</span></code> parameter, passing the node ids. Finally, the <code class="docutils literal notranslate"><span class="pre">readd-group</span></code> option specify if nodes must be added to a group, even if they are already on them.</p>
+<p>Examples are shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster setup cluster-0
+clapp cluster setup cluster-0 --at &quot;before&quot;
+clapp cluster setup cluster-0 --nodes node-4 node-5
+</pre></div>
+</div>
+<p>In the above examples, the first one setups all cluster nodes from <code class="docutils literal notranslate"><span class="pre">cluster-0</span></code>, the second one setups all nodes, but starting at <code class="docutils literal notranslate"><span class="pre">before</span></code> phase and the third one setup only <code class="docutils literal notranslate"><span class="pre">node-4</span></code> and <code class="docutils literal notranslate"><span class="pre">node-5</span></code> of cluster <code class="docutils literal notranslate"><span class="pre">cluster-0</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">before_all</span></code> and <code class="docutils literal notranslate"><span class="pre">after_all</span></code> phases will be executed at all cluster’s nodes, even if setting the <code class="docutils literal notranslate"><span class="pre">nodes</span></code> parameter.</p>
+</div>
+</div>
+<div class="section" id="command-cluster-add">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">add</span></code><a class="headerlink" href="#command-cluster-add" title="Permalink to this headline">¶</a></h3>
+<p>Start and add a new node to cluster, based on its cluster’s node name. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster add [-h] [--readd-group] [--at [AT]] [--no-setup] cluster_id node_type:num [node_type:num ...]
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">node_type:num</span></code> parameter determines how much nodes will be added to cluster. If <code class="docutils literal notranslate"><span class="pre">--no-setup</span></code> is provided no setup phase will be executed, else the setup phase to be executed can be controlled with <code class="docutils literal notranslate"><span class="pre">--at</span></code> parameter. Finally, the <code class="docutils literal notranslate"><span class="pre">readd-group</span></code> option specify if nodes must be added to a group, even if they are already on them.</p>
+<p>Examples are shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster add cluster-0 slave-nodes:2
+</pre></div>
+</div>
+<p>In the above example, two <code class="docutils literal notranslate"><span class="pre">slave-nodes</span></code> will be added to cluster <code class="docutils literal notranslate"><span class="pre">cluster-0</span></code> and all setup phases will be executed.</p>
+</div>
+<div class="section" id="command-cluster-add-existing">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">add-existing</span></code><a class="headerlink" href="#command-cluster-add-existing" title="Permalink to this headline">¶</a></h3>
+<p>Add an already started CLAP’s node to a cluster. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster add-existing [-h] [--readd-group] [--at [AT]] [--no-setup] cluster_id node_type node_ids [node_ids ...]
+</pre></div>
+</div>
+<p>The command allow to add multiple started nodes by its node IDs (<code class="docutils literal notranslate"><span class="pre">node_ids</span></code> parameter) to a already started cluster. The nodes will be added as the cluster’s node type, defined by <code class="docutils literal notranslate"><span class="pre">node_type</span></code> parameter If <code class="docutils literal notranslate"><span class="pre">--no-setup</span></code> is provided no setup phase will be executed, else the setup phase to be executed can be controlled with <code class="docutils literal notranslate"><span class="pre">--at</span></code> parameter. Finally, the <code class="docutils literal notranslate"><span class="pre">readd-group</span></code> option specify if nodes must be added to a group, even if they are already on them.</p>
+<p>Examples are shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster add-existing cluster-0 slave-nodes node-0 node-1 node-2
+</pre></div>
+</div>
+<p>In the above example, nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code>, <code class="docutils literal notranslate"><span class="pre">node-1</span></code> and <code class="docutils literal notranslate"><span class="pre">node-2</span></code>  will be added to cluster <code class="docutils literal notranslate"><span class="pre">cluster-0</span></code> as <code class="docutils literal notranslate"><span class="pre">slave-nodes</span></code> cluster’s node type and all setup phases will be executed.</p>
+</div>
+<div class="section" id="command-cluster-list">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">list</span></code><a class="headerlink" href="#command-cluster-list" title="Permalink to this headline">¶</a></h3>
+<p>List all available CLAP’s clusters. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster list [-h] [--id ID] [--full]
+</pre></div>
+</div>
+<p>Optionally, if <code class="docutils literal notranslate"><span class="pre">--id</span></code> parameter is passed, only a cluster with this ID is listed. Also, if <code class="docutils literal notranslate"><span class="pre">--full</span></code> parameter is passed it will print all cluster information, including it’s configuration used.</p>
+<p>An output example is shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>creation time: 01-01-20 00:00:00
+id: cluster-0
+name: my-cool-cluster-1
+nodes:
+    master-node:
+    - node-0
+    slave-node:
+    - node-1
+    - node-2
+state: running
+update time: 01-15-20 00:01:40
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-cluster-alive">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">alive</span></code><a class="headerlink" href="#command-cluster-alive" title="Permalink to this headline">¶</a></h3>
+<p>Check if all nodes of the cluster are alive. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster alive [-h] cluster_id
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">cluster</span> <span class="pre">alive</span></code> command also updates the nodes connection’s IP and can be very useful when node’s IP changes (e.g. and stopped node comes alive or when using floating IPs). As CLAP is an ad-hoc tool and does not monitor each node, its recommended to run this command periodically to update nodes information.</p>
+</div>
+</div>
+<div class="section" id="command-cluster-resume">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">resume</span></code><a class="headerlink" href="#command-cluster-resume" title="Permalink to this headline">¶</a></h3>
+<p>Resume all nodes of the cluster. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster resume [-h] [--setup] [--at [AT]] cluster_id
+</pre></div>
+</div>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code> all nodes in the cluster will be resumed. If option <code class="docutils literal notranslate"><span class="pre">setup</span></code> is set, it also runs setups in nodes. The <code class="docutils literal notranslate"><span class="pre">at</span></code> parameter controls the setup phase.</p>
+</div>
+<div class="section" id="command-cluster-pause">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">pause</span></code><a class="headerlink" href="#command-cluster-pause" title="Permalink to this headline">¶</a></h3>
+<p>Pause all nodes of the cluster. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster pause [-h] cluster_id
+</pre></div>
+</div>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code> all nodes in the cluster will be paused.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a node belongs to more than one cluster, it will only be paused if all clusters that contains this node is paused.</p>
+</div>
+</div>
+<div class="section" id="command-cluster-stop">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">stop</span></code><a class="headerlink" href="#command-cluster-stop" title="Permalink to this headline">¶</a></h3>
+<p>Stop all nodes of the cluster. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster stop [-h] cluster_id
+</pre></div>
+</div>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code> all nodes in the cluster will be stopped.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a node belongs to more than one cluster, it will only be stopped if all clusters that contains this node are stopped. Else, the node is just removed from the cluster.</p>
+</div>
+</div>
+<div class="section" id="command-cluster-list-templates">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">list-templates</span></code><a class="headerlink" href="#command-cluster-list-templates" title="Permalink to this headline">¶</a></h3>
+<p>List all available cluster templates at directory. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster list-templates [-h] [--file FILE] [--directory DIRECTORY]
+</pre></div>
+</div>
+<p>All clusters at <code class="docutils literal notranslate"><span class="pre">~/clap/configs/clusters</span></code> directory will be listed. A different directory can be specified with <code class="docutils literal notranslate"><span class="pre">--directory</span></code> parameter. If the <code class="docutils literal notranslate"><span class="pre">--file</span></code> parameter is passed, clusters will only be listed from this file.</p>
+</div>
+<div class="section" id="command-cluster-update">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">update</span></code><a class="headerlink" href="#command-cluster-update" title="Permalink to this headline">¶</a></h3>
+<p>Update a cluster configuration from a created cluster. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster update [-h] [--file FILE] [--directory DIRECTORY] [--extra ...] cluster_id
+</pre></div>
+</div>
+<p>By default, the cluster’s configuration and its name is stored when a cluster is created. If you update configurations files, you can update a running cluster’s configuration using this command (note, the cluster configuration name must not change).</p>
+<p>Clusters will be searched at <code class="docutils literal notranslate"><span class="pre">~/clap/configs/clusters</span></code> directory. A different directory can be specified with <code class="docutils literal notranslate"><span class="pre">--directory</span></code> parameter. If the <code class="docutils literal notranslate"><span class="pre">--file</span></code> parameter is passed, clusters will only be listed from this file. Finally <code class="docutils literal notranslate"><span class="pre">--extra</span></code> parameter is used to perform Jinja replacements.</p>
+</div>
+<div class="section" id="command-cluster-group">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">group</span></code><a class="headerlink" href="#command-cluster-group" title="Permalink to this headline">¶</a></h3>
+<p>Add cluster’s nodes to a group. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster group [-h] [--nodes NODES [NODES ...]] [--readd-group] [--extra ...] cluster_id group
+</pre></div>
+</div>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code>, adds all nodes belonging to this cluster to the group, informed by <code class="docutils literal notranslate"><span class="pre">group</span></code> parameter. If the <code class="docutils literal notranslate"><span class="pre">--readd-group</span></code> option is set nodes will be added to a group, even if they are already on them. Nodes of cluster can be filtered using the <code class="docutils literal notranslate"><span class="pre">--nodes</span></code> parameter. Finally, the <code class="docutils literal notranslate"><span class="pre">--extra</span></code> parameter pass keyword variables to the group’s setup action.</p>
+<p>Examples are shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster group cluster-0 commands-common
+clapp cluster group cluster-0 commands-common --nodes node-0 node-1
+clapp cluster group cluster-0 commands-common --nodes node-0 node-1 --extra &quot;foo=bar&quot;
+</pre></div>
+</div>
+<p>In the above examples, the first one adds all nodes from <code class="docutils literal notranslate"><span class="pre">cluster-0</span></code> to the group <code class="docutils literal notranslate"><span class="pre">commands-common</span></code>. The second one, added only nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and <code class="docutils literal notranslate"><span class="pre">node-1</span></code> from <code class="docutils literal notranslate"><span class="pre">cluster-0</span></code> to the group <code class="docutils literal notranslate"><span class="pre">commands-common</span></code>. The third one is similar to the second one but pass the variable <code class="docutils literal notranslate"><span class="pre">foo</span></code> with value <code class="docutils literal notranslate"><span class="pre">bar</span></code> to the <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">setup</span></code> action.</p>
+</div>
+<div class="section" id="command-cluster-action">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">action</span></code><a class="headerlink" href="#command-cluster-action" title="Permalink to this headline">¶</a></h3>
+<p>Perform a group action to cluster’s nodes. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster action [-h] [--nodes NODES [NODES ...]] [--extra ...] cluster_id group action
+</pre></div>
+</div>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code>, it will perform a group action, informed by <code class="docutils literal notranslate"><span class="pre">group</span></code> and <code class="docutils literal notranslate"><span class="pre">action</span></code> parameters, to all nodes of the cluster. Nodes of cluster can be filtered using the <code class="docutils literal notranslate"><span class="pre">--nodes</span></code> parameter. Finally, the <code class="docutils literal notranslate"><span class="pre">--extra</span></code> parameter pass keyword variables to the group’s action.</p>
+<p>Examples are shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster action cluster-0 commands-common update-packages
+clapp cluster action cluster-0 commands-common update-packages --nodes node-0 node-1
+clapp cluster action cluster-0 commands-common update-packages --nodes node-0 node-1 --extra &quot;foo=bar&quot;
+</pre></div>
+</div>
+<p>In the above examples, the first one adds perform the <code class="docutils literal notranslate"><span class="pre">update-packages</span></code> action from <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> group at all nodes of cluster <code class="docutils literal notranslate"><span class="pre">cluster-0</span></code>. The second one, perform the <code class="docutils literal notranslate"><span class="pre">update-packages</span></code> action from <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> group only at nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and <code class="docutils literal notranslate"><span class="pre">node-1</span></code> from <code class="docutils literal notranslate"><span class="pre">cluster-0`.</span> <span class="pre">The</span> <span class="pre">third</span> <span class="pre">one</span> <span class="pre">is</span> <span class="pre">similar</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">second</span> <span class="pre">one</span> <span class="pre">but</span> <span class="pre">pass</span> <span class="pre">the</span> <span class="pre">variable</span> <span class="pre">``foo</span></code> with value <code class="docutils literal notranslate"><span class="pre">bar</span></code> to the <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">update-packages</span></code> action.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The action is performed only in nodes of cluster that belongs to the specified group</p>
+</div>
+</div>
+<div class="section" id="command-cluster-connect">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">connect</span></code><a class="headerlink" href="#command-cluster-connect" title="Permalink to this headline">¶</a></h3>
+<p>Get a SSH shell to a node of the cluster. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster connect [-h] [--node NODE] cluster_id
+</pre></div>
+</div>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code> it will try to get an SSH shell to a node type specified in <code class="docutils literal notranslate"><span class="pre">ssh_to</span></code> cluster configuration option. If no <code class="docutils literal notranslate"><span class="pre">ssh_to</span></code> option is informed at cluster’s configuration the <code class="docutils literal notranslate"><span class="pre">--node</span></code> parameter must be informed. If the <code class="docutils literal notranslate"><span class="pre">--node</span></code> parameter is informed an SSH shell from that node will be get.</p>
+</div>
+<div class="section" id="command-cluster-execute">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">execute</span></code><a class="headerlink" href="#command-cluster-execute" title="Permalink to this headline">¶</a></h3>
+<p>Execute a shell command in nodes of the cluster. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster execute [-h] [--nodes NODES [NODES ...]] --command COMMAND cluster_id
+</pre></div>
+</div>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code> execute the string command passed from <code class="docutils literal notranslate"><span class="pre">command</span></code> parameter in cluster’s nodes. The <code class="docutils literal notranslate"><span class="pre">--nodes</span></code> parameters can be populated with the cluster’s nodes ids to limit the execution of the command to these nodes.</p>
+<p>Examples are shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster execute --command &quot;ls -lha&quot; cluster-0
+clapp cluster execute --command &quot;ls -lha&quot; cluster-0 --nodes node-0 node-1
+</pre></div>
+</div>
+<p>In the above examples, the first one execute the command <code class="docutils literal notranslate"><span class="pre">ls</span> <span class="pre">-lha</span></code> in all cluster <code class="docutils literal notranslate"><span class="pre">cluster-0</span></code> nodes. The second ne is similar to the first, but execute the command in nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and <code class="docutils literal notranslate"><span class="pre">node-1</span></code> only.</p>
+</div>
+<div class="section" id="command-cluster-playbook">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">playbook</span></code><a class="headerlink" href="#command-cluster-playbook" title="Permalink to this headline">¶</a></h3>
+<p>Execute an Ansible Playbook in nodes of the cluster. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster playbook [-h] [--nodes NODES [NODES ...]] [--extra ...] cluster_id playbook_file
+</pre></div>
+</div>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code>, the Ansible playbook located at the informed parameter <code class="docutils literal notranslate"><span class="pre">playbook_file</span></code> is executed. The <code class="docutils literal notranslate"><span class="pre">--nodes</span></code> parameters can be populated with the cluster’s nodes ids to limit the execution of the playbook to these nodes. Finally, the <code class="docutils literal notranslate"><span class="pre">--extra</span></code> parameter pass keyword variables to the playbook.</p>
+<p>Examples are shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster playbook cluster-0 /home/my-playbook.yml
+clapp cluster playbook cluster-0 /home/my-playbook.yml --nodes node-0 node-1
+clapp cluster playbook cluster-0 /home/my-playbook.yml --nodes node-0 node-1 --extra &quot;foo=bar&quot; &quot;var1=abaco&quot;
+</pre></div>
+</div>
+<p>In the above examples, the first one execute the playbook <code class="docutils literal notranslate"><span class="pre">/home/my-playbook.yml</span></code> at all cluster’s nodes. The second one also execute the <code class="docutils literal notranslate"><span class="pre">/home/my-playbook.yml</span></code> playbook, but limiting to nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code> and <code class="docutils literal notranslate"><span class="pre">node-1</span></code> only. The third one is similar to the second, but also pass the extra variables <code class="docutils literal notranslate"><span class="pre">foo</span></code> and <code class="docutils literal notranslate"><span class="pre">var1</span></code> with values <code class="docutils literal notranslate"><span class="pre">bar</span></code> and <code class="docutils literal notranslate"><span class="pre">abaco</span></code> (respectively) to the playbook.</p>
+</div>
+<div class="section" id="command-cluster-copy">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">copy</span></code><a class="headerlink" href="#command-cluster-copy" title="Permalink to this headline">¶</a></h3>
+<p>Copy files from the localhost to all cluster’s nodes. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster copy [-h] [--nodes NODES [NODES ...]] cluster_id from dest
+</pre></div>
+</div>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code>, the files informed at <code class="docutils literal notranslate"><span class="pre">from</span></code> parameter are all copied (recursively) from localhost to the <code class="docutils literal notranslate"><span class="pre">dest</span></code> directory at all nodes.</p>
+<p>Examples are shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster copy cluster-0 /home/my-file &quot;{{ ansible_env.HOME }}/my-folder&quot;
+clapp cluster copy cluster-0 /home/my-directory/ &quot;{{ ansible_env.HOME }}/my-folder&quot; --nodes node-0
+</pre></div>
+</div>
+<p>In the above examples, the first one will copy the file at <code class="docutils literal notranslate"><span class="pre">/home/my-file</span></code> (from localhost) to nodes <code class="docutils literal notranslate"><span class="pre">&quot;{{</span> <span class="pre">ansible_env.HOME</span> <span class="pre">}}/my-folder&quot;</span></code> directory (see notes below). The second one will copy the  directory at  <code class="docutils literal notranslate"><span class="pre">/home/my-directory/</span></code> (from localhost) to node’s <code class="docutils literal notranslate"><span class="pre">node-0</span></code> <code class="docutils literal notranslate"><span class="pre">&quot;{{</span> <span class="pre">ansible_env.HOME</span> <span class="pre">}}/my-folder&quot;</span></code> directory (see notes below).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Use the value <code class="docutils literal notranslate"><span class="pre">&quot;{{</span> <span class="pre">ansible_env.HOME</span> <span class="pre">}}&quot;</span></code> as a special variable to access a node’s user home directory.</p></li>
+<li><p>The command uses the <a class="reference external" href="https://rsync.samba.org/">rsync copy format</a> to select files to copy.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="command-cluster-fetch">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">fetch</span></code><a class="headerlink" href="#command-cluster-fetch" title="Permalink to this headline">¶</a></h3>
+<p>Fetch files from remote nodes to localhost. The command has the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster fetch [-h] [--nodes NODES [NODES ...]] cluster_id from dest
+</pre></div>
+</div>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code>, the files informed at <code class="docutils literal notranslate"><span class="pre">from</span></code> parameter are all copied (recursively) from the cluster’s nodes to the <code class="docutils literal notranslate"><span class="pre">dest</span></code> directory at localhost.</p>
+<p>Examples are shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp cluster fetch cluster-0 &quot;{{ ansible_env.HOME }}/my-file&quot; /home/my-directory
+clapp cluster fetch cluster-0 &quot;{{ ansible_env.HOME }}/my-folder&quot; /home/my-directory/ --nodes node-0
+</pre></div>
+</div>
+<p>In the above examples, the first one will fetch the file at <code class="docutils literal notranslate"><span class="pre">&quot;{{</span> <span class="pre">ansible_env.HOME</span> <span class="pre">}}/my-folder&quot;</span></code> from cluster’s nodes (see notes below) to the localhost’s <code class="docutils literal notranslate"><span class="pre">/home/my-directory&quot;</span></code> directory. The second one will fetch the  directory at <code class="docutils literal notranslate"><span class="pre">&quot;{{</span> <span class="pre">ansible_env.HOME</span> <span class="pre">}}/my-folder&quot;</span></code> from cluster’s nodes <code class="docutils literal notranslate"><span class="pre">node-0</span></code> (see notes below) to the localhost’s <code class="docutils literal notranslate"><span class="pre">/home/my-directory&quot;</span></code> directory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Use the value <code class="docutils literal notranslate"><span class="pre">&quot;{{</span> <span class="pre">ansible_env.HOME</span> <span class="pre">}}&quot;</span></code> as a special variable to access a node’s user home directory.</p></li>
+<li><p>The command uses the <a class="reference external" href="https://rsync.samba.org/">rsync copy format</a> to select files to fetch.</p></li>
+</ul>
 </div>
 </div>
 </div>

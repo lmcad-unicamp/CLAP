@@ -336,6 +336,7 @@ class ClusterParser(AbstractParser):
                     if f.endswith(ftype)]
         
         clusters, _ = list_templates(files)
+        no_clusters = 0
 
         for cluster_name, cluster_vals in clusters.items():
             print("------- `{}` -------".format(cluster_name))
@@ -352,7 +353,9 @@ class ClusterParser(AbstractParser):
                 print("* node: {}".format(node_name))
                 print("  setups: {}".format(', '.join(node_vals['setups'])))
             print()
+            no_clusters += 1
 
+        print("Listed {} cluster template(s)".format(no_clusters))
         return 0
 
     def commands_update_cluster(self, namespace: argparse.Namespace):
