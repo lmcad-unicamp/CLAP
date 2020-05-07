@@ -111,7 +111,11 @@ class AnsibleInterface(AbstractInstanceInterface):
 
         return elasticluster_vars
 
-    def start_nodes(self, instances_num: Dict[str, int]) -> List[NodeInfo]:     
+    def start_nodes(self, instances_num: Dict[str, int]) -> List[NodeInfo]:
+        invalid_instances = [i_name for i_name in instances_num.keys() if i_name not in self.reader.get_instances().keys()]
+        if invalid_instances:
+            raise Exception("Could not start nodes. Invalid instance types: `{}`".format(', '.join(sorted(invalid_instances))))
+
         # Get instance configurations from configuration files
         instances = {i_name: i_conf for i_name, i_conf in self.reader.get_instances().items() if i_name in list(instances_num.keys())}
         
@@ -285,7 +289,8 @@ class AnsibleInterface(AbstractInstanceInterface):
         cluster_nodes_map = self.__cluster_nodes_map__(node_ids)
         
         for retry in range(1, retries+1):
-            log.info("Checking if nodes are alive (retry: {}/{})".format(retry, retries))
+            print("Checking if nodes `{}` are alive (retry: {}/{})".format(', '.join(sorted(node_ids)), retry, retries))
+            log.info("Checking if nodes `{}` are alive (retry: {}/{})".format(', '.join(sorted(node_ids)), retry, retries))
 
             q = Queue()
             # Iterate over all nodes of the cluters
@@ -346,6 +351,7 @@ class AnsibleInterface(AbstractInstanceInterface):
                     break
 
                 log.info("Some nodes are not acessible by SSH yet... We will retry again after {} seconds. Please wait...".format(retry_timeout))
+                print("Some nodes are not acessible by SSH yet... We will retry again after {} seconds. Please wait...".format(retry_timeout))
                 time.sleep(retry_timeout)
 
         return alive_nodes
@@ -398,7 +404,8 @@ class AnsibleInterface(AbstractInstanceInterface):
     def execute_playbook_in_nodes(self, playbook_path: str,
                                   group_hosts_map: Dict[str, List[str]],
                                   extra_args: Dict[str, str] = None,
-                                  group_vars: Dict[str, Dict[str, str]] = None) -> Dict[str, bool]:
+                                  group_vars: Dict[str, Dict[str, str]] = None,
+                                  quiet: bool = False) -> Dict[str, bool]:
         group_vars = group_vars if group_vars else {}
         extra_args = extra_args if extra_args else {}
 
@@ -421,7 +428,7 @@ class AnsibleInterface(AbstractInstanceInterface):
 
             log.info("Executing playbook: `{}`".format(playbook_path))
             extra_args.update(self.__create_extra_vars__(dir, list(all_nodes)))
-            ret = ansible_runner.run(private_data_dir=dir, inventory=inventory_filepath, playbook=playbook_path, 
+            ret = ansible_runner.run(private_data_dir=dir, inventory=inventory_filepath, playbook=playbook_path, quiet=quiet,
                                     verbosity=Defaults.verbosity, extravars=extra_args, debug=True if Defaults.verbosity>3 else False)
 
             status_event = [e for e in ret.events if e['event'] == 'playbook_on_stats'][-1]['event_data']

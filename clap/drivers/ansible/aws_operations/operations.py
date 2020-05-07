@@ -54,8 +54,9 @@ def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf
             f.write(rendered_template)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars,
-                                debug=True if Defaults.verbosity>3 else False)
+        ret = ansible_runner.run(
+            private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars,
+            debug=True if Defaults.verbosity>3 else False)
 
         # Not OK?
         if ret.rc != 0:
@@ -99,7 +100,9 @@ def pause_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_con
             f.write(rendered_template)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars, debug=True if Defaults.verbosity>3 else False)
+        ret = ansible_runner.run(
+            private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars, 
+            debug=True if Defaults.verbosity>3 else False)
 
         # Not OK?
         if ret.rc != 0:
@@ -163,7 +166,9 @@ def resume_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_co
             f.write(rendered_template)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars, debug=True if Defaults.verbosity>3 else False)
+        ret = ansible_runner.run(
+            private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars, 
+            debug=True if Defaults.verbosity>3 else False)
 
         # Not OK?
         if ret.rc != 0:
@@ -258,7 +263,9 @@ def check_instance_status(queue, repository: RepositoryOperations, provider_conf
             f.write(rendered_template)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars, debug=True if Defaults.verbosity>3 else False)
+        ret = ansible_runner.run(
+            private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars, 
+            debug=True if Defaults.verbosity>3 else False)
         
         # Not OK?
         if ret.rc != 0:
@@ -405,8 +412,9 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
             f.write(rendered_template)
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars, 
-                                debug=True if Defaults.verbosity>3 else False)
+        ret = ansible_runner.run(
+            private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars, 
+            debug=True if Defaults.verbosity>3 else False)
 
         # Not OK?
         # TODO may check return code or inexistence of runner_on_ok & task==Start instances?
@@ -475,8 +483,9 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
         log.info("Tagging the instances")
 
         # Run the playbook!
-        ret = ansible_runner.run(private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars, 
-                                debug=True if Defaults.verbosity>3 else False)
+        ret = ansible_runner.run(
+            private_data_dir=dir, playbook=filename, verbosity=Defaults.verbosity, envvars=envvars, 
+            debug=True if Defaults.verbosity>3 else False)
         if ret.rc != 0:
             log.error("Error tagging instances. Ansible command returned non-zero code")
             queue.put(created_nodes)

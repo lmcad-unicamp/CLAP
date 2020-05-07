@@ -25,7 +25,7 @@ def setup_log(log_name: str = None, verbosity_level: int = 0, filename: str = ''
     formatter = '[%(asctime)s] [%(levelname)s] %(threadName)s: %(message)s'
     log_level = 0
     if verbosity_level == 0:
-        log_level = logging.INFO
+        log_level = logging.ERROR
     elif verbosity_level == 1:
         log_level = logging.INFO
     elif verbosity_level >= 2:

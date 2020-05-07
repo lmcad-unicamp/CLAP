@@ -205,6 +205,7 @@ class MultiInstanceAPI:
         :return: List of created nodes 
         :rtype: List[NodeInfo]
         """
+        print("Starting instances: {}...".format(instances_num))
         return self._get_instance_iface(self.__default_driver).start_nodes(instances_num)
 
     def stop_nodes(self, node_ids: List[str]) -> List[str]:
@@ -216,8 +217,9 @@ class MultiInstanceAPI:
         nodes = self.get_nodes(node_ids)
         stopped_nodes = []
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            stopped_nodes += self._get_instance_iface(cluster.driver_id).stop_nodes([
-                node.node_id for node in nodes if node.cluster_id == cluster.cluster_id])
+            node_ids = [node.node_id for node in nodes if node.cluster_id == cluster.cluster_id]
+            print("Stopping nodes: `{}`...".format(', '.join(sorted(node_ids))))
+            stopped_nodes += self._get_instance_iface(cluster.driver_id).stop_nodes(node_ids)
         return stopped_nodes
 
     def pause_nodes(self, node_ids: List[str]) -> List[str]:
@@ -229,8 +231,9 @@ class MultiInstanceAPI:
         nodes = self.get_nodes(node_ids)
         paused_nodes = []
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            paused_nodes += self._get_instance_iface(cluster.driver_id).pause_nodes([
-                node.node_id for node in nodes if node.cluster_id == cluster.cluster_id])
+            node_ids = [node.node_id for node in nodes if node.cluster_id == cluster.cluster_id]
+            print("Pausing nodes: `{}`...".format(', '.join(sorted(node_ids))))
+            paused_nodes += self._get_instance_iface(cluster.driver_id).pause_nodes(node_ids)
         return paused_nodes
 
     def resume_nodes(self, node_ids: List[str]) -> List[str]:
@@ -242,16 +245,18 @@ class MultiInstanceAPI:
         nodes = self.get_nodes(node_ids)
         resumed_nodes = []
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            resumed_nodes += self._get_instance_iface(cluster.driver_id).resume_nodes([
-                node.node_id for node in nodes if node.cluster_id == cluster.cluster_id])
+            node_ids = [node.node_id for node in nodes if node.cluster_id == cluster.cluster_id]
+            print("Resuming nodes: `{}`...".format(', '.join(sorted(node_ids))))
+            resumed_nodes += self._get_instance_iface(cluster.driver_id).resume_nodes(node_ids)
         return resumed_nodes
 
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
         nodes = self.get_nodes(node_ids)
         checked_nodes = dict()
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            checked_nodes.update(self._get_instance_iface(cluster.driver_id).check_nodes_alive([
-                node.node_id for node in nodes if node.cluster_id == cluster.cluster_id]))
+            node_ids = [node.node_id for node in nodes if node.cluster_id == cluster.cluster_id]
+            print("Cheking if nodes `{}` are alive...".format(', '.join(sorted(node_ids))))
+            checked_nodes.update(self._get_instance_iface(cluster.driver_id).check_nodes_alive(node_ids))
         return checked_nodes
 
     def execute_playbook_in_nodes(self, playbook_path: str, hosts: Union[List[str], Dict[str, List[str]]],
