@@ -59,6 +59,10 @@ def __get_setups__(config_dict: dict) -> dict:
         return in_use_groups
 
     def __check_valid_group_action__(depth_keys: List[str], action_dict: dict) -> dict:
+        invalid_keys = [key for key in action_dict.keys() if key not in ['name', 'group', 'extra', 'type']]
+        if invalid_keys:
+            raise ConfigurationError("Invalid keys `{}` at `{}".format(', '.join(sorted(invalid_keys)), '.'.join(depth_keys)))
+
         extra = {}
         # Check if action has a name and is a valid str
         if 'name' not in action_dict:
@@ -76,6 +80,10 @@ def __get_setups__(config_dict: dict) -> dict:
         return {'name': action_dict['name'], 'group': action_dict['group'], 'type': 'action', 'extra': extra}
 
     def __check_valid_command_action__(depth_keys: List[str], action_dict: dict) -> dict:
+        invalid_keys = [key for key in action_dict.keys() if key not in ['command', 'type']]
+        if invalid_keys:
+            raise ConfigurationError("Invalid keys `{}` at `{}".format(', '.join(sorted(invalid_keys)), '.'.join(depth_keys)))
+
         # Check if action has a command and is a valid str
         if 'command' not in action_dict:
             raise ConfigurationError("Error in setup `{}`. All command actions must have the command key (command to execute)".format('.'.join(depth_keys)))
@@ -84,6 +92,10 @@ def __get_setups__(config_dict: dict) -> dict:
         return {'type': 'command', 'command': action_dict['command']}
 
     def __check_valid_playbook_action__(depth_keys: List[str], action_dict: dict) -> dict:
+        invalid_keys = [key for key in action_dict.keys() if key not in ['extra', 'path', 'type']]
+        if invalid_keys:
+            raise ConfigurationError("Invalid keys `{}` at `{}".format(', '.join(sorted(invalid_keys)), '.'.join(depth_keys)))
+
         extra = {}
         # Check if action has a name and is a valid str
         if 'path' not in action_dict:
@@ -120,6 +132,10 @@ def __get_setups__(config_dict: dict) -> dict:
         return in_use_actions
     
     for setup_name, setup_values in config_dict['setups'].items():
+        invalid_keys = [key for key in setup_values.keys() if key not in ['groups', 'actions']]
+        if invalid_keys:
+            raise ConfigurationError("Invalid keys `{}` at setup `{}`".format(', '.join(sorted(invalid_keys)), setup_name)) 
+
         groups, actions = [], []
         if 'groups' in setup_values:
             groups = __get_groups__([setup_name], setup_values['groups'])
@@ -136,6 +152,9 @@ def __get_clusters__(config_dict: dict) -> dict:
     clusters = dict()
 
     def __get_options__(depth_keys: List[str], options_dict: dict, cluster_nodes: dict) -> dict:
+        invalid_keys = [key for key in options_dict.keys() if key not in ['ssh_to']]
+        if invalid_keys:
+            raise ConfigurationError("Invalid keys `{}` at `{}".format(', '.join(sorted(invalid_keys)), '.'.join(depth_keys+['options']))) 
         options = {}
         if 'ssh_to' not in options_dict:
             options['ssh_to'] = ''
@@ -149,6 +168,10 @@ def __get_clusters__(config_dict: dict) -> dict:
     def __get_nodes__(depth_keys: List[str], nodes_dict: dict) -> dict:
         nodes = {}
         for node_name, node_vals in nodes_dict.items():
+            invalid_keys = [key for key in node_vals.keys() if key not in ['type', 'count', 'min_count', 'setups']]
+            if invalid_keys:
+                raise ConfigurationError("Invalid keys `{}` at `{}".format(', '.join(sorted(invalid_keys)), '.'.join(depth_keys+[node_name])))
+
             min_count = 1
             setups = []
 
@@ -198,6 +221,10 @@ def __get_clusters__(config_dict: dict) -> dict:
         return tuple([checked_vals[check] for check in checks])
 
     for cluster_name, cluster_values in config_dict['clusters'].items():
+        invalid_keys = [key for key in cluster_values.keys() if key not in ['options', 'nodes', 'before', 'before_all', 'after', 'after_all']]
+        if invalid_keys:
+            raise ConfigurationError("Invalid keys `{}` at cluster configuration `{}`".format(', '.join(sorted(invalid_keys)), cluster_name))
+
         if 'nodes' not in cluster_values:
             raise ConfigurationError("Cluster `{}` does not have any node".format(cluster_name))
         nodes = __get_nodes__([cluster_name], cluster_values['nodes'])

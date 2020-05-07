@@ -5,3 +5,6 @@ login-ubuntu:
     keypair_private_file: otavio_key_us_east_1.pem
     sudo: true
     sudo_user: root
+    
+login-ubuntu-b:
+    user: ubuntu

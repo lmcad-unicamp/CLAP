@@ -7,11 +7,10 @@ type-a:
        
 type-b:
     provider: aws-config-us-east-1
-    login: login-ubuntu
-    flavor: t2.medium
+    login: login-ubuntu-b
+    flavor: t2.small
     image_id: ami-07d0cf3af28718ef8
-    security_group: otavio-secgroup
-    boot_disk_size: 40
+    boot_disk_size: 10
     # image_userdata: 
     # boot_disk_device: /dev/sda1
     # boot_disk_iops: io1

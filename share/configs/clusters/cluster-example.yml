@@ -1,0 +1,80 @@
+setups:
+  config-master:
+    groups:
+    - name: commands-common
+    
+    actions:
+    - type: action
+      name: update-packages
+      group: commands-common
+    
+    - type: action
+      name: run-command
+      group: commands-common
+      extra:
+        cmd: "ls -lha"
+        
+      # - type: playbook
+      #   path: xxxx
+      #   extra:
+      #     a:  b
+      
+      # - type: command
+      #   command: yyyy
+  
+  config-slave:
+    groups:
+    - name: commands-common
+    
+    actions:
+    - type: action
+      name: update-packages
+      group: commands-common
+    
+    - type: command
+      command: "ls -lha"
+      
+  config-before:
+    actions:
+    - type: command
+      command: "pwd"
+      
+  config-before-all:
+    actions:
+    - type: command
+      command: "echo $PWD"
+
+
+clusters:
+  cluster-legal:
+    options:
+      ssh_to: node-type-master
+      
+    before_all:
+    - config-before-all
+
+    before:
+    - config-before
+
+    nodes:
+      node-type-master:
+        type: type-b
+        count: 1
+        # min_count: 1
+        setups: 
+        - config-master
+        - config-slave
+      
+      node-type-slave-1:
+        type: type-a
+        count: 2
+        min_count: 1
+        setups: 
+        - config-slave
+        
+      node-type-slave-2:
+        type: type-a
+        count: 2
+        min_count: 1
+        setups: 
+        - config-slave
