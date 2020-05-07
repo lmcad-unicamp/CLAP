@@ -339,22 +339,27 @@ class ClusterParser(AbstractParser):
         no_clusters = 0
 
         for cluster_name, cluster_vals in clusters.items():
-            print("------- Cluster: `{}` -------".format(cluster_name))
-            if cluster_vals['before_all']:
-                print("* before_all: {}".format(', '.join(cluster_vals['before_all'])))
-            if cluster_vals['before']:
-                print("* before: {}".format(', '.join(cluster_vals['before'])))
-            if cluster_vals['after']:
-                print("* after: {}".format(', '.join(cluster_vals['after'])))
-            if cluster_vals['after_all']:
-                print("* after_all: {}".format(', '.join(cluster_vals['after_all'])))
+            try:
+                print("------- Cluster: `{}` -------".format(cluster_name))
+                if cluster_vals['before_all']:
+                    print("* before_all: {}".format(', '.join(cluster_vals['before_all'])))
+                if cluster_vals['before']:
+                    print("* before: {}".format(', '.join(cluster_vals['before'])))
+                if cluster_vals['after']:
+                    print("* after: {}".format(', '.join(cluster_vals['after'])))
+                if cluster_vals['after_all']:
+                    print("* after_all: {}".format(', '.join(cluster_vals['after_all'])))
 
-            for node_name, node_vals in cluster_vals['nodes'].items():
-                print("* node name: `{}`".format(node_name))
-                print("  type: {}".format(node_vals['type']))
-                print("  setups: {}".format(', '.join(node_vals['setups'])))
-            print()
-            no_clusters += 1
+                for node_name, node_vals in cluster_vals['nodes'].items():
+                    print("* node name: `{}`".format(node_name))
+                    print("  type: {}".format(node_vals['type']))
+                    print("  setups: {}".format(', '.join(node_vals['setups'])))
+                print()
+                no_clusters += 1
+            except Exception as e:
+                log.error(e)
+                log.error("Error at cluster `{}`, skipping...".format(cluster_name))
+            
 
         print("Listed {} cluster template(s)".format(no_clusters))
         return 0
