@@ -1,3 +1,37 @@
-tinydb
-paramiko
+# Requirements
+pip>=9.0.0
+tinydb==3.15.2
 PyYAML
+PyCLI
+ansible>=2.7
+ansible-runner
+click>=4.0
+coloredlogs
+netaddr
+paramiko>=2.7
+schema
+subprocess32
+
+# AWS requirements
+pycrypto
+boto>=2.48
+boto3
+botocore
+
+# Other depencencies
+ipaddress
+scandir
+secretstorage<=2.3.1
+
+# Documentation
+sphinx
+sphinx-autoapi
+sphinx_rtd_theme
+
+# Server app
+Flask
+Bootstrap-Flask
+Flask-SQLAlchemy
+Flask-WTF
+python-socketio
+

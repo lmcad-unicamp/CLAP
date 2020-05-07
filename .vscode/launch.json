@@ -13,6 +13,14 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Node start type-b",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "node", "start", "type-b"],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Node stop node-0",
             "type": "python",
             "request": "launch",
