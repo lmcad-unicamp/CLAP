@@ -26,6 +26,7 @@ def __is_valid_directory__(fpath):
         return fpath
 
 # TODO cluster resume --setup --at=after_all
+# TODO cluster remove-node
 
 class ClusterParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):
@@ -51,9 +52,9 @@ class ClusterParser(AbstractParser):
                 help='Id of the cluster to perform setup')
         cluster_subcom_parser.add_argument('--readd-group', action='store_true', default=False,
                 help='Add nodes to the groups even if the nodes already belonging to it (default: False)')
-        cluster_subcom_parser.add_argument('--nodes', action='store',
+        cluster_subcom_parser.add_argument('--nodes', action='store', nargs='+',
                 help='Run setup at only specific nodes of the cluster')
-        cluster_subcom_parser.add_argument('--at', nargs='?', action='store', const='before_all',
+        cluster_subcom_parser.add_argument('--at', action='store',
                 help='Start setup at desired phase (the pipeline is: before_all, before, node, after, after_all)')
         cluster_subcom_parser.set_defaults(func=self.command_setup_cluster)
 
@@ -144,6 +145,8 @@ class ClusterParser(AbstractParser):
         cluster_subcom_parser.add_argument('--directory', '-d', default=ClusterDefaults.CLUSTER_SEARCH_PATH, 
                 type=lambda path: __is_valid_directory__(path),
                 help='Directory to search for cluster templates (Default is: `{}`)'.format(ClusterDefaults.CLUSTER_SEARCH_PATH))
+        cluster_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
+                help="Keyworded (format: x=y) Arguments to be passed to the actions")
         cluster_subcom_parser.set_defaults(func=self.commands_update_cluster)
 
         # cluster group
@@ -170,7 +173,7 @@ class ClusterParser(AbstractParser):
         cluster_subcom_parser.set_defaults(func=self.commands_group_action)
 
         # cluster connect
-        cluster_subcom_parser = commands_parser.add_parser('group', help="Add group to cluster's nodes")
+        cluster_subcom_parser = commands_parser.add_parser('connect', help="Connect to cluster's nodes")
         cluster_subcom_parser.add_argument('cluster_id', action='store', help='Id of the cluster to connect')
         cluster_subcom_parser.add_argument('--node', action='store', 
                 help="Id of cluster's node to connect. If none is supplied it will take the a node from cluster's ssh_to option")
@@ -235,7 +238,7 @@ class ClusterParser(AbstractParser):
 
     def command_setup_cluster(self, namespace: argparse.Namespace):
         cluster_id = namespace.cluster_id
-        at = namespace.at
+        at = namespace.at if namespace.at else 'before_all'
         readd_group = namespace.readd_group
         nodes = namespace.nodes
         cluster_setup_in_specific_nodes(cluster_id, node_ids=nodes, re_add_to_group=readd_group, at=at)
@@ -244,7 +247,7 @@ class ClusterParser(AbstractParser):
     
     def command_add_more_nodes(self, namespace: argparse.Namespace):
         cluster_id = namespace.cluster_id
-        at = namespace.at
+        at = namespace.at if namespace.at else 'before_all'
         readd_group = namespace.readd_group
         no_setup = namespace.no_setup
 
@@ -258,9 +261,9 @@ class ClusterParser(AbstractParser):
 
     def command_existing_nodes(self, namespace: argparse.Namespace):
         cluster_id = namespace.cluster_id
-        at = namespace.at
+        at = namespace.at if namespace.at else 'before_all'
         readd_group = namespace.readd_group
-        node_type = namespace.type
+        node_type = namespace.node_type
         node_ids = namespace.node_ids
         no_setup = namespace.no_setup
 
@@ -308,11 +311,11 @@ class ClusterParser(AbstractParser):
 
     def command_resume_cluster(self, namespace: argparse.Namespace):
         cluster_id = namespace.cluster_id
-        at = namespace.at
+        at = namespace.at if namespace.at else 'before_all'
         setup_cluster = namespace.setup
         node_ids = cluster_resume(cluster_id, setup=setup_cluster, at=at)
         #for node in node_ids:
-        print("Nodes `{}` from cluster `{}` resumed!".format(sorted(node_ids), cluster_id))
+        print("Nodes `{}` from cluster `{}` resumed!".format(', '.join(sorted(node_ids)), cluster_id))
         return 0
 
     def command_pause_cluster(self, namespace: argparse.Namespace):
@@ -375,7 +378,7 @@ class ClusterParser(AbstractParser):
         nodes = namespace.nodes
         extra = {arg.split('=')[0]: '='.join(arg.split('=')[1:]) for arg in namespace.extra} if namespace.extra else {}
         node_ids = cluster_group_add(cluster_id, group_name=group_name, node_ids=nodes, re_add_to_group=readd_group, extra_args=extra)
-        print("Nodes `{}` from cluster `{}` were added to group `{}`".format(sorted(node_ids), cluster_id, group_name))
+        print("Nodes `{}` from cluster `{}` were added to group `{}`".format(', '.join(sorted(node_ids)), cluster_id, group_name))
         return 0
 
     def commands_group_action(self, namespace: argparse.Namespace):
@@ -385,7 +388,7 @@ class ClusterParser(AbstractParser):
         nodes = namespace.nodes
         extra = {arg.split('=')[0]: '='.join(arg.split('=')[1:]) for arg in namespace.extra} if namespace.extra else {}
         node_ids = perform_group_action(cluster_id, group_name=group_name, action_name=action_name, node_ids=nodes, extra_args=extra)
-        print("Nodes `{}` from cluster `{}` successfully perfored action `{}`".format(sorted(node_ids), cluster_id, action_name))
+        print("Nodes `{}` from cluster `{}` successfully perfored action `{}`".format(', '.join(sorted(node_ids)), cluster_id, action_name))
         return 0
 
     def commands_connect(self, namespace: argparse.Namespace):

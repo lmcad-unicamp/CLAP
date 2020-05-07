@@ -432,9 +432,10 @@ class MultiInstanceAPI:
                 else:
                     ## Must handle ignore. Remove host from next iteration....
                     #             for group, host_list in hosts.items():
-                    log.error("Error executing setup playbook `{}` in nodes `{}`. Ignoring these nodes...".format(
-                        action, ', '.join(error_nodes)))
-                    raise Exception
+                    log.error("Error executing setup playbook `{}` in nodes `{}`.".format(
+                        action, ', '.join(sorted(error_nodes))))
+                    raise Exception("Error executing setup playbook `{}` in nodes `{}`.".format(
+                        action, ', '.join(sorted(error_nodes))))
 
         return list(executeds.keys())
 

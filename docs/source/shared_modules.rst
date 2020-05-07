@@ -5,6 +5,7 @@ Modules shared with CLAP
 ==========================
 
 .. _cluster module:
+
 Cluster Module
 -------------------
 
@@ -97,14 +98,14 @@ A type may have three values:
 - **playbook**: will execute an Ansible Playbook. Thus, the ``path`` key must be informed, telling the absolute path of the playbook that will be executed. Optionally an ``extra`` dictionary can be informed to pass keyword variables to the playbook.
 - **command**: will execute a shell command. Thus, the ``command`` key must be informed, telling which shell command must be executed.
 
-Some actions example are briefly shown below:
+Some action examples are briefly shown below:
 
 .. code-block:: yaml
 
     # Setup configurations must be declared inside setups key
     setups: 
 
-        # This is a setup configuration called setup-common
+        # This is a setup configuration called setup-common. The actions are executed sequentially
         another-setup-example:
             actions: 
             
@@ -138,9 +139,342 @@ Some actions example are briefly shown below:
 Cluster Configuration Sections
 ++++++++++++++++++++++++++++++
 
-XXXX
+The cluster configuration defines a set of nodes that must be created and setups that must be executed. Clusters are written inside ``clusters`` YAML-dictionary key and each dictionary inside ``clusters`` key denotes a cluster (where the dictionary key is the cluster's name). Above is an example of a cluster configuration:
+
+.. code-block:: yaml
+
+  # Clusters must be defined inside clusters key
+  clusters:
+    # This is the cluster name
+    my-cool-cluster-1:  
+      # Nodes that must be created when a cluster is instantiated  
+      nodes:
+        # Node named master-node
+        master-node:
+          type: aws-instance-t2.large   # Instance type that must be created (must match instances.yaml name)
+          count: 1                      # Number of instances that must be created
+          setups:                       # Optionally, list of setups to be executed when the master-nodes is created (reference setup configuration names, at setups section)
+          - another-example-setup
+          - master-setup
+        
+        # Node named taskmanager
+        slave-nodes:
+          type: aws-instance-t2.small  # Instance type that must be created (must match instances.yaml name)
+          count: 2                     # Number of instances that must be created
+          min_count: 1                 # Minimum desired number of instances that must effectively be created
+          setups:                      # Optionally, list of setups to be executed when the slave-nodes is created
+          - setup-slave-node
+
+Clusters must have the ``nodes`` section, which defines the nodes that must be created when the cluster is instantiated. As example above, each cluster's node have a name (``master-node`` and ``slave-node``) and values, that specify the cluster's node characteristics. Each node may have the values listed in is table below.
+
+..  list-table:: code-block:: none Cluster's nodes valid parameters
+    :header-rows: 1
+
+    *   - **Name**
+        - **Type**
+        - **Description**
+
+    *   - ``type``
+        - string
+        - Instance type that must to be created. The type must match the node name at ``instances.yaml`` file
+
+    *   - ``count``
+        - Positive integer
+        - Number of instances of this type to be launched
+    
+    *   - ``min_count`` (OPTIONAL)
+        - Positive integer (less then or equal ``count`` parameter)
+        - Minimum number of instances of this type that must effectively be launched. If this parameter is not supplied the value of ``count`` parameter is assumed
+
+    *   - ``setups``
+        - List of strings
+        - List with the name of the setup configurations that must be executed after nodes are created
+
+When a cluster is created, the instance types specified in the each node section is created with the desired ``count`` number. The cluster is considered created when all nodes are effectively created. The ``min_count`` parameter at each node specify the minimum number of instances of that type that must effectively be launched. If some instances could not be instantiated, with less than ``min_count`` parameter, the cluster creation process fails and all nodes are terminated.
+
+After the cluster is created, i.e. the minimum number of nodes of each type is successfully created, the ``setups`` for each node is executed, in order. If some setup does not execute correctly, the cluster remains created and the ``setup`` phase can be executed again.
+
+Controlling cluster's setups execution phases
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+CLAP's cluster module also offers some other facilities to configure the cluster. By default the cluster module create nodes and run the setup from each node type. You can control the flow of the setup execution using some optional keys at your cluster configuration. The keys: ``before_all``, ``before``, ``after`` and ``after_all`` can be plugged into a cluster's configuration, in order to execute setups in different set of nodes, before and after the nodes setups. These keys takes a list of setups to execute.
+CLAP's setup phases are executed in the order, as shown in table bellow.
+
+
+..  list-table:: code-block:: none Cluster's setups execution phases (in order)
+    :header-rows: 1
+
+    *   - **Phase name**
+        - **Description**
+
+    *   - ``before_all``
+        - Setups inside this key are executed in all cluster's nodes before specific setup of the nodes.
+
+    *   - ``before``
+        - Setups inside this key are executed only in nodes that are currently being added to the cluster, before the setup specific setup of the nodes. Its useful when resizing cluster, i.e., adding more nodes. This phase is always executed at cluster creation, as all created nodes are being added to the cluster.
+
+    *   - ``node``
+        - The setup for each node is executed, for the nodes that are being added to the cluster
+
+    *   - ``after``
+        - Setups inside this key are executed only in nodes that are currently being added to the cluster, after the setup specific setup of the nodes. Its useful when resizing cluster, i.e., adding more nodes. This phase is always executed at cluster creation, as all created nodes are being added to the cluster.
+
+    *   - ``after_all``
+        - Setups inside this key are executed in all cluster's nodes after specific setup of the nodes.
+
+.. note:: 
+
+  All setups are executed after the nodes are created and are all optional
+
+
+An example is shown below:
+
+.. code-block:: yaml
+
+  # Clusters must be defined inside clusters key
+  clusters:
+    # This is the cluster name
+    my-cool-cluster-1:  
+      # These setups are executed at all cluster's nodes, before setups at nodes section
+      before_all:
+      - my-custom-setup-1
+
+      # These setups are executed at nodes that are currently being added to cluster, before setups at nodes section
+      before:
+      - my-custom-setup-2
+
+      # These setups are executed at nodes that are currently being added to cluster, after setups at nodes section
+      after:
+      - my-custom-setup-3
+      - my-custom-setup-4
+
+      # These setups are executed at all cluster's nodes, after setups at nodes section
+      after_all:
+      - final_setup
+
+      # Nodes that must be created when a cluster is instantiated 
+      nodes:
+        # Node named master-node
+        master-node:
+          type: aws-instance-t2.large   # Instance type that must be created (must match instances.yaml name)
+          count: 1                      # Number of instances that must be created
+          setups:                       # Optionally, list of setups to be executed when the master-nodes is created (reference setup configuration names, at setups section)
+          - another-example-setup
+          - master-setup
+        
+        # Node named taskmanager
+        slave-nodes:
+          type: aws-instance-t2.small  # Instance type that must be created (must match instances.yaml name)
+          count: 2                     # Number of instances that must be created
+          min_count: 1                 # Minimum desired number of instances that must effectively be created
+          setups:                      # Optionally, list of setups to be executed when the slave-nodes is created
+          - setup-slave-node
+
+
+In the above example, supposing you are creating a new cluster, thus after 1 ``master-node`` and 2 ``slave-nodes`` were created, the following setups are executed (in order):
+
+- ``before_all`` setups: ``my-custom-setup-1`` at all nodes
+- ``before`` setups: ``my-custom-setup-2`` at all nodes
+- ``nodes`` setups (not necessary in order): ``another-example-setup``and ``master-setup`` at ``master-nodes`` nodes and ``setup-slave-node`` at ``slave-nodes`` nodes.
+- ``after`` setups: ``my-custom-setup-3`` and ``my-custom-setup-4`` at all nodes
+- ``after_all`` setups: ``final_setup`` at all nodes
+    
+Now supposing you are resizing the already created cluster (adding more ``slave-nodes`` to it), the ``before_all`` and ``after_all`` setups will be executed in all cluster's nodes (including the new ones, that are being added) and ``before``, ``nodes`` and ``after`` phase setups will only be executed at nodes that are being added to the the cluster.
+
+Other cluster's setups optional keys
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``options`` key can be plugged at a cluster configuration allowing some special options to cluster. The ``options`` key may have the following parameters:
+
+..  list-table:: code-block:: none Cluster's options keys
+    :header-rows: 1
+
+    *   - **Option name**
+        - **Description**
+
+    *   - ``ssh_to``
+        - Connect to a specific node when performing the ``cluster connect`` command
+
+A example is shown below:
+
+.. code-block:: yaml
+
+  # Clusters must be defined inside clusters key
+  clusters:
+    # This is the cluster name
+    my-cool-cluster-1:  
+      # Additional cluster's options (optional)
+      options:
+        # When connecting to a cluster, connect to a master-node 
+        ssh_to: master-node
+
+      # Nodes that must be created when a cluster is instantiated  
+      nodes:
+        # Node named master-node
+        master-node:
+          type: aws-instance-t2.large   # Instance type that must be created (must match instances.yaml name)
+          count: 1                      # Number of instances that must be created
+          setups:                       # Optionally, list of setups to be executed when the master-nodes is created (reference setup configuration names, at setups section)
+          - another-example-setup
+          - master-setup
+        
+        # Node named taskmanager
+        slave-nodes:
+          type: aws-instance-t2.small  # Instance type that must be created (must match instances.yaml name)
+          count: 2                     # Number of instances that must be created
+          min_count: 1                 # Minimum desired number of instances that must effectively be created
+          setups:                      # Optionally, list of setups to be executed when the slave-nodes is created
+          - setup-slave-node
 
 
 Command ``cluster start``
 ++++++++++++++++++++++++++
-After
+
+Start a cluster given a cluster configuration name. The syntax of the command is shown below 
+
+.. code-block:: none
+
+  clapp cluster start [-h] [--file FILE] [--directory DIRECTORY] [--no-setup] [--extra ...] cluster_name
+
+By default, the CLAP's cluster module search for configurations at all ``.yml`` files inside ``~/.clap/configs/clusters`` directory. This can be changed with ``--directory`` parameter. Or if you want to search for the cluster configuration at only one file, use the ``--file`` parameter.
+After the cluster is created, the setups are automatically executed. You can omit this phase by using the ``--no-setup`` option.
+
+The ``--extra`` parameter performs Jinja variable replacements at the cluster configuration files.
+
+An example of the command is shown below, which starts and instantiate nodes from a cluster called ``my-cool-cluster-1``.
+
+.. code-block:: none
+
+  clapp cluster start my-cool-cluster-1
+
+.. note::
+  - After the cluster's creation a new ``cluster_id`` will be assigned to it. Thus, multiple clusters with same cluster configuration can be launched Also, all commands will reference to ``cluster_id`` to perform their actions.
+  - When a cluster is started its initial configuration is copied to cluster metadata. If you update the cluster configuration while having already started clusters use the ``clapp cluster update`` command to update the cluster configuration.
+
+
+Command ``cluster setup``
+++++++++++++++++++++++++++
+
+Setup an existing cluster. The command has the following syntax:
+
+.. code-block:: none
+
+  clapp cluster setup [-h] [--readd-group] [--nodes NODES] [--at [AT]] cluster_id
+
+Given the ``cluster_id``, the command will execute all setup phases in all cluster nodes. Some phases of the setup pipeline can be skipped informing at which phase the setup must begin with the ``at`` parameter. Also, if you want to execute the setup only in selected nodes of the cluster you can use the ``nodes`` parameter, passing the node ids. Finally, the ``readd-group`` option specify if nodes must be added to a group, even if they are already on them.
+
+Examples are shown below:
+
+.. code-block:: none
+
+  clapp cluster setup cluster-0
+  clapp cluster setup cluster-0 --at "before"
+  clapp cluster setup cluster-0 --nodes node-4 node-5
+
+In the above examples, the first one setups all cluster nodes from ``cluster-0``, the second one setups all nodes, but starting at ``before`` phase and the third one setup only ``node-4`` and ``node-5`` of cluster ``cluster-0``.
+
+.. note::
+  The ``before_all`` and ``after_all`` phases will be executed at all cluster's nodes, even if setting the ``nodes`` parameter.
+
+
+Command ``cluster add``
+++++++++++++++++++++++++++
+
+Start and add a new node to cluster, based on its cluster's node name. The command has the following syntax:
+
+.. code-block:: none
+  clapp cluster add [-h] [--readd-group] [--at [AT]] [--no-setup] cluster_id node_type:num [node_type:num ...]
+
+The ``node_type:num`` parameter determines how much nodes will be added to cluster. If ``--no-setup`` is provided no setup phase will be executed, else the setup phase to be executed can be controlled with ``--at`` parameter. Finally, the ``readd-group`` option specify if nodes must be added to a group, even if they are already on them.
+
+Examples are shown below:
+
+.. code-block:: none
+
+  clapp cluster add cluster-0 slave-nodes:2
+
+In the above example, two ``slave-nodes`` will be added to cluster ``cluster-0`` and all setup phases will be executed.
+
+
+Command ``cluster add-existing``
+++++++++++++++++++++++++++++++++++
+
+Add an already started CLAP's node to a cluster. The command has the following syntax:
+
+.. code-block:: none
+  clapp cluster add-existing [-h] [--readd-group] [--at [AT]] [--no-setup] cluster_id node_type node_ids [node_ids ...]
+
+The command allow to add multiple started nodes by its node IDs (``node_ids`` parameter) to a already started cluster. The nodes will be added as the cluster's node type, defined by ``node_type`` parameter If ``--no-setup`` is provided no setup phase will be executed, else the setup phase to be executed can be controlled with ``--at`` parameter. Finally, the ``readd-group`` option specify if nodes must be added to a group, even if they are already on them.
+
+Examples are shown below:
+
+.. code-block:: none
+
+  clapp cluster add-existing cluster-0 slave-nodes node-0 node-1 node-2
+
+In the above example, nodes ``node-0``, ``node-1`` and ``node-2``  will be added to cluster ``cluster-0`` as ``slave-nodes`` cluster's node type and all setup phases will be executed.
+
+Command ``cluster list``
+++++++++++++++++++++++++++
+
+List all available CLAP's clusters. The command has the following syntax:
+
+.. code-block:: none
+
+  clapp cluster list [-h] [--id ID] [--full]
+
+Optionally, if ``--id`` parameter is passed, only a cluster with this ID is listed. Also, if ``--full`` parameter is passed it will print all cluster information, including it's configuration used.
+
+An output example is shown below:
+
+.. code-block:: none
+  creation time: 01-01-20 00:00:00
+  id: cluster-0
+  name: my-cool-cluster-
+  nodes:
+      master-node:
+      - node-0
+      slave-node:
+      - node-1
+      - node-2
+  state: running
+  update time: 01-15-20 00:01:40
+
+Command ``cluster alive``
+++++++++++++++++++++++++++
+
+Command ``cluster resume``
+++++++++++++++++++++++++++
+
+Command ``cluster pause``
+++++++++++++++++++++++++++
+
+Command ``cluster stop``
+++++++++++++++++++++++++++
+
+Command ``cluster list-templates``
++++++++++++++++++++++++++++++++++++
+
+Command ``cluster update``
++++++++++++++++++++++++++++++
+
+Command ``cluster group``
++++++++++++++++++++++++++++++
+
+Command ``cluster action``
++++++++++++++++++++++++++++++
+
+Command ``cluster connect``
++++++++++++++++++++++++++++++
+
+Command ``cluster execute``
++++++++++++++++++++++++++++++
+
+Command ``cluster playbook``
++++++++++++++++++++++++++++++
+
+Command ``cluster copy``
++++++++++++++++++++++++++++++
+
+Command ``cluster fetch``
++++++++++++++++++++++++++++++

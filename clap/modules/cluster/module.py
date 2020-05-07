@@ -77,11 +77,11 @@ def __get_setups__(config_dict: dict) -> dict:
 
     def __check_valid_command_action__(depth_keys: List[str], action_dict: dict) -> dict:
         # Check if action has a command and is a valid str
-        if 'commmand' not in action_dict:
+        if 'command' not in action_dict:
             raise ConfigurationError("Error in setup `{}`. All command actions must have the command key (command to execute)".format('.'.join(depth_keys)))
-        if not action_dict['commmand'] or type(action_dict['commmand']) is not str:
+        if not action_dict['command'] or type(action_dict['command']) is not str:
             raise ConfigurationError("Error in setup `{}`. Invalid string for command: `{}`".format('.'.join(depth_keys), action_dict['commmand']))
-        return {'name': action_dict['name'], 'type': 'command', 'command': action_dict['command']}
+        return {'type': 'command', 'command': action_dict['command']}
 
     def __check_valid_playbook_action__(depth_keys: List[str], action_dict: dict) -> dict:
         extra = {}
@@ -108,11 +108,11 @@ def __get_setups__(config_dict: dict) -> dict:
                 raise ConfigurationError("Error in setup `{}`. Invalid string for action type: `{}`".format('.'.join(depth_keys), action_values['type']))
                 
             if action_values['type'] == 'action':
-                in_use_actions.append(__check_valid_group_action__('.'.join(depth_keys), action_values))
+                in_use_actions.append(__check_valid_group_action__(depth_keys+['action'], action_values))
             elif action_values['type'] == 'command':
-                in_use_actions.append(__check_valid_command_action__('.'.join(depth_keys), action_values))
+                in_use_actions.append(__check_valid_command_action__(depth_keys+['command'], action_values))
             elif action_values['type'] == 'playbook':
-                in_use_actions.append(__check_valid_playbook_action__('.'.join(depth_keys), action_values))
+                in_use_actions.append(__check_valid_playbook_action__(depth_keys+['playbook'], action_values))
             else:
                 raise ConfigurationError("Error in setup `{}`. Invalid action type: `{}` (choose from {}) ".format(
                     '.'.join(depth_keys), action_values['type'], ', '.join(valid_action_types)))
@@ -296,6 +296,8 @@ def __add_nodes_to_cluster__(cluster: ClusterData, node_types: Dict[str, Tuple[i
     # Iterate over nodes and count minimum and maximum instance types
     for node_name, (count, min_count) in node_types.items():
         # Instance type not in the nodes dict yet?
+        if node_name not in cluster.cluster_config['nodes']:
+            raise Exception("Invalid node type `{}` for cluster `{}`".format(node_name, cluster.cluster_name))
         node_type = cluster.cluster_config['nodes'][node_name]['type']
         if node_type not in nodes:
             nodes[node_type] = {
@@ -419,7 +421,7 @@ def __execute_action__(setup_name: str, action: dict, node_ids: List[str] = None
 
 def __run_setup__(  cluster_name: str, setup_name: str, setup_dict: dict, node_ids: List[str] = None, 
                     tags: Dict[str, str] = None, re_add_to_group: bool = False):
-    log.info("Executing before setup `{}` in nodes `{}`".format(setup_name, ', '.join(sorted(node_ids))))
+    log.info("Executing setup `{}` in nodes `{}`".format(setup_name, ', '.join(sorted(node_ids))))
 
     for group in setup_dict['groups']:
         __add_to_group__(setup_name, group, node_ids, tags, re_add_to_group=re_add_to_group)
@@ -427,6 +429,9 @@ def __run_setup__(  cluster_name: str, setup_name: str, setup_dict: dict, node_i
         __execute_action__(setup_name, action, node_ids, tags)
 
 def __run_setup_list__(cluster_name: str, setup_list: List[Dict[str, Any]], node_ids: List[str], re_add_to_group: bool):
+    if not node_ids or not setup_list:
+        return
+
     for _setup in setup_list:
         for setup_name, setup in _setup.items():
              __run_setup__(cluster_name, setup_name, setup, node_ids=node_ids, re_add_to_group=re_add_to_group)
@@ -490,12 +495,12 @@ def get_cluster_config(cluster_files: List[str], cluster_name: str, extra_args: 
 
     # Get the cluster configuration
     cluster_data = clusters[cluster_name]
-    
-    # Perform jinja substitutions
-    cluster_data = __perform_replacements__(cluster_data, extra_args)
 
     # Check cluster configuration
     cluster_data = __validate_cluster_setups__(cluster_name, cluster_data, setups)
+
+        # Perform jinja substitutions
+    cluster_data = __perform_replacements__(cluster_data, extra_args)
 
     # Validate nodes
     valid_instances = template_module.list_instance_types()
@@ -509,7 +514,6 @@ def get_cluster_config(cluster_files: List[str], cluster_name: str, extra_args: 
 
 def cluster_create( cluster_files: List[str], cluster_name: str, extra_args: Dict[str, str] = None, 
                     no_setup: bool = False) -> Tuple[ClusterData, List[NodeInfo], bool]:
-    # TODO start cluster with 0 nodes
     node_module = PlatformFactory.get_module_interface().get_module('node')
     
     # Create a new repository 
@@ -532,7 +536,7 @@ def cluster_create( cluster_files: List[str], cluster_name: str, extra_args: Dic
         except Exception as e:
             log.error(e)
 
-    node_ids = set([node.node_id for node_name, node_list in created_nodes.items() for node in node_list])
+    node_ids = set([node_id for node_name, node_list in created_nodes.items() for node_id in node_list])
     return cluster, node_module.list_nodes(list(node_ids)), is_setup
 
 def add_nodes_to_cluster(cluster_id: str, node_types: Dict[str, int] = None, no_setup: bool = False, re_add_to_group: bool = False, at: str = 'before_all') -> Tuple[ClusterData, List[NodeInfo]]:
@@ -553,6 +557,7 @@ def add_existing_nodes_to_cluster(cluster_id: str, node_types: Dict[str, List[st
     node_ids = []
 
     for node_name, node_list in node_types.items():
+        valids = node_module.list_nodes(node_list)
         if node_name not in cluster.cluster_config['nodes']:
             raise ValueError("Invalid node `{}` for cluster `{}`".format(node_name, cluster.cluster_name))
         node_ids += node_list
@@ -597,7 +602,7 @@ def cluster_setup(  cluster_id: str, nodes_type: Dict[str, List[str]] = None, re
     if 'before' in setups:
         setups_to_execute.append((cluster.cluster_name, cluster.cluster_config['before'], all_nodes, re_add_to_group))
         
-    if 'nodes' in setups:
+    if 'node' in setups:
         for node_name, node_list in nodes_type.items():
             setups_to_execute.append((cluster.cluster_name, cluster.cluster_config['nodes'][node_name]['setups'], node_list, re_add_to_group))
     
@@ -619,13 +624,11 @@ def cluster_setup_in_specific_nodes( cluster_id: str, node_ids: List[str] = None
     cluster = ClusterRepositoryOperations().get_cluster(cluster_id)
 
     all_cluster_nodes = [node.node_id for node in node_module.list_nodes(tags={'clusters': "{}".format(cluster.cluster_id)})]
-    invalid_nodes = [node for node in node_ids if node not in all_cluster_nodes]
-    if invalid_nodes:
-        raise Exception("Nodes `{}` does not belong to cluster `{}`".format(sorted(invalid_nodes), cluster_id))
-
     if node_ids:
-        cluster_setup(cluster_id, nodes_type=None, re_add_to_group=re_add_to_group, at=at)
-    else:
+        invalid_nodes = [node for node in node_ids if node not in all_cluster_nodes]
+        if invalid_nodes:
+            raise Exception("Nodes `{}` does not belong to cluster `{}`".format(', '.join(sorted(invalid_nodes)), cluster_id))
+
         nodes_type = {}
         for node_name in cluster.cluster_config['nodes'].keys():
             tags = {'cluster_node_type': "{}:{}".format(cluster.cluster_id, node_name)}
@@ -633,13 +636,15 @@ def cluster_setup_in_specific_nodes( cluster_id: str, node_ids: List[str] = None
             nodes_type[node_name] = [node_id for node_id in node_ids if node_id in nodes]
 
         cluster_setup(cluster_id, nodes_type=nodes_type, re_add_to_group=re_add_to_group, at=at)
+    else:
+        cluster_setup(cluster_id, nodes_type=None, re_add_to_group=re_add_to_group, at=at)
 
 def update_cluster_config(cluster_files: List[str], cluster_id: str, extra_args: Dict[str, str] = None) -> ClusterData:
     repository = ClusterRepositoryOperations()
     cluster = repository.get_cluster(cluster_id)
     cluster_data = get_cluster_config(cluster_files, cluster.cluster_name, extra_args)
     cluster.cluster_config = cluster_data
-    repository.update_cluster(cluster_data)
+    repository.update_cluster(cluster)
     return cluster
 
 def cluster_stop(cluster_id: str, do_not_stop: bool = False) -> Tuple[List[str], List[str]]:
@@ -754,7 +759,7 @@ def cluster_group_add(cluster_id: str, group_name: str, node_ids: List[str] = No
     if node_ids:
         invalid_nodes = [node_id for node_id in node_ids if node_id not in all_cluster_nodes]
         if invalid_nodes:
-            raise Exception("Nodes `{}` does not belong to cluster {}".format(sorted(invalid_nodes), cluster_id))
+            raise Exception("Nodes `{}` does not belong to cluster {}".format(', '.join(sorted(invalid_nodes)), cluster_id))
     else:
         node_ids = all_cluster_nodes
     
@@ -771,11 +776,11 @@ def perform_group_action(cluster_id: str, group_name: str, action_name: str, nod
     if node_ids:
         invalid_nodes = [node_id for node_id in node_ids if node_id not in all_cluster_nodes]
         if invalid_nodes:
-            raise Exception("Nodes `{}` does not belong to cluster {}".format(sorted(invalid_nodes), cluster_id))
+            raise Exception("Nodes `{}` does not belong to cluster {}".format(', '.join(sorted(invalid_nodes)), cluster_id))
     else:
         node_ids = all_cluster_nodes
     
-    action = {'type': 'action', 'group': group_name, 'action': action_name, 'extra': extra}
+    action = {'type': 'action', 'group': group_name, 'name': action_name, 'extra': extra}
     return __execute_action__(cluster.cluster_name, action, node_ids=node_ids)
 
 def execute_playbook(cluster_id: str, playbook_path: str, node_ids: List[str] = None, extra_args: Dict[str, str] = None) -> Dict[str, bool]:
@@ -788,7 +793,7 @@ def execute_playbook(cluster_id: str, playbook_path: str, node_ids: List[str] = 
     if node_ids:
         invalid_nodes = [node_id for node_id in node_ids if node_id not in all_cluster_nodes]
         if invalid_nodes:
-            raise Exception("Nodes `{}` does not belong to cluster {}".format(sorted(invalid_nodes), cluster_id))
+            raise Exception("Nodes `{}` does not belong to cluster {}".format(', '.join(sorted(invalid_nodes)), cluster_id))
     else:
         node_ids = all_cluster_nodes
 
@@ -804,7 +809,7 @@ def execute_command(cluster_id: str, command: str, node_ids: List[str] = None) -
     if node_ids:
         invalid_nodes = [node_id for node_id in node_ids if node_id not in all_cluster_nodes]
         if invalid_nodes:
-            raise Exception("Nodes `{}` does not belong to cluster {}".format(sorted(invalid_nodes), cluster_id))
+            raise Exception("Nodes `{}` does not belong to cluster {}".format(', '.join(sorted(invalid_nodes)), cluster_id))
     else:
         node_ids = all_cluster_nodes
 
@@ -851,12 +856,13 @@ def run_command(node_ids: List[str], command_string: str):
     node_module = PlatformFactory.get_module_interface().get_module('node')
     ssh_connections = node_module.get_ssh_connections(node_ids=node_ids)
     
-    for node_id, ssh in ssh_connections.items():
+    for node_id in sorted(ssh_connections.keys()):
+        ssh = ssh_connections[node_id]
         print('Executing in node `{}` the command (via SSH): `{}`'.format(node_id, command_string))
         _, stdout, stderr = ssh.exec_command(command_string)
-        print("{} STD OUTPUT {}".format('-'*40, '-'*40))
+        print("{} STD OUTPUT of `{}` {}".format('-'*40, node_id, '-'*40))
         print(''.join(stdout.readlines()))
-        print("{} ERR OUTPUT {}".format('-'*40, '-'*40))
+        print("{} ERR OUTPUT of `{}` {}".format('-'*40, node_id, '-'*40))
         print(''.join(stderr.readlines()))
         print('-' * 80)
 

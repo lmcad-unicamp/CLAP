@@ -228,17 +228,17 @@ The above command will update the package list from remote hosts (similar to ``a
 
 
 
-Group ``docker``
------------------
+.. Group ``docker``
+.. -----------------
 
-This group installs docker-ce in debian and red-hat based systems. The following actions are provided by this group.
+.. This group installs docker-ce in debian and red-hat based systems. The following actions are provided by this group.
 
-- ``setup``: Install docker-ce and start the service
+.. - ``setup``: Install docker-ce and start the service
 
-Hosts
-+++++++++++++++++++
+.. Hosts
+.. +++++++++++++++++++
 
-No host must be specified by this group.
+.. No host must be specified by this group.
 
 
 

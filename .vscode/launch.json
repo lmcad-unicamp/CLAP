@@ -43,6 +43,54 @@
             "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
             "args": ["-vv", "group", "action", "spits/jobmanager", "job-create", "--extra", "jobid=my-job-123", "spits_binary=/home/napoli/Documents/Doutorado/Projects/CEPETRO/spits-2.0/examples/spits-pi/bin/spits-pi-module", "spits_args=100000 1000", "SPITS_JOB_PATH=/home/ubuntu/efs/spits-jobs"],
             "console": "integratedTerminal"
-        }
+        },
+        {
+            "name": "Start cluster cluster-legal",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "start", "cluster-legal"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Setup cluster-0",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "setup", "cluster-0"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Setup cluster-0 node-11 node-12 node-13 at node",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-v", "cluster", "setup", "cluster-0", "--nodes", "node-11", "node-12", "node-13", "--at", "node"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Add node-type-master to cluster-0",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "add", "cluster-0", "node-type-master", "node-type-slave-1:2"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Add existing node-5 node-6 to cluster-0 as node-type-slave-2",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "add-existing", "cluster-0", "node-type-slave-1", "node-5", "node-6"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Update cluster-0",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "cluster", "update", "cluster-0"],
+            "console": "integratedTerminal"
+        },
     ]
 }

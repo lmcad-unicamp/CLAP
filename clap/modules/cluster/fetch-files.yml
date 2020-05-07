@@ -1,9 +1,10 @@
 - name: Fetch files playbook
   hosts: all
-  gather_facts: no
+  gather_facts: yes
   tasks:
-  - name: Ansible fetch files from remote host to local
+  - name: Ansible fetch files remote host to local
     become: no
-    fetch:
-      src: "{{ src }}"
-      dest: "{{ dest }}"
+    synchronize:
+        src: "{{ src }}"
+        dest: "{{ dest }}"
+        mode: pull
