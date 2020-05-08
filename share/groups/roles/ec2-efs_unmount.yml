@@ -1,0 +1,10 @@
+---   
+- name: EC2 EFS Playbook
+  hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+  - include_role:
+      name: ec2-efs
+      tasks_from: unmount
+

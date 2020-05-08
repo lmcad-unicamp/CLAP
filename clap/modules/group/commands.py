@@ -95,11 +95,21 @@ class GroupsParser(AbstractParser):
         groups = list_groups()
 
         for group_dict in sorted(groups, key=lambda x: x['name']):
-            print('* ' + group_dict['name'] + " ({})".format(group_dict['playbook']))
-            if group_dict['actions']:
-                print(' ' * 4 + 'actions: ' + ', '.join(sorted(group_dict['actions'])))
-            if group_dict['hosts']:
-                print(' ' * 4 + 'hosts: ' + ', '.join(sorted(group_dict['hosts'])))
+            print("* GROUP: {}".format(group_dict['name']))
+            print("  hosts: {}".format(', '.join(sorted(group_dict['hosts']))if group_dict['hosts'] else "none" ))
+            for action_name, action_values in group_dict['actions'].items():
+                print("  > action: {}".format(action_name))
+                if action_values['description']:
+                    print("    description: {}".format(action_values['description']))
+                print("    playbook: {}".format(action_values['playbook']))
+                if action_values['vars']:
+                    print("    variables:")
+                    for var in action_values['vars']:
+                        print("      - name: {}".format(var['name']))
+                        if var['description']:
+                            print("        description: {}".format(var['description']))
+                        print("        optional: {}".format(var['optional']))
+            print('')
 
         print("Listed {} group(s)".format(len(groups)))
 

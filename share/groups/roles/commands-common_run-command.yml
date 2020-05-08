@@ -1,0 +1,9 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: Run command in the remote hosts (free form)
+    become: no
+    shell: "{{ cmd }}"
+    args:
+      chdir: "{{ workdir | default('') }}"

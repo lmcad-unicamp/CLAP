@@ -1,0 +1,15 @@
+---
+actions:
+  setup:
+    playbook: roles/nfs-client_setup.yml
+
+  mount:
+    playbook: roles/nfs-client_mount.yml
+    vars:
+    - name: fs_mountpoint
+    - name: fs_name
+    - name: fs_options
+    - name: fs_state 
+  
+  unmount:
+    playbook: roles/nfs-client_unmount.yml

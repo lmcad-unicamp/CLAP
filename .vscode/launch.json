@@ -21,6 +21,22 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Add group commands-common to node-0 and node-1",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-vv", "group", "add", "commands-common", "node-0", "node-1", "--extra", "command=hostname"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Execute action commands-common run-command",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/Documents/Doutorado/Projects/CEPETRO/clap/clapp",
+            "args": ["-v", "group", "action", "commands-common", "run-command", "--extra", "cmd=hostname"],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Node stop node-0",
             "type": "python",
             "request": "launch",

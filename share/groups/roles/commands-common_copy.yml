@@ -1,0 +1,10 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: Ansible copy files from local to remote hosts
+    become: no
+    synchronize:
+      src: "{{ src }}"
+      dest: "{{ dest }}"
+      recursive: yes

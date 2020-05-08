@@ -1,0 +1,10 @@
+---   
+- name: NFS Client Playbook
+  hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+  - include_role:
+      name: nfs-client
+      tasks_from: mount
+

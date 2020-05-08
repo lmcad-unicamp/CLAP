@@ -1,0 +1,13 @@
+---   
+- name: EC2 EFS Playbook
+  hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+  - include_role:
+      name: nfs-client
+      tasks_from: setup
+  
+  - include_role:
+      name: ec2-efs
+      tasks_from: setup

@@ -1,0 +1,18 @@
+---
+- name: Ensure that mountpoint directory exists
+  file:
+    path: "{{ fs_mountpoint }}"
+    state: directory
+
+- name: add to /etc/fstab
+  mount:
+    name: "{{ fs_mountpoint }}"
+    src: "{{ fs_name }}"
+    fstype: nfs
+    opts: "{{ fs_options|default('rw,async') }}"
+    state: "{{ fs_state|default('mounted') }}"
+
+- name: Allow NFS homes through SELinux
+  command: |
+    setsebool -P use_nfs_home_dirs=1
+  when: 'fs.mountpoint == "/home" and is_rhel_compatible and ansible_selinux.status == "enabled"'

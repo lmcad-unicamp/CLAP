@@ -1,0 +1,18 @@
+---
+actions:
+  setup:
+    playbook: roles/ec2-efs_setup.yml
+
+  mount:
+    playbook: roles/ec2-efs_mount.yml
+    vars:
+    - name: efs_mount_point
+      optional: yes
+    - name: owner
+    - name: group
+    - name: mount_ip
+    - name: mount_permissions
+      optional: yes
+  
+  unmount:
+    playbook: roles/ec2-efs_unmount.yml

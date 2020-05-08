@@ -1,0 +1,13 @@
+---   
+- name: EC2 EFS Playbook
+  hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+  - set_fact:
+      efs_mount_point: "{{ efs_mount_point|default('/efs') }}"
+      mount_permissions: "{{ mount_permissions|default('0777') }}"
+  - include_role:
+      name: ec2-efs
+      tasks_from: mount
+
