@@ -1,14 +1,4 @@
 setups:
-  # This setup is called before other ones, in all nodes
-  setup-spits-common:
-    groups: 
-    - name: commands-common
-    
-    actions:
-    - type: action
-      name: update-packages
-      group: commands-common
-
   # This is for JM
   setup-spits-jobmanager:
     groups:
@@ -45,8 +35,6 @@ setups:
       extra:
         jobid: "{{ jobid }}"
 
-
-
 clusters:
   spits-cluster:
     options:
@@ -54,7 +42,7 @@ clusters:
     
     nodes:
       jobmanager:
-        type: type-a
+        type: type-b
         count: 1
         setups: 
         - setup-spits-jobmanager
@@ -65,13 +53,9 @@ clusters:
         min_count: 1
         setups: 
         - setup-spits-taskmanager
-        
-    before:
-    - setup-spits-common
     
     after:
     - setup-spits-start-bin
     
     after_all:
     - setup-spits-add-nodes
-        

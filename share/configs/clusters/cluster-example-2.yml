@@ -1,0 +1,41 @@
+setups:
+  config-master-1:
+    groups:
+    - name: commands-common
+    actions:
+    - type: action
+      name: update-packages
+      group: commands-common
+    - type: action
+      name: install-packages
+      group: commands-common
+      extra:
+        packages: "openmpi-bin"
+  
+  config-slave-1:
+    groups:
+    - name: commands-common
+    actions:
+    - type: action
+      name: update-packages
+      group: commands-common
+    - type: action
+      name: install-packages
+      group: commands-common
+      extra:
+        packages: "openmpi-bin"
+      
+clusters:
+  my-cool-cluster:
+    nodes:
+      node-master:
+        type: type-b
+        count: 1
+        setups: 
+        - config-master-1
+      node-slave:
+        type: type-a
+        count: 2
+        min_count: 1
+        setups: 
+        - config-slave-1
