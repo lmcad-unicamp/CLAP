@@ -1,0 +1,44 @@
+---
+- name: "Ensure that packages are updated"
+  become: yes
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install module dependencies
+  become: yes
+  apt:
+    pkg:
+      # Python 3
+      - python3
+      - python3-pip
+      - python3-virtualenv
+      - python3-setuptools
+      - zip
+      - unzip
+      
+- name: Create pypits directory
+  become: no
+  file:
+    path: "{{ PYPITS_PATH }}"
+    state: directory
+    mode: 0755
+    
+- name: Create spits-jobs directory
+  become: no
+  file:
+    path: "{{ SPITS_JOB_PATH }}"
+    state: directory
+    mode: 0755
+
+- name: Extract pypits in remote host
+  become: no
+  unarchive:
+    src: "files/pypits-2.0.zip"
+    dest: "{{ PYPITS_PATH }}"
+    
+- name: Install libspits
+  become: no
+  pip:
+    name: "file://{{ PYPITS_PATH }}/dist/libspits-0.0.1.tar.gz"
+

@@ -1,0 +1,23 @@
+- name: Setting up SPITS job
+  become: no
+  shell: "{{ PYPITS_PATH }}/scripts/spits-create-job.py --no-binary --jobdir {{ SPITS_JOB_PATH }} {{ jobid }} {{ spits_binary | basename }} {{ spits_args }}"
+  when: COPY_BINARY
+  
+- name: Copying SPITS binary
+  become: no
+  copy:
+    src: "{{ spits_binary }}"
+    dest: "{{ SPITS_JOB_PATH }}/{{ jobid }}/bin/{{ spits_binary | basename }}"
+  when: COPY_BINARY
+
+- name: Setting up SPITS job without copy
+  become: no
+  shell: "{{ PYPITS_PATH }}/scripts/spits-create-job.py --jobdir {{ SPITS_JOB_PATH }} {{ jobid }} {{ spits_binary }} {{ spits_args }}"
+  when: not COPY_BINARY
+
+- name: "Set executable"
+  become: no
+  file:
+    dest: "{{ SPITS_JOB_PATH }}/{{ jobid }}/bin/"
+    mode: 0777
+    recurse: yes

@@ -1,0 +1,5 @@
+- name: Run job manager for job "{{ jobid }}"
+  become: no
+  poll: 0
+  async: 0
+  shell: "nohup {{ PYPITS_PATH }}/scripts/spits-job-manager.py --jobdir {{ SPITS_JOB_PATH }} --pypitsdir {{ PYPITS_PATH }} {{ jobid }} {{ jmargs }} &"

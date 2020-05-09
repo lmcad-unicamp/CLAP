@@ -1,0 +1,8 @@
+---   
+- name: SPITS Playbook
+  hosts: all
+  gather_facts: yes
+  tasks:
+  - include_role:
+      name: spits
+      tasks_from: job-create

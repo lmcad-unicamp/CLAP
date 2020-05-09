@@ -1,0 +1,12 @@
+- name: Get directory for rsync
+  become: no
+  shell: "echo {{ SPITS_JOB_PATH }}"
+  register: spitspath
+
+
+- name: Copy job results from job "{{ jobid }}"
+  become: no
+  synchronize:
+    src: "{{ spitspath.stdout }}/{{ jobid }}/logs/"
+    dest: "{{ outputdir }}/"
+    mode: pull

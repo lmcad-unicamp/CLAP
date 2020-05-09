@@ -1,0 +1,10 @@
+- name: Get directory for rsync
+  become: no
+  shell: "echo {{ SPITS_JOB_PATH }}"
+  register: spitspath
+    
+- name: Copy task manager nodes to job manager host
+  become: no
+  synchronize: 
+    src: "{{ elasticluster.output_dir }}/nodes/"
+    dest: "{{ spitspath.stdout }}/{{ jobid }}/nodes" 

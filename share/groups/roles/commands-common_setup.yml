@@ -4,4 +4,4 @@
   tasks:
   - name: Debug task....
     debug:
-      msg: OLA!
+      msg: Commands-common setup action called! 

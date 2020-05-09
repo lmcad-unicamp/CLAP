@@ -1,0 +1,8 @@
+---
+PYPITS_PATH: '${HOME}/pypits/'
+SPITS_JOB_PATH: '${HOME}/spits-jobs/'
+COPY_BINARY: true
+jmargs: ''
+tmargs: ''
+jmport: '7726'
+jmaddr: '0.0.0.0'

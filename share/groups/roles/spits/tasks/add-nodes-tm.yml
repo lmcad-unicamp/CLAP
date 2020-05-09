@@ -1,0 +1,14 @@
+- name: Get directory for rsync
+  become: no
+  shell: "echo {{ SPITS_JOB_PATH }}"
+  register: spitspath
+
+- name: Parse nodes and replace with the public IP
+  script: "parse_nodes.py {{ spitspath.stdout }}/{{ jobid }}/nodes/ {{ ansible_host }}"
+
+- name: Copy task manager nodes to localhost
+  become: no
+  synchronize: 
+    src: "{{ spitspath.stdout }}/{{ jobid }}/nodes/" 
+    dest: "{{ elasticluster.output_dir }}/nodes/"
+    mode: pull

@@ -1,0 +1,22 @@
+---   
+- name: SPITS TaskManager Start
+  hosts: taskmanager
+  gather_facts: yes
+  tasks:
+  - include_role:
+      name: spits
+      tasks_from: start-tm
+  #- include_role:
+      #name: spits
+      #tasks_from: add-nodes-tm
+
+- name: SPITS JobManager Start
+  hosts: jobmanager
+  gather_facts: yes
+  tasks:
+  - include_role:
+      name: spits
+      tasks_from: start-jm
+  #- include_role:
+      #name: spits
+      #tasks_from: add-nodes-jm

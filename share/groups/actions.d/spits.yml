@@ -1,0 +1,93 @@
+---
+actions:
+  setup:
+    playbook: roles/spits_setup.yml
+    description: Install Pypits at nodes
+    vars:
+    - name: PYPITS_PATH
+      description: "Directory path where the pypits will be installed (default: ${HOME}/pypits/)"
+      optional: yes
+    - name: SPITS_JOB_PATH
+      description: "Directory path where the spits jobs will be created (default: ${HOME}/spits-jobs/)"
+      optional: yes
+  
+  add-nodes:
+    playbook: roles/spits_add-nodes.yml
+    description: Inform to the job manager node, the public address of all task managers
+    vars:
+    - name: jobid
+      description: Unique job identifier (must match the job ID used in the job-create action)
+    - name: PYPITS_PATH
+      description: "Directory path where the pypits will be installed (default: ${HOME}/pypits/)"
+      optional: yes
+    - name: SPITS_JOB_PATH
+      description: "Directory path where the spits jobs will be created (default: ${HOME}/spits-jobs/)"
+      optional: yes
+    
+  job-copy:
+    playbook: roles/spits_job-copy.yml
+    description: Copy the results (job directory) from the job manager to the localhost
+    vars:
+    - name: jobid
+      description: Unique job identifier (must match the job ID used in the job-create action)
+    - name: outputdir
+      description: Path where job will be copied to
+    - name: PYPITS_PATH
+      description: "Directory path where the pypits will be installed (default: ${HOME}/pypits/)"
+      optional: yes
+    - name: SPITS_JOB_PATH
+      description: "Directory path where the spits jobs will be created (default: ${HOME}/spits-jobs/)"
+      optional: yes
+
+  job-create:
+    playbook: roles/spits_job-create.yml
+    description: Create a SPITS job in nodes to run an SPITS application
+    vars:
+    - name: jobid
+      description: Unique job identifier (must match the job ID used in the job-create action)
+    - name: spits_binary
+      description: Absolute path to the SPITS binary (at localhost) that will be copied to nodes
+    - name: spits_args
+      description: Arguments that will be passed to the SPITS binary when executing the SPITS application
+    - name: PYPITS_PATH
+      description: "Directory path where the pypits will be installed (default: ${HOME}/pypits/)"
+      optional: yes
+    - name: SPITS_JOB_PATH
+      description: "Directory path where the spits jobs will be created (default: ${HOME}/spits-jobs/)"
+      optional: yes
+      
+  job-status:
+    playbook: roles/spits_job-status.yml
+    description: Query job manager nodes the status and the metrics of a running SPITS job
+    vars:
+    - name: jobid
+      description: Unique job identifier (must match the job ID used in the job-create action)
+    - name: PYPITS_PATH
+      description: "Directory path where the pypits will be installed (default: ${HOME}/pypits/)"
+      optional: yes
+    - name: SPITS_JOB_PATH
+      description: "Directory path where the spits jobs will be created (default: ${HOME}/spits-jobs/)"
+      optional: yes
+      
+  start:
+    playbook: roles/spits_start.yml
+    description: Start a SPITS job at job manager and task manager nodes
+    vars:
+    - name: jobid
+      description: Unique job identifier (must match the job ID used in the job-create action)
+    - name: jm_args
+      description: Arguments to be passed to the job manager SPITS runtime
+      optional: yes
+    - name: tm_args
+      description: Arguments to be passed to the task manager SPITS runtime
+      optional: yes
+    - name: PYPITS_PATH
+      description: "Directory path where the pypits will be installed (default: ${HOME}/pypits/)"
+      optional: yes
+    - name: SPITS_JOB_PATH
+      description: "Directory path where the spits jobs will be created (default: ${HOME}/spits-jobs/)"
+      optional: yes
+
+hosts:
+- taskmanager
+- jobmanager

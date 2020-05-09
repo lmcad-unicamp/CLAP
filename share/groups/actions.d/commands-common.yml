@@ -1,9 +1,11 @@
 ---
 actions:
-  setup:
-    playbook: roles/commands-common_setup.yml
+  install-packages:
+    playbook: roles/commands-common_install.yml
+    descripton: Install packages in nodes
     vars:
-    - name: value
+    - name: packages
+      description: Packages to install (comma separated)
 
   copy:
     playbook: roles/commands-common_copy.yml
