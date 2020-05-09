@@ -34,6 +34,10 @@ Module Contents
 
 
 
+   .. method:: command_existing_nodes(self, namespace: argparse.Namespace)
+
+
+
    .. method:: command_list_clusters(self, namespace: argparse.Namespace)
 
 
@@ -54,53 +58,39 @@ Module Contents
 
 
 
-   .. method:: commands_show_cluster(self, namespace: argparse.Namespace)
-      :abstractmethod:
-
-
-
    .. method:: commands_list_templates(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_update_cluster(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_group_add(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_group_action(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_connect(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_execute(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_playbook(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_copy(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_fetch(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 

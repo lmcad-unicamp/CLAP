@@ -297,6 +297,7 @@ class ClusterParser(AbstractParser):
     def command_stop_cluster(self, namespace: argparse.Namespace):
         cluster_id = namespace.cluster_id
         cluster_stop(cluster_id)
+        print("Cluster `{}` stopped!".format(cluster_id))
         return 0
     
     def command_alive_cluster_nodes(self, namespace: argparse.Namespace):

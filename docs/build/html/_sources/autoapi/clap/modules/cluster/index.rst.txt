@@ -39,30 +39,6 @@ Package Contents
 .. function:: float_time_to_string(timespec: float)
 
 
-.. function:: cluster_create(cluster_files: List[str], cluster_name: str, extra_args: Dict[str, str] = None, no_setup: bool = False) -> Tuple[ClusterData, List[NodeInfo]]
-
-
-.. function:: cluster_setup(cluster_id: str, nodes_type: Dict[str, List[str]], re_add_to_group: bool = False) -> List[str]
-
-
-.. function:: list_clusters(cluster_id: str = None) -> dict
-
-
-.. function:: add_nodes_to_cluster(cluster_id: str, node_types: Dict[str, int] = None, no_setup: bool = False) -> Tuple[ClusterData, List[NodeInfo]]
-
-
-.. function:: cluster_stop(cluster_id: str, do_not_stop: bool = False) -> Tuple[List[str], List[str]]
-
-
-.. function:: cluster_alive(cluster_id: str) -> Dict[str, bool]
-
-
-.. function:: cluster_pause(cluster_id: str) -> Tuple[List[str], List[str]]
-
-
-.. function:: cluster_resume(cluster_id: str) -> List[str]
-
-
 .. py:class:: ClusterDefaults
 
    .. attribute:: CLUSTER_REPOSITORY_DIR
@@ -107,6 +83,10 @@ Package Contents
 
 
 
+   .. method:: command_existing_nodes(self, namespace: argparse.Namespace)
+
+
+
    .. method:: command_list_clusters(self, namespace: argparse.Namespace)
 
 
@@ -127,55 +107,293 @@ Package Contents
 
 
 
-   .. method:: commands_show_cluster(self, namespace: argparse.Namespace)
-      :abstractmethod:
-
-
-
    .. method:: commands_list_templates(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_update_cluster(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_group_add(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_group_action(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_connect(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_execute(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_playbook(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_copy(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
    .. method:: commands_fetch(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
+
+
+.. py:class:: PlatformFactory
+
+   .. attribute:: __multi_instance_api__
+      
+
+      
+
+   .. attribute:: __module_iface__
+      
+
+      
+
+   .. method:: get_module_interface()
+      :staticmethod:
+
+
+      Get the default ModuleInterface used to pick clap modules
+
+      :return: The modules interface
+      :rtype: ModuleInterface
+
+
+   .. method:: get_instance_api(platform_db: str = Defaults.PLATFORM_REPOSITORY, repository_type: str = Defaults.REPOSITORY_TYPE, default_driver: str = Defaults.DRIVER_ID)
+      :staticmethod:
+
+
+      Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers
+
+      :return: The MultiInstanceAPI object to manipulate cluster, nodes and modules
+      :rtype: MultiInstanceAPI
+
+
+
+.. py:class:: NodeInfo(**kwargs)
+
+   Bases: :class:`clap.common.repository.AbstractEntry`
+
+   This class holds information about a node that is stored in the repository and used by several interfaces
+   Each node is unique and is composed by the following elements:
+       * node_id: The unique identification of the node, used to perform operations across modules and instance interfaces
+       * node_name: The name of the node used by the driver object that controls it
+       * cluster_id: ID of the cluster that this node is attached to
+       * flavor: Instance flavor (e.g., t2.micro in aws)
+       * status: Last known status of the node (see PlatformCodes)
+       * ip: IP address used to connect to this node (address used to perform SSH)
+       * driver_id: ID of the driver that controls this node
+       * driver_version: Version of the driver used by this node
+       * keypair: The name of the keypair used to connect to the machines created in the node cluster
+       * key: The private key file used to perform SSH and connect to machines
+       * tags: Additional user tags for node identification
+
+   .. method:: __repr__(self)
+
+
+
+
+.. py:class:: Codes
+
+   Status codes for nodes
+       
+
+   .. attribute:: NODE_STATUS_INIT
+      :annotation: = started
+
+      
+
+   .. attribute:: NODE_STATUS_UNREACHABLE
+      :annotation: = unreachable
+
+      
+
+   .. attribute:: NODE_STATUS_REACHABLE
+      :annotation: = reachable
+
+      
+
+   .. attribute:: NODE_STATUS_PAUSED
+      :annotation: = paused
+
+      
+
+   .. attribute:: NODE_STATUS_STOPPED
+      :annotation: = stopped
+
+      
+
+
+.. function:: yaml_load(filename: str) -> dict
+
+
+.. function:: tmpdir(suffix=None, prefix='clap.', dir=None)
+
+
+.. py:class:: ClusterData(**kwargs)
+
+   Bases: :class:`clap.common.repository.AbstractEntry`
+
+
+.. py:class:: ClusterRepositoryOperations(repository_name: str = 'cluster.json', repository_type: str = Defaults.REPOSITORY_TYPE, cluster_prefix='cluster')
+
+   .. method:: exists_platform_db(self)
+
+
+
+   .. method:: create_repository(self, exists: str = 'pass')
+
+
+
+   .. method:: new_cluster(self, cluster_name, cluster_config, state: str = 'running')
+
+
+
+   .. method:: get_cluster(self, cluster_id: str)
+
+
+
+   .. method:: get_all_clusters(self)
+
+
+
+   .. method:: update_cluster(self, cluster_data: ClusterData)
+
+
+
+   .. method:: remove_cluster(self, cluster_id)
+
+
+
+
+.. py:exception:: ConfigurationError
+
+   Bases: :class:`Exception`
+
+
+.. py:class:: ClusterState
+
+   .. attribute:: CLUSTER_RUNNING
+      :annotation: = running
+
+      
+
+   .. attribute:: CLUSTER_PAUSED
+      :annotation: = paused
+
+      
+
+
+.. function:: __get_setups__(config_dict: dict) -> dict
+
+
+.. function:: __get_clusters__(config_dict: dict) -> dict
+
+
+.. function:: __validate_cluster_setups__(cluster_name: str, cluster_dict: dict, setups: dict) -> dict
+
+
+.. function:: __perform_replacements__(config, extra_args: Dict[str, str])
+
+
+.. function:: __validate_nodes__(cluster_name: str, cluster_data: dict, valid_instances: List[str]) -> dict
+
+
+.. function:: __validate_groups_and_actions__(cluster_name: str, cluster_data: dict, valid_groups: Dict[str, List[str]]) -> dict
+
+
+.. function:: __add_nodes_to_cluster__(cluster: ClusterData, node_types: Dict[str, Tuple[int, int]]) -> Dict[str, List[str]]
+
+
+.. function:: __add_to_group__(setup_name: str, group: dict, node_ids: List[str], tags: Dict[str, str] = None, re_add_to_group: bool = False) -> List[str]
+
+
+.. function:: __execute_action__(setup_name: str, action: dict, node_ids: List[str] = None, tags: Dict[str, str] = None)
+
+
+.. function:: __run_setup__(cluster_name: str, setup_name: str, setup_dict: dict, node_ids: List[str] = None, tags: Dict[str, str] = None, re_add_to_group: bool = False)
+
+
+.. function:: __run_setup_list__(cluster_name: str, setup_list: List[Dict[str, Any]], node_ids: List[str], re_add_to_group: bool)
+
+
+.. function:: __get_nodes_from_cluster__(cluster_id: str, node_ids: List[str]) -> Tuple[List[str], List[str]]
+
+
+.. function:: get_cluster_config(cluster_files: List[str], cluster_name: str, extra_args: Dict[str, str] = None)
+
+
+.. function:: cluster_create(cluster_files: List[str], cluster_name: str, extra_args: Dict[str, str] = None, no_setup: bool = False) -> Tuple[ClusterData, List[NodeInfo], bool]
+
+
+.. function:: add_nodes_to_cluster(cluster_id: str, node_types: Dict[str, int] = None, no_setup: bool = False, re_add_to_group: bool = False, at: str = 'before_all') -> Tuple[ClusterData, List[NodeInfo]]
+
+
+.. function:: add_existing_nodes_to_cluster(cluster_id: str, node_types: Dict[str, List[str]], no_setup: bool = False, re_add_to_group: bool = False, at: str = 'before_all')
+
+
+.. function:: cluster_setup(cluster_id: str, nodes_type: Dict[str, List[str]] = None, re_add_to_group: bool = False, at: str = 'before_all')
+
+
+.. function:: cluster_setup_in_specific_nodes(cluster_id: str, node_ids: List[str] = None, re_add_to_group: bool = False, at: str = 'before_all')
+
+
+.. function:: update_cluster_config(cluster_files: List[str], cluster_id: str, extra_args: Dict[str, str] = None) -> ClusterData
+
+
+.. function:: cluster_stop(cluster_id: str, do_not_stop: bool = False) -> Tuple[List[str], List[str]]
+
+
+.. function:: cluster_alive(cluster_id: str) -> Dict[str, bool]
+
+
+.. function:: cluster_pause(cluster_id: str) -> Tuple[List[str], List[str]]
+
+
+.. function:: cluster_resume(cluster_id: str, setup: bool = False, at='before_all') -> List[str]
+
+
+.. function:: list_clusters(cluster_id: str = None) -> dict
+
+
+.. function:: list_templates(cluster_files: List[str]) -> Tuple[dict, dict]
+
+
+.. function:: cluster_group_add(cluster_id: str, group_name: str, node_ids: List[str] = None, re_add_to_group: bool = False, extra_args: Dict[str, str] = None) -> List[str]
+
+
+.. function:: perform_group_action(cluster_id: str, group_name: str, action_name: str, node_ids: List[str] = None, extra_args: Dict[str, str] = None) -> List[str]
+
+
+.. function:: execute_playbook(cluster_id: str, playbook_path: str, node_ids: List[str] = None, extra_args: Dict[str, str] = None) -> Dict[str, bool]
+
+
+.. function:: execute_command(cluster_id: str, command: str, node_ids: List[str] = None) -> Dict[str, bool]
+
+
+.. function:: cluster_copy_files(cluster_id: str, copy_from: str, copy_to: str, node_ids: List[str] = None)
+
+
+.. function:: cluster_fetch_files(cluster_id: str, copy_from: str, copy_to: str, node_ids: List[str] = None)
+
+
+.. function:: cluster_connect(cluster_id: str, node_id: str = None)
+
+
+.. function:: run_playbook_in_nodes(playbook_path: str, node_ids: List[str], extra_args: Dict[str, str]) -> Dict[str, bool]
+
+
+.. function:: run_command(node_ids: List[str], command_string: str)
+
+
+.. function:: connect_to_node(node_id: str)
 
 
 .. py:class:: PlatformFactory
@@ -273,6 +491,12 @@ Package Contents
 .. function:: yaml_load(filename: str) -> dict
 
 
+.. function:: tmpdir(suffix=None, prefix='clap.', dir=None)
+
+
+.. function:: path_extend(*args) -> str
+
+
 .. py:class:: ClusterData(**kwargs)
 
    Bases: :class:`clap.common.repository.AbstractEntry`
@@ -363,28 +587,43 @@ Package Contents
 .. function:: __validate_groups_and_actions__(cluster_name: str, cluster_data: dict, valid_groups: Dict[str, List[str]]) -> dict
 
 
-.. function:: get_cluster_config(cluster_files: List[str], cluster_name: str, extra_args: Dict[str, str] = None)
-
-
 .. function:: __add_nodes_to_cluster__(cluster: ClusterData, node_types: Dict[str, Tuple[int, int]]) -> Dict[str, List[str]]
 
 
-.. function:: cluster_create(cluster_files: List[str], cluster_name: str, extra_args: Dict[str, str] = None, no_setup: bool = False) -> Tuple[ClusterData, List[NodeInfo]]
+.. function:: __add_to_group__(setup_name: str, group: dict, node_ids: List[str], tags: Dict[str, str] = None, re_add_to_group: bool = False) -> List[str]
 
 
-.. function:: add_nodes_to_cluster(cluster_id: str, node_types: Dict[str, int] = None, no_setup: bool = False) -> Tuple[ClusterData, List[NodeInfo]]
+.. function:: __execute_action__(setup_name: str, action: dict, node_ids: List[str] = None, tags: Dict[str, str] = None)
 
 
-.. function:: cluster_setup(cluster_id: str, nodes_type: Dict[str, List[str]], re_add_to_group: bool = False) -> List[str]
+.. function:: __run_setup__(cluster_name: str, setup_name: str, setup_dict: dict, node_ids: List[str] = None, tags: Dict[str, str] = None, re_add_to_group: bool = False)
 
 
-.. function:: update_cluster_config(cluster_files: List[str], cluster_id: str, extra_args: Dict[str, str] = None) -> ClusterData
-
-
-.. function:: add_existing_nodes_to_cluster(cluster_id: str, node_types: Dict[str, List[str]])
+.. function:: __run_setup_list__(cluster_name: str, setup_list: List[Dict[str, Any]], node_ids: List[str], re_add_to_group: bool)
 
 
 .. function:: __get_nodes_from_cluster__(cluster_id: str, node_ids: List[str]) -> Tuple[List[str], List[str]]
+
+
+.. function:: get_cluster_config(cluster_files: List[str], cluster_name: str, extra_args: Dict[str, str] = None)
+
+
+.. function:: cluster_create(cluster_files: List[str], cluster_name: str, extra_args: Dict[str, str] = None, no_setup: bool = False) -> Tuple[ClusterData, List[NodeInfo], bool]
+
+
+.. function:: add_nodes_to_cluster(cluster_id: str, node_types: Dict[str, int] = None, no_setup: bool = False, re_add_to_group: bool = False, at: str = 'before_all') -> Tuple[ClusterData, List[NodeInfo]]
+
+
+.. function:: add_existing_nodes_to_cluster(cluster_id: str, node_types: Dict[str, List[str]], no_setup: bool = False, re_add_to_group: bool = False, at: str = 'before_all')
+
+
+.. function:: cluster_setup(cluster_id: str, nodes_type: Dict[str, List[str]] = None, re_add_to_group: bool = False, at: str = 'before_all')
+
+
+.. function:: cluster_setup_in_specific_nodes(cluster_id: str, node_ids: List[str] = None, re_add_to_group: bool = False, at: str = 'before_all')
+
+
+.. function:: update_cluster_config(cluster_files: List[str], cluster_id: str, extra_args: Dict[str, str] = None) -> ClusterData
 
 
 .. function:: cluster_stop(cluster_id: str, do_not_stop: bool = False) -> Tuple[List[str], List[str]]
@@ -396,19 +635,43 @@ Package Contents
 .. function:: cluster_pause(cluster_id: str) -> Tuple[List[str], List[str]]
 
 
-.. function:: cluster_resume(cluster_id: str) -> List[str]
+.. function:: cluster_resume(cluster_id: str, setup: bool = False, at='before_all') -> List[str]
 
 
 .. function:: list_clusters(cluster_id: str = None) -> dict
 
 
-.. function:: list_templates()
+.. function:: list_templates(cluster_files: List[str]) -> Tuple[dict, dict]
+
+
+.. function:: cluster_group_add(cluster_id: str, group_name: str, node_ids: List[str] = None, re_add_to_group: bool = False, extra_args: Dict[str, str] = None) -> List[str]
+
+
+.. function:: perform_group_action(cluster_id: str, group_name: str, action_name: str, node_ids: List[str] = None, extra_args: Dict[str, str] = None) -> List[str]
+
+
+.. function:: execute_playbook(cluster_id: str, playbook_path: str, node_ids: List[str] = None, extra_args: Dict[str, str] = None) -> Dict[str, bool]
+
+
+.. function:: execute_command(cluster_id: str, command: str, node_ids: List[str] = None) -> Dict[str, bool]
+
+
+.. function:: cluster_copy_files(cluster_id: str, copy_from: str, copy_to: str, node_ids: List[str] = None)
+
+
+.. function:: cluster_fetch_files(cluster_id: str, copy_from: str, copy_to: str, node_ids: List[str] = None)
+
+
+.. function:: cluster_connect(cluster_id: str, node_id: str = None)
 
 
 .. function:: run_playbook_in_nodes(playbook_path: str, node_ids: List[str], extra_args: Dict[str, str]) -> Dict[str, bool]
 
 
 .. function:: run_command(node_ids: List[str], command_string: str)
+
+
+.. function:: connect_to_node(node_id: str)
 
 
 .. py:class:: Defaults
@@ -458,12 +721,12 @@ Package Contents
 
       
 
-   .. attribute:: execution_playbook
-      
-
-      
-
    .. attribute:: groups_path
+      
+
+      
+
+   .. attribute:: actions_path
       
 
       

@@ -60,7 +60,7 @@ Module Contents
 
 
 
-.. py:class:: RepositoryOperations(platform_repository: str, repository_type: str)
+.. py:class:: RepositoryOperations(platform_repository: str, repository_type: str, node_prefix='node')
 
    .. method:: _get_platform_repository(self)
 
@@ -93,71 +93,23 @@ Module Contents
       :rtype: AbstractRepository
 
 
-   .. method:: get_and_increment_node_index(self)
+   .. method:: new_cluster(self, cluster_id: str, provider_id: str, login_id: str, driver_id: str, extra: dict = None)
 
 
 
-   .. method:: get_and_increment_cluster_index(self)
+   .. method:: new_node(self, cluster_id: str, instance_type: str, status: str, driver_id: str, ip: str = None, instance_id: str = None, tags: dict = None, groups: dict = None, extra: dict = None)
 
 
 
-   .. method:: write_cluster_info(self, cluster: ClusterInfo, create: bool = False)
-
-
-      Helper function to write Cluster information on the correct table in the repository
-
-      :param cluster: Cluster information to be written
-      :type cluster: ClusterInfo
-      :param create: If true, create a new element, else update the one with same id
-      :type create: str
-      :return: None
-
-
-   .. method:: _read_clusters_info(self, **where)
-
-
-      Helper function to read Cluster information from the correct table in the repository
-
-      :param where: Dictionary of criterion to be matched when retrieving elements (e.g., {'cluster.id' == 'xxx'})
-      :return: List of cluster matching the criterion passed
-      :rtype: List[ClusterInfo]
-
-
-   .. method:: write_node_info(self, node: NodeInfo, create: bool = False)
-
-
-      Helper function to write Node information on the correct table in the repository
-
-      :param node: node information to be written
-      :type node: NodeInfo
-      :param create: If true, create a new element, else update the one with same id
-      :type create: str
-      :return: None
-
-
-   .. method:: _read_nodes_info(self, **where)
-
-
-      Helper function to read Nodes information from the correct table in the repository
-
-      :param where: Dictionary of criterion to be matched when retrieving elements (e.g., {'node.id' == 'xxx'})
-      :return: List of nodes matching the criterion passed
-      :rtype: List[NodeInfo]
-
-
-   .. method:: _delete_clusters_info(self, **where)
+   .. method:: update_cluster(self, cluster: ClusterInfo)
 
 
 
-   .. method:: _delete_nodes_info(self, **where)
+   .. method:: update_node(self, node: NodeInfo)
 
 
 
-   .. method:: get_cluster(self, cluster_id: str)
-
-
-
-   .. method:: get_clusters(self, cluster_ids: List[str])
+   .. method:: get_clusters(self, cluster_ids: Union[str, List[str]])
 
 
       Given a list with cluster ids, it returns all the Cluster Information that matches the Ids in the repository
@@ -177,15 +129,7 @@ Module Contents
       :rtype: List[ClusterInfo]
 
 
-   .. method:: remove_cluster(self, cluster_id: str)
-
-
-
-   .. method:: get_node(self, node_id)
-
-
-
-   .. method:: get_nodes(self, node_ids: List[str])
+   .. method:: get_nodes(self, node_ids: Union[str, List[str]])
 
 
       Given a list with node ids, it returns all the Node Information that matches the ids in the repository
@@ -214,6 +158,10 @@ Module Contents
       :type cluster_id: str
       :return: All the nodes that matches the cluster ids passed
       :rtype: List[NodeInfo]
+
+
+   .. method:: remove_cluster(self, cluster_id: str)
+
 
 
    .. method:: remove_node(self, node_id: str)

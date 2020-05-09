@@ -73,10 +73,9 @@ By default, CLAP holds all of it information inside the ``~/.clap`` directory (w
         │   ├── logins.yaml
         │   └── providers.yaml
         ├── groups/
-        │   ├── groups/
+        │   ├── actions.d/
         │   ├── group_vars/
         │   │   └── all.yml
-        │   ├── main.yml
         │   └── roles/
         ├── modules/
         ├── private/

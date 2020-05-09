@@ -267,41 +267,92 @@ In this way, the group module consists of three steps:
 CLAP's groups and actions
 ++++++++++++++++++++++++++++++
 
-Group's actions are `Ansible playbooks <https://www.ansible.com/>`_ that are executed when an action is invoked (using ``group action`` command, described below). By default CLAP's groups are stored in the ``~/.clap/groups/`` directory and each group consists in at minimum of two files: (1) a python file describing the group and its actions and; (2) the Ansible Playbook called when each action is invoked. 
-By default, when each action is invoked a variable called ``action`` is passed to the Ansible Playbook with the name of the invoked action. 
+Group's actions are `Ansible playbooks <https://www.ansible.com/>`_ that are executed when an action is invoked (using ``group action`` command, described below). By default CLAP's groups are stored in the ``~/.clap/groups/`` directory and each group consists in at minimum of two files: (1) a YAML description file describing the actions that can be performed (and informing the playbook that must be called) and, optionally the hosts (subset of group's nodes to execute the playbook) ; (2) the Ansible Playbook called when each action is invoked. 
 You can see some groups shared with CLAP and their requirements at :ref:`shared groups` section.
 
 
 Group description file
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The group's description files are python files placed at ``~/.clap/groups/groups`` directory. The name of the python file defines the group's name.
-Each group's python file defines three variables: 
+The group's description files are python files placed at ``~/.clap/groups/actions.d`` directory. The name of the YAML file defines the group's name.
+Each group description file defines the key ``actions`` and (optionally) the ``hosts`` key. Inside ``actions`` key, each dictionary defines an CLAP's action where the key name is the action name and the values informs characteristic of that action, such as which Ansible Playbook to run, an optional description and the variables needed.
 
-- ``playbook``: A string, with the name of the path of playbook to be executed (the path can be relative to ``~/.clap/groups/`` directory)
-- ``actions``: A list of string, defining each group's action name.
-- ``hosts``: Optionally, a list of strings defining the hosts used in Ansible Playbooks can be defined. Hosts is used for Ansible to segment the execution of the playbook to specific nodes. If no hosts is defined, the Ansible Playbook must use ``hosts: all``, to perform the operation at all nodes belonging to the group.
+An example group description file is shown below, for a group named ``commands-common`` (at ``~/.clap/groups/actions.d/commands-common.yml``).
 
-An example of a group called ``example-1``, placed at ``~/.clap/groups/groups/example-1.py`` is shown below. The ``~/clap/groups/roles/example1.yml`` will be executed and the group has three actions: ``setup``, ``start`` and ``terminate``.
+.. code-block:: yaml
+
+    ---
+    actions:                    # Defines the actions of this group
+        setup:                  # Action called setup
+            playbook: roles/commands-common_setup.yml   # Playbook to be executed when this group action is invoked
+
+        copy:                   # Action called copy
+            playbook: roles/commands-common_copy.yml    # Playbook to be executed when this group action is invoked
+            description: Copy files from localhost to remote hosts # Optional action's description
+            vars:                                       # Optional variables required 
+            - name: src                                 # src variable
+              description: Source files/directory to be copied # optional variable's description
+              optional: no                              # Informs if this variable is optional
+            - name: dest                                # dest variable
+              description: Destination directory where files will be placed # optional variable's description
+        
+        fetch:
+            playbook: roles/commands-common_fetch.yml
+            description: Fetch files from remote hosts to localhosts
+            vars:
+            - name: src
+              description: Source files/directory to be fetched
+            - name: dest
+              description: Destination directory where files will be placed
+        
+    hosts:                      # (optional) List of hosts that are used in this group (and in the playbooks)
+    - master
+    - slave
+
+Fot group's description files, ``actions`` dictionary is required, and ``hosts`` optional. The keys inside ``actions`` dictionary are the action names and the possible values for each action are described in table below.
+
+..  list-table:: Valid values for actions
+    :header-rows: 1
+
+    *   - **Name**
+        - **Type**
+        - **Description**
+
+    *   - ``playbook``
+        - path
+        - Playbook to be executed when this action is invoked. The path is relative to ``~/.clap/groups/`` directory.
+
+    *   - ``description`` (optional)
+        - string
+        - Action's descriptive information
+
+    *   - ``vars`` (optional)
+        - List of variable dictionaries
+        - List informing variables needed for this action
+
+And optionally, the actions can define their variables to use. The possible values are listed table below
+
+..  list-table:: Valid action's values
+    :header-rows: 1
+
+    *   - **Name**
+        - **Type**
+        - **Description**
+
+    *   - ``name``
+        - string
+        - Name of the variable
+
+    *   - ``description`` (optional)
+        - string
+        - Variable's descriptive information
+
+    *   - ``optional`` (optional)
+        - boolean
+        - Inform if variable is optional (default is ``no``)
 
 
-.. code-block:: python
-
-    # example-1 group
-    playbook = 'roles/example1.yml'
-    actions = ['setup', 'start', 'terminate']
-    
-    # Optionally, playbook can specify hosts e.g. master and slaves
-    # hosts = ['master', 'slaves']
-
-.. note::
-
-    - The ``setup`` action is **always** called when a node is added to a group.
-    - The Ansible Playbook may perform the desired action by inspecting the ``action`` variable.
-
-.. warning::
-
-    The ``setup`` action is **always** required. So a minimal group's description file must contains the variable: ``actions = ['setup']``.
+Finally the hosts specify the ``hosts`` used by group actions. It's optional and when specified Ansible playbooks can segment their execution using the ``hosts`` variable at each play. If no hosts are specified use ``hosts: all``  to perform the action over all nodes that belong to the group.
 
 
 Command ``group list``
@@ -311,10 +362,34 @@ The ``clapp group list`` command can be used to list all available groups and th
 
 .. code-block:: none
 
-    * spits (roles/spits.yml)
-        actions: add-nodes, job-copy, job-create, job-status, setup, start
-        hosts: jobmanager, taskmanager
-    Listed 1 groups
+    * GROUP: commands-common
+        hosts: none
+        
+        > action: setup
+            playbook: roles/commands-common_setup.yml
+        
+        > action: copy
+            playbook: roles/commands-common_copy.yml
+            variables:
+            - name: src
+              description: Source files/directory to be copied
+              optional: False
+            - name: dest
+              description: Destination directory where files will be placed
+              optional: False
+        
+        > action: fetch
+            description: Fetch files from remote hosts to localhosts
+            playbook: roles/commands-common_fetch.yml
+            variables:
+            - name: src
+              description: Source files/directory to be fetched
+              optional: False
+            - name: dest
+              description: Destination directory where files will be placed
+              optional: False
+
+    Listed 1 group(s)
 
 
 Command ``group add``

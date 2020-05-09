@@ -121,7 +121,7 @@ class GroupInterface:
                     if invalid_hosts:
                         raise Exception("Hosts `{}` are invalid".format(', '.join(sorted(invalid_hosts))))
                     
-                    __new_group['hosts'] = dict(group_values['hosts'])
+                    __new_group['hosts'] = list(group_values['hosts'])
 
                 if 'actions' not in group_values:
                     raise Exception("All groups must have `actions` values") 
@@ -375,8 +375,10 @@ class MultiInstanceAPI:
         tagged_nodes = []
         for node in self.__repository_operations.get_all_nodes():
             add_node = True
+            if not tags:
+                continue
             for tag, val in tags.items():
-                if tag not in node.tags or val not in node.tags[tag]:
+                if not node.tags or tag not in node.tags or val not in node.tags[tag]:
                     add_node = False
                     break
             if add_node:
@@ -592,7 +594,8 @@ class MultiInstanceAPI:
         for _, host_list in hosts_map.items():
             nodes = self.get_nodes(host_list)
             for node in nodes:
-                extra_args.update(node.groups[group_name]['extra'])
+                if group_name in node.groups:
+                    extra_args.update(node.groups[group_name]['extra'])
 
         extra_args.update(group_args)
         #log.info("Executing action `{}` of group `{}` in nodes `{}`".format(action, group_name, ', '.join(sorted(node_ids))))

@@ -38,7 +38,7 @@ Copy a file from the localhost to the remote nodes
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
 
-..  list-table:: code-block:: none ``commands-commands copy`` action variables
+..  list-table::  ``commands-commands copy`` action variables
     :header-rows: 1
 
     *   - **Name**
@@ -82,7 +82,7 @@ Fetch files from the remote nodes to the localhost
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
 
-..  list-table:: code-block:: none ``commands-common fetch`` action variables
+..  list-table::  ``commands-common fetch`` action variables
     :header-rows: 1
 
     *   - **Name**
@@ -137,7 +137,7 @@ Execute a shell command in the remote hosts
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
 
-..  list-table:: code-block:: none ``commands-common run-command`` action variables
+..  list-table::  ``commands-common run-command`` action variables
     :header-rows: 1
 
     *   - **Name**
@@ -171,7 +171,7 @@ Transfer a script from localhost to remote nodes and execute it in the remote ho
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
 
-..  list-table:: code-block:: none ``commands-common run-script`` action variables
+..  list-table::  ``commands-common run-script`` action variables
     :header-rows: 1
 
     *   - **Name**
@@ -262,7 +262,7 @@ Install nfs client and mount EC2 file system. This action is executed when nodes
 
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
-..  list-table:: code-block:: none ``ec2-efs setup`` action variables
+..  list-table::  ``ec2-efs setup`` action variables
     :header-rows: 1
 
     *   - **Name**
@@ -306,7 +306,7 @@ Unmount the EC2 File System
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
 
-..  list-table:: code-block:: none ``ec2-efs umount`` action variables
+..  list-table::  ``ec2-efs umount`` action variables
     :header-rows: 1
 
     *   - **Name**
@@ -379,7 +379,7 @@ This action informs to the job manager node, the public address of all task mana
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
 
-..  list-table:: code-block:: none ``spits add-nodes`` action variables
+..  list-table::  ``spits add-nodes`` action variables
     :header-rows: 1
 
     *   - **Name**
@@ -421,7 +421,7 @@ Copy the results (job directory) from the job manager to the localhost
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
 
-..  list-table:: code-block:: none ``spits job-copy`` action variables
+..  list-table::  ``spits job-copy`` action variables
     :header-rows: 1
 
     *   - **Name**
@@ -434,7 +434,7 @@ Required Variables
 
     *   - ``outputdir``
         - path
-        - Path where 
+        - Path where job will be copied to
 
     *   - ``PYPITS_PATH`` (OPTIONAL)
         - path
@@ -463,7 +463,7 @@ Create a SPITS job in nodes to run an SPITS application. If you are using a shar
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
 
-..  list-table:: code-block:: none ``spits job-create`` action variables
+..  list-table::  ``spits job-create`` action variables
     :header-rows: 1
 
     *   - **Name**
@@ -507,7 +507,7 @@ Query job manager nodes the status and the metrics of a running SPITS job
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
 
-..  list-table:: code-block:: none ``spits job-status`` action variables
+..  list-table::  ``spits job-status`` action variables
     :header-rows: 1
 
     *   - **Name**
@@ -546,7 +546,7 @@ Required Variables
 
 This action does not require any additional variable to be passed. Optional variables can be passed.
 
-..  list-table:: code-block:: none ``spits setup`` action variables
+..  list-table::  ``spits setup`` action variables
     :header-rows: 1
 
     *   - **Name**
@@ -581,7 +581,7 @@ Start a SPITS job at job manager and task manager nodes
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
 
-..  list-table:: code-block:: none ``spits start`` action variables
+..  list-table::  ``spits start`` action variables
     :header-rows: 1
 
     *   - **Name**

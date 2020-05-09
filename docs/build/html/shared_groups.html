@@ -33,6 +33,7 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Modules shared with CLAP" href="shared_modules.html" />
@@ -175,9 +176,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="shared_modules.html">Modules shared with CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
 
             
@@ -269,7 +268,7 @@ Consider add nodes to this group to quickly perform common commands in several n
 <div class="section" id="required-variables">
 <h4>Required Variables<a class="headerlink" href="#required-variables" title="Permalink to this headline">¶</a></h4>
 <table class="docutils align-default" id="id29">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">commands-commands</span> <span class="pre">copy</span></code> action variables</span><a class="headerlink" href="#id29" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">commands-commands</span> <span class="pre">copy</span></code> action variables</span><a class="headerlink" href="#id29" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -316,7 +315,7 @@ clapp group action commands-common copy --tag &#39;x=y&#39; --extra src=&quot;/h
 <div class="section" id="id1">
 <h4>Required Variables<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
 <table class="docutils align-default" id="id30">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">fetch</span></code> action variables</span><a class="headerlink" href="#id30" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">fetch</span></code> action variables</span><a class="headerlink" href="#id30" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -371,7 +370,7 @@ clapp group action commands-common reboot --tag &#39;x=y&#39;
 <div class="section" id="id5">
 <h4>Required Variables<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <table class="docutils align-default" id="id31">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">run-command</span></code> action variables</span><a class="headerlink" href="#id31" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">run-command</span></code> action variables</span><a class="headerlink" href="#id31" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -410,7 +409,7 @@ clapp group action commands-common run-command --extra cmd=&quot;ls&quot; workdi
 <div class="section" id="id7">
 <h4>Required Variables<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
 <table class="docutils align-default" id="id32">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">run-script</span></code> action variables</span><a class="headerlink" href="#id32" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">commands-common</span> <span class="pre">run-script</span></code> action variables</span><a class="headerlink" href="#id32" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -483,7 +482,7 @@ clapp group action commands-common run-script --extra src=&quot;/home/ubuntu/ech
 <div class="section" id="id12">
 <h4>Required Variables<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
 <table class="docutils align-default" id="id33">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">ec2-efs</span> <span class="pre">setup</span></code> action variables</span><a class="headerlink" href="#id33" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">ec2-efs</span> <span class="pre">setup</span></code> action variables</span><a class="headerlink" href="#id33" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -533,7 +532,7 @@ clapp group action commands-common run-script --extra src=&quot;/home/ubuntu/ech
 <div class="section" id="id14">
 <h4>Required Variables<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
 <table class="docutils align-default" id="id34">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">ec2-efs</span> <span class="pre">umount</span></code> action variables</span><a class="headerlink" href="#id34" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">ec2-efs</span> <span class="pre">umount</span></code> action variables</span><a class="headerlink" href="#id34" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -608,7 +607,7 @@ clapp group action commands-common run-script --extra src=&quot;/home/ubuntu/ech
 <div class="section" id="id17">
 <h4>Required Variables<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
 <table class="docutils align-default" id="id35">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">add-nodes</span></code> action variables</span><a class="headerlink" href="#id35" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">add-nodes</span></code> action variables</span><a class="headerlink" href="#id35" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -656,7 +655,7 @@ clapp group action commands-common run-script --extra src=&quot;/home/ubuntu/ech
 <div class="section" id="id19">
 <h4>Required Variables<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h4>
 <table class="docutils align-default" id="id36">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-copy</span></code> action variables</span><a class="headerlink" href="#id36" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-copy</span></code> action variables</span><a class="headerlink" href="#id36" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -702,7 +701,7 @@ clapp group action commands-common run-script --extra src=&quot;/home/ubuntu/ech
 <div class="section" id="id21">
 <h4>Required Variables<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h4>
 <table class="docutils align-default" id="id37">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-create</span></code> action variables</span><a class="headerlink" href="#id37" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-create</span></code> action variables</span><a class="headerlink" href="#id37" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -752,7 +751,7 @@ clapp group action commands-common run-script --extra src=&quot;/home/ubuntu/ech
 <div class="section" id="id23">
 <h4>Required Variables<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h4>
 <table class="docutils align-default" id="id38">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-status</span></code> action variables</span><a class="headerlink" href="#id38" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">job-status</span></code> action variables</span><a class="headerlink" href="#id38" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -795,7 +794,7 @@ clapp group action commands-common run-script --extra src=&quot;/home/ubuntu/ech
 <h4>Required Variables<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h4>
 <p>This action does not require any additional variable to be passed. Optional variables can be passed.</p>
 <table class="docutils align-default" id="id39">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">setup</span></code> action variables</span><a class="headerlink" href="#id39" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">setup</span></code> action variables</span><a class="headerlink" href="#id39" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -834,7 +833,7 @@ clapp group add spits/taskmanager node-1 node-2
 <div class="section" id="id27">
 <h4>Required Variables<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h4>
 <table class="docutils align-default" id="id40">
-<caption><span class="caption-text">code-block:: none <code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">start</span></code> action variables</span><a class="headerlink" href="#id40" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">spits</span> <span class="pre">start</span></code> action variables</span><a class="headerlink" href="#id40" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />

@@ -33,6 +33,7 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Groups shared with CLAP" href="shared_groups.html" />
@@ -122,8 +123,7 @@
 <li class="toctree-l1"><a class="reference internal" href="shared_groups.html">Groups shared with CLAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="shared_modules.html">Modules shared with CLAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
 
             
@@ -378,47 +378,134 @@ Thus, each group defines their set of specific actions that can be performed to 
 </ol>
 <div class="section" id="clap-s-groups-and-actions">
 <h3>CLAP’s groups and actions<a class="headerlink" href="#clap-s-groups-and-actions" title="Permalink to this headline">¶</a></h3>
-<p>Group’s actions are <a class="reference external" href="https://www.ansible.com/">Ansible playbooks</a> that are executed when an action is invoked (using <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">action</span></code> command, described below). By default CLAP’s groups are stored in the <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/</span></code> directory and each group consists in at minimum of two files: (1) a python file describing the group and its actions and; (2) the Ansible Playbook called when each action is invoked.
-By default, when each action is invoked a variable called <code class="docutils literal notranslate"><span class="pre">action</span></code> is passed to the Ansible Playbook with the name of the invoked action.
+<p>Group’s actions are <a class="reference external" href="https://www.ansible.com/">Ansible playbooks</a> that are executed when an action is invoked (using <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">action</span></code> command, described below). By default CLAP’s groups are stored in the <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/</span></code> directory and each group consists in at minimum of two files: (1) a YAML description file describing the actions that can be performed (and informing the playbook that must be called) and, optionally the hosts (subset of group’s nodes to execute the playbook) ; (2) the Ansible Playbook called when each action is invoked.
 You can see some groups shared with CLAP and their requirements at <a class="reference internal" href="shared_groups.html#shared-groups"><span class="std std-ref">Groups shared with CLAP</span></a> section.</p>
 <div class="section" id="group-description-file">
 <h4>Group description file<a class="headerlink" href="#group-description-file" title="Permalink to this headline">¶</a></h4>
-<p>The group’s description files are python files placed at <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/groups</span></code> directory. The name of the python file defines the group’s name.
-Each group’s python file defines three variables:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">playbook</span></code>: A string, with the name of the path of playbook to be executed (the path can be relative to <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/</span></code> directory)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">actions</span></code>: A list of string, defining each group’s action name.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">hosts</span></code>: Optionally, a list of strings defining the hosts used in Ansible Playbooks can be defined. Hosts is used for Ansible to segment the execution of the playbook to specific nodes. If no hosts is defined, the Ansible Playbook must use <code class="docutils literal notranslate"><span class="pre">hosts:</span> <span class="pre">all</span></code>, to perform the operation at all nodes belonging to the group.</p></li>
-</ul>
-<p>An example of a group called <code class="docutils literal notranslate"><span class="pre">example-1</span></code>, placed at <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/groups/example-1.py</span></code> is shown below. The <code class="docutils literal notranslate"><span class="pre">~/clap/groups/roles/example1.yml</span></code> will be executed and the group has three actions: <code class="docutils literal notranslate"><span class="pre">setup</span></code>, <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">terminate</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># example-1 group</span>
-<span class="n">playbook</span> <span class="o">=</span> <span class="s1">&#39;roles/example1.yml&#39;</span>
-<span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;terminate&#39;</span><span class="p">]</span>
+<p>The group’s description files are python files placed at <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/actions.d</span></code> directory. The name of the YAML file defines the group’s name.
+Each group description file defines the key <code class="docutils literal notranslate"><span class="pre">actions</span></code> and (optionally) the <code class="docutils literal notranslate"><span class="pre">hosts</span></code> key. Inside <code class="docutils literal notranslate"><span class="pre">actions</span></code> key, each dictionary defines an CLAP’s action where the key name is the action name and the values informs characteristic of that action, such as which Ansible Playbook to run, an optional description and the variables needed.</p>
+<p>An example group description file is shown below, for a group named <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> (at <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/actions.d/commands-common.yml</span></code>).</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="nt">actions</span><span class="p">:</span>                    <span class="c1"># Defines the actions of this group</span>
+    <span class="nt">setup</span><span class="p">:</span>                  <span class="c1"># Action called setup</span>
+        <span class="nt">playbook</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">roles/commands-common_setup.yml</span>   <span class="c1"># Playbook to be executed when this group action is invoked</span>
 
-<span class="c1"># Optionally, playbook can specify hosts e.g. master and slaves</span>
-<span class="c1"># hosts = [&#39;master&#39;, &#39;slaves&#39;]</span>
+    <span class="nt">copy</span><span class="p">:</span>                   <span class="c1"># Action called copy</span>
+        <span class="nt">playbook</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">roles/commands-common_copy.yml</span>    <span class="c1"># Playbook to be executed when this group action is invoked</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Copy files from localhost to remote hosts</span> <span class="c1"># Optional action&#39;s description</span>
+        <span class="nt">vars</span><span class="p">:</span>                                       <span class="c1"># Optional variables required</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">src</span>                                 <span class="c1"># src variable</span>
+          <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Source files/directory to be copied</span> <span class="c1"># optional variable&#39;s description</span>
+          <span class="nt">optional</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">no</span>                              <span class="c1"># Informs if this variable is optional</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dest</span>                                <span class="c1"># dest variable</span>
+          <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Destination directory where files will be placed</span> <span class="c1"># optional variable&#39;s description</span>
+
+    <span class="nt">fetch</span><span class="p">:</span>
+        <span class="nt">playbook</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">roles/commands-common_fetch.yml</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Fetch files from remote hosts to localhosts</span>
+        <span class="nt">vars</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">src</span>
+          <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Source files/directory to be fetched</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dest</span>
+          <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Destination directory where files will be placed</span>
+
+<span class="nt">hosts</span><span class="p">:</span>                      <span class="c1"># (optional) List of hosts that are used in this group (and in the playbooks)</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">master</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">slave</span>
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul class="simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">setup</span></code> action is <strong>always</strong> called when a node is added to a group.</p></li>
-<li><p>The Ansible Playbook may perform the desired action by inspecting the <code class="docutils literal notranslate"><span class="pre">action</span></code> variable.</p></li>
-</ul>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">setup</span></code> action is <strong>always</strong> required. So a minimal group’s description file must contains the variable: <code class="docutils literal notranslate"><span class="pre">actions</span> <span class="pre">=</span> <span class="pre">['setup']</span></code>.</p>
-</div>
+<p>Fot group’s description files, <code class="docutils literal notranslate"><span class="pre">actions</span></code> dictionary is required, and <code class="docutils literal notranslate"><span class="pre">hosts</span></code> optional. The keys inside <code class="docutils literal notranslate"><span class="pre">actions</span></code> dictionary are the action names and the possible values for each action are described in table below.</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Valid values for actions</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Name</strong></p></th>
+<th class="head"><p><strong>Type</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">playbook</span></code></p></td>
+<td><p>path</p></td>
+<td><p>Playbook to be executed when this action is invoked. The path is relative to <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/</span></code> directory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code> (optional)</p></td>
+<td><p>string</p></td>
+<td><p>Action’s descriptive information</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vars</span></code> (optional)</p></td>
+<td><p>List of variable dictionaries</p></td>
+<td><p>List informing variables needed for this action</p></td>
+</tr>
+</tbody>
+</table>
+<p>And optionally, the actions can define their variables to use. The possible values are listed table below</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Valid action’s values</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Name</strong></p></th>
+<th class="head"><p><strong>Type</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Name of the variable</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code> (optional)</p></td>
+<td><p>string</p></td>
+<td><p>Variable’s descriptive information</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">optional</span></code> (optional)</p></td>
+<td><p>boolean</p></td>
+<td><p>Inform if variable is optional (default is <code class="docutils literal notranslate"><span class="pre">no</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Finally the hosts specify the <code class="docutils literal notranslate"><span class="pre">hosts</span></code> used by group actions. It’s optional and when specified Ansible playbooks can segment their execution using the <code class="docutils literal notranslate"><span class="pre">hosts</span></code> variable at each play. If no hosts are specified use <code class="docutils literal notranslate"><span class="pre">hosts:</span> <span class="pre">all</span></code>  to perform the action over all nodes that belong to the group.</p>
 </div>
 </div>
 <div class="section" id="command-group-list">
 <h3>Command <code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">list</span></code><a class="headerlink" href="#command-group-list" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">group</span> <span class="pre">list</span></code> command can be used to list all available groups and their respective actions and hosts. An example of output is shown below, for a group called <code class="docutils literal notranslate"><span class="pre">spits</span></code>, which has actions <code class="docutils literal notranslate"><span class="pre">add-nodes</span></code>, <code class="docutils literal notranslate"><span class="pre">job-copy</span></code>, <code class="docutils literal notranslate"><span class="pre">job-create</span></code>, <code class="docutils literal notranslate"><span class="pre">setup</span></code> and <code class="docutils literal notranslate"><span class="pre">start</span></code>. Besides that, the nodes from this group can be segmented in <code class="docutils literal notranslate"><span class="pre">jobmanager</span></code> and <code class="docutils literal notranslate"><span class="pre">taskmanager</span></code> hosts.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>* spits (roles/spits.yml)
-    actions: add-nodes, job-copy, job-create, job-status, setup, start
-    hosts: jobmanager, taskmanager
-Listed 1 groups
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>* GROUP: commands-common
+    hosts: none
+
+    &gt; action: setup
+        playbook: roles/commands-common_setup.yml
+
+    &gt; action: copy
+        playbook: roles/commands-common_copy.yml
+        variables:
+        - name: src
+          description: Source files/directory to be copied
+          optional: False
+        - name: dest
+          description: Destination directory where files will be placed
+          optional: False
+
+    &gt; action: fetch
+        description: Fetch files from remote hosts to localhosts
+        playbook: roles/commands-common_fetch.yml
+        variables:
+        - name: src
+          description: Source files/directory to be fetched
+          optional: False
+        - name: dest
+          description: Destination directory where files will be placed
+          optional: False
+
+Listed 1 group(s)
 </pre></div>
 </div>
 </div>

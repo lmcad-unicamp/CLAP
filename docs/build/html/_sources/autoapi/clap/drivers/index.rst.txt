@@ -11,6 +11,5 @@ Subpackages
    :maxdepth: 3
 
    ansible/index.rst
-   elasticluster/index.rst
 
 

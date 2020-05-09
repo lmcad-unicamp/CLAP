@@ -80,6 +80,9 @@ Package Contents
 .. function:: stop_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]
 
 
+.. function:: connect_to_node(node_id: str)
+
+
 .. function:: resume_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]
 
 
@@ -139,6 +142,9 @@ Package Contents
    .. method:: command_node_connect(self, namespace: argparse.Namespace)
 
 
+
+
+.. function:: interactive_shell(chan)
 
 
 .. py:class:: PlatformFactory
@@ -219,6 +225,9 @@ Package Contents
 
 
 .. function:: get_ssh_connections(node_ids: List[str], tags: Dict[str, str] = None, *args, **kwargs) -> Dict[str, SSHClient]
+
+
+.. function:: connect_to_node(node_id: str)
 
 
 .. data:: __module_name__

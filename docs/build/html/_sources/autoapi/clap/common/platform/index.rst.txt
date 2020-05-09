@@ -65,11 +65,6 @@ Module Contents
 
       
 
-   .. attribute:: GROUP_SCHEMA
-      
-
-      
-
    .. method:: __find_groups()
       :staticmethod:
 
@@ -150,7 +145,7 @@ Module Contents
 
 
 
-   .. method:: execute_playbook_in_nodes(self, playbook_path: str, hosts: Union[List[str], Dict[str, List[str]]], extra_args: Dict[str, str] = ())
+   .. method:: execute_playbook_in_nodes(self, playbook_path: str, hosts: Union[List[str], Dict[str, List[str]]], extra_args: Dict[str, str] = None)
 
 
 
@@ -158,11 +153,11 @@ Module Contents
 
 
 
-   .. method:: get_node(self, node_id: str)
+   .. method:: get_nodes(self, node_ids: List[str])
 
 
 
-   .. method:: get_nodes(self, node_ids: List[str] = None)
+   .. method:: get_all_nodes(self)
 
 
 
@@ -186,27 +181,27 @@ Module Contents
 
 
 
-   .. method:: __execute_group_action_sequence(self, hosts: Dict[str, List[str]], actions: List[str], group_path: str, extra_args: Dict[str, str], error_action: str = 'error')
+   .. method:: __execute_group_action__(self, hosts: Dict[str, List[str]], action_dict: str, action_name: str, extra_args: Dict[str, str])
 
 
 
-   .. method:: __check_nodes_in_group(self, group: str, node_ids: List[str] = None)
+   .. method:: __get_nodes_in_group__(self, group: str, node_ids: List[str] = None)
 
 
 
-   .. method:: add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict = None, error_action: str = 'error')
+   .. method:: add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict = None)
 
 
 
-   .. method:: __add_nodes_to_group(self, group_hosts_map: Dict[str, Union[List[str], Dict[str, List[str]]]], group_args: Dict = None, error_action: str = 'error')
+   .. method:: __add_nodes_to_group(self, group_hosts_map: Dict[str, Union[List[str], Dict[str, List[str]]]], group_args: Dict = None)
 
 
 
-   .. method:: execute_group_action(self, group_name: str, action: str, group_args: Dict = None, node_ids: List[str] = None, error_action='ignore')
+   .. method:: execute_group_action(self, group_name: str, action: str, group_args: Dict = None, node_ids: List[str] = None)
 
 
 
-   .. method:: __execute_group_action(self, node_ids: List[str], group_name: str, action: str, group_args: Dict = None, error_action='error')
+   .. method:: __execute_group_action(self, node_ids: List[str], group_name: str, action: str, group_args: Dict = None)
 
 
 

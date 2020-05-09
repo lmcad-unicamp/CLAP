@@ -55,12 +55,12 @@ Module Contents
 
       
 
-   .. attribute:: execution_playbook
-      
-
-      
-
    .. attribute:: groups_path
+      
+
+      
+
+   .. attribute:: actions_path
       
 
       

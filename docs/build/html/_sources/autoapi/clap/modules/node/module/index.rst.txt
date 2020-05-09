@@ -32,3 +32,6 @@ Module Contents
 .. function:: get_ssh_connections(node_ids: List[str], tags: Dict[str, str] = None, *args, **kwargs) -> Dict[str, SSHClient]
 
 
+.. function:: connect_to_node(node_id: str)
+
+

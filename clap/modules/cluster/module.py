@@ -680,11 +680,12 @@ def cluster_stop(cluster_id: str, do_not_stop: bool = False) -> Tuple[List[str],
     repository = ClusterRepositoryOperations()
     cluster = repository.get_cluster(cluster_id)
     stopped_nodes, do_not_stopped = __get_nodes_from_cluster__(cluster.cluster_id, [node.node_id for node in nodes])
-    
-    if not do_not_stop:
+
+    if do_not_stopped:
+        log.info("Nodes `{}` belong to other clusters and will not be stopped".format(', '.join(sorted(do_not_stopped))))
+
+    if stopped_nodes:
         log.info("Stopping nodes `{}`...".format(', '.join(sorted(stopped_nodes))))
-        if do_not_stopped:
-            log.info("Nodes `{}` belong to other clusters and will not be stopped".format(', '.join(sorted(do_not_stopped))))
         node_module.stop_nodes(stopped_nodes)
 
     repository.remove_cluster(cluster_id)

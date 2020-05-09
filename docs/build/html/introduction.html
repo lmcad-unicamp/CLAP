@@ -33,6 +33,7 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Basic Configuration Setup" href="configuration.html" />
@@ -95,9 +96,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="shared_groups.html">Groups shared with CLAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="shared_modules.html">Modules shared with CLAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
 
             
@@ -222,10 +221,9 @@ CLAP can be used to start, configure and manage single or multiple cloud’s ins
     │   ├── logins.yaml
     │   └── providers.yaml
     ├── groups/
-    │   ├── groups/
+    │   ├── actions.d/
     │   ├── group_vars/
     │   │   └── all.yml
-    │   ├── main.yml
     │   └── roles/
     ├── modules/
     ├── private/

@@ -30,9 +30,10 @@ Contents
     usage
     shared_groups
     shared_modules
-    architecture
-    tutorials
-    troubleshooting
+.. architecture
+.. tutorials
+.. troubleshooting
+    
     autoapi/index
 
 
