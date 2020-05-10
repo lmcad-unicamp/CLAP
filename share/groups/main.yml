@@ -1,0 +1,14 @@
+---
+
+- name: Run the playbook
+  import_playbook: '{{ playbook_path }}'
+
+- name: Report success on cluster creation
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Mark host as successfully configured
+      shell: |
+        echo 'done' > '{{ elasticluster.output_dir }}/{{ inventory_hostname }}.log'
+      delegate_to: 'localhost'
+      become: no

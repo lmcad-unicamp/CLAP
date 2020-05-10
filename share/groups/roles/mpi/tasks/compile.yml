@@ -11,6 +11,8 @@
 
 
 
+
+
 - name: Creates directory
   become: no
   file:
@@ -46,7 +48,7 @@
     make
     source run
 
-
+  register: outputCommand
   args:
     executable: /bin/bash
 
@@ -58,7 +60,7 @@
 #    ./run
 
 
-  register: outputCommand
+
 
 
 

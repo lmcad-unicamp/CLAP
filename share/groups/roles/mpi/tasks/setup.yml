@@ -15,7 +15,7 @@
 
 - name: passing key
   copy:
-    src: ~/.clap/private/{{ elasticluster.nodes[inventory_hostname].user_key_name }}.pem #Key should be here
+    src: "{{ ansible_ssh_private_key_file }}" #Key should be here
     dest: ~{{ user }}/.ssh/clusterKey
     mode: '0644'
 

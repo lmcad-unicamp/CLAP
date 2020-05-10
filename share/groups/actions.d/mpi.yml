@@ -1,0 +1,19 @@
+---
+actions:
+
+  setup:
+    playbook: roles/mpi.yml
+    vars:
+    - name: mount_ip
+      optional: no
+
+  compile:
+     playbook: roles/mpi-compile.yml
+     vars:
+         - name: app_name
+           optional: no
+         - name: file_path
+           optional: no
+hosts:                      # (optional) List of hosts that are used in this group (and in the playbooks)
+- master
+- slave
