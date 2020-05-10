@@ -1,0 +1,4 @@
+- name: Install Zabbix Agent
+  become: yes
+  script: zabbix-agentd-install.sh
+

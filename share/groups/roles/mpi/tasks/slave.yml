@@ -1,0 +1,32 @@
+#
+- name: Debug
+  include_vars:
+      file: "{{ ansible_distribution }}Setup.yml"
+      name: osSetup
+  # vars:
+  #   possible_file:
+  #    - "{{ ansible_distribution }}Setup.yml"
+
+
+
+  delegate_to: localhost
+
+- debug:
+    msg:  "{{ item  }}"
+  loop: "{{ osSetup.libraries}}"
+    # with_items:
+    #   - "{{ osSetup.libraries }}"
+
+  delegate_to: localhost
+
+
+
+
+
+- debug:
+    msg:  "{{ item  }}"
+  with_items: "{{ osSetup.LD_LIBRARY_PATH}}"
+    # with_items:
+    #   - "{{ osSetup.libraries }}"
+
+  delegate_to: localhost

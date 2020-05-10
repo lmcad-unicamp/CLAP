@@ -1,0 +1,59 @@
+#Group-addition must be passed with the extra var mount_ip
+
+- name: MPI  Playbook for all
+  hosts: all
+  vars:
+      efs_mount_point: "~{{ user }}/efs"
+      user: "ubuntu"
+      group: "ubuntu"
+      mount_ip: "{{ mount_ip }}"
+      mount_permissions: "0755"
+
+
+  gather_facts: yes
+  tasks:
+     - include_role:
+          name: 'mpi'
+          tasks_from: "{{ action }}"
+       when: action in ['setup']
+
+
+     - include_role:
+            #become_user: "ubuntu"
+            name: 'ec2-efs'
+            tasks_from: main
+       when: action in ['setup']
+
+
+     - include_role:
+            name: 'zabbix'
+            tasks_from: setup
+       when: action in ['setup']
+       
+
+
+
+#Arguments: app_name -> Name of the app (HelloWorld.c -> HelloWorld)
+
+
+
+
+
+- name: MPI  Playbook for master
+  hosts: master
+  gather_facts: yes
+  vars:
+      exec_dir:   "{{ ansible_user }}/efs/{{ app_name}}"
+  tasks:
+     - include_role:
+          name: 'mpi'
+          tasks_from: "{{ action }}"
+       when: action in ['compile']
+
+- name: MPI  Playbook for slave
+  hosts: slave
+  gather_facts: no
+  tasks:
+      - include_role:
+          name: 'mpi'
+          tasks_from: slave
