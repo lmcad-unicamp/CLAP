@@ -25,6 +25,7 @@ author = u'Otávio Napoli'
 # The full version, including alpha/beta/rc tags
 version = '0.2.0'
 release = '0.2.0'
+master_doc = 'index'
 
 
 # -- General configuration ---------------------------------------------------
@@ -32,7 +33,7 @@ release = '0.2.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [ 
+extensions = [
     'autoapi.extension',
     'sphinx_rtd_theme',
     'sphinx.ext.viewcode'
