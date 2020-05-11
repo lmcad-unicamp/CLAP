@@ -43,6 +43,10 @@ To install CLAP in a linux-based system follow the instructions below.
 
     clapp -vv --show-all-help
 
+.. note::
+
+    As CLAP is at development stage, use the ``update.sh`` periodically to fetch updates!
+
 .. warning::
 
     Since January 2020, `Python 2.7 was discontinuated <https://www.python.org/doc/sunset-python-2/>`_ and support for Python 2.x. is being phased out. For this reason, CLAP uses Python 3 as default and does not support Python 2 versions.
@@ -88,7 +92,7 @@ By default, CLAP holds all of it information inside the ``~/.clap`` directory (w
 
 - The ``~/.clap/configs/instances.yaml`` holds the information about the instances to launch, i.e. the instance templates.
 
-- The ``groups`` directory store groups file and actions, used to perform action in several nodes. More detailed information about groups and actions will be presented at <GROUPS>
+- The ``groups`` directory store groups file and actions, used to perform action in several nodes. More detailed information about groups and actions will be presented at :ref:`groups section <group section>`
 
 - The ``modules`` directory store module files, used to extend CLAP.
 

@@ -5,7 +5,7 @@ Basic Usage
 =============
 
 CLAP is a platform to start, stop and manage cloud's instances (called CLAP nodes or simply ,nodes) at different cloud providers transparently, based on configuration files. Also, it offers mechanisms to perform actions via SSH commands or Ansible playboks in single nodes or in a set of nodes in a row.
-To provide this, in a modular way, CLAP provides modules to allow performing several operations (see <ARCH> section for more information about the CLAP architecture). You can use ``clapp --help`` command to list the available modules or ``clapp -v --show-all`` to show all available commands that can be used. 
+To provide this, in a modular way, CLAP provides modules to allow performing several operations. You can use ``clapp --help`` command to list the available modules or ``clapp -v --show-all`` to show all available commands that can be used. 
 
 The most common modules are: ``node``, ``tags`` and ``groups``.
 

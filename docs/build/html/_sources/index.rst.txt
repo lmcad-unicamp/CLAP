@@ -18,7 +18,6 @@ Its main features includes:
 - Group system to easily perform actions in different heterogeneous nodes via `Ansible <https://ansible.com/>`_. playbooks.
 - Easy-to-use python API to bring nodes up and configure them (via ansible or SSH commands).
 
-
 Contents
 ---------------
 

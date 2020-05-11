@@ -43,7 +43,7 @@ pip --no-cache-dir install -r requirements.txt || abort "Installing clap require
 green_print "OK"
 
 green_print "Creating default folders"
-green_print "Using default CLAP path: $CLAP_PATH" 
+green_print "Using default CLAP path: $CLAP_PATH"
 mkdir -p $CLAP_PATH/configs/
 mkdir -p $CLAP_PATH/configs/clusters/
 mkdir -p $CLAP_PATH/modules/

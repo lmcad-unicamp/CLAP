@@ -199,6 +199,10 @@ Inside the <code class="docutils literal notranslate"><span class="pre">clap</sp
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>clapp -vv --show-all-help
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As CLAP is at development stage, use the <code class="docutils literal notranslate"><span class="pre">update.sh</span></code> periodically to fetch updates!</p>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Since January 2020, <a class="reference external" href="https://www.python.org/doc/sunset-python-2/">Python 2.7 was discontinuated</a> and support for Python 2.x. is being phased out. For this reason, CLAP uses Python 3 as default and does not support Python 2 versions.</p>
@@ -234,7 +238,7 @@ CLAP can be used to start, configure and manage single or multiple cloud’s ins
 <li><p>The <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/providers.yaml</span></code> <a class="reference external" href="https://yaml.org/">YAML</a> file inside the <code class="docutils literal notranslate"><span class="pre">~/.clap/configs</span></code> directory holds the information about the cloud provider and how to connect to it.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/logins.yaml</span></code> file holds information about how to connect to an instance (e.g. login user, keyfile, etc)</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/instances.yaml</span></code> holds the information about the instances to launch, i.e. the instance templates.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">groups</span></code> directory store groups file and actions, used to perform action in several nodes. More detailed information about groups and actions will be presented at &lt;GROUPS&gt;</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">groups</span></code> directory store groups file and actions, used to perform action in several nodes. More detailed information about groups and actions will be presented at <a class="reference internal" href="usage.html#group-section"><span class="std std-ref">groups section</span></a></p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">modules</span></code> directory store module files, used to extend CLAP.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">private</span></code> stores keys and passwords files used to connect to the cloud provider and to the instance itself. Every key/secret files needed in the configuration sections must be placed inside this directory (usually with 0400 permissions).</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">storage</span></code> directory store metadata information used by CLAP.</p></li>
