@@ -224,7 +224,7 @@ CLAP's setup phases are executed in the order, as shown in table bellow.
 
 .. note:: 
 
-  All setups are executed after the nodes are created and are all optional
+  All setups are optional
 
 
 An example is shown below:
