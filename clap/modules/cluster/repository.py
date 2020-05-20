@@ -47,9 +47,9 @@ class ClusterRepositoryOperations:
 
     def create_repository(self, exists: str = 'pass'):
         with get_repository_connection(self.repository) as repository:
-            if check_and_create_table(self.repository, 'control', exists):
+            if check_and_create_table(repository, 'control', exists):
                 repository.create_element('control', ClusterControlData())
-            check_and_create_table(self.repository, 'clusters', exists)
+            check_and_create_table(repository, 'clusters', exists)
 
     def new_cluster(self, cluster_name, cluster_config, state: str = 'running') -> ClusterData:
         with get_repository_connection(self.repository) as repository:

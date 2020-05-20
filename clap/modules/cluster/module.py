@@ -463,7 +463,7 @@ def __run_setup_list__(cluster_name: str, setup_list: List[Dict[str, Any]], node
         for setup_name, setup in _setup.items():
              __run_setup__(cluster_name, setup_name, setup, node_ids=node_ids, re_add_to_group=re_add_to_group)
 
-def __get_nodes_from_cluster__(cluster_id: str, node_ids: List[str]) -> Tuple[List[str], List[str]]:
+def __get_nodes_to_stop__(cluster_id: str, node_ids: List[str]) -> Tuple[List[str], List[str]]:
     node_module = PlatformFactory.get_module_interface().get_module('node')
     tag_module = PlatformFactory.get_module_interface().get_module('tag')
     repository = ClusterRepositoryOperations()
@@ -679,7 +679,7 @@ def cluster_stop(cluster_id: str, do_not_stop: bool = False) -> Tuple[List[str],
     nodes = node_module.list_nodes(tags={'clusters': cluster_id})
     repository = ClusterRepositoryOperations()
     cluster = repository.get_cluster(cluster_id)
-    stopped_nodes, do_not_stopped = __get_nodes_from_cluster__(cluster.cluster_id, [node.node_id for node in nodes])
+    stopped_nodes, do_not_stopped = __get_nodes_to_stop__(cluster.cluster_id, [node.node_id for node in nodes])
 
     if do_not_stopped:
         log.info("Nodes `{}` belong to other clusters and will not be stopped".format(', '.join(sorted(do_not_stopped))))
@@ -873,6 +873,47 @@ def cluster_connect(cluster_id: str, node_id: str = None):
         if not ssh_nodes:
             raise Exception("No `{}` nodes in `{}` to connect".format(cluster.cluster_config['options']['ssh_to'], cluster_id))
         connect_to_node(ssh_nodes[0])
+
+def get_nodes_from_cluster(cluster_id: str) -> List[str]:
+    repository = ClusterRepositoryOperations()
+    cluster = repository.get_cluster(cluster_id)
+    return [node.node_id for node in node_module.list_nodes(tags={'clusters': "{}".format(cluster.cluster_id)})]
+
+def get_node_types_from_cluster(cluster_id: str) -> Dict[str, List[str]]:
+    nodes_type = dict()
+    repository = ClusterRepositoryOperations()
+    cluster = repository.get_cluster(cluster_id)
+    for node_name in cluster.cluster_config['nodes'].keys():
+        tags = {'cluster_node_type': "{}:{}".format(cluster.cluster_id, node_name)}
+        nodes_type[node_name] = [node.node_id for node in node_module.list_nodes(tags=tags)]
+    
+    return nodes_type
+
+def stop_nodes_from_cluster_by_type(cluster_id: str, nodes_type: Dict[str, int]) -> Tuple[List[str], List[str]]:
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+    cluster = ClusterRepositoryOperations().get_cluster(cluster_id)
+    nodes = []
+
+    for node_name, qtde in nodes_type.items():
+        if node_name not in cluster.cluster_config['nodes'].keys():
+            raise Exception("Invalid node type: `{}`".format(node_name))
+    
+        tags = {'cluster_node_type': "{}:{}".format(cluster.cluster_id, node_name)}
+        typed_nodes = node_module.list_nodes(tags=tags)
+        if len(typed_nodes) < qtde:
+            raise Exception("Requested to stop {} `{}` nodes but only {} exists".format(qtde, node_name, len(typed_nodes)))
+        nodes += [node.node_id for node in typed_nodes[:qtde]]
+
+    stopped_nodes, do_not_stopped = __get_nodes_to_stop__(cluster_id, nodes)
+
+    if do_not_stopped:
+        log.info("Nodes `{}` belong to other clusters and will not be stopped".format(', '.join(sorted(do_not_stopped))))
+
+    if stopped_nodes:
+        log.info("Stopping nodes `{}`...".format(', '.join(sorted(stopped_nodes))))
+        node_module.stop_nodes(stopped_nodes)
+
+    return stopped_nodes, do_not_stopped
 
 
 # Default actions....

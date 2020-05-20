@@ -1,0 +1,14 @@
+setups:
+  paramount-setup:
+    groups:
+    - name: ec2-efs
+    - name: paramount
+
+clusters:
+  paramount-cluster:
+    nodes:
+      paramount-node:
+        type: {{ node_type }}
+        count: {{ node_count }}
+        setups:
+        - paramount-setup
