@@ -13,7 +13,7 @@ from clap.common.utils import log, yaml_load, tmpdir, path_extend
 from .repository import ParamountClusterData, ParamountClusterRepositoryOperations
 from .conf import ParamountClusterDefaults, ParamountState
 
-def create_paramount_cluster(app_name: str, node_type: str, node_counts: List[int], setup_args: Dict[str, str]) -> ParamountClusterData:
+def create_paramount_cluster(app_name: str, node_type: str, node_counts: List[int]) -> ParamountClusterData:
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
     repository = ParamountClusterRepositoryOperations()
     max_count = max(node_counts)
@@ -27,7 +27,7 @@ def create_paramount_cluster(app_name: str, node_type: str, node_counts: List[in
         filename = path_extend(dir, 'paramount-cluster.yml')
         with open(filename, 'w') as f:
             f.write(rendered_template)
-        cluster, nodes, is_setup = cluster_module.cluster_create([filename], cluster_name='paramount-cluster', )
+        cluster, nodes, is_setup = cluster_module.cluster_create([filename], cluster_name='paramount-cluster')
 
     paramount = repository.new_paramount(app_name, cluster.cluster_id, node_type, node_counts)
     cluster_module.perform_group_action(cluster_id=cluster.cluster_id, group_name='paramount', 

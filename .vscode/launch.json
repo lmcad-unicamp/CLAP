@@ -8,7 +8,7 @@
             "name": "Node start type-a",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "node", "start", "type-a"],
             "console": "integratedTerminal"
         },
@@ -16,7 +16,7 @@
             "name": "Node start type-b",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "node", "start", "type-b"],
             "console": "integratedTerminal"
         },
@@ -24,7 +24,7 @@
             "name": "Add group commands-common to node-0 and node-1",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "group", "add", "commands-common", "node-0", "node-1", "--extra", "command=hostname"],
             "console": "integratedTerminal"
         },
@@ -32,7 +32,7 @@
             "name": "Execute action commands-common run-command",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-v", "group", "action", "commands-common", "run-command", "--extra", "cmd=hostname"],
             "console": "integratedTerminal"
         },
@@ -40,7 +40,7 @@
             "name": "Node stop node-0",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "node", "stop", "node-0"],
             "console": "integratedTerminal"
         },
@@ -48,7 +48,7 @@
             "name": "Node pause node-1",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "node", "pause", "node-1"],
             "console": "integratedTerminal"
         },
@@ -56,7 +56,7 @@
             "name": "Node resume node-1",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "node", "resume", "node-1"],
             "console": "integratedTerminal"
         },
@@ -64,7 +64,7 @@
             "name": "SPITS job create at jobmanager",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "group", "action", "spits/jobmanager", "job-create", "--extra", "jobid=my-job-123", "spits_binary=/home/napoli/Documents/Doutorado/Projects/CEPETRO/spits-2.0/examples/spits-pi/bin/spits-pi-module", "spits_args=100000 1000", "SPITS_JOB_PATH=/home/ubuntu/efs/spits-jobs"],
             "console": "integratedTerminal"
         },
@@ -72,7 +72,7 @@
             "name": "Start cluster cluster-legal",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "cluster", "start", "cluster-legal"],
             "console": "integratedTerminal"
         },
@@ -80,7 +80,7 @@
             "name": "Setup cluster-0",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "cluster", "setup", "cluster-0"],
             "console": "integratedTerminal"
         },
@@ -88,7 +88,7 @@
             "name": "Setup cluster-0 node-11 node-12 node-13 at node",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-v", "cluster", "setup", "cluster-0", "--nodes", "node-11", "node-12", "node-13", "--at", "node"],
             "console": "integratedTerminal"
         },
@@ -96,7 +96,7 @@
             "name": "Add node-type-master to cluster-0",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "cluster", "add", "cluster-0", "node-type-master", "node-type-slave-1:2"],
             "console": "integratedTerminal"
         },
@@ -104,7 +104,7 @@
             "name": "Add existing node-5 node-6 to cluster-0 as node-type-slave-2",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "cluster", "add-existing", "cluster-0", "node-type-slave-1", "node-5", "node-6"],
             "console": "integratedTerminal"
         },
@@ -112,7 +112,7 @@
             "name": "Update cluster-0",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "cluster", "update", "cluster-0"],
             "console": "integratedTerminal"
         },
@@ -120,8 +120,16 @@
             "name": "Stop cluster-9",
             "type": "python",
             "request": "launch",
-            "program": "/home/oon/clap/clapp",
+            "program": "/home/napoli/clap/clapp",
             "args": ["-vv", "cluster", "stop", "cluster-9"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Create paramount cluster",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/clap/clapp",
+            "args": ["-vv", "paramount", "start", "mpiapp", "type-b", "1", "2"],
             "console": "integratedTerminal"
         },
 

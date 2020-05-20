@@ -41,7 +41,8 @@ def main(arguments: List[str]):
                 commands_subcom_parser = commands_com_parser.add_subparsers(title='commands', dest='subcommand')
                 p_obj.add_parser(commands_subcom_parser)
             except Exception as e:
-                log.error(e)
+                log.error("Error adding parser for command `{}`: {}".format(module_vals['name'], e))
+                log.error("Ignoring command `{}`".format(module_vals['name']))
 
     try:
         args = parser.parse_args(arguments)

@@ -12,17 +12,26 @@ from .conf import ParamountClusterDefaults
 class ClusterParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         # cluster start commands 
-        cluster_subcom_parser = commands_parser.add_parser('start', help='Start cluster given a cluster configuration file')
-        cluster_subcom_parser.add_argument('cluster_name', action='store', 
-                help='Name of the cluster to create')
-        cluster_subcom_parser.add_argument('--file', '-f', action='store', 
-                type=lambda path: __is_valid_file__(path),
-                help='File of the cluster configuration template (this option replaces the --directory option')
-        cluster_subcom_parser.add_argument('--directory', '-d', default=ClusterDefaults.CLUSTER_SEARCH_PATH, 
-                type=lambda path: __is_valid_directory__(path),
-                help='Directory to search for cluster templates (Default is: `{}`)'.format(ClusterDefaults.CLUSTER_SEARCH_PATH))
-        cluster_subcom_parser.add_argument('--no-setup', action='store_true', default=False,
-                help='Does not setup the cluster')
-        cluster_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
-                help="Keyworded (format: x=y) Arguments to be passed to the actions")
-        cluster_subcom_parser.set_defaults(func=self.command_start_cluster)
+        paramount_subcom_parser = commands_parser.add_parser('start', help='Start cluster given a cluster configuration file')
+        paramount_subcom_parser.add_argument('app_name', action='store', 
+                help='Symbolic name of the application to run')
+        paramount_subcom_parser.add_argument('node_type', action='store', 
+                help='Type of the node to be created')
+        paramount_subcom_parser.add_argument('sizes', action='store', nargs='+',
+                help='List with the number of nodes to be executed...')
+        paramount_subcom_parser.set_defaults(func=self.start_paramount_cluster)
+
+    def start_paramount_cluster(self, namespace: argparse.Namespace):
+        print(namespace)
+        app_name = namespace.app_name
+        node_type = namespace.node_type
+        try:
+            sizes = [int(value) for value in namespace.sizes]
+        except ValueError as e:
+            log.error(e)
+            log.error("The size must be a list o integers")
+            return 1
+        paramount = create_paramount_cluster(app_name, node_type, sizes)
+        
+
+        return 0
