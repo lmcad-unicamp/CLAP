@@ -148,5 +148,13 @@
             "args": ["-vv", "paramount", "run", "paramount-4", "/home/napoli/temp/run_es_scripts/", "/home/napoli/temp/run_es_scripts/run_IS.C.X"],
             "console": "integratedTerminal"
         },
+        {
+            "name": "Node start i-t2.small-spot",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/clap/clapp",
+            "args": ["-vv", "node", "start", "i-t2.small-spot"],
+            "console": "integratedTerminal"
+        },
     ]
 }

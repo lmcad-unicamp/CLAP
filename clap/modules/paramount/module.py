@@ -142,7 +142,7 @@ def run_paramount(  paramount_id: str,
 
             cluster_module.perform_group_action(paramount.cluster_id, group_name='paramount', action_name='generate-hosts', extra_args=extra)
             for script in execute_scripts:
-                extra['execution_id'] = '{}-{}-{}x{}'.format(int(time.time()), paramount.application_name, count, paramount.node_type)
+                extra['execution_id'] = '{}-{}-{}x-{}'.format(int(time.time()), paramount.application_name, count, paramount.node_type)
                 extra['script_to_execute'] = script
                 log.info("Executing script `{}`".format(script))
                 cluster_module.perform_group_action(paramount.cluster_id, group_name='paramount', action_name='execute', extra_args=extra)

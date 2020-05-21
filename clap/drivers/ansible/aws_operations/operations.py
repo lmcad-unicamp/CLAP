@@ -395,6 +395,12 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
         if 'boot_disk_iops' in instance_conf:
             ec2_vals['iops'] = instance_conf['iops']
 
+    # Request spot instance
+    if 'price' in instance_conf:
+        ec2_vals['spot_price'] = instance_conf['price']
+        ec2_vals['spot_timeout'] = instance_conf['timeout'] if 'timeout' in instance_conf else 600
+        ec2_vals['instance_tags']['Spot'] = True
+
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(os.path.abspath(__file__))), 
             trim_blocks=True, lstrip_blocks=True)
     template = jinjaenv.get_template('ec2-start.j2')

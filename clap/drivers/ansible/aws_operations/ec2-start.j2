@@ -50,6 +50,11 @@
       wait: {{ wait }}
       wait_timeout: {{ instance_wait_timeout }}
       group: {{ security_group }}
+{% if spot_price is defined %}
+      spot_price: {{ spot_price }}
+      spot_wait_timeout: {{ spot_timeout }}
+      instance_initiated_shutdown_behavior: terminate
+{% endif %}
       instance_tags: 
 {% for key, val in instance_tags.items() %}
         {{key}}: {{val}}
