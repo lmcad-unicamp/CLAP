@@ -26,7 +26,7 @@ class AbstractInstanceInterface:
         raise NotImplementedError("Must implement this method in derived classes!")
 
     @abstractmethod
-    def stop_nodes(self, node_ids: List[str]) -> List[str]:
+    def stop_nodes(self, node_ids: List[str], force: bool) -> List[str]:
         raise NotImplementedError("Must implement this method in derived classes!")
 
     @abstractmethod

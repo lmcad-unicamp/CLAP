@@ -149,11 +149,11 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Node start i-t2.small-spot",
+            "name": "Node start 16 i-r5.large-spot",
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/clap/clapp",
-            "args": ["-vv", "node", "start", "i-t2.small-spot"],
+            "args": ["-vv", "node", "start", "i-r5.large-spot:16"],
             "console": "integratedTerminal"
         },
     ]

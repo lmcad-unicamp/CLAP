@@ -43,6 +43,7 @@ class NodeParser(AbstractParser):
         node_subcom_parser = commands_parser.add_parser('stop', help='Stop and terminate nodes')
         node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be stopped')
         node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
+        node_subcom_parser.add_argument('--force', action='store_true', default=False, help='Force node removal')
         node_subcom_parser.set_defaults(func=self.command_node_stop)
 
         node_subcom_parser = commands_parser.add_parser('pause', help='Pause nodes')
@@ -202,6 +203,7 @@ class NodeParser(AbstractParser):
 
     def command_node_stop(self, namespace: argparse.Namespace):
         node_ids = list(set(namespace.node_ids))
+        force = namespace.force
 
         if namespace.tag:
             try:
@@ -215,7 +217,7 @@ class NodeParser(AbstractParser):
         if not node_ids and not tag:
             raise Exception("No nodes provided")
 
-        node_ids = stop_nodes(node_ids=node_ids, tags=tag)
+        node_ids = stop_nodes(node_ids=node_ids, tags=tag, force=force)
 
         if not node_ids:
             print("No nodes were stopped")

@@ -204,7 +204,7 @@ class AnsibleInterface(AbstractInstanceInterface):
         # Return last updated nodes
         return self.repository_operator.get_nodes(list(alive_nodes.keys()))
 
-    def stop_nodes(self, node_ids: List[str]) -> List[str]:
+    def stop_nodes(self, node_ids: List[str], force=False) -> List[str]:
         # Group instances with same provider and login
         cluster_nodes_map = self.__cluster_nodes_map__(node_ids)
         
@@ -217,7 +217,7 @@ class AnsibleInterface(AbstractInstanceInterface):
             if provider_conf['provider'] == 'aws':
                 log.info("Stopping nodes `{}`...".format(', '.join(sorted([n.node_id for n in list_nodes]))))
                 try:
-                    t = threading.Thread(target=stop_aws_nodes, args=(q, self.repository_operator, provider_conf, list_nodes))
+                    t = threading.Thread(target=stop_aws_nodes, args=(q, self.repository_operator, provider_conf, list_nodes, force))
                     t.start()
                     t.join()
                 except BaseException:

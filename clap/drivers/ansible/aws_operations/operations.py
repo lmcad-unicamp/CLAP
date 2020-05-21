@@ -42,7 +42,7 @@ def __get_ec2_common_template__(provider_conf: dict, node_infos: List[NodeInfo],
 
     return rendered_template, envvars
 
-def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]:
+def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo], force: bool = False) -> List[str]:
     # Main task check name
     task_check_name = 'Stop instances'
     rendered_template, envvars = __get_ec2_common_template__(provider_conf, node_infos, task_check_name, 'absent')
@@ -71,19 +71,26 @@ def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf
         removed_instances = instances_event['event_data']['res']['instance_ids']
 
         stopped_nodes = []
-        # Run through removed instance ids
-        for instance_id in removed_instances:
-            # Get node with the selected instance id
-            node = next(iter([node for node in node_infos if node.extra['instance_id'] == instance_id]), None)
-            # No one? Error?
-            if not node:
-                log.error("Invalid node with instance id: `{}`".format(instance_id))
-                continue
-            
-            # Remove node with instance id
-            repository.remove_node(node.node_id)
-            log.info("Node `{}` has been removed!".format(node.node_id))
-            stopped_nodes.append(node.node_id)
+        if force:
+            for node in node_infos:
+                # Remove node with instance id
+                repository.remove_node(node.node_id)
+                log.info("Node `{}` has been removed!".format(node.node_id))
+                stopped_nodes.append(node.node_id)
+        else:
+            # Run through removed instance ids
+            for instance_id in removed_instances:
+                # Get node with the selected instance id
+                node = next(iter([node for node in node_infos if node.extra['instance_id'] == instance_id]), None)
+                # No one? Error?
+                if not node:
+                    log.error("Invalid node with instance id: `{}`".format(instance_id))
+                    continue
+                
+                # Remove node with instance id
+                repository.remove_node(node.node_id)
+                log.info("Node `{}` has been removed!".format(node.node_id))
+                stopped_nodes.append(node.node_id)
         
         queue.put(stopped_nodes)
         return stopped_nodes
@@ -424,6 +431,7 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
 
         # Not OK?
         # TODO may check return code or inexistence of runner_on_ok & task==Start instances?
+        # TODO check if instances were spot....
         if ret.rc != 0:
             log.error("Error creating instances. Ansible command returned non-zero code")
             queue.put([])
