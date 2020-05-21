@@ -875,6 +875,7 @@ def cluster_connect(cluster_id: str, node_id: str = None):
         connect_to_node(ssh_nodes[0])
 
 def get_nodes_from_cluster(cluster_id: str) -> List[str]:
+    node_module = PlatformFactory.get_module_interface().get_module('node')
     repository = ClusterRepositoryOperations()
     cluster = repository.get_cluster(cluster_id)
     return [node.node_id for node in node_module.list_nodes(tags={'clusters': "{}".format(cluster.cluster_id)})]

@@ -63,7 +63,7 @@ class ParamountClusterRepositoryOperations:
             control.cluster_index += 1
             generic_write_entry(control, repository, 'control', False, control=0)
 
-            node_counts = reversed(sorted(node_counts))
+            node_counts = list(reversed(sorted(node_counts)))
             node_executeds = {count: ParamountState.NOT_RUN for count in node_counts}
 
             paramount_cluster = ParamountClusterData(

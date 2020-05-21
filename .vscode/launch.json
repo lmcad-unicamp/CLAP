@@ -129,9 +129,24 @@
             "type": "python",
             "request": "launch",
             "program": "/home/napoli/clap/clapp",
-            "args": ["-vv", "paramount", "start", "mpiapp", "type-b", "1", "2"],
+            "args": ["-vv", "paramount", "start", "NAS.C", "paramount-t2.medium", "2", "4"],
             "console": "integratedTerminal"
         },
-
+        {
+            "name": "Setup paramount cluster paramount-4",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/clap/clapp",
+            "args": ["-vv", "paramount", "setup", "paramount-4", "--execution-dir", "/home/ubuntu/NPB3.4-MPI/bin"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Run paramount application paramount-4",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/clap/clapp",
+            "args": ["-vv", "paramount", "run", "paramount-4", "/home/napoli/temp/run_es_scripts/", "/home/napoli/temp/run_es_scripts/run_IS.C.X"],
+            "console": "integratedTerminal"
+        },
     ]
 }

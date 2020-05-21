@@ -1,14 +1,22 @@
 setups:
-  paramount-setup:
+  paramount-setup-master:
     groups:
-    - name: ec2-efs
-    - name: paramount
+    - name: paramount/master
+  paramount-setup-slave:
+    groups:
+    - name: paramount/slave
 
 clusters:
   paramount-cluster:
     nodes:
-      paramount-node:
+      paramount-node-master:
         type: {{ node_type }}
-        count: {{ node_count }}
+        count: 1
         setups:
-        - paramount-setup
+        - paramount-setup-master
+
+      paramount-node-slave:
+        type: {{ node_type }}
+        count: {{ node_count-1 }}
+        setups:
+        - paramount-setup-slave
