@@ -253,7 +253,7 @@ class MultiInstanceAPI:
         print("Starting instances: {}...".format(instances_num))
         return self._get_instance_iface(self.__default_driver).start_nodes(instances_num)
 
-    def stop_nodes(self, node_ids: List[str], force: bool = False) -> List[str]:
+    def stop_nodes(self, node_ids: List[str], force: bool = True) -> List[str]:
         """ Stop started nodes based on their node ids
 
         :param node_ids: List of node ids to stop

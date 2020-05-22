@@ -26,7 +26,7 @@ def is_alive(node_ids: List[str], tags: Dict[str, str] = None) -> Dict[str, bool
     node_ids = [node.node_id for node in list_nodes(node_ids=node_ids, tags=tags)]
     return  multi_instance.check_nodes_alive(list(set(node_ids)))
 
-def stop_nodes(node_ids: List[str], tags: Dict[str, str] = None, force: bool = False) -> List[str]:
+def stop_nodes(node_ids: List[str], tags: Dict[str, str] = None, force: bool = True) -> List[str]:
     multi_instance = PlatformFactory.get_instance_api()
     if not node_ids and not tags:
         raise Exception("No nodes provided")

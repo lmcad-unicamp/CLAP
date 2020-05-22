@@ -204,7 +204,7 @@ class AnsibleInterface(AbstractInstanceInterface):
         # Return last updated nodes
         return self.repository_operator.get_nodes(list(alive_nodes.keys()))
 
-    def stop_nodes(self, node_ids: List[str], force=False) -> List[str]:
+    def stop_nodes(self, node_ids: List[str], force: bool) -> List[str]:
         # Group instances with same provider and login
         cluster_nodes_map = self.__cluster_nodes_map__(node_ids)
         

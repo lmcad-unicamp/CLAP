@@ -34,7 +34,7 @@ class ClusterRepositoryOperations:
             if os.path.isfile(repository_dir):
                 raise NotADirectoryError("File `{}` is not a directory".format(repository_dir))
         else:
-            os.mkdir(repository_dir)
+            os.makedirs(repository_dir)
 
         self.repository_path = path_extend(repository_dir, repository_name)
         self.repository_type = repository_type

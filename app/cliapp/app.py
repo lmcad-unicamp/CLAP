@@ -4,6 +4,7 @@ import traceback
 import sys
 import argparse
 import inspect
+import argcomplete
 
 from typing import List
 
@@ -46,6 +47,7 @@ def main(arguments: List[str]):
 
     try:
         args = parser.parse_args(arguments)
+        argcomplete.autocomplete(parser)
     except Exception as err:
         log.error("Parsing command line arguments: {}".format(err))
         return 1

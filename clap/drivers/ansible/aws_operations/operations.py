@@ -42,7 +42,7 @@ def __get_ec2_common_template__(provider_conf: dict, node_infos: List[NodeInfo],
 
     return rendered_template, envvars
 
-def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo], force: bool = False) -> List[str]:
+def stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo], force: bool) -> List[str]:
     # Main task check name
     task_check_name = 'Stop instances'
     rendered_template, envvars = __get_ec2_common_template__(provider_conf, node_infos, task_check_name, 'absent')

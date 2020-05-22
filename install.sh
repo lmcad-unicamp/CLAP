@@ -19,6 +19,7 @@ virtualenv -p python3 clap-env || abort "Creating venv"
 echo "export CLAP=$PWD" >> clap-env/bin/activate || abort "Error writting on activate"
 echo "export CLAP_PATH=$CLAP_PATH" >> clap-env/bin/activate || abort "Error writting on activate"
 echo "export PATH=\$PATH:$PWD" >> clap-env/bin/activate || abort "Error writting on activate"
+echo 'eval "$(register-python-argcomplete clapp)"' >> clap-env/bin/activate || abort "Error writting on activate"
 source clap-env/bin/activate || abort "Activating venv"
 green_print "OK"
 
