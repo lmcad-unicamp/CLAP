@@ -14,9 +14,10 @@ clusters:
         count: 1
         setups:
         - paramount-setup-master
-
+      {% if node_count > 1 %}
       paramount-node-slave:
         type: {{ node_type }}
         count: {{ node_count-1 }}
         setups:
         - paramount-setup-slave
+      {% endif %}

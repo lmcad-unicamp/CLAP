@@ -156,5 +156,14 @@
             "args": ["-vv", "node", "start", "i-r5.large-spot:16"],
             "console": "integratedTerminal"
         },
+
+        {
+            "name": "Create paramount cluster and setup",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/clap/clapp",
+            "args": ["-vv", "paramount", "start", "NAS.C", "i-c5.large", "2", "1", "--setup", "--execution-dir", "/home/ubuntu/NPB3.4-MPI/bin"],
+            "console": "integratedTerminal"
+        },
     ]
 }

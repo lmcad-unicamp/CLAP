@@ -8,4 +8,5 @@ class ParamountState:
     NOT_RUN='not run'
     RUNNING='running'
     ERROR='error'
+    SOME_ERROR='some errors'
     TERMINATED='terminated'

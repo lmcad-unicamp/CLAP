@@ -52,7 +52,7 @@ mkdir -p $CLAP_PATH/groups/
 mkdir -p $CLAP_PATH/private/
 mkdir -p $CLAP_PATH/storage/
 mkdir -p $CLAP_PATH/storage/clusters.d
-cp -r ./share/configs/ $CLAP_PATH
+cp -r -n ./share/configs/ $CLAP_PATH
 cp -r ./share/groups/ $CLAP_PATH
 cp -r ./share/modules/ $CLAP_PATH
 

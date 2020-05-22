@@ -24,6 +24,7 @@ class ParamountClusterData(AbstractEntry):
         self.node_type = None
         self.node_counts = None
         self.node_executeds = None
+        self.node_scripts_executeds = None
         self.execution_dir = None
         self.is_setup = False
         self.is_installed = False
