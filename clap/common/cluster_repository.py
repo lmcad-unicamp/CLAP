@@ -79,6 +79,7 @@ class NodeInfo(AbstractEntry):
         self.driver_id = None
         self.instance_id = None
         self.extra = None
+        self.lifecycle = None
         super(NodeInfo, self).__init__(**kwargs)
 
     def __repr__(self):
@@ -142,7 +143,7 @@ class RepositoryOperations:
             return cluster_data
     
     def new_node(self, cluster_id: str, instance_type: str, status: str, driver_id: str, ip: str = None, 
-                 instance_id: str = None, tags: dict = None, groups: dict = None, extra: dict = None):
+                 instance_id: str = None, tags: dict = None, groups: dict = None, extra: dict = None, lifecycle: str = 'on-demand'):
         with get_repository_connection(self.repository) as repository:
             control = next(iter(clap.common.repository.generic_read_entry(PlatformControlInfo, repository, 'control')))
             index = control.node_idx
@@ -159,7 +160,8 @@ class RepositoryOperations:
                 instance_id=instance_id,
                 tags=tags if tags else {},
                 groups=groups if groups else {},
-                extra=extra if extra else {}
+                extra=extra if extra else {},
+                lifecycle=lifecycle
             )
 
             clap.common.repository.generic_write_entry(node_data, repository, 'nodes', create=True)

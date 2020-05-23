@@ -411,7 +411,7 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
         ec2_vals['instance_tags']['Spot'] = True
         ec2_vals['instance_tags']['SpotCountTag'] = count_tag
         
-
+    # Perform jinja replacements
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(os.path.abspath(__file__))), 
             trim_blocks=True, lstrip_blocks=True)
     template = jinjaenv.get_template('ec2-start.j2')
@@ -458,6 +458,7 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
                 instance_id=instance['id'],
                 tags={},
                 groups={},
+                lifecycle='spot' if 'price' in instance_conf else 'on-demand',
                 extra={
                     'instance_id': instance['id'],
                     'private_ip': instance['private_ip'],
