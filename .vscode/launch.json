@@ -156,6 +156,14 @@
             "args": ["-vv", "node", "start", "i-r5.large-spot:16"],
             "console": "integratedTerminal"
         },
+        {
+            "name": "Node start 32 i-c5n.xlarge-spot",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/napoli/clap/clapp",
+            "args": ["-vv", "node", "start", "i-c5n.xlarge-spot:32"],
+            "console": "integratedTerminal"
+        },
 
         {
             "name": "Create paramount cluster and setup",

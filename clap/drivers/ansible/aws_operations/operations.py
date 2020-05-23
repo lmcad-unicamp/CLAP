@@ -320,6 +320,7 @@ def check_instance_status(queue, repository: RepositoryOperations, provider_conf
         queue.put(stated_nodes)
         return stated_nodes
 
+
 def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: ClusterInfo, provider_conf: dict, 
                     login_conf: dict, instance_name: str, instance_conf: dict, count: int, driver_id: str,
                     instance_wait_timeout: int = 600, node_prefix: str = 'node', additional_ansible_kwargs: dict = None,
@@ -341,7 +342,6 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
     ec2_vals = {
         'gather_facts': 'no',
         'hosts': 'localhost',
-        'task_name': task_check_name,
         'keypair_name': keypair_name,
         'instance_type': instance_type,
         'image_id': image_id,
@@ -409,8 +409,12 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
         ec2_vals['spot_timeout'] = instance_conf['timeout'] if 'timeout' in instance_conf else 600
         ec2_vals['count_tag'] = count_tag
         ec2_vals['instance_tags']['Spot'] = True
+        ec2_vals['instance_tags'][count_tag] = True
         ec2_vals['instance_tags']['SpotCountTag'] = count_tag
+        task_check_name = 'Start spot instances (timeout {} seconds)'.format(ec2_vals['spot_timeout'])
         
+    ec2_vals['task_name'] = task_check_name
+    
     # Perform jinja replacements
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(os.path.abspath(__file__))), 
             trim_blocks=True, lstrip_blocks=True)

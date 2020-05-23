@@ -46,7 +46,6 @@
       key_name: {{ keypair_name }}
       instance_type: {{ instance_type }}
       image: {{ image_id }}
-      count: {{ count }}
       wait: {{ wait }}
       wait_timeout: {{ instance_wait_timeout }}
       group: {{ security_group }}
@@ -56,6 +55,8 @@
       instance_initiated_shutdown_behavior: terminate
       count_tag: {{ count_tag }}
       exact_count: {{ count }}
+{% else %}
+      count: {{ count }}
 {% endif %}
       instance_tags: 
 {% for key, val in instance_tags.items() %}
