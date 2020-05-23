@@ -404,9 +404,13 @@ def start_aws_nodes(queue: Queue, repository: RepositoryOperations, cluster: Clu
 
     # Request spot instance
     if 'price' in instance_conf:
+        count_tag = 'spot-{}'.format(str(random.random())[2:])
         ec2_vals['spot_price'] = instance_conf['price']
         ec2_vals['spot_timeout'] = instance_conf['timeout'] if 'timeout' in instance_conf else 600
+        ec2_vals['count_tag'] = count_tag
         ec2_vals['instance_tags']['Spot'] = True
+        ec2_vals['instance_tags']['SpotCountTag'] = count_tag
+        
 
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(os.path.abspath(__file__))), 
             trim_blocks=True, lstrip_blocks=True)

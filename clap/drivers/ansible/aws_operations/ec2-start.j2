@@ -54,6 +54,8 @@
       spot_price: {{ spot_price }}
       spot_wait_timeout: {{ spot_timeout }}
       instance_initiated_shutdown_behavior: terminate
+      count_tag: {{ count_tag }}
+      exact_count: {{ count }}
 {% endif %}
       instance_tags: 
 {% for key, val in instance_tags.items() %}
