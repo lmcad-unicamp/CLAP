@@ -15,9 +15,13 @@ from .module import (start_nodes, list_nodes, is_alive, stop_nodes, connect_to_n
 
 class NodeParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):
+        template_module = PlatformFactory.get_module_interface().get_module('template')
+        node_templates = list(template_module.list_templates().keys())
+        node_list = list_nodes()
+
         node_subcom_parser = commands_parser.add_parser('start', help='Start nodes in the cluster (based on the template)')
         node_subcom_parser.add_argument(
-            'nodes', action='store', nargs='+', metavar='node_type:num',
+            'nodes', action='store', nargs='+', metavar='node_type:num', choices=node_templates,
             help='Type of the nodes to be instantiated (based on the cluster template). Format is <node_type>:<num>, '
                 'if num is not provided, default is 1')
         node_subcom_parser.add_argument('--group', action='store', nargs='+', help='Groups to add nodes after started')
@@ -31,48 +35,56 @@ class NodeParser(AbstractParser):
         node_subcom_parser.set_defaults(func=self.command_node_list)
 
         node_subcom_parser = commands_parser.add_parser('show', help='Show detailed information of the nodes')
-        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be displayed')
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', choices=node_list, 
+            help='ID of the nodes to be displayed')
         node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         node_subcom_parser.set_defaults(func=self.command_node_show)
 
         node_subcom_parser = commands_parser.add_parser('alive', help='Check if nodes are alive')
-        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be checked')
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', choices=node_list, 
+            help='ID of the nodes to be checked')
         node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         node_subcom_parser.set_defaults(func=self.command_node_alive)
 
         node_subcom_parser = commands_parser.add_parser('stop', help='Stop and terminate nodes')
-        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be stopped')
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', choices=node_list, 
+            help='ID of the nodes to be stopped')
         node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         node_subcom_parser.add_argument('--force', action='store_true', default=False, help='Force node removal')
         node_subcom_parser.set_defaults(func=self.command_node_stop)
 
         node_subcom_parser = commands_parser.add_parser('pause', help='Pause nodes')
-        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be paused')
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', choices=node_list, 
+            help='ID of the nodes to be paused')
         node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         node_subcom_parser.set_defaults(func=self.command_node_pause)
         
         node_subcom_parser = commands_parser.add_parser('resume', help='Resume nodes')
-        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be resumed')
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', choices=node_list, 
+            help='ID of the nodes to be resumed')
         node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         node_subcom_parser.set_defaults(func=self.command_node_resume)
 
         node_subcom_parser = commands_parser.add_parser('playbook', help='Execute playbook in nodes')
         node_subcom_parser.add_argument('playbook_file', action='store', help='Playbook file to be executed')
-        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be stopped')
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', choices=node_list, 
+            help='ID of the nodes to be stopped')
         node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         node_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
                                         help="Keyworded (format: x=y) Arguments to be passed to the playbook")
         node_subcom_parser.set_defaults(func=self.command_node_playbook)
 
         node_subcom_parser = commands_parser.add_parser('execute', help='Execute a command in the node (via SSH)')
-        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', help='ID of the nodes to be execute the SSH command')
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', choices=node_list, 
+            help='ID of the nodes to be execute the SSH command')
         node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         node_subcom_parser.add_argument('--command', '-c',  action='store', required=True, metavar='command',
                                         help='Command string to be executed')
         node_subcom_parser.set_defaults(func=self.command_node_exec_command)
 
         node_subcom_parser = commands_parser.add_parser('connect', help='Connect via SSH to a node')
-        node_subcom_parser.add_argument('node_id', action='store', help='ID of the node to get an SSH connection')
+        node_subcom_parser.add_argument('node_id', action='store', choices=node_list, 
+            help='ID of the node to get an SSH connection')
         node_subcom_parser.set_defaults(func=self.command_node_connect)
 
     def command_node_start(self, namespace: argparse.Namespace):

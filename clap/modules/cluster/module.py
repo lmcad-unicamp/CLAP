@@ -742,6 +742,10 @@ def cluster_resume(cluster_id: str, setup: bool = False, at='before_all') -> Lis
 
     return resumed_nodes
 
+def list_cluster_names() -> List[str]:
+    repository = ClusterRepositoryOperations()
+    return [cluster.cluster_id for cluster in repository.get_all_clusters()]
+
 def list_clusters(cluster_id: str = None) -> dict:
     node_module = PlatformFactory.get_module_interface().get_module('node')
     repository = ClusterRepositoryOperations()
