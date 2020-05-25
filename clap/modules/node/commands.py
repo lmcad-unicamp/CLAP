@@ -17,7 +17,7 @@ class NodeParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         template_module = PlatformFactory.get_module_interface().get_module('template')
         node_templates = list(template_module.list_templates().keys())
-        node_list = list_nodes()
+        node_list = [node.node_id for node in list_nodes()]
 
         node_subcom_parser = commands_parser.add_parser('start', help='Start nodes in the cluster (based on the template)')
         node_subcom_parser.add_argument(
