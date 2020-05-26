@@ -14,7 +14,7 @@ class PlatformFactory:
         :rtype: ModuleInterface
         """
         if not PlatformFactory.__module_iface__:
-            PlatformFactory.__module_iface__ = ModuleInterface()
+            PlatformFactory.__module_iface__ = ModuleInterface(module_paths=[Defaults.modules_path])
         return PlatformFactory.__module_iface__
 
     @staticmethod
