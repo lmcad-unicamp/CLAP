@@ -1,0 +1,4 @@
+- name: passing file
+  synchronize:
+    src: "{{ file_path }}/"
+    dest: "~{{ exec_dir }}/"

@@ -1,1 +1,4 @@
 ansible_python_interpreter: /usr/bin/python
+install_mpi: True
+filesystem_ip: False
+use_instance_key: True

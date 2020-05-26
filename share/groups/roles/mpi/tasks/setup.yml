@@ -13,35 +13,31 @@
       name: osSetup
 
 
-- name: passing key
-  copy:
-    src: "{{ ansible_ssh_private_key_file }}" #Key should be here
-    dest: ~{{ user }}/.ssh/clusterKey
-    mode: '0644'
 
+tasks: Key passing part
 
-
-
-
-- name: Ensure id_rsa exists
-  file:
-    path:  ~{{ user }}/.ssh/id_rsa
-    state: touch
-
+  - name: passing key
+    copy:
+      src: "{{ ansible_ssh_private_key_file }}" #Key should be here
+      dest: ~{{ user }}/.ssh/clusterKey
+      mode: '0644'
+   when:  {{ use_instance_key }}
+  - name: Ensure id_rsa exists
+    file:
+      path:  ~{{ user }}/.ssh/id_rsa
+      state: touch
+    when:  {{ use_instance_key }}
 
   #Blockinfile in ansible adds undisireble marker
-- name: Append key to id_rsa
-  become: yes
-  shell: |
-        cd ~{{ user }}/.ssh/
-        cat clusterKey >> ~{{ user }}/.ssh/id_rsa
+  - name: Append key to id_rsa
+    become: yes
+    shell: |
+          cd ~{{ user }}/.ssh/
+          cat clusterKey >> ~{{ user }}/.ssh/id_rsa
+   when:  {{ use_instance_key }}
 
 
-# - name: testing env variables
-#   become: yes
-#   shell: |
-#         sudo apt-get update
-
+- meta: end_play
 
 - name: Update apt
   apt:
@@ -57,6 +53,8 @@
 
   loop: "{{ osSetup.libraries}}"
   register: resultMPI
+  when: {{ install_mpi }} is True
+
 #TODO: criar dicionario com o tipo da instancia e como o pacote se chama no respectivo sistema, na instancia AMI linux o nome eh "openmpi-devel", Com ubuntu o nome eh: openmpi-bin
 
 # - name: Stop task
