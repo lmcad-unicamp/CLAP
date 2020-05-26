@@ -1,0 +1,17 @@
+---
+actions:
+  setup:
+    playbook: gromax/setup.yml
+    description: Configura a máquina virtual com todas as bibliotecas necessárias e instala o GROMACS;
+
+  simulation-setup:
+    playbook: gromax/simulation-setup.yml
+    description: Gera os arquivos necessários para a simulação
+  
+  run:
+    playbook: gromax/run.yml
+    description: Run gromax
+    
+  fetch-result:
+    playbook: gromax/fetch-result.yml
+    description: Get results
