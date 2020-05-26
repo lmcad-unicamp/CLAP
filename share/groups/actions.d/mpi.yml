@@ -5,7 +5,7 @@ actions:
     playbook: roles/mpi.yml
     vars:
     - name: mount_ip
-      optional: no
+      optional: yes
 
   compile:
      playbook: roles/mpi-compile.yml

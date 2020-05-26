@@ -12,32 +12,29 @@
       file: "{{ ansible_distribution }}Setup.yml"
       name: osSetup
 
+- name: Key passing part
+  block:
+    - name: passing key
+      copy:
+        src: "{{ ansible_ssh_private_key_file }}" #Key should be here
+        dest: ~{{ user }}/.ssh/clusterKey
+        mode: '0644'
+    
 
-
-tasks: Key passing part
-
-  - name: passing key
-    copy:
-      src: "{{ ansible_ssh_private_key_file }}" #Key should be here
-      dest: ~{{ user }}/.ssh/clusterKey
-      mode: '0644'
-   when:  {{ use_instance_key }}
-  - name: Ensure id_rsa exists
-    file:
-      path:  ~{{ user }}/.ssh/id_rsa
-      state: touch
-    when:  {{ use_instance_key }}
+    - name: Ensure id_rsa exists
+      file:
+       path:  ~{{ user }}/.ssh/id_rsa
+       state: touch
 
   #Blockinfile in ansible adds undisireble marker
-  - name: Append key to id_rsa
-    become: yes
-    shell: |
-          cd ~{{ user }}/.ssh/
-          cat clusterKey >> ~{{ user }}/.ssh/id_rsa
-   when:  {{ use_instance_key }}
+    - name: Append key to id_rsa
+      become: yes
+      shell: |
+        cd ~{{ user }}/.ssh/
+        cat clusterKey >> ~{{ user }}/.ssh/id_rsa
+  
+  when:   use_instance_key  == True
 
-
-- meta: end_play
 
 - name: Update apt
   apt:
@@ -47,18 +44,18 @@ tasks: Key passing part
   become: yes
   package:
     name:
-    - "{{ item  }}"
-
+      - "{{ item  }}"
     state: latest
 
   loop: "{{ osSetup.libraries}}"
   register: resultMPI
-  when: {{ install_mpi }} is True
+  when: install_mpi == True
 
 #TODO: criar dicionario com o tipo da instancia e como o pacote se chama no respectivo sistema, na instancia AMI linux o nome eh "openmpi-devel", Com ubuntu o nome eh: openmpi-bin
 
-# - name: Stop task
-#   meta: end_play
+
+- name: Stop task
+  meta: end_play
 
 
 
