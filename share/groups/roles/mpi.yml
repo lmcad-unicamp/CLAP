@@ -15,12 +15,12 @@
   hosts: all
   become: yes
 
-  vars:
-      efs_mount_point: "~{{ user }}/efs"
-      user: "ubuntu"
-      group: "ubuntu"
-      mount_ip: "{{ mount_ip }}"
-      mount_permissions: "0755"
+  # vars:
+  #     efs_mount_point: "~{{ user }}/efs"
+  #     user: "ubuntu"
+  #     group: "ubuntu"
+  #     mount_ip: "{{ mount_ip }}"
+  #     mount_permissions: "0755"
 
 
 
@@ -32,10 +32,10 @@
        #when: action in ['setup']
 
 
-     - include_role:
-            #become_user: "ubuntu"
-            name: 'ec2-efs'
-            tasks_from: main
+    #  - include_role:
+    #         #become_user: "ubuntu"
+    #         name: 'ec2-efs'
+    #         tasks_from: main
 
 
      - include_role:

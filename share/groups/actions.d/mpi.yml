@@ -5,7 +5,32 @@ actions:
     playbook: roles/mpi.yml
     vars:
     - name: mount_ip
+      description: if not specified the file system mounting step will be skipped
       optional: yes
+    - name: skip_mpi
+      description: Assign to "True" if want to skip, default is to install mpi
+      optional: yes
+    - name: use_instance_key
+      description: >
+                  Set to False if instance key from .clap/private/x.pem does not exist or you don't want to use it(
+                  possibly to generate a new RSA key).
+      optional: yes
+
+
+    install:
+     playbook: roles/mpi-install.yml
+     vars:
+         - name: execution-dir
+           description: >
+                        Directory where the script should be executed on remote host
+           optional: no
+         - name: src-dir
+           description: >
+                      Directory containing files which the script depends(optional if script does not need such files)
+           optional: yes
+         - name: install-script
+           description: The script to be executed
+           optional: no
 
   compile:
      playbook: roles/mpi-compile.yml
@@ -15,5 +40,5 @@ actions:
          - name: file_path
            optional: no
 hosts:                      # (optional) List of hosts that are used in this group (and in the playbooks)
-- master
+- coordinator
 - slave

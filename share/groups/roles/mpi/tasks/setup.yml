@@ -13,6 +13,8 @@
       name: osSetup
 
 - name: Key passing part
+  vars:
+    user: "{{ ansible_user }}"
   block:
     - name: passing key
       copy:
@@ -33,34 +35,51 @@
         cd ~{{ user }}/.ssh/
         cat clusterKey >> ~{{ user }}/.ssh/id_rsa
   
-  when:   use_instance_key  == True
+  when:   use_instance_key|bool
 
 
 - name: Update apt
   apt:
     update_cache: yes
+  
 
-- name: install the required package for OpenMPI
-  become: yes
-  package:
-    name:
-      - "{{ item  }}"
-    state: latest
+- debug: var=skip_mpi|bool 
 
-  loop: "{{ osSetup.libraries}}"
-  register: resultMPI
-  when: install_mpi == True
+- name: basic mpi packages installation
+  block:
+  - name: install the required package for OpenMPI
+    become: yes
+    package:
+      name:
+        - "{{ item  }}"
+      state: latest
+
+    loop: "{{ osSetup.libraries}}"
+    register: resultMPI
+
+  - name: testing env variables
+    become: yes
+    shell: |
+          stringTemp="export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/openmpi/lib
+          " &&
+          echo "$(echo -n "$stringTemp"; cat .bashrc)" > .bashrc
+
+  - name: Check whether the bin files were properly exported
+    shell: "which -a orted"
+    register: output
+
+  when: not skip_mpi|bool 
+
+
 
 #TODO: criar dicionario com o tipo da instancia e como o pacote se chama no respectivo sistema, na instancia AMI linux o nome eh "openmpi-devel", Com ubuntu o nome eh: openmpi-bin
 
 
-- name: Stop task
-  meta: end_play
 
 
 
-- debug:
-    msg: resultMPI.stdout
+# - debug:
+#     msg: resultMPI.stdout
 
 - name: Getting gcc, make
   become: yes
@@ -72,23 +91,37 @@
 
 
    #Aparentemente nao precisa escapar as aspas tal comando (e possiveis variacoes ) funcionam!
-- name: testing env variables
-  become: yes
-  shell: |
-        stringTemp="export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/openmpi/lib
-        " &&
-        echo "$(echo -n "$stringTemp"; cat .bashrc)" > .bashrc
 
-- name: Check whether the bin files were properly exported
-  shell: "which -a orted"
-  register: output
 
-- name: Creates directory
-  become: no
-  file:
-    path: ~/efs
-    state: directory
-    mode: "0755"
+
+- debug: var=mount_ip|bool
+
+- name: File system setup
+  vars:
+      efs_mount_point: "~{{ user }}/efs"
+      user: "ubuntu"
+      group: "ubuntu"
+      mount_permissions: "0755"   
+  block:  
+  - name: Including efs
+    include_role:
+          #become_user: "ubuntu"
+      name: 'ec2-efs'
+      tasks_from: main
+
+  - name: Creates directory
+    become: no
+    file:
+        path: ~/efs
+        state: directory
+        mode: "0755"
+  
+  when:  mount_ip is defined
+
+
+
+- name: Stop task
+  meta: end_play
 
 - name: Disable firewall (shotgun approach, in the future probably properly configure)
   become: yes
