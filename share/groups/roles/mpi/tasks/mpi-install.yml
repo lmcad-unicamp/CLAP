@@ -1,0 +1,32 @@
+---
+- hosts: all
+  gather_facts: yes  
+  become: no
+  tasks:
+  - name: create the execution path recursively if the same does not exist
+    file:
+      path: "{{ execution_dir }}"
+      state: directory
+
+  - name: Pass relevant files to  execution_dir
+    synchronize:
+      src: "{{ src_dir  }}"
+      dest: "{{ execution_dir }}"
+    when: src_dir is defined
+
+
+  - debug: var=ansible_env.HOME
+
+
+  - debug: var="{{ ansible_user  + '/' + execution_dir  }}"
+
+
+  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
+  - name: Execute install script
+    poll: 15
+    script: 
+      cmd: "{{ install_script }}"
+      chdir: "{{ execution_dir  }}/"
+    register: script_execution
+
+  - debug: msg={{ script_execution.stdout }}

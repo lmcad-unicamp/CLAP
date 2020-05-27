@@ -17,18 +17,18 @@ actions:
       optional: yes
 
 
-    install:
-     playbook: roles/mpi-install.yml
+  install:
+     playbook: roles/mpi/tasks/mpi-install.yml
      vars:
-         - name: execution-dir
+         - name: execution_dir
            description: >
                         Directory where the script should be executed on remote host
            optional: no
-         - name: src-dir
+         - name: src_dir
            description: >
                       Directory containing files which the script depends(optional if script does not need such files)
            optional: yes
-         - name: install-script
+         - name: install_script
            description: The script to be executed
            optional: no
 
