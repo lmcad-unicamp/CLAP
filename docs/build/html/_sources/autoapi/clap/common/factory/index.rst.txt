@@ -34,9 +34,9 @@ Module Contents
       :staticmethod:
 
 
-      Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers
+      Get the default MultiInstance API used to manipulate nodes and modules across different drivers
 
-      :return: The MultiInstanceAPI object to manipulate cluster, nodes and modules
+      :return: The MultiInstanceAPI object to manipulate nodes and modules
       :rtype: MultiInstanceAPI
 
 

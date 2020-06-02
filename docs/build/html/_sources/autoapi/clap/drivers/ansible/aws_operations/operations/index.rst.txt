@@ -11,7 +11,7 @@ Module Contents
 .. function:: __get_ec2_common_template__(provider_conf: dict, node_infos: List[NodeInfo], task_check_name: str, state: str)
 
 
-.. function:: stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]
+.. function:: stop_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo], force: bool) -> List[str]
 
 
 .. function:: pause_aws_nodes(queue: Queue, repository: RepositoryOperations, provider_conf: dict, node_infos: List[NodeInfo]) -> List[str]

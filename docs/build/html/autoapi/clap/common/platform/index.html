@@ -183,7 +183,7 @@
 <dd><p>Get the module package</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>module_name</strong> (<em>str</em>) – Name of the clap module</p>
+<dd class="field-odd"><p><strong>module_name</strong> (<em>str</em>) – Name of the clap’s module (as python module)</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The module</p>
@@ -200,7 +200,12 @@
 <dd><p>Get the module package</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Dictionaty with modules information</p>
+<dd class="field-odd"><p>Dictionaty with modules information. Theinformation are:
+- name: Name of the module
+- description: Module’s description
+- dependencies: Module’s depencencies
+- module: The loaded module (as python module)
+- loaded_time: Date when the module was loaded</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>Dict[str, Any]</p>
@@ -214,7 +219,7 @@
 <dd><p>Get the name of all the modules in the clap modules repository</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>List containing the module names</p>
+<dd class="field-odd"><p>List containing the all module names</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>List[str]</p>
@@ -252,7 +257,7 @@
 <dl class="py class">
 <dt id="clap.common.platform.MultiInstanceAPI">
 <em class="property">class </em><code class="sig-prename descclassname">clap.common.platform.</code><code class="sig-name descname">MultiInstanceAPI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">platform_db</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">repository_type</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">default_driver</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI" title="Permalink to this definition">¶</a></dt>
-<dd><p>API used to manage and perform operations in cluster and nodes from different driver implementations,
+<dd><p>API used to manage and perform operations in nodes from different driver implementations,
 and cloud providers in a transparently manner.</p>
 <dl class="py attribute">
 <dt id="clap.common.platform.MultiInstanceAPI.__interfaces_map__">
@@ -272,7 +277,17 @@ and cloud providers in a transparently manner.</p>
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.get_instance_templates">
 <em class="property">static </em><code class="sig-name descname">get_instance_templates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_instance_templates" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the instance templates defined in the instance configuration files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary with instance templates. The keys are the instance name and the value are the values for the instance.
+The dictionary have the same values for the instance configuration files</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.start_nodes">
@@ -280,10 +295,10 @@ and cloud providers in a transparently manner.</p>
 <dd><p>Start instances based on the configuration values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>instances_num</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – Dictionary containing the instance name as key and number of instances as value]</p>
+<dd class="field-odd"><p><strong>instances_num</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – Dictionary containing the instance name as key and number of instances as value. The instance name must match the instance name at instances configuration file</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of created nodes</p>
+<dd class="field-even"><p>A list of created nodes</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>List[<a class="reference internal" href="../cluster_repository/index.html#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
@@ -293,11 +308,17 @@ and cloud providers in a transparently manner.</p>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.stop_nodes">
-<code class="sig-name descname">stop_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.stop_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">stop_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">force</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.stop_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop started nodes based on their node ids</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to stop</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of stopped nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -310,6 +331,12 @@ and cloud providers in a transparently manner.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to pause</p>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of paused nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -321,58 +348,196 @@ and cloud providers in a transparently manner.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to resume</p>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of resumed nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.check_nodes_alive">
 <code class="sig-name descname">check_nodes_alive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.check_nodes_alive" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Check if nodes are alive, based on their node ids. The nodes are alive if a successfully SSH connection is performed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to check for aliveness.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary telling which nodes are alive. The dictionary keys correspond to the node id and the value is a boolean that is true if node is alive or false otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.execute_playbook_in_nodes">
 <code class="sig-name descname">execute_playbook_in_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">playbook_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">hosts</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.execute_playbook_in_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Execute an Ansible Playbook at nodes based on their node ids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>playbook_path</strong> (<em>str</em>) – Path of the Ansible playbook to execute.</p></li>
+<li><p><strong>hosts</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em>) – Nodes which playbooks will be executed. The variables can be, one of them:
+- A List of node ids, telling which nodes the playbook will be executed
+- A Dictionary telling the ansible host name (as key) and a list of node ids as value. The ansible inventory will be generated putting each node list inside the respective host.</p></li>
+<li><p><strong>extra_args</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary containing the extra variables to be passed to the playbook. Both key and value are strings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary telling which nodes have sucessfully executed the playbook. The dictionary keys correspond to the node id and the value is a boolean that is true if node successfully executed the playbook or false otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.get_connection_to_nodes">
 <code class="sig-name descname">get_connection_to_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_connection_to_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get a SSH client to nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to get the clients.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary with the SSH clients. The key is the node id and each value is the SSH client (from Paramiko library)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, Paramiko.SSHClient]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.get_nodes">
 <code class="sig-name descname">get_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the information of nodes from the node repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to get the node information.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list with nodes information</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../cluster_repository/index.html#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.get_all_nodes">
 <code class="sig-name descname">get_all_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_all_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all nodes information from the repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list with nodes information</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../cluster_repository/index.html#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.get_nodes_with_tags">
 <code class="sig-name descname">get_nodes_with_tags</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_nodes_with_tags" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the information of nodes from the node repository that match the tags informed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary with informing tags to be searched in nodes. A matched node is a node which contains the tags and the tag value match the informed tags value. The node must match all tags passed.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list with nodes information</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../cluster_repository/index.html#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.add_tags_to_nodes">
 <code class="sig-name descname">add_tags_to_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.add_tags_to_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add tags to nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to add the tags.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary with informing the tags key and value. Each tag may contain a set of value, so if a value a tag with the same key already exists in node, the value will be added to the tag set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes which the tags were added</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.remove_tags_from_nodes">
 <code class="sig-name descname">remove_tags_from_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.remove_tags_from_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove a tag value from a node tag set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to remove the tags.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary with informing the tags key and value. The value will be removed from each tag set. If the tag set contains no value, the node tag will be removed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes which the tags were removed</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.remove_tags_from_nodes_by_key">
 <code class="sig-name descname">remove_tags_from_nodes_by_key</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.remove_tags_from_nodes_by_key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove all values from a tag set from nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to remove the tags.</p></li>
+<li><p><strong>tags</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of tags to remove from nodes (all tag values will be removed from the tag set of the node)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes which the tags were removed</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.get_groups">
 <code class="sig-name descname">get_groups</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.get_groups" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all CLAP groups</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A List of dictionary with groups information. Each dictionary’s element of the list contains:
+- name: The group’s name (string)
+- actions: The list of group’s actions (list of string)
+- hosts: The list group’s host (list of string)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[Dict[str, Any]]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.__execute_group_action__">
@@ -386,8 +551,24 @@ and cloud providers in a transparently manner.</p>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.add_nodes_to_group">
-<code class="sig-name descname">add_nodes_to_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">group_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.add_nodes_to_group" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">add_nodes_to_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">group_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.add_nodes_to_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add nodes to a informed group</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to add the the group.</p></li>
+<li><p><strong>group_name</strong> (<em>str</em>) – Name of the group which the nodes will be added. If the group has a setup action, the setup action will be executed.</p></li>
+<li><p><strong>group_args</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary with the extra arguments to be passed to the setup’s action.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes that was successfully added to group. A node is sucessfully added to the group if the setup action was sucessfully performed (if any)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.__add_nodes_to_group">
@@ -397,7 +578,24 @@ and cloud providers in a transparently manner.</p>
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.execute_group_action">
 <code class="sig-name descname">execute_group_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">group_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.platform.MultiInstanceAPI.execute_group_action" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform a group action in all nodes belonging to a group</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group_name</strong> (<em>str</em>) – Name of the group which the action will be performed</p></li>
+<li><p><strong>action</strong> (<em>str</em>) – Name of the group’s action to be perfomed</p></li>
+<li><p><strong>group_args</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary with the extra arguments to be passed to the action.</p></li>
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids which the action will be performed. If None is informed, the action will be performed to all nodes belonging to the group informed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes that successfully performed the action.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.platform.MultiInstanceAPI.__execute_group_action">

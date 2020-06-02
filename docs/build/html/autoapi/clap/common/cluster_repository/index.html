@@ -163,26 +163,23 @@
 <em class="property">class </em><code class="sig-prename descclassname">clap.common.cluster_repository.</code><code class="sig-name descname">PlatformControlInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.PlatformControlInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../repository/index.html#clap.common.repository.AbstractEntry" title="clap.common.repository.AbstractEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.repository.AbstractEntry</span></code></a></p>
 <p>This class holds control information used to create nodes and cluster in the repository (database).
-It holds an incremental index to be used when creating such elements.</p>
+It holds an <strong>incremental index</strong> to be used to create such elements.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="clap.common.cluster_repository.ClusterInfo">
 <em class="property">class </em><code class="sig-prename descclassname">clap.common.cluster_repository.</code><code class="sig-name descname">ClusterInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.ClusterInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../repository/index.html#clap.common.repository.AbstractEntry" title="clap.common.repository.AbstractEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.repository.AbstractEntry</span></code></a></p>
-<p>This class holds information about a cluster that is stored in the repository and used by several interfaces
+<p>This class holds information about a cluster. A cluster is considered a set of nodes with the same provider and login configurations
 Each cluster is unique and is composed by the following elements:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>cluster_id: The unique identification of the cluster, used to perform operations across modules and instance interfaces</p></li>
-<li><p>cluster_name: The name of the cluster used by the driver object that controls this cluster</p></li>
-<li><p>cloud: The cluster (or cloud) provider that this cluster is attached (e.g., aws, azure, …)</p></li>
-<li><p>keypair: The name of the keypair used to connect to the machines created in this cluster</p></li>
-<li><p>region: The avaliability zone that this cluster was created</p></li>
-<li><p>template: Name of the template that was used to create this cluster</p></li>
-<li><p>driver_id: ID of the driver that controls this cluster</p></li>
-<li><p>driver_version: Version of the driver used by this cluster</p></li>
-<li><p>tags: Additional user tags for cluster identification</p></li>
+<li><p>cluster_id: The unique identification of the cluster, used to perform operations across modules and instance interfaces (auto-generated)</p></li>
+<li><p>provider_id: Id of the provider configuration used</p></li>
+<li><p>login_id: Id of the login configuration used</p></li>
+<li><p>driver_id: Id of the driver in-use</p></li>
+<li><p>creation_time: Date of cluster’s creation</p></li>
+<li><p>extra: Optional extra information</p></li>
 </ul>
 </div></blockquote>
 <dl class="py method">
@@ -196,21 +193,23 @@ Each cluster is unique and is composed by the following elements:</p>
 <dt id="clap.common.cluster_repository.NodeInfo">
 <em class="property">class </em><code class="sig-prename descclassname">clap.common.cluster_repository.</code><code class="sig-name descname">NodeInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.NodeInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../repository/index.html#clap.common.repository.AbstractEntry" title="clap.common.repository.AbstractEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.repository.AbstractEntry</span></code></a></p>
-<p>This class holds information about a node that is stored in the repository and used by several interfaces
+<p>This class holds information about a node that is stored in the CLAP’s repository and used by several interfaces
 Each node is unique and is composed by the following elements:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>node_id: The unique identification of the node, used to perform operations across modules and instance interfaces</p></li>
-<li><p>node_name: The name of the node used by the driver object that controls it</p></li>
-<li><p>cluster_id: ID of the cluster that this node is attached to</p></li>
-<li><p>flavor: Instance flavor (e.g., t2.micro in aws)</p></li>
-<li><p>status: Last known status of the node (see PlatformCodes)</p></li>
+<li><p>node_id: The unique identification of the node, used to perform operations across modules and interfaces</p></li>
+<li><p>cluster_id: ID of the cluster that this node is attached to. The cluster defines a unique login and provider configurations.</p></li>
+<li><p>instance_type: Type of the instantiated node (equivalent to the instances configuration file)</p></li>
+<li><p>creation_time: Date of node’s creation</p></li>
+<li><p>update_time: Date of the last node’s update</p></li>
 <li><p>ip: IP address used to connect to this node (address used to perform SSH)</p></li>
-<li><p>driver_id: ID of the driver that controls this node</p></li>
-<li><p>driver_version: Version of the driver used by this node</p></li>
-<li><p>keypair: The name of the keypair used to connect to the machines created in the node cluster</p></li>
-<li><p>key: The private key file used to perform SSH and connect to machines</p></li>
-<li><p>tags: Additional user tags for node identification</p></li>
+<li><p>status: Last known status of the node (see PlatformCodes)</p></li>
+<li><p>tags: Dictionary of tags for node identification. The key is the tag name and the value is a set of tag values</p></li>
+<li><p>groups: Dictionary with groups which the nodes belongs to. The key is the group name and the value is additional group’s information.</p></li>
+<li><p>driver_id: ID of the in-use driver that controls this node</p></li>
+<li><p>instance_id: ID of the instance at the cloud provider (cloud’s instance id)</p></li>
+<li><p>lifecycle: Instance lifecycle. It can be ‘spot’ or ‘on-demand’</p></li>
+<li><p>extra: Additional instance information</p></li>
 </ul>
 </div></blockquote>
 <dl class="py method">
@@ -282,7 +281,7 @@ Each node is unique and is composed by the following elements:</p>
 
 <dl class="py method">
 <dt id="clap.common.cluster_repository.RepositoryOperations.new_node">
-<code class="sig-name descname">new_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">instance_type</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">status</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">driver_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ip</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">instance_id</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">groups</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extra</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.new_node" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">new_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">instance_type</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">status</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">driver_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ip</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">instance_id</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">groups</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extra</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lifecycle</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'on-demand'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.new_node" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

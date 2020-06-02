@@ -185,12 +185,44 @@
 <dl class="py function">
 <dt id="clap.modules.tag.node_add_tag">
 <code class="sig-prename descclassname">clap.modules.tag.</code><code class="sig-name descname">node_add_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.tag.node_add_tag" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add tags to nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to add the tags.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary with informing the tags key and value. Each tag may contain a set of value, so if a value a tag with the same key already exists in node, the value will be added to the tag set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes which the tags were added</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.tag.node_remove_tag">
 <code class="sig-prename descclassname">clap.modules.tag.</code><code class="sig-name descname">node_remove_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.tag.node_remove_tag" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove a tag value from a node tag set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to remove the tags.</p></li>
+<li><p><strong>tags</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – The tags can be a dictionay or a list. If:
+- Tag is a dictionary: Key-valued dictionary with informing the tags key and value. The value will be removed from each tag set. If the tag set contains no value, the node tag will be removed.
+- Tag is a list: List of tags to remove from nodes (all tag values will be removed from the tag set of the node)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes which the tags were removed</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="clap.modules.tag.TagsParser">
@@ -243,10 +275,10 @@
 <dl class="py method">
 <dt id="clap.modules.tag.PlatformFactory.get_instance_api">
 <em class="property">static </em><code class="sig-name descname">get_instance_api</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">platform_db</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.PLATFORM_REPOSITORY</span></em>, <em class="sig-param"><span class="n">repository_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.REPOSITORY_TYPE</span></em>, <em class="sig-param"><span class="n">default_driver</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.DRIVER_ID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.tag.PlatformFactory.get_instance_api" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers</p>
+<dd><p>Get the default MultiInstance API used to manipulate nodes and modules across different drivers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The MultiInstanceAPI object to manipulate cluster, nodes and modules</p>
+<dd class="field-odd"><p>The MultiInstanceAPI object to manipulate nodes and modules</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="../../common/platform/index.html#clap.common.platform.MultiInstanceAPI" title="clap.common.platform.MultiInstanceAPI">MultiInstanceAPI</a></p>
@@ -260,21 +292,23 @@
 <dt id="clap.modules.tag.NodeInfo">
 <em class="property">class </em><code class="sig-prename descclassname">clap.modules.tag.</code><code class="sig-name descname">NodeInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.tag.NodeInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../common/repository/index.html#clap.common.repository.AbstractEntry" title="clap.common.repository.AbstractEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.repository.AbstractEntry</span></code></a></p>
-<p>This class holds information about a node that is stored in the repository and used by several interfaces
+<p>This class holds information about a node that is stored in the CLAP’s repository and used by several interfaces
 Each node is unique and is composed by the following elements:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>node_id: The unique identification of the node, used to perform operations across modules and instance interfaces</p></li>
-<li><p>node_name: The name of the node used by the driver object that controls it</p></li>
-<li><p>cluster_id: ID of the cluster that this node is attached to</p></li>
-<li><p>flavor: Instance flavor (e.g., t2.micro in aws)</p></li>
-<li><p>status: Last known status of the node (see PlatformCodes)</p></li>
+<li><p>node_id: The unique identification of the node, used to perform operations across modules and interfaces</p></li>
+<li><p>cluster_id: ID of the cluster that this node is attached to. The cluster defines a unique login and provider configurations.</p></li>
+<li><p>instance_type: Type of the instantiated node (equivalent to the instances configuration file)</p></li>
+<li><p>creation_time: Date of node’s creation</p></li>
+<li><p>update_time: Date of the last node’s update</p></li>
 <li><p>ip: IP address used to connect to this node (address used to perform SSH)</p></li>
-<li><p>driver_id: ID of the driver that controls this node</p></li>
-<li><p>driver_version: Version of the driver used by this node</p></li>
-<li><p>keypair: The name of the keypair used to connect to the machines created in the node cluster</p></li>
-<li><p>key: The private key file used to perform SSH and connect to machines</p></li>
-<li><p>tags: Additional user tags for node identification</p></li>
+<li><p>status: Last known status of the node (see PlatformCodes)</p></li>
+<li><p>tags: Dictionary of tags for node identification. The key is the tag name and the value is a set of tag values</p></li>
+<li><p>groups: Dictionary with groups which the nodes belongs to. The key is the group name and the value is additional group’s information.</p></li>
+<li><p>driver_id: ID of the in-use driver that controls this node</p></li>
+<li><p>instance_id: ID of the instance at the cloud provider (cloud’s instance id)</p></li>
+<li><p>lifecycle: Instance lifecycle. It can be ‘spot’ or ‘on-demand’</p></li>
+<li><p>extra: Additional instance information</p></li>
 </ul>
 </div></blockquote>
 <dl class="py method">
@@ -287,17 +321,44 @@ Each node is unique and is composed by the following elements:</p>
 <dl class="py function">
 <dt id="id0">
 <code class="sig-prename descclassname">clap.modules.tag.</code><code class="sig-name descname">node_add_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="clap.modules.tag.node_append_tag">
-<code class="sig-prename descclassname">clap.modules.tag.</code><code class="sig-name descname">node_append_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.tag.node_append_tag" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add tags to nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to add the tags.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary with informing the tags key and value. Each tag may contain a set of value, so if a value a tag with the same key already exists in node, the value will be added to the tag set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes which the tags were added</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id1">
 <code class="sig-prename descclassname">clap.modules.tag.</code><code class="sig-name descname">node_remove_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove a tag value from a node tag set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to remove the tags.</p></li>
+<li><p><strong>tags</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – The tags can be a dictionay or a list. If:
+- Tag is a dictionary: Key-valued dictionary with informing the tags key and value. The value will be removed from each tag set. If the tag set contains no value, the node tag will be removed.
+- Tag is a list: List of tags to remove from nodes (all tag values will be removed from the tag set of the node)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes which the tags were removed</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py data">
 <dt id="clap.modules.tag.__module_name__">

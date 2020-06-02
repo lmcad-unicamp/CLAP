@@ -185,7 +185,17 @@
 <dl class="py function">
 <dt id="clap.modules.template.list_templates">
 <code class="sig-prename descclassname">clap.modules.template.</code><code class="sig-name descname">list_templates</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><a class="headerlink" href="#clap.modules.template.list_templates" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the instance templates defined in the instance configuration files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary with instance templates. The keys are the instance name and the value are the values for the instance.
+The dictionary have the same values for the instance configuration files</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="clap.modules.template.TagsParser">
@@ -233,10 +243,10 @@
 <dl class="py method">
 <dt id="clap.modules.template.PlatformFactory.get_instance_api">
 <em class="property">static </em><code class="sig-name descname">get_instance_api</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">platform_db</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.PLATFORM_REPOSITORY</span></em>, <em class="sig-param"><span class="n">repository_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.REPOSITORY_TYPE</span></em>, <em class="sig-param"><span class="n">default_driver</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.DRIVER_ID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.template.PlatformFactory.get_instance_api" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers</p>
+<dd><p>Get the default MultiInstance API used to manipulate nodes and modules across different drivers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The MultiInstanceAPI object to manipulate cluster, nodes and modules</p>
+<dd class="field-odd"><p>The MultiInstanceAPI object to manipulate nodes and modules</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="../../common/platform/index.html#clap.common.platform.MultiInstanceAPI" title="clap.common.platform.MultiInstanceAPI">MultiInstanceAPI</a></p>
@@ -249,12 +259,31 @@
 <dl class="py function">
 <dt id="id0">
 <code class="sig-prename descclassname">clap.modules.template.</code><code class="sig-name descname">list_templates</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the instance templates defined in the instance configuration files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary with instance templates. The keys are the instance name and the value are the values for the instance.
+The dictionary have the same values for the instance configuration files</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.template.list_instance_types">
 <code class="sig-prename descclassname">clap.modules.template.</code><code class="sig-name descname">list_instance_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.template.list_instance_types" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the instance templates defined in the instance configuration files (only instance names)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List with instance template names, from the instance configuration files.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py data">
 <dt id="clap.modules.template.__module_name__">

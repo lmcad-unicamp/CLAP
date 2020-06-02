@@ -45,9 +45,9 @@ Package Contents
       :staticmethod:
 
 
-      Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers
+      Get the default MultiInstance API used to manipulate nodes and modules across different drivers
 
-      :return: The MultiInstanceAPI object to manipulate cluster, nodes and modules
+      :return: The MultiInstanceAPI object to manipulate nodes and modules
       :rtype: MultiInstanceAPI
 
 
@@ -68,31 +68,108 @@ Package Contents
 .. function:: interactive_shell(chan)
 
 
-.. function:: start_nodes(node_ids: Dict[str, int]) -> List[NodeInfo]
+.. function:: start_nodes(instance_ids: Dict[str, int]) -> List[NodeInfo]
+
+   Start instances based on the instance configuration values
+
+   :param instance_ids: Dictionary containing the instance name as key and number of instances as value. The instance name must match the instance name at instances configuration file
+   :type instance_ids: Dict[str, int]
+   :return: A list of created nodes 
+   :rtype: List[NodeInfo]
 
 
 .. function:: list_nodes(node_ids: List[str] = None, tags: Dict[str, str] = None) -> List[NodeInfo]
 
+   Get the information of nodes from the node repository
+
+   :param node_ids: List of node ids to get the node information. If no node_ids and no tags are informed, all nodes are retrieved
+   :type node_ids: List[str]
+   :param tags: Key-valued dictionary informing the nodes to get, matching the tags informed. The nodes containing all tag values are retieved.
+   :type tags: Dict[str, str]
+   :return: A list with nodes information 
+   :rtype: List[NodeInfo]
+
 
 .. function:: is_alive(node_ids: List[str], tags: Dict[str, str] = None) -> Dict[str, bool]
 
+   Check if nodes are alive, based on their node ids. The nodes are alive if a successfully SSH connection is performed
 
-.. function:: stop_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]
+   :param node_ids: List of node ids to check for aliveness.
+   :type node_ids: List[str]
+   :param tags: Optionally check nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :return: A dictionary telling which nodes are alive. The dictionary keys correspond to the node id and the value is a boolean that is true if node is alive or false otherwise. 
+   :rtype: Dict[str, bool]
+
+
+.. function:: stop_nodes(node_ids: List[str], tags: Dict[str, str] = None, force: bool = True) -> List[str]
+
+   Stop started nodes based on their node ids
+
+   :param node_ids: List of node ids to stop
+   :type node_ids: List[str]
+   :param tags: Optionally stop nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :return: A list of stopped nodes 
+   :rtype: List[str]
 
 
 .. function:: connect_to_node(node_id: str)
 
+   Open a SSH shell to a node based on it node id
+       
+
 
 .. function:: resume_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]
+
+   Resume stopped nodes based on their node ids
+
+   :param node_ids: List of node ids to resume
+   :type node_ids: List[str]
+   :param tags: Optionally resume nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :return: A list of resumed nodes 
+   :rtype: List[str]
 
 
 .. function:: pause_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]
 
+   Pause nodes based on their node ids
+
+   :param node_ids: List of node ids to pause
+   :type node_ids: List[str]
+   :param tags: Optionally pause nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :return: A list of paused nodes 
+   :rtype: List[str]
+
 
 .. function:: execute_playbook(playbook_file: str, node_ids: List[str], tags: Dict[str, str] = None, extra_args: Dict[str, str] = None) -> Dict[str, bool]
 
+   Execute an Ansible Playbook at nodes based on their node ids.
+
+   :param playbook_file: Path of the Ansible playbook to execute.
+   :type playbook_file: str
+   :param node_ids: List of node ids to execute the playbook
+   :type node_ids: List[str]
+   :param tags: Optionally execute playbook at nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :param extra_args: Key-valued dictionary containing the extra variables to be passed to the playbook. Both key and value are strings
+   :type extra_args: Dict[str, str]
+   :return: A dictionary telling which nodes have sucessfully executed the playbook. The dictionary keys correspond to the node id and the value is a boolean that is true if node successfully executed the playbook or false otherwise. 
+   :rtype: Dict[str, bool]
+
 
 .. function:: get_ssh_connections(node_ids: List[str], tags: Dict[str, str] = None, *args, **kwargs) -> Dict[str, SSHClient]
+
+   Get a SSH client to nodes.
+
+   :param node_ids: List of node ids to get the clients.
+   :type node_ids: List[str]
+   :param tags: Optionally get connections to nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :return: A dictionary with the SSH clients. The key is the node id and each value is the SSH client (from Paramiko library)
+   :rtype: Dict[str, Paramiko.SSHClient]
 
 
 .. py:class:: NodeParser
@@ -173,9 +250,9 @@ Package Contents
       :staticmethod:
 
 
-      Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers
+      Get the default MultiInstance API used to manipulate nodes and modules across different drivers
 
-      :return: The MultiInstanceAPI object to manipulate cluster, nodes and modules
+      :return: The MultiInstanceAPI object to manipulate nodes and modules
       :rtype: MultiInstanceAPI
 
 
@@ -184,50 +261,129 @@ Package Contents
 
    Bases: :class:`clap.common.repository.AbstractEntry`
 
-   This class holds information about a node that is stored in the repository and used by several interfaces
+   This class holds information about a node that is stored in the CLAP's repository and used by several interfaces
    Each node is unique and is composed by the following elements:
-       * node_id: The unique identification of the node, used to perform operations across modules and instance interfaces
-       * node_name: The name of the node used by the driver object that controls it
-       * cluster_id: ID of the cluster that this node is attached to
-       * flavor: Instance flavor (e.g., t2.micro in aws)
-       * status: Last known status of the node (see PlatformCodes)
+       * node_id: The unique identification of the node, used to perform operations across modules and interfaces
+       * cluster_id: ID of the cluster that this node is attached to. The cluster defines a unique login and provider configurations.
+       * instance_type: Type of the instantiated node (equivalent to the instances configuration file)
+       * creation_time: Date of node's creation
+       * update_time: Date of the last node's update
        * ip: IP address used to connect to this node (address used to perform SSH)
-       * driver_id: ID of the driver that controls this node
-       * driver_version: Version of the driver used by this node
-       * keypair: The name of the keypair used to connect to the machines created in the node cluster
-       * key: The private key file used to perform SSH and connect to machines
-       * tags: Additional user tags for node identification
+       * status: Last known status of the node (see PlatformCodes)
+       * tags: Dictionary of tags for node identification. The key is the tag name and the value is a set of tag values
+       * groups: Dictionary with groups which the nodes belongs to. The key is the group name and the value is additional group's information.
+       * driver_id: ID of the in-use driver that controls this node
+       * instance_id: ID of the instance at the cloud provider (cloud's instance id)
+       * lifecycle: Instance lifecycle. It can be 'spot' or 'on-demand'
+       * extra: Additional instance information
 
    .. method:: __repr__(self)
 
 
 
 
-.. function:: start_nodes(node_ids: Dict[str, int]) -> List[NodeInfo]
+.. function:: start_nodes(instance_ids: Dict[str, int]) -> List[NodeInfo]
+
+   Start instances based on the instance configuration values
+
+   :param instance_ids: Dictionary containing the instance name as key and number of instances as value. The instance name must match the instance name at instances configuration file
+   :type instance_ids: Dict[str, int]
+   :return: A list of created nodes 
+   :rtype: List[NodeInfo]
 
 
 .. function:: list_nodes(node_ids: List[str] = None, tags: Dict[str, str] = None) -> List[NodeInfo]
 
+   Get the information of nodes from the node repository
+
+   :param node_ids: List of node ids to get the node information. If no node_ids and no tags are informed, all nodes are retrieved
+   :type node_ids: List[str]
+   :param tags: Key-valued dictionary informing the nodes to get, matching the tags informed. The nodes containing all tag values are retieved.
+   :type tags: Dict[str, str]
+   :return: A list with nodes information 
+   :rtype: List[NodeInfo]
+
 
 .. function:: is_alive(node_ids: List[str], tags: Dict[str, str] = None) -> Dict[str, bool]
 
+   Check if nodes are alive, based on their node ids. The nodes are alive if a successfully SSH connection is performed
 
-.. function:: stop_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]
+   :param node_ids: List of node ids to check for aliveness.
+   :type node_ids: List[str]
+   :param tags: Optionally check nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :return: A dictionary telling which nodes are alive. The dictionary keys correspond to the node id and the value is a boolean that is true if node is alive or false otherwise. 
+   :rtype: Dict[str, bool]
+
+
+.. function:: stop_nodes(node_ids: List[str], tags: Dict[str, str] = None, force: bool = True) -> List[str]
+
+   Stop started nodes based on their node ids
+
+   :param node_ids: List of node ids to stop
+   :type node_ids: List[str]
+   :param tags: Optionally stop nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :return: A list of stopped nodes 
+   :rtype: List[str]
 
 
 .. function:: resume_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]
 
+   Resume stopped nodes based on their node ids
+
+   :param node_ids: List of node ids to resume
+   :type node_ids: List[str]
+   :param tags: Optionally resume nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :return: A list of resumed nodes 
+   :rtype: List[str]
+
 
 .. function:: pause_nodes(node_ids: List[str], tags: Dict[str, str] = None) -> List[str]
+
+   Pause nodes based on their node ids
+
+   :param node_ids: List of node ids to pause
+   :type node_ids: List[str]
+   :param tags: Optionally pause nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :return: A list of paused nodes 
+   :rtype: List[str]
 
 
 .. function:: execute_playbook(playbook_file: str, node_ids: List[str], tags: Dict[str, str] = None, extra_args: Dict[str, str] = None) -> Dict[str, bool]
 
+   Execute an Ansible Playbook at nodes based on their node ids.
+
+   :param playbook_file: Path of the Ansible playbook to execute.
+   :type playbook_file: str
+   :param node_ids: List of node ids to execute the playbook
+   :type node_ids: List[str]
+   :param tags: Optionally execute playbook at nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :param extra_args: Key-valued dictionary containing the extra variables to be passed to the playbook. Both key and value are strings
+   :type extra_args: Dict[str, str]
+   :return: A dictionary telling which nodes have sucessfully executed the playbook. The dictionary keys correspond to the node id and the value is a boolean that is true if node successfully executed the playbook or false otherwise. 
+   :rtype: Dict[str, bool]
+
 
 .. function:: get_ssh_connections(node_ids: List[str], tags: Dict[str, str] = None, *args, **kwargs) -> Dict[str, SSHClient]
 
+   Get a SSH client to nodes.
+
+   :param node_ids: List of node ids to get the clients.
+   :type node_ids: List[str]
+   :param tags: Optionally get connections to nodes that match the tags informed
+   :type tags: Dict[str, str]
+   :return: A dictionary with the SSH clients. The key is the node id and each value is the SSH client (from Paramiko library)
+   :rtype: Dict[str, Paramiko.SSHClient]
+
 
 .. function:: connect_to_node(node_id: str)
+
+   Open a SSH shell to a node based on it node id
+       
 
 
 .. data:: __module_name__

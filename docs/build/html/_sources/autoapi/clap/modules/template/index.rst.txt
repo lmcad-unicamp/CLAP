@@ -33,6 +33,12 @@ Package Contents
 
 .. function:: list_templates() -> Dict[str, Any]
 
+   Get the instance templates defined in the instance configuration files.
+
+   :return:    Dictionary with instance templates. The keys are the instance name and the value are the values for the instance. 
+               The dictionary have the same values for the instance configuration files
+   :rtype: Dict[str, Any]
+
 
 .. py:class:: TagsParser
 
@@ -73,17 +79,28 @@ Package Contents
       :staticmethod:
 
 
-      Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers
+      Get the default MultiInstance API used to manipulate nodes and modules across different drivers
 
-      :return: The MultiInstanceAPI object to manipulate cluster, nodes and modules
+      :return: The MultiInstanceAPI object to manipulate nodes and modules
       :rtype: MultiInstanceAPI
 
 
 
 .. function:: list_templates() -> Dict[str, Any]
 
+   Get the instance templates defined in the instance configuration files.
+
+   :return:    Dictionary with instance templates. The keys are the instance name and the value are the values for the instance. 
+               The dictionary have the same values for the instance configuration files
+   :rtype: Dict[str, Any]
+
 
 .. function:: list_instance_types() -> List[str]
+
+   Get the instance templates defined in the instance configuration files (only instance names)
+
+   :return:    List with instance template names, from the instance configuration files.
+   :rtype: List[str]
 
 
 .. data:: __module_name__

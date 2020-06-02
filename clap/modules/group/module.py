@@ -7,6 +7,21 @@ from clap.common.utils import log
 
 def add_group_to_node(  node_ids: List[str], group: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None, 
                         re_add_to_group: bool = True) -> List[str]:
+    """ Add nodes to a informed group
+
+    :param node_ids: List of node ids to add the the group.
+    :type node_ids: List[str]
+    :param group_name: Name of the group which the nodes will be added. If the group has a setup action, the setup action will be executed.
+    :type group_name: str
+    :param group_args: Key-valued dictionary with the extra arguments to be passed to the setup's action.
+    :type group_args: Dict[str, str]
+    :param tags: Optionally add nodes that match the tags informed to the group
+    :type tags: Dict[str, str]
+    :param re_add_to_group: Boolean variable that if is set to true, does not readd node to a group, if the node already belongs to it (Default: True)
+    :type re_add_to_group: bool
+    :return: A list of nodes that was successfully added to group. A node is sucessfully added to the group if the setup action was sucessfully performed (if any)
+    :rtype: List[str] 
+    """
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = set(node_ids)
     if tags:
@@ -26,6 +41,21 @@ def add_group_to_node(  node_ids: List[str], group: str, group_args: Dict[str, s
     return multi_instance.add_nodes_to_group(node_ids, group, group_args=group_args) + already_added_nodes
 
 def execute_group_action(node_ids: List[str], group: str, action: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]:
+    """ Perform a group action to nodes
+
+    :param node_ids: List of node ids to execute the group action.
+    :type node_ids: List[str]
+    :param group_name: Name of the group which the action will be performed
+    :type group_name: str
+    :param action: Name of the group's action to be perfomed
+    :type action: str 
+    :param group_args: Key-valued dictionary with the extra arguments to be passed to the action.
+    :type group_args: Dict[str, str]
+    :param tags: Optionally execute group's action to nodes that match the tags informed
+    :type tags: Dict[str, str]
+    :return: A list of nodes that successfully performed the action.
+    :rtype: List[str] 
+    """
     multi_instance = PlatformFactory.get_instance_api()
     node_ids = set(node_ids) if node_ids else set()
     if tags:
@@ -36,6 +66,14 @@ def execute_group_action(node_ids: List[str], group: str, action: str, group_arg
 
 
 def list_groups() -> List[Dict[str, Any]]:
+    """ Get all CLAP groups
+
+    :return: A List of dictionary with groups information. Each dictionary's element of the list contains:
+        - name: The group's name (string)
+        - actions: The list of group's actions (list of string)
+        - hosts: The list group's host (list of string)
+    :rtype: List[Dict[str, Any]]
+    """
     multi_instance = PlatformFactory.get_instance_api()
     groups = multi_instance.get_groups()
     return groups
