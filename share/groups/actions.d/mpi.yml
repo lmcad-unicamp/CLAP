@@ -15,7 +15,19 @@ actions:
                   Set to False if instance key from .clap/private/x.pem does not exist or you don't want to use it(
                   possibly to generate a new RSA key).
       optional: yes
-
+ 
+  sync:
+     playbook: roles/mpi/tasks/mpi-sync.yml
+     vars:
+        
+         - name: src_dir
+           description: >
+                      Source directory (on localhost)
+           optional: no
+         - name: execution_dir
+           description: The script to be executed
+           optional: no
+    
 
   install:
      playbook: roles/mpi/tasks/mpi-install.yml
@@ -33,12 +45,45 @@ actions:
            optional: no
 
   compile:
-     playbook: roles/mpi-compile.yml
+     playbook: roles/mpi/tasks/mpi-compile.yml
      vars:
-         - name: app_name
+         - name: execution_dir
            optional: no
-         - name: file_path
+         - name: compile_script
            optional: no
+
+  setup-keys:
+     playbook: roles/mpi/tasks/mpi-setup-keys.yml
+     vars:
+         - name: key_name
+           description: Name of the RSA key which will be stored in remote node's .ssh/ folder
+           optional: yes
+
+  compile-c:
+    playbook: roles/mpi/tasks/mpi-compile-c.yml
+    vars:
+        - name: execution_dir
+          optional: no
+        - name: flags
+          optional: yes
+        - name: files
+          optional: yes
+        - name: output_file
+          optional: yes
+
+
+    run:
+      playbook: roles/mpi/tasks/mpi-run.yml
+      vars:
+          - name: execution_dir
+            optional: no
+          - name: job_name
+            optional: no
+          - name: binary
+            optional: no
+          - name: binary_args
+            optional: yes
+
 hosts:                      # (optional) List of hosts that are used in this group (and in the playbooks)
 - coordinator
 - slave

@@ -13,6 +13,9 @@
       name: osSetup
 
 - name: Key passing part
+  #By default, clapp already puts the public key in the authorized_key of each 
+  # node (so that the localhost, who has the private part can connect to the node), therefore this part only pass the private parted
+  # such that each node has the capability to connected to other node
   vars:
     user: "{{ ansible_user }}"
   block:
@@ -68,6 +71,12 @@
     shell: "which -a orted"
     register: output
 
+  - name: Getting gcc, make
+    become: yes
+    package:
+      name:   build-essential
+      state: present
+
   when: not skip_mpi|bool 
 
 
@@ -81,11 +90,7 @@
 # - debug:
 #     msg: resultMPI.stdout
 
-- name: Getting gcc, make
-  become: yes
-  package:
-    name:   build-essential
-    state: present
+
 
 
 
@@ -120,8 +125,7 @@
 
 
 
-- name: Stop task
-  meta: end_play
+
 
 - name: Disable firewall (shotgun approach, in the future probably properly configure)
   become: yes

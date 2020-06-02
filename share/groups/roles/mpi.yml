@@ -14,34 +14,14 @@
 - name: MPI  Playbook for all
   hosts: all
   become: yes
-
-  # vars:
-  #     efs_mount_point: "~{{ user }}/efs"
-  #     user: "ubuntu"
-  #     group: "ubuntu"
-  #     mount_ip: "{{ mount_ip }}"
-  #     mount_permissions: "0755"
-
-
-
   gather_facts: yes
   tasks:
      - include_role:
           name: 'mpi'
           tasks_from: "setup"
-       #when: action in ['setup']
-
-
-    #  - include_role:
-    #         #become_user: "ubuntu"
-    #         name: 'ec2-efs'
-    #         tasks_from: main
-
-
      - include_role:
             name: 'zabbix'
             tasks_from: setup
-       #when: action in ['setup']
 
 
 

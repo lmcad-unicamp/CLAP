@@ -1,0 +1,30 @@
+#Arguments:
+# file_path= absolute path ( on localhost) of the folder containing all *.c files
+
+# To create a directory or pass file the path must be absolute ~exec_dir where
+#  exec_dir= (user)/efs/app_name/
+# however, in a shell command, the current directory is ~(user)/ so cd exec_dir yields
+# ~(user)/(user)/efs/app_name/, which does not exist
+# There are two options:
+# 1- Hardcode the directory
+# 2- change to home director and re-use the exec_dir <- Option used
+
+
+
+
+
+---
+- hosts: all
+  gather_facts: yes  
+  become: no
+  tasks:
+  
+  
+  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
+  - name: Execute compile script
+    poll: 15
+    script: 
+      cmd: "{{ compile_script }}"
+      chdir: "{{ execution_dir  }}"
+    register: script_execution
+
