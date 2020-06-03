@@ -1,19 +1,23 @@
 
 ---
-- hosts: all
+- name: generate hostfile in the execution dir
+  import_playbook: mpi-generate-hosts.yml
+
+- hosts: coordinator
   gather_facts: yes  
   become: no
+
   vars:
-    _binary: "{{ binary_args | default('') }}" 
+    _binaryArgs: "{{ binary_args | default('') }}" 
   tasks:
   
-  - name: generate hostfile in the execution dir
 
+    
 
   #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
   - name: Execute compile script
     poll: 15
     shell: 
-       "cd {{ execution_dir }}  &&  mpirun "
+       "cd {{ execution_dir }}  &&  mpirun --hostfile hosts {{ binary }} {{ _binaryArgs }}> {{ job_name }}.out 2>{{ job_name }}.err "
     register: binary_execution
 

@@ -1,0 +1,35 @@
+
+
+---
+- hosts: coordinator
+  gather_facts: yes  
+  become: no
+  tasks:
+  
+  
+  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
+  - name: Execute compile script
+    poll: 15
+    script: 
+      cmd: "{{ run_script }}"
+      chdir: "{{ execution_dir  }}"
+    register: script_execution
+
+  - debug: var=script_execution
+
+
+
+  - name: Save output
+    copy:
+      content: "{{ script_execution.stdout }}"
+      dest: "{{ execution_dir }}{{ job_name }}.out"
+
+  - name: Save error
+    copy:
+      content: "{{ script_execution.stderr }}"
+      dest: "{{ execution_dir }}{{ job_name }}.err"
+    
+
+  # - name: Generate output files
+  #   shell: "cd {{ execution_dir  }} && echo \"{{ script_execution.stdout_lines }}\" > {{ job_name }}.out &&
+  #   \"{{ script_execution.stderr_lines }}\" >  {{ job_name }}.err"
