@@ -36,6 +36,7 @@ setuptools.setup(
       'paramiko>=2.7',
       'schema',
       'subprocess32',
+      'tinyrecord',
       # AWS requirements
       'pycrypto',
       'boto>=2.48',

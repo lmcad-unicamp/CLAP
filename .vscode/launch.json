@@ -173,5 +173,13 @@
             "args": ["-vv", "paramount", "start", "NAS.C", "i-c5.large", "2", "1", "--setup", "--execution-dir", "/home/ubuntu/NPB3.4-MPI/bin"],
             "console": "integratedTerminal"
         },
+        {
+            "name": "Test SQLite",
+            "type": "python",
+            "request": "launch",
+            "program": "test/test_repository_sqlite.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },
     ]
 }

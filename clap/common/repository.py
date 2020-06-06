@@ -462,12 +462,18 @@ class SQLiteRepository(AbstractRepository):
         self.sqlite_obj = None
 
     def open_connection(self, *args, **kwargs):
-        self.sqlite_obj = sqlitedict.SqliteDict(self.repository)
+        table = kwargs.get('table', 'default')
+        self.sqlite_obj = sqlitedict.SqliteDict(self.repository, tablename=table, flag='c', encode=json.dumps, decode=json.loads)
         return self
 
     def close_connection(self, *args, **kwargs):
         self.sqlite_obj.commit()
         self.sqlite_obj = None
+
+    def __set_table__(self, table: str):
+        if self.sqlite_obj.tablename != table:
+            self.sqlite_obj.commit()
+        self.sqlite_obj.tablename = table
 
     def create_table(self, table: str, *args, **kwargs):
         """ Create a table in the repository  (a container to hold elements of the same type)
@@ -478,7 +484,9 @@ class SQLiteRepository(AbstractRepository):
         :param kwargs: Additional keyword arguments to be used
         :return: None
         """
-        self.sqlite_obj = sqlitedict.SqliteDict(self.repository, tablename=table, flag='c')
+        self.sqlite_obj.commit()
+        del self.sqlite_obj
+        self.open_connection(table=table)
         self.sqlite_obj.commit()
 
     def retrieve_tables(self) -> List[str]:
@@ -510,14 +518,10 @@ class SQLiteRepository(AbstractRepository):
         :param kwargs: Additional keyword arguments to be used
         :return: None
         """
-        self.sqlite_obj = sqlitedict.SqliteDict(self.repository, tablename=table, flag='w')
-        self.sqlite_obj.commit()
-        self.sqlite_obj = sqlitedict.SqliteDict(self.repository, tablename=table, flag='c')
-
-    def __set_table__(self, table: str):
-        if self.sqlite_obj.tablename != table:
+        for table in tables:
+            self.__set_table__(table)
+            self.sqlite_obj.clear()
             self.sqlite_obj.commit()
-        self.sqlite_obj.tablename = table
 
     def create_element(self, table: str, obj: AbstractEntry, *args, **kwargs):
         """ Insert a new element in the table
@@ -532,11 +536,12 @@ class SQLiteRepository(AbstractRepository):
         """
         self.__set_table__(table)
         try:
-            last_idx = int(max(self.sqlite_obj.keys()))
+            last_idx = max([int(i) for i in self.sqlite_obj.keys()])
         except ValueError:
             last_idx = 0
         last_idx += 1
-        self.sqlite_obj[last_idx] = obj
+        self.sqlite_obj[last_idx] = obj.__dict__
+        self.sqlite_obj.commit()
 
     def retrieve_elements(self, table: str, cast_to: type, **where) -> List[Any]:
         """ Retrieve elements from a table in the database, basing on a simle keyworded query
@@ -587,8 +592,9 @@ class SQLiteRepository(AbstractRepository):
                     pass
         
         for k in update_keys:
-            self.sqlite_obj[k] = obj
+            self.sqlite_obj[k] = obj.__dict__
     
+        self.sqlite_obj.commit()
         return values
 
     def drop_elements(self, table: str, **where):
@@ -614,6 +620,8 @@ class SQLiteRepository(AbstractRepository):
     
         for k in update_keys:
             self.sqlite_obj.pop(k)
+        
+        self.sqlite_obj.commit()
             
 
 class RepositoryFactory:
