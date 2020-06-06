@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
+
 import logging
 import time
 import traceback
@@ -8,7 +11,7 @@ import argcomplete
 
 from typing import List
 
-from app.cliapp.commands import get_known_arguments_parser, get_argument_parser, print_all_help
+from .commands import get_known_arguments_parser, get_argument_parser, print_all_help
 from clap.common.config import Defaults
 from clap.common.module import AbstractParser
 from clap.common.utils import log, setup_log, path_extend

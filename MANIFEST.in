@@ -1,0 +1,3 @@
+recursive-include app *
+recursive-include docs *
+include elasticluster README.md version.txt

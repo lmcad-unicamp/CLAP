@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-
-import os
-os.environ['CLAP'] = os.getcwd()
+#!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
 
 import sys
-from app.cliapp.app import main
+from clap.app.cliapp.app import main
 sys.exit(main(sys.argv[1:]))
