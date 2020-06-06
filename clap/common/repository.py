@@ -462,9 +462,6 @@ class RepositoryFactory:
 
             return TinyDBRepository(repository, create_new,
                                     TinyDBRepository.DEFAULT_STORAGE_TYPE if storage_type is None else storage_type)
-        elif repository_type == 'sqlite':
-            repository = path_extend(repository)
-            return SQLiteRepository(repository, True, None) 
         else:
             raise ValueError("Invalid repository type `{}`".format(repository_type))
 
@@ -483,9 +480,5 @@ class RepositoryFactory:
         if repository_type == 'tinydb':
             repository = path_extend(repository)
             return os.path.exists(repository) and os.path.isfile(repository)
-        elif repository_type == 'sqlite':
-            repository = path_extend(repository)
-            return os.path.exists(repository) and os.path.isfile(repository)
-
         else:
             raise ValueError("Invalid repository type `{}`".format(repository_type))
