@@ -1,7 +1,6 @@
 import os.path
 
 import tinydb
-import sqlitedict
 import json
 from abc import abstractmethod
 from functools import reduce
