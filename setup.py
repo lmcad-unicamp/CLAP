@@ -55,7 +55,8 @@ setuptools.setup(
       'Bootstrap-Flask',
       'Flask-SQLAlchemy',
       'Flask-WTF',
-      'python-socketio'
+      'python-socketio',
+      'sqlitedict'
     ],
     python_requires='>=3.6'
 )
