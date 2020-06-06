@@ -1,0 +1,5 @@
+---
+actions:
+  setup:
+    playbook: roles/zabbix.yml
+    description: Install zabbix agent in nodes

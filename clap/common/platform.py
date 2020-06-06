@@ -17,8 +17,6 @@ from clap.common.cluster_repository import RepositoryOperations, NodeInfo
 from clap.common.utils import path_extend, log, yaml_load
 
 
-# TODO tag values must be a set
-
 class ModuleInterface:
     """ Interface to get clap modules from the modules repository
     """
@@ -71,7 +69,7 @@ class ModuleInterface:
     def get_module(self, module_name: str) -> list:
         """ Get the module package
 
-        :param module_name: Name of the clap module
+        :param module_name: Name of the clap's module (as python module)
         :type module_name: str
         :return: The module
         :rtype: Module
@@ -81,7 +79,12 @@ class ModuleInterface:
     def get_modules(self) -> Dict[str, Any]:
         """ Get the module package
 
-        :return: Dictionaty with modules information
+        :return: Dictionaty with modules information. Theinformation are:
+          - name: Name of the module
+          - description: Module's description
+          - dependencies: Module's depencencies
+          - module: The loaded module (as python module)
+          - loaded_time: Date when the module was loaded
         :rtype: Dict[str, Any]
         """
         return self.__modules_map__
@@ -89,7 +92,7 @@ class ModuleInterface:
     def get_module_names(self) -> List[str]:
         """ Get the name of all the modules in the clap modules repository
 
-        :return: List containing the module names
+        :return: List containing the all module names
         :rtype: List[str]
         """
 
@@ -183,7 +186,7 @@ class GroupInterface:
 
 
 class MultiInstanceAPI:
-    """ API used to manage and perform operations in cluster and nodes from different driver implementations,
+    """ API used to manage and perform operations in nodes from different driver implementations,
     and cloud providers in a transparently manner.
     """
     __interfaces_map__ = dict()
@@ -213,11 +216,11 @@ class MultiInstanceAPI:
     def __init__(self, platform_db: str, repository_type: str, default_driver: str):
         """ Create a MultiInstance API used to manage several clusters and nodes in a transparent manner
 
-        :param platform_db: Path of the platform repository to use. The repository is used to store clusters and nodes information
+        :param platform_db: Path of the platform repository to use. The repository is used to store nodes information
         :type platform_db: str
         :param repository_type: Type of the repository storage
         :type repository_type: str
-        :param default_driver: Default driver used to manage clusters (if no other one is provided)
+        :param default_driver: Default driver used to manage nodes
         :type default_driver: str
         """
         self.__repository_operations = RepositoryOperations(platform_db, repository_type)
@@ -235,6 +238,12 @@ class MultiInstanceAPI:
 
     @staticmethod
     def get_instance_templates() -> Dict[str, Any]:
+        """ Get the instance templates defined in the instance configuration files.
+
+        :return:    Dictionary with instance templates. The keys are the instance name and the value are the values for the instance. 
+                    The dictionary have the same values for the instance configuration files
+        :rtype: Dict[str, Any]
+        """
         return yaml_load(Defaults.instances_conf)
 
     # --------------------------------------------------------------------------------
@@ -245,9 +254,9 @@ class MultiInstanceAPI:
     def start_nodes(self, instances_num: Dict[str, int]) -> List[NodeInfo]:
         """ Start instances based on the configuration values
 
-        :param instances_num: Dictionary containing the instance name as key and number of instances as value]
+        :param instances_num: Dictionary containing the instance name as key and number of instances as value. The instance name must match the instance name at instances configuration file
         :type instances_num: Dict[str, int]
-        :return: List of created nodes 
+        :return: A list of created nodes 
         :rtype: List[NodeInfo]
         """
         print("Starting instances: {}...".format(instances_num))
@@ -258,6 +267,8 @@ class MultiInstanceAPI:
 
         :param node_ids: List of node ids to stop
         :type node_ids: List[str]
+        :return: A list of stopped nodes 
+        :rtype: List[str]
         """      
         nodes = self.get_nodes(node_ids)
         stopped_nodes = []
@@ -272,6 +283,8 @@ class MultiInstanceAPI:
 
         :param node_ids: List of node ids to pause
         :type node_ids: List[str]
+        :return: A list of paused nodes 
+        :rtype: List[str]
         """
         nodes = self.get_nodes(node_ids)
         paused_nodes = []
@@ -286,6 +299,8 @@ class MultiInstanceAPI:
 
         :param node_ids: List of node ids to resume
         :type node_ids: List[str]
+        :return: A list of resumed nodes 
+        :rtype: List[str]
         """
         nodes = self.get_nodes(node_ids)
         resumed_nodes = []
@@ -296,6 +311,13 @@ class MultiInstanceAPI:
         return resumed_nodes
 
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
+        """ Check if nodes are alive, based on their node ids. The nodes are alive if a successfully SSH connection is performed
+
+        :param node_ids: List of node ids to check for aliveness.
+        :type node_ids: List[str]
+        :return: A dictionary telling which nodes are alive. The dictionary keys correspond to the node id and the value is a boolean that is true if node is alive or false otherwise. 
+        :rtype: Dict[str, bool]
+        """
         nodes = self.get_nodes(node_ids)
         checked_nodes = dict()
         for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
@@ -306,6 +328,19 @@ class MultiInstanceAPI:
 
     def execute_playbook_in_nodes(self, playbook_path: str, hosts: Union[List[str], Dict[str, List[str]]],
                                   extra_args: Dict[str, str] = None) -> Dict[str, bool]:
+        """ Execute an Ansible Playbook at nodes based on their node ids.
+
+        :param playbook_path: Path of the Ansible playbook to execute.
+        :type playbook_path: str
+        :param hosts: Nodes which playbooks will be executed. The variables can be, one of them:
+          - A List of node ids, telling which nodes the playbook will be executed
+          - A Dictionary telling the ansible host name (as key) and a list of node ids as value. The ansible inventory will be generated putting each node list inside the respective host.
+        :type hosts: Union[List[str], Dict[str, List[str]]]
+        :param extra_args: Key-valued dictionary containing the extra variables to be passed to the playbook. Both key and value are strings
+        :type extra_args: Dict[str, str]
+        :return: A dictionary telling which nodes have sucessfully executed the playbook. The dictionary keys correspond to the node id and the value is a boolean that is true if node successfully executed the playbook or false otherwise. 
+        :rtype: Dict[str, bool]
+        """
         if not os.path.isfile(playbook_path):
             raise Exception("Invalid playbook at `{}`".format(playbook_path))
         if not hosts:
@@ -345,6 +380,13 @@ class MultiInstanceAPI:
         return executed_nodes
 
     def get_connection_to_nodes(self, node_ids: List[str], *args, **kwargs) -> Dict[str, SSHClient]:
+        """ Get a SSH client to nodes.
+
+        :param node_ids: List of node ids to get the clients.
+        :type node_ids: List[str]
+        :return: A dictionary with the SSH clients. The key is the node id and each value is the SSH client (from Paramiko library)
+        :rtype: Dict[str, Paramiko.SSHClient]
+        """
         nodes = self.get_nodes(node_ids)
         connections = dict()
         for cluster in self.__repository_operations.get_clusters(list({node.cluster_id for node in nodes})):
@@ -353,10 +395,17 @@ class MultiInstanceAPI:
         return connections
 
     # --------------------------------------------------------------------------------
-    # ########################### Operations with repository ##########################
+    # ########################### Operations with repository #########################
     # The following operations directly uses the reporitory
     # --------------------------------------------------------------------------------
     def get_nodes(self, node_ids: List[str]) -> List[NodeInfo]:
+        """ Get the information of nodes from the node repository
+
+        :param node_ids: List of node ids to get the node information.
+        :type node_ids: List[str]
+        :return: A list with nodes information 
+        :rtype: List[NodeInfo]
+        """
         if not node_ids:
             raise Exception("No nodes informed")
 
@@ -368,10 +417,22 @@ class MultiInstanceAPI:
 
         return nodes
     
-    def get_all_nodes(self):
+    def get_all_nodes(self) -> List[NodeInfo]:
+        """ Get all nodes information from the repository
+
+        :return: A list with nodes information 
+        :rtype: List[NodeInfo]
+        """
         return self.__repository_operations.get_all_nodes()
 
     def get_nodes_with_tags(self, tags: Dict[str, str]) -> List[NodeInfo]:
+        """ Get the information of nodes from the node repository that match the tags informed
+
+        :param tags: Key-valued dictionary with informing tags to be searched in nodes. A matched node is a node which contains the tags and the tag value match the informed tags value. The node must match all tags passed.
+        :type tags: Dict[str, str]
+        :return: A list with nodes information 
+        :rtype: List[NodeInfo]
+        """
         tagged_nodes = []
         for node in self.__repository_operations.get_all_nodes():
             add_node = True
@@ -392,6 +453,15 @@ class MultiInstanceAPI:
     # --------------------------------------------------------------------------------
 
     def add_tags_to_nodes(self, node_ids: List[str], tags: Dict[str, str]) -> List[str]:
+        """ Add tags to nodes
+
+        :param node_ids: List of node ids to add the tags.
+        :type node_ids: List[str]
+        :param tags: Key-valued dictionary with informing the tags key and value. Each tag may contain a set of value, so if a value a tag with the same key already exists in node, the value will be added to the tag set.
+        :type tags: Dict[str, str]
+        :return: A list of nodes which the tags were added 
+        :rtype: List[str]
+        """
         added_nodes = []
         for node in self.get_nodes(node_ids):
             for tag, val in tags.items():
@@ -409,6 +479,15 @@ class MultiInstanceAPI:
         return [node.node_id for node in added_nodes]
 
     def remove_tags_from_nodes(self, node_ids: List[str], tags: Dict[str, str]) -> List[str]:
+        """ Remove a tag value from a node tag set 
+
+        :param node_ids: List of node ids to remove the tags.
+        :type node_ids: List[str]
+        :param tags: Key-valued dictionary with informing the tags key and value. The value will be removed from each tag set. If the tag set contains no value, the node tag will be removed.
+        :type tags: Dict[str, str]
+        :return: A list of nodes which the tags were removed 
+        :rtype: List[str]
+        """
         removed_nodes = []
         for node in self.get_nodes(node_ids):
             for tag, value in tags.items():
@@ -427,6 +506,15 @@ class MultiInstanceAPI:
         return [node.node_id for node in removed_nodes]
 
     def remove_tags_from_nodes_by_key(self, node_ids: List[str], tags: List[str]) -> List[str]:
+        """ Remove all values from a tag set from nodes
+
+        :param node_ids: List of node ids to remove the tags.
+        :type node_ids: List[str]
+        :param tags: List of tags to remove from nodes (all tag values will be removed from the tag set of the node)
+        :type tags: List[str]
+        :return: A list of nodes which the tags were removed 
+        :rtype: List[str]
+        """
         removed_nodes = []
         for node in self.get_nodes(node_ids):
             for tag in tags:
@@ -446,6 +534,14 @@ class MultiInstanceAPI:
     # --------------------------------------------------------------------------------
 
     def get_groups(self) -> List[Dict[str, Any]]:
+        """ Get all CLAP groups
+
+        :return: A List of dictionary with groups information. Each dictionary's element of the list contains:
+          - name: The group's name (string)
+          - actions: The list of group's actions (list of string)
+          - hosts: The list group's host (list of string)
+        :rtype: List[Dict[str, Any]]
+        """
         groups = []
         for group_name in GroupInterface().get_group_names():
             group_actions, group_hosts = GroupInterface().get_group(group_name)
@@ -481,7 +577,18 @@ class MultiInstanceAPI:
 
         return members
 
-    def add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict = None) -> List[str]:
+    def add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict[str, str] = None) -> List[str]:
+        """ Add nodes to a informed group
+
+        :param node_ids: List of node ids to add the the group.
+        :type node_ids: List[str]
+        :param group_name: Name of the group which the nodes will be added. If the group has a setup action, the setup action will be executed.
+        :type group_name: str
+        :param group_args: Key-valued dictionary with the extra arguments to be passed to the setup's action.
+        :type group_args: Dict[str, str]
+        :return: A list of nodes that was successfully added to group. A node is sucessfully added to the group if the setup action was sucessfully performed (if any)
+        :rtype: List[str] 
+        """
         split_vals = group_name.split('/')
 
         if len(split_vals) > 2:
@@ -528,6 +635,19 @@ class MultiInstanceAPI:
         return list(node_ids)
 
     def execute_group_action(self, group_name: str, action: str, group_args: Dict = None, node_ids: List[str] = None):
+        """ Perform a group action in all nodes belonging to a group
+
+        :param group_name: Name of the group which the action will be performed
+        :type group_name: str
+        :param action: Name of the group's action to be perfomed
+        :type action: str 
+        :param group_args: Key-valued dictionary with the extra arguments to be passed to the action.
+        :type group_args: Dict[str, str]
+        :param node_ids: List of node ids which the action will be performed. If None is informed, the action will be performed to all nodes belonging to the group informed. 
+        :type node_ids: List[str]
+        :return: A list of nodes that successfully performed the action.
+        :rtype: List[str] 
+        """
         split_vals = group_name.split('/')
         if len(split_vals) > 2:
             raise Exception("Invalid group and hosts `{}`".format(group_name))

@@ -10,7 +10,7 @@ from clap.common.repository import AbstractEntry, AbstractRepository, Repository
 
 class PlatformControlInfo(AbstractEntry):
     """ This class holds control information used to create nodes and cluster in the repository (database).
-    It holds an incremental index to be used when creating such elements.
+    It holds an **incremental index** to be used to create such elements.
     """
 
     def __init__(self, *args, **kwargs):
@@ -20,17 +20,14 @@ class PlatformControlInfo(AbstractEntry):
         super(PlatformControlInfo, self).__init__(*args, **kwargs)
 
 class ClusterInfo(AbstractEntry):
-    """ This class holds information about a cluster that is stored in the repository and used by several interfaces
+    """ This class holds information about a cluster. A cluster is considered a set of nodes with the same provider and login configurations
     Each cluster is unique and is composed by the following elements:
-        * cluster_id: The unique identification of the cluster, used to perform operations across modules and instance interfaces
-        * cluster_name: The name of the cluster used by the driver object that controls this cluster
-        * cloud: The cluster (or cloud) provider that this cluster is attached (e.g., aws, azure, ...)
-        * keypair: The name of the keypair used to connect to the machines created in this cluster
-        * region: The avaliability zone that this cluster was created
-        * template: Name of the template that was used to create this cluster
-        * driver_id: ID of the driver that controls this cluster
-        * driver_version: Version of the driver used by this cluster
-        * tags: Additional user tags for cluster identification
+        * cluster_id: The unique identification of the cluster, used to perform operations across modules and instance interfaces (auto-generated)
+        * provider_id: Id of the provider configuration used
+        * login_id: Id of the login configuration used 
+        * driver_id: Id of the driver in-use
+        * creation_time: Date of cluster's creation
+        * extra: Optional extra information
 
     """
     def __init__(self, **kwargs):
@@ -50,19 +47,21 @@ class ClusterInfo(AbstractEntry):
             self.cluster_id, self.provider_id, self.login_id, float_time_to_string(self.creation_time))
 
 class NodeInfo(AbstractEntry):
-    """ This class holds information about a node that is stored in the repository and used by several interfaces
+    """ This class holds information about a node that is stored in the CLAP's repository and used by several interfaces
     Each node is unique and is composed by the following elements:
-        * node_id: The unique identification of the node, used to perform operations across modules and instance interfaces
-        * node_name: The name of the node used by the driver object that controls it
-        * cluster_id: ID of the cluster that this node is attached to
-        * flavor: Instance flavor (e.g., t2.micro in aws)
-        * status: Last known status of the node (see PlatformCodes)
+        * node_id: The unique identification of the node, used to perform operations across modules and interfaces
+        * cluster_id: ID of the cluster that this node is attached to. The cluster defines a unique login and provider configurations.
+        * instance_type: Type of the instantiated node (equivalent to the instances configuration file)
+        * creation_time: Date of node's creation
+        * update_time: Date of the last node's update
         * ip: IP address used to connect to this node (address used to perform SSH)
-        * driver_id: ID of the driver that controls this node
-        * driver_version: Version of the driver used by this node
-        * keypair: The name of the keypair used to connect to the machines created in the node cluster
-        * key: The private key file used to perform SSH and connect to machines
-        * tags: Additional user tags for node identification
+        * status: Last known status of the node (see PlatformCodes)
+        * tags: Dictionary of tags for node identification. The key is the tag name and the value is a set of tag values
+        * groups: Dictionary with groups which the nodes belongs to. The key is the group name and the value is additional group's information.
+        * driver_id: ID of the in-use driver that controls this node
+        * instance_id: ID of the instance at the cloud provider (cloud's instance id)
+        * lifecycle: Instance lifecycle. It can be 'spot' or 'on-demand'
+        * extra: Additional instance information
 
     """
 

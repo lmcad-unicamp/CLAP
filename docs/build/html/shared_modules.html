@@ -390,7 +390,7 @@ CLAP’s setup phases are executed in the order, as shown in table bellow.</p>
 <td><p>Setups inside this key are executed only in nodes that are currently being added to the cluster, before the setup specific setup of the nodes. Its useful when resizing cluster, i.e., adding more nodes. This phase is always executed at cluster creation, as all created nodes are being added to the cluster.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">node</span></code></p></td>
-<td><p>The setup for each node is executed, for the nodes that are being added to the cluster</p></td>
+<td><p>The setup for each node is executed. The setup (inventory generated) is excuted only at nodes of this type</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">after</span></code></p></td>
 <td><p>Setups inside this key are executed only in nodes that are currently being added to the cluster, after the setup specific setup of the nodes. Its useful when resizing cluster, i.e., adding more nodes. This phase is always executed at cluster creation, as all created nodes are being added to the cluster.</p></td>
@@ -402,7 +402,7 @@ CLAP’s setup phases are executed in the order, as shown in table bellow.</p>
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>All setups are executed after the nodes are created and are all optional</p>
+<p>All setups are optional</p>
 </div>
 <p>An example is shown below:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clusters must be defined inside clusters key</span>
@@ -449,7 +449,7 @@ CLAP’s setup phases are executed in the order, as shown in table bellow.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">before_all</span></code> setups: <code class="docutils literal notranslate"><span class="pre">my-custom-setup-1</span></code> at all nodes</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">before</span></code> setups: <code class="docutils literal notranslate"><span class="pre">my-custom-setup-2</span></code> at all nodes</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nodes</span></code> setups (not necessary in order): <code class="docutils literal notranslate"><span class="pre">another-example-setup``and</span> <span class="pre">``master-setup</span></code> at <code class="docutils literal notranslate"><span class="pre">master-nodes</span></code> nodes and <code class="docutils literal notranslate"><span class="pre">setup-slave-node</span></code> at <code class="docutils literal notranslate"><span class="pre">slave-nodes</span></code> nodes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nodes</span></code> setups (not necessary in order): <code class="docutils literal notranslate"><span class="pre">another-example-setup</span></code> and <code class="docutils literal notranslate"><span class="pre">master-setup</span></code> at <code class="docutils literal notranslate"><span class="pre">master-nodes</span></code> nodes and <code class="docutils literal notranslate"><span class="pre">setup-slave-node</span></code> at <code class="docutils literal notranslate"><span class="pre">slave-nodes</span></code> nodes.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">after</span></code> setups: <code class="docutils literal notranslate"><span class="pre">my-custom-setup-3</span></code> and <code class="docutils literal notranslate"><span class="pre">my-custom-setup-4</span></code> at all nodes</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">after_all</span></code> setups: <code class="docutils literal notranslate"><span class="pre">final_setup</span></code> at all nodes</p></li>
 </ul>

@@ -275,7 +275,8 @@ Group ``ec2-efs``
 
 This group setup and mount an network EFS filesystem on AWS provider. The following actions are provided by the group.
 
-- ``setup``: Install nfs client and mount EC2 file system 
+- ``setup``: Install nfs client
+- ``mount``: Mount an EFS filesystem
 - ``umount``: Unmount EC2 File System
 
 Hosts
@@ -286,45 +287,56 @@ No host must be specified by this group.
 Action ``ec2-efs setup``
 ++++++++++++++++++++++++++++
 
-Install nfs client and mount EC2 file system. This action is executed when nodes are added to the group.
+Install nfs client at remote host. This action is executed when nodes are added to the group.
 
 Required Variables
 ^^^^^^^^^^^^^^^^^^^
-..  list-table::  ``ec2-efs setup`` action variables
+
+This action does not require any additional variable to be passed
+
+Action ``ec2-efs mount``
+++++++++++++++++++++++++++++
+
+Mount an AWS EC2 EFS filesystem at remote host.
+
+
+Required Variables
+^^^^^^^^^^^^^^^^^^^
+..  list-table::  ``ec2-efs mount`` action variables
     :header-rows: 1
 
     *   - **Name**
         - **Type**
         - **Description**
 
-    *   - ``efs_mount_point``
+    *   - ``efs_mount_ip``
+        - string
+        - Mount IP of the filesystem (see `AWS EFS Documentation <https://docs.aws.amazon.com/efs/latest/ug/accessing-fs.html>`_ for more information)
+
+    *   - ``efs_mount_point`` (OPTIONAL)
         - path
-        - Directory path where the filesystem will be mounted
+        - Directory path where the filesystem will be mounted. Default path is: ``/efs``
 
-    *   - ``user``
+    *   - ``efs_owner`` (OPTIONAL)
         - string
-        - Name of the user owner (e.g. ubuntu)
+        - Name of the user owner (e.g. ubuntu). Default user is the currently logged user
 
-    *   - ``group``
+    *   - ``efs_group`` (OPTIONAL)
         - string
-        - Name of the group owner (e.g. ubuntu)
+        - Name of the group owner (e.g. ubuntu). Default group is the currently logged user
 
-    *   - ``mount_ip``
+    *   - ``efs_mount_permissions`` (OPTIONAL)
         - string
-        - Mount ip of the filesystem (see `AWS EFS Documentation <https://docs.aws.amazon.com/efs/latest/ug/accessing-fs.html>`_ for more information)
-
-    *   - ``mount_permissions``
-        - string
-        - Permission used tomount the filesystem (e.g. 0644)
+        - Permission used to mount the filesystem (e.g. 0644). Default permission is ``0744``
 
 Examples
 ^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: none
 
-    clapp group add ec2-efs node-0 --extra efs_mount_point="/efs" user="ubuntu" group="ubuntu" mount_ip="192.168.0.1" mount_permissions="0644"
+    clapp group action ec2-efs mount --extra "efs_mount_ip="192.168.0.1" "efs_mount_point=/tmp"
 
-The above command will install EC2 EFS filesystem on ``node-0`` and mount the EFS Filesystem from ``192.168.0.1`` it at ``/efs`` with ``0644`` permissions (read-write for user and read-only for others).
+The above command will mount the EFS Filesystem from ``192.168.0.1`` it at ``/tmp`` with ``744`` permissions (read-write-execute for user and read-only for group and others).
 
 Action ``ec2-efs umount``
 ++++++++++++++++++++++++++++
@@ -341,9 +353,9 @@ Required Variables
         - **Type**
         - **Description**
 
-    *   - ``efs_mount_point``
+    *   - ``efs_mount_point`` (OPTIONAL)
         - path
-        - Directory path where the filesystem will be unmounted
+        - Directory path where the filesystem will be mounted. Default path is: ``/efs``
 
 
 Examples
@@ -353,7 +365,7 @@ Examples
 
     clapp group action ec2-efs umount --nodes node-0 --extra efs_mount_point="/efs"
 
-The above command will unmount EC2 EFS filesystem from ``node-0``
+The above command will unmount EC2 EFS filesystem at ``/efs`` directory from ``node-0``
 
 
 

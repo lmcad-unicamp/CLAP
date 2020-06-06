@@ -1,4 +1,5 @@
 ---
-- name: Fail
-  fail:
-    msg: Not implemented error!
+- name: Mount EFS volume
+  mount:
+    name: "{{ mount_point }}"
+    state: unmounted

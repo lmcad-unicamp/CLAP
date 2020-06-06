@@ -1,6 +1,7 @@
 import os.path
 
 import tinydb
+import json
 from abc import abstractmethod
 from functools import reduce
 from typing import List, Any, Dict
@@ -29,7 +30,6 @@ class AbstractEntry(Struct):
         :param kwargs: Keyworded values to populate the class
         """
         super(AbstractEntry, self).__init__(None, **kwargs)
-
 
 # Repositories
 class AbstractRepository:
@@ -352,7 +352,6 @@ class TinyDBRepository(AbstractRepository):
         table = self.db.table(table)
         query = tinydb.Query()
         table.remove(reduce(lambda x, y: x & y, [getattr(query, key) == val for key, val in where.items()]))
-
 
 # Generic methods
 def generic_read_entry(info_type: type, repository: AbstractRepository, table: str, **where) -> list:

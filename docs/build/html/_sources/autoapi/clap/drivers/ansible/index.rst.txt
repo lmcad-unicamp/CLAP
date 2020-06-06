@@ -51,7 +51,7 @@ Package Contents
 
 
 
-   .. method:: stop_nodes(self, node_ids: List[str])
+   .. method:: stop_nodes(self, node_ids: List[str], force: bool)
 
 
 

@@ -1,0 +1,27 @@
+---
+#
+# Set up SSH host-based authentication
+#
+- hosts: all
+  gather_facts: yes
+  become: no
+  tasks:
+  - name: Remove hosts file
+    file:
+      path: "{{ ansible_env.HOME }}/hosts"
+      state: absent
+
+  - name: Create hosts file
+    file:
+      path: "{{ ansible_env.HOME }}/hosts"
+      state: touch
+
+  - name: "Add Ansible inventory mappings to {{ ansible_env.HOME }}/hosts"
+    blockinfile:
+      marker: ""
+      path: "{{ ansible_env.HOME }}/hosts"
+      block: |
+        {% for host in groups['all'] %}
+        {{ hostvars[host].ansible_host }}
+        {% endfor %}
+

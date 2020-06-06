@@ -185,17 +185,65 @@
 <dl class="py function">
 <dt id="clap.modules.group.add_group_to_node">
 <code class="sig-prename descclassname">clap.modules.group.</code><code class="sig-name descname">add_group_to_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">group</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">re_add_to_group</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.group.add_group_to_node" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add nodes to a informed group</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to add the the group.</p></li>
+<li><p><strong>group_name</strong> (<em>str</em>) – Name of the group which the nodes will be added. If the group has a setup action, the setup action will be executed.</p></li>
+<li><p><strong>group_args</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary with the extra arguments to be passed to the setup’s action.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally add nodes that match the tags informed to the group</p></li>
+<li><p><strong>re_add_to_group</strong> (<em>bool</em>) – Boolean variable that if is set to true, does not readd node to a group, if the node already belongs to it (Default: True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes that was successfully added to group. A node is sucessfully added to the group if the setup action was sucessfully performed (if any)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.group.execute_group_action">
 <code class="sig-prename descclassname">clap.modules.group.</code><code class="sig-name descname">execute_group_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">group</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.group.execute_group_action" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform a group action to nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to execute the group action.</p></li>
+<li><p><strong>group_name</strong> (<em>str</em>) – Name of the group which the action will be performed</p></li>
+<li><p><strong>action</strong> (<em>str</em>) – Name of the group’s action to be perfomed</p></li>
+<li><p><strong>group_args</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary with the extra arguments to be passed to the action.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally execute group’s action to nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes that successfully performed the action.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.group.list_groups">
 <code class="sig-prename descclassname">clap.modules.group.</code><code class="sig-name descname">list_groups</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#clap.modules.group.list_groups" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all CLAP groups</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A List of dictionary with groups information. Each dictionary’s element of the list contains:
+- name: The group’s name (string)
+- actions: The list of group’s actions (list of string)
+- hosts: The list group’s host (list of string)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[Dict[str, Any]]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.group.remove_group_from_node">
@@ -263,10 +311,10 @@
 <dl class="py method">
 <dt id="clap.modules.group.PlatformFactory.get_instance_api">
 <em class="property">static </em><code class="sig-name descname">get_instance_api</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">platform_db</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.PLATFORM_REPOSITORY</span></em>, <em class="sig-param"><span class="n">repository_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.REPOSITORY_TYPE</span></em>, <em class="sig-param"><span class="n">default_driver</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.DRIVER_ID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.group.PlatformFactory.get_instance_api" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers</p>
+<dd><p>Get the default MultiInstance API used to manipulate nodes and modules across different drivers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The MultiInstanceAPI object to manipulate cluster, nodes and modules</p>
+<dd class="field-odd"><p>The MultiInstanceAPI object to manipulate nodes and modules</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="../../common/platform/index.html#clap.common.platform.MultiInstanceAPI" title="clap.common.platform.MultiInstanceAPI">MultiInstanceAPI</a></p>
@@ -280,21 +328,23 @@
 <dt id="clap.modules.group.NodeInfo">
 <em class="property">class </em><code class="sig-prename descclassname">clap.modules.group.</code><code class="sig-name descname">NodeInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.group.NodeInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../common/repository/index.html#clap.common.repository.AbstractEntry" title="clap.common.repository.AbstractEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.repository.AbstractEntry</span></code></a></p>
-<p>This class holds information about a node that is stored in the repository and used by several interfaces
+<p>This class holds information about a node that is stored in the CLAP’s repository and used by several interfaces
 Each node is unique and is composed by the following elements:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>node_id: The unique identification of the node, used to perform operations across modules and instance interfaces</p></li>
-<li><p>node_name: The name of the node used by the driver object that controls it</p></li>
-<li><p>cluster_id: ID of the cluster that this node is attached to</p></li>
-<li><p>flavor: Instance flavor (e.g., t2.micro in aws)</p></li>
-<li><p>status: Last known status of the node (see PlatformCodes)</p></li>
+<li><p>node_id: The unique identification of the node, used to perform operations across modules and interfaces</p></li>
+<li><p>cluster_id: ID of the cluster that this node is attached to. The cluster defines a unique login and provider configurations.</p></li>
+<li><p>instance_type: Type of the instantiated node (equivalent to the instances configuration file)</p></li>
+<li><p>creation_time: Date of node’s creation</p></li>
+<li><p>update_time: Date of the last node’s update</p></li>
 <li><p>ip: IP address used to connect to this node (address used to perform SSH)</p></li>
-<li><p>driver_id: ID of the driver that controls this node</p></li>
-<li><p>driver_version: Version of the driver used by this node</p></li>
-<li><p>keypair: The name of the keypair used to connect to the machines created in the node cluster</p></li>
-<li><p>key: The private key file used to perform SSH and connect to machines</p></li>
-<li><p>tags: Additional user tags for node identification</p></li>
+<li><p>status: Last known status of the node (see PlatformCodes)</p></li>
+<li><p>tags: Dictionary of tags for node identification. The key is the tag name and the value is a set of tag values</p></li>
+<li><p>groups: Dictionary with groups which the nodes belongs to. The key is the group name and the value is additional group’s information.</p></li>
+<li><p>driver_id: ID of the in-use driver that controls this node</p></li>
+<li><p>instance_id: ID of the instance at the cloud provider (cloud’s instance id)</p></li>
+<li><p>lifecycle: Instance lifecycle. It can be ‘spot’ or ‘on-demand’</p></li>
+<li><p>extra: Additional instance information</p></li>
 </ul>
 </div></blockquote>
 <dl class="py method">
@@ -312,17 +362,65 @@ Each node is unique and is composed by the following elements:</p>
 <dl class="py function">
 <dt id="id1">
 <code class="sig-prename descclassname">clap.modules.group.</code><code class="sig-name descname">add_group_to_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">group</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">re_add_to_group</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add nodes to a informed group</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to add the the group.</p></li>
+<li><p><strong>group_name</strong> (<em>str</em>) – Name of the group which the nodes will be added. If the group has a setup action, the setup action will be executed.</p></li>
+<li><p><strong>group_args</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary with the extra arguments to be passed to the setup’s action.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally add nodes that match the tags informed to the group</p></li>
+<li><p><strong>re_add_to_group</strong> (<em>bool</em>) – Boolean variable that if is set to true, does not readd node to a group, if the node already belongs to it (Default: True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes that was successfully added to group. A node is sucessfully added to the group if the setup action was sucessfully performed (if any)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id2">
 <code class="sig-prename descclassname">clap.modules.group.</code><code class="sig-name descname">execute_group_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">group</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">group_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform a group action to nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to execute the group action.</p></li>
+<li><p><strong>group_name</strong> (<em>str</em>) – Name of the group which the action will be performed</p></li>
+<li><p><strong>action</strong> (<em>str</em>) – Name of the group’s action to be perfomed</p></li>
+<li><p><strong>group_args</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary with the extra arguments to be passed to the action.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally execute group’s action to nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes that successfully performed the action.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id3">
 <code class="sig-prename descclassname">clap.modules.group.</code><code class="sig-name descname">list_groups</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all CLAP groups</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A List of dictionary with groups information. Each dictionary’s element of the list contains:
+- name: The group’s name (string)
+- actions: The list of group’s actions (list of string)
+- hosts: The list group’s host (list of string)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[Dict[str, Any]]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id4">

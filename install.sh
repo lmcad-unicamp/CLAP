@@ -18,8 +18,7 @@ green_print "Creating clap virtualenv..."
 virtualenv -p python3 clap-env || abort "Creating venv"
 echo "export CLAP=$PWD" >> clap-env/bin/activate || abort "Error writting on activate"
 echo "export CLAP_PATH=$CLAP_PATH" >> clap-env/bin/activate || abort "Error writting on activate"
-echo "export PATH=\$PATH:$PWD" >> clap-env/bin/activate || abort "Error writting on activate"
-echo 'eval "$(register-python-argcomplete clapp)"' >> clap-env/bin/activate || abort "Error writting on activate"
+#echo "export PATH=\$PATH:$PWD" >> clap-env/bin/activate || abort "Error writting on activate"
 source clap-env/bin/activate || abort "Activating venv"
 green_print "OK"
 
@@ -27,21 +26,11 @@ green_print "Upgrading PIP..."
 pip install --upgrade 'pip>=9.0.0' || abort "Upgrading PIP"
 green_print "OK"
 
-#mkdir -p downloads
-#cd downloads || abort "Invalid directory downloads"
-
-#echo "Fetching elasticluster"
-#if [[ ! -d elasticluster ]]; then
-  #git clone -b v1.3.dev25 https://github.com/elasticluster/elasticluster.git elasticluster || abort "Fetching elasticluster"
-#fi
-#cd elasticluster || abort "Invalid directory elasticluster"
-#pip install -e . || abort "Installing elasticluster"
-#cd ../..
-#echo "OK"
-
-green_print "Installing clap requirements...."
-pip --no-cache-dir install -r requirements.txt || abort "Installing clap requirements"
+green_print "Installing clap...."
+pip --no-cache-dir install . || abort "Installing clap..."
 green_print "OK"
+
+echo 'eval "$(register-python-argcomplete clapp)"' >> clap-env/bin/activate || abort "Error writting on activate"
 
 green_print "Creating default folders"
 green_print "Using default CLAP path: $CLAP_PATH"

@@ -214,7 +214,7 @@ CLAP's setup phases are executed in the order, as shown in table bellow.
         - Setups inside this key are executed only in nodes that are currently being added to the cluster, before the setup specific setup of the nodes. Its useful when resizing cluster, i.e., adding more nodes. This phase is always executed at cluster creation, as all created nodes are being added to the cluster.
 
     *   - ``node``
-        - The setup for each node is executed, for the nodes that are being added to the cluster
+        - The setup for each node is executed. The setup (inventory generated) is excuted only at nodes of this type
 
     *   - ``after``
         - Setups inside this key are executed only in nodes that are currently being added to the cluster, after the setup specific setup of the nodes. Its useful when resizing cluster, i.e., adding more nodes. This phase is always executed at cluster creation, as all created nodes are being added to the cluster.
@@ -224,7 +224,7 @@ CLAP's setup phases are executed in the order, as shown in table bellow.
 
 .. note:: 
 
-  All setups are executed after the nodes are created and are all optional
+  All setups are optional
 
 
 An example is shown below:
@@ -275,7 +275,7 @@ In the above example, supposing you are creating a new cluster, thus after 1 ``m
 
 - ``before_all`` setups: ``my-custom-setup-1`` at all nodes
 - ``before`` setups: ``my-custom-setup-2`` at all nodes
-- ``nodes`` setups (not necessary in order): ``another-example-setup``and ``master-setup`` at ``master-nodes`` nodes and ``setup-slave-node`` at ``slave-nodes`` nodes.
+- ``nodes`` setups (not necessary in order): ``another-example-setup`` and ``master-setup`` at ``master-nodes`` nodes and ``setup-slave-node`` at ``slave-nodes`` nodes.
 - ``after`` setups: ``my-custom-setup-3`` and ``my-custom-setup-4`` at all nodes
 - ``after_all`` setups: ``final_setup`` at all nodes
     

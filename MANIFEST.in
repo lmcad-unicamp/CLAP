@@ -1,0 +1,3 @@
+recursive-include clap *
+recursive-include docs *
+include elasticluster README.md version.txt

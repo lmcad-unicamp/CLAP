@@ -198,10 +198,10 @@
 <dl class="py method">
 <dt id="clap.modules.node.PlatformFactory.get_instance_api">
 <em class="property">static </em><code class="sig-name descname">get_instance_api</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">platform_db</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.PLATFORM_REPOSITORY</span></em>, <em class="sig-param"><span class="n">repository_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.REPOSITORY_TYPE</span></em>, <em class="sig-param"><span class="n">default_driver</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.DRIVER_ID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.node.PlatformFactory.get_instance_api" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers</p>
+<dd><p>Get the default MultiInstance API used to manipulate nodes and modules across different drivers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The MultiInstanceAPI object to manipulate cluster, nodes and modules</p>
+<dd class="field-odd"><p>The MultiInstanceAPI object to manipulate nodes and modules</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="../../common/platform/index.html#clap.common.platform.MultiInstanceAPI" title="clap.common.platform.MultiInstanceAPI">MultiInstanceAPI</a></p>
@@ -233,48 +233,168 @@
 
 <dl class="py function">
 <dt id="clap.modules.node.start_nodes">
-<code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">start_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>int<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>NodeInfo<span class="p">]</span><a class="headerlink" href="#clap.modules.node.start_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">start_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">instance_ids</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>int<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>NodeInfo<span class="p">]</span><a class="headerlink" href="#clap.modules.node.start_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start instances based on the instance configuration values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>instance_ids</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – Dictionary containing the instance name as key and number of instances as value. The instance name must match the instance name at instances configuration file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of created nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../../common/cluster_repository/index.html#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.node.list_nodes">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">list_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>NodeInfo<span class="p">]</span><a class="headerlink" href="#clap.modules.node.list_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the information of nodes from the node repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to get the node information. If no node_ids and no tags are informed, all nodes are retrieved</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary informing the nodes to get, matching the tags informed. The nodes containing all tag values are retieved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list with nodes information</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../../common/cluster_repository/index.html#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.node.is_alive">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">is_alive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>bool<span class="p">]</span><a class="headerlink" href="#clap.modules.node.is_alive" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Check if nodes are alive, based on their node ids. The nodes are alive if a successfully SSH connection is performed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to check for aliveness.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally check nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary telling which nodes are alive. The dictionary keys correspond to the node id and the value is a boolean that is true if node is alive or false otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.node.stop_nodes">
-<code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">stop_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.node.stop_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">stop_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.node.stop_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop started nodes based on their node ids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to stop</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally stop nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of stopped nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.node.connect_to_node">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">connect_to_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.node.connect_to_node" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Open a SSH shell to a node based on it node id</p>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.node.resume_nodes">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">resume_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.node.resume_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Resume stopped nodes based on their node ids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to resume</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally resume nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of resumed nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.node.pause_nodes">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">pause_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#clap.modules.node.pause_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Pause nodes based on their node ids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to pause</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally pause nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of paused nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.node.execute_playbook">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">execute_playbook</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">playbook_file</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>bool<span class="p">]</span><a class="headerlink" href="#clap.modules.node.execute_playbook" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Execute an Ansible Playbook at nodes based on their node ids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>playbook_file</strong> (<em>str</em>) – Path of the Ansible playbook to execute.</p></li>
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to execute the playbook</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally execute playbook at nodes that match the tags informed</p></li>
+<li><p><strong>extra_args</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary containing the extra variables to be passed to the playbook. Both key and value are strings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary telling which nodes have sucessfully executed the playbook. The dictionary keys correspond to the node id and the value is a boolean that is true if node successfully executed the playbook or false otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="clap.modules.node.get_ssh_connections">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">get_ssh_connections</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>SSHClient<span class="p">]</span><a class="headerlink" href="#clap.modules.node.get_ssh_connections" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get a SSH client to nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to get the clients.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally get connections to nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary with the SSH clients. The key is the node id and each value is the SSH client (from Paramiko library)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, Paramiko.SSHClient]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="clap.modules.node.NodeParser">
@@ -372,10 +492,10 @@
 <dl class="py method">
 <dt id="id5">
 <em class="property">static </em><code class="sig-name descname">get_instance_api</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">platform_db</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.PLATFORM_REPOSITORY</span></em>, <em class="sig-param"><span class="n">repository_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.REPOSITORY_TYPE</span></em>, <em class="sig-param"><span class="n">default_driver</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">Defaults.DRIVER_ID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the default MultiInstance API used to manipulate cluster, nodes and modules across different drivers</p>
+<dd><p>Get the default MultiInstance API used to manipulate nodes and modules across different drivers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The MultiInstanceAPI object to manipulate cluster, nodes and modules</p>
+<dd class="field-odd"><p>The MultiInstanceAPI object to manipulate nodes and modules</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="../../common/platform/index.html#clap.common.platform.MultiInstanceAPI" title="clap.common.platform.MultiInstanceAPI">MultiInstanceAPI</a></p>
@@ -389,21 +509,23 @@
 <dt id="clap.modules.node.NodeInfo">
 <em class="property">class </em><code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">NodeInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.modules.node.NodeInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../common/repository/index.html#clap.common.repository.AbstractEntry" title="clap.common.repository.AbstractEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">clap.common.repository.AbstractEntry</span></code></a></p>
-<p>This class holds information about a node that is stored in the repository and used by several interfaces
+<p>This class holds information about a node that is stored in the CLAP’s repository and used by several interfaces
 Each node is unique and is composed by the following elements:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>node_id: The unique identification of the node, used to perform operations across modules and instance interfaces</p></li>
-<li><p>node_name: The name of the node used by the driver object that controls it</p></li>
-<li><p>cluster_id: ID of the cluster that this node is attached to</p></li>
-<li><p>flavor: Instance flavor (e.g., t2.micro in aws)</p></li>
-<li><p>status: Last known status of the node (see PlatformCodes)</p></li>
+<li><p>node_id: The unique identification of the node, used to perform operations across modules and interfaces</p></li>
+<li><p>cluster_id: ID of the cluster that this node is attached to. The cluster defines a unique login and provider configurations.</p></li>
+<li><p>instance_type: Type of the instantiated node (equivalent to the instances configuration file)</p></li>
+<li><p>creation_time: Date of node’s creation</p></li>
+<li><p>update_time: Date of the last node’s update</p></li>
 <li><p>ip: IP address used to connect to this node (address used to perform SSH)</p></li>
-<li><p>driver_id: ID of the driver that controls this node</p></li>
-<li><p>driver_version: Version of the driver used by this node</p></li>
-<li><p>keypair: The name of the keypair used to connect to the machines created in the node cluster</p></li>
-<li><p>key: The private key file used to perform SSH and connect to machines</p></li>
-<li><p>tags: Additional user tags for node identification</p></li>
+<li><p>status: Last known status of the node (see PlatformCodes)</p></li>
+<li><p>tags: Dictionary of tags for node identification. The key is the tag name and the value is a set of tag values</p></li>
+<li><p>groups: Dictionary with groups which the nodes belongs to. The key is the group name and the value is additional group’s information.</p></li>
+<li><p>driver_id: ID of the in-use driver that controls this node</p></li>
+<li><p>instance_id: ID of the instance at the cloud provider (cloud’s instance id)</p></li>
+<li><p>lifecycle: Instance lifecycle. It can be ‘spot’ or ‘on-demand’</p></li>
+<li><p>extra: Additional instance information</p></li>
 </ul>
 </div></blockquote>
 <dl class="py method">
@@ -415,48 +537,168 @@ Each node is unique and is composed by the following elements:</p>
 
 <dl class="py function">
 <dt id="id6">
-<code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">start_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>int<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>NodeInfo<span class="p">]</span><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">start_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">instance_ids</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>int<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>NodeInfo<span class="p">]</span><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start instances based on the instance configuration values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>instance_ids</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – Dictionary containing the instance name as key and number of instances as value. The instance name must match the instance name at instances configuration file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of created nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../../common/cluster_repository/index.html#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id7">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">list_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>NodeInfo<span class="p">]</span><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the information of nodes from the node repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to get the node information. If no node_ids and no tags are informed, all nodes are retrieved</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary informing the nodes to get, matching the tags informed. The nodes containing all tag values are retieved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list with nodes information</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../../common/cluster_repository/index.html#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id8">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">is_alive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>bool<span class="p">]</span><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Check if nodes are alive, based on their node ids. The nodes are alive if a successfully SSH connection is performed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to check for aliveness.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally check nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary telling which nodes are alive. The dictionary keys correspond to the node id and the value is a boolean that is true if node is alive or false otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id9">
-<code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">stop_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">stop_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop started nodes based on their node ids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to stop</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally stop nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of stopped nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id10">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">resume_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#id10" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Resume stopped nodes based on their node ids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to resume</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally resume nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of resumed nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id11">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">pause_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#id11" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Pause nodes based on their node ids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to pause</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally pause nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of paused nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id12">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">execute_playbook</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">playbook_file</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>bool<span class="p">]</span><a class="headerlink" href="#id12" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Execute an Ansible Playbook at nodes based on their node ids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>playbook_file</strong> (<em>str</em>) – Path of the Ansible playbook to execute.</p></li>
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to execute the playbook</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally execute playbook at nodes that match the tags informed</p></li>
+<li><p><strong>extra_args</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Key-valued dictionary containing the extra variables to be passed to the playbook. Both key and value are strings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary telling which nodes have sucessfully executed the playbook. The dictionary keys correspond to the node id and the value is a boolean that is true if node successfully executed the playbook or false otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id13">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">get_ssh_connections</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>SSHClient<span class="p">]</span><a class="headerlink" href="#id13" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get a SSH client to nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of node ids to get the clients.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Optionally get connections to nodes that match the tags informed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary with the SSH clients. The key is the node id and each value is the SSH client (from Paramiko library)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, Paramiko.SSHClient]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="id14">
 <code class="sig-prename descclassname">clap.modules.node.</code><code class="sig-name descname">connect_to_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Open a SSH shell to a node based on it node id</p>
+</dd></dl>
 
 <dl class="py data">
 <dt id="clap.modules.node.__module_name__">

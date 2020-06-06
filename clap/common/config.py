@@ -2,13 +2,13 @@ import logging
 import os
 from clap.common.utils import path_extend, yaml_load
 
-if 'CLAP' not in os.environ:
-    raise ValueError('CLAP environment variable is not set. Please set the CLAP variable in your system, '
-                     'pointing directly to the clap root directory!')
+#if 'CLAP' not in os.environ:
+#    raise ValueError('CLAP environment variable is not set. Please set the CLAP variable in your system, '
+#                     'pointing directly to the clap root directory!')
 
 if 'CLAP_PATH' not in os.environ:
-    raise ValueError('CLAP_PATH environment variable is not set. Please set the CLAP_PATH variable in your system!')
-
+    #raise ValueError('CLAP_PATH environment variable is not set. Please set the CLAP_PATH variable in your system!')
+    os.environ['CLAP_PATH'] = path_extend('~', '.clap')
 
 class Defaults:
     verbosity = 0
