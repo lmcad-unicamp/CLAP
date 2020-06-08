@@ -64,7 +64,10 @@ class TestSqliteRepositoryElements(unittest.TestCase):
         self.path = tempfile.mktemp(suffix='.db')
         self.repository = repository.RepositoryFactory.get_repository(self.path, repository_type='sqlite')
         self.create_tables()
-    
+        self.num_elements = 100
+        self.test_infos = [TestInfo(test_id='test-{}'.format(i), test_name='name-{}'.format(i), test_value=str(random.random())[2:], 
+                                    extra={'twice': i*2, 'another_dict': {'exp': i*i}}) for i in range(0, self.num_elements)]
+
     def tearDown(self):
         os.unlink(self.path)
 
@@ -74,24 +77,22 @@ class TestSqliteRepositoryElements(unittest.TestCase):
                 rep.create_element('control', TestControlInfo())
             repository.check_and_create_table(rep, 'values', 'pass')
 
-    def test_elements_01(self):
-        num_elements = 100
+    def element_insert(self, rep):
+        for element in self.test_infos:
+            rep.create_element('values', element)
 
+    def test_elements_insertion_01(self):
         with repository.get_repository_connection(self.repository) as rep:
-            test_infos = [TestInfo(test_id='test-{}'.format(i), test_name='name-{}'.format(i), test_value=str(random.random())[2:], 
-                extra={'twice': i*2, 'another_dict': {'exp': i*i}}) for i in range(0, num_elements)]
-            for element in test_infos:
-                rep.create_element('values', element)
+            self.element_insert(rep)
+            retrieved_elements = rep.retrieve_elements('values', TestInfo)
+            self.assertEqual(len(retrieved_elements), self.num_elements)
+
+            test_infos = sorted(self.test_infos, key=lambda x: x.test_id)
+            retrieved_elements = sorted(retrieved_elements, key=lambda x: x.test_id)
             
-            elements = rep.retrieve_elements('values', TestInfo)
-            self.assertEqual(len(elements), num_elements)
-            
-            test_infos = sorted(test_infos, key=lambda x: x.test_id)
-            elements = sorted(elements, key=lambda x: x.test_id)
-            
-            for i in range(0, num_elements):
+            for i in range(0, self.num_elements):
                 val1 = test_infos[i]
-                val2 = elements[i]
+                val2 = retrieved_elements[i]
                 self.assertEqual(val1.test_id, val2.test_id)
                 self.assertEqual(val1.test_name, val2.test_name)
                 self.assertEqual(val1.test_value, val2.test_value)
