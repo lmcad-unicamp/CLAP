@@ -41,21 +41,11 @@
 
         $.post('save-configuration', {"config_type": "{{ config_type }}", "content": editor.getValue()}, 
             function(response){
-                now = moment().toString();
-                $("#"+div_id).replaceWith(`
-                <div class="alert alert-dismissible alert-success">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    ${now} -- <strong>Content successfully saved</strong> (${response})
-                </div>`
-            )
-        }).fail( function(response) {
-            now = moment().toString();
-            $("#"+div_id).replaceWith(`
-                <div class="alert alert-dismissible alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    ${now} -- <strong>Fail to save content:</strong> ${response.responseText}
-                </div>`
-        )})
+                add_notification('success', `<strong>Content successfully saved</strong> (${response})`)
+            }).fail( function(response) {
+                add_notification('fail', `<strong>Fail to save content:</strong> ${response.responseText}`)
+            }
+        )
     }
 </script>
 
