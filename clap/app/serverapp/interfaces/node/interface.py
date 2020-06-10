@@ -15,13 +15,6 @@ def __get_module__(name, **kwargs):
     driver = kwargs.get('driver', Defaults.DRIVER_ID)
     return PlatformFactory.get_module_interface().get_module(name)
 
-def get_navigation_html():
-    actions = [
-        {'name': 'Start', 'url': 'node-start'},
-        {'name': 'Stop', 'url': 'node-stop'}
-    ]
-    return render_template('node/node_navigation_template.html', actions=actions), 200
-
 def node_index():
     return render_template('node/node.html')
 

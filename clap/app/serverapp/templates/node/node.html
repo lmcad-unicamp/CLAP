@@ -3,15 +3,22 @@
 {% block page %}
 
 <script type="text/javascript">
-    $.get('get-navigation-html', function(response){
-        $("#navigation-items").replaceWith(response);
-    })
-</script>
-
-<script type="text/javascript">
     window.addEventListener('DOMContentLoaded', (event) => {
+        put_navigation()
         update_node_list()
     });
+
+    function put_navigation(){
+        // $("#navigation-items").replaceWith(`
+        //     <li class="nav-item" onClick="save_content()">Start</li>
+        //     <li class="nav-item" onClick="get_editor_content()">Reload</li>
+        // `);
+    }
+
+
+    function action_start() {
+        console.log('start action called!')
+    }
 
     function update_node_list(){
         $.get('get-node-list', function(response){
@@ -25,7 +32,7 @@
                 node_status = response[node]['status']
                 node_ip = response[node]['ip']
                 node_lifecycle = response[node]['lifecycle']
-                node_update_time = response[node]['update_time']
+                node_update_time = moment.unix(response[node]['update_time']).toString()
                 
                 table.row.add([node_id, node_instance_type, node_status, node_ip, node_lifecycle, node_update_time]).draw(true)
             }
@@ -40,7 +47,7 @@
 
 <div id="nodeListContainer">
     <div id="nodeListTableDiv" class="table-responsive">
-        <table id="nodeTable" class="table table-striped">
+        <table id="nodeTable" class="table">
             <thead>
               <tr>
                 <th scope="col">Node</th>

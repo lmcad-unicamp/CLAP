@@ -16,11 +16,38 @@
 </head>
 
 <body>
-    <div id="navigationHolder"></div>
+    <div id="navigationHolder">
+        <div class="container p-2" id="navigationContainer"> 
+            <ul id="navigation-items" class="nav nav-pills">
+                <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Modules</a>
+                <div id="nav-modules" class="dropdown-menu"></div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Configs</a>
+                    <div id="nav-modules" class="dropdown-menu">
+                        <a class="dropdown-item" href="/configuration?config=provider">Provider Configuration</a>
+                        <a class="dropdown-item" href="/configuration?config=login">Login Configuration</a>
+                        <a class="dropdown-item" href="/configuration?config=instance">Instance Configuration</a>
+                    </div>
+                </li>
+                <div id="navigation-extra"></div>
+            </ul>
+        </div>
+
+    </div>
 
     <script type="text/javascript">
-        $.get('/get-navigation-html', function(response){
-            $("#navigationHolder").replaceWith(response);
+        $.get('/get-navigation-items', function(response){
+            for (mod in response){
+                console.log(response)
+                mod_mod = response[mod]['module']
+                mod_name = response[mod]['name']
+                $('#nav-modules').append(`<a class="dropdown-item" href="/${mod_mod}">${mod_name}</a>`)
+            }
         })
     </script>
 
@@ -28,6 +55,11 @@
         {% block page %}
         {% endblock %}
     </main>
+
+    <div class="container p-2" id="notifications">
+        {% block notifications %}
+        {% endblock %}
+    </div>
     
     <footer class="page-footer font-small text-center py-3">
             <a href="https://github.com/lmcad-unicamp/CLAP"> 2020: Unicamp CLAP </a>
@@ -37,5 +69,6 @@
     <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
     <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/dataTables.jqueryui.min.js') }}"></script>
     <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/dataTables.bootstrap4.min.js') }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/moment-with-locales.js') }}"></script>
 </body>
 </html>

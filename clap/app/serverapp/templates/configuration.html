@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block page %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/editor.css') }}">
+<script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='ace/ace.js') }}"></script>
+
+<script>
+    editor = null
+    config_type = "{{ config_type }}"
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+        put_navigation()
+        show_editor()
+        get_editor_content()
+    });
+
+    function put_navigation(){
+        $("#navigation-extra").replaceWith(`
+            <li class="nav-item"> <a class="nav-link" href="#" onclick="save_content()">Save</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="#" onclick="get_editor_content()">Reload</a> </li>`
+        )
+    }
+
+    function show_editor(){
+        editor = ace.edit("editor");
+        editor.setValue("", -1)
+        editor.getSession().setMode('ace/mode/yaml')
+    }
+
+    function get_editor_content(){
+        $.post('get-configuration', {"config_type": "{{ config_type }}"}, function(response){
+            editor.setValue("", -1)
+            editor.setValue(response, -1)});
+    }
+
+    function save_content() {
+        div_id = "notification-"+moment().unix().toString()
+        div_notification = document.createElement('div');
+        div_notification.setAttribute("id", div_id);
+        $("#notificationHolder").prepend(div_notification)
+
+        $.post('save-configuration', {"config_type": "{{ config_type }}", "content": editor.getValue()}, 
+            function(response){
+                now = moment().toString();
+                $("#"+div_id).replaceWith(`
+                <div class="alert alert-dismissible alert-success">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    ${now} -- <strong>Content successfully saved</strong> (${response})
+                </div>`
+            )
+        }).fail( function(response) {
+            now = moment().toString();
+            $("#"+div_id).replaceWith(`
+                <div class="alert alert-dismissible alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    ${now} -- <strong>Fail to save content:</strong> ${response.responseText}
+                </div>`
+        )})
+    }
+</script>
+
+<div class="container p-2" id="notificationHolder">
+</div>
+
+<div class="container">
+    <div id="editor">
+    </div>    
+</div>
+
+{% endblock %}
