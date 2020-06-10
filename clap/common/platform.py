@@ -1,4 +1,5 @@
 import setuptools
+import pkgutil
 import inspect
 import importlib.util
 import os
@@ -38,25 +39,22 @@ class ModuleInterface:
 
         log.debug("Searching modules in paths: {}".format(", ".join(module_paths)))
 
-        for path in module_paths:
-            sys.path.append(path)
-            
-            for pkg_name in setuptools.find_packages(path):
-                if '.' in pkg_name:
-                    continue
-                try:
-                    mod =  __import__(pkg_name)
-                    mod_values = {
-                        'name': mod.__module_name__ if '__module_name__' in mod.__dict__ else pkg_name,
-                        'description': mod.__module_description__ if '__module_description__' in mod.__dict__ else '',
-                        'dependencies': mod.__module_dependencies__ if '__module_dependencies__' in mod.__dict__ else [],
-                        'module': mod,
-                        'loaded time': time.time()
-                    }
-                    ModuleInterface.__modules_map__[mod_values['name']] = mod_values
-                except Exception as e:
-                    log.error("At module: `{}`: {}".format(pkg_name, e))
-                    log.error("Discarding module `{}`".format(pkg_name))
+        for importer, package_name, _ in pkgutil.iter_modules(module_paths):
+            if 'pycache' in package_name or '.' in package_name:
+                continue
+            try:
+                mod =  importer.find_module(package_name).load_module(package_name) 
+                mod_values = {
+                    'name': mod.__module_name__ if '__module_name__' in mod.__dict__ else package_name,
+                    'description': mod.__module_description__ if '__module_description__' in mod.__dict__ else '',
+                    'dependencies': mod.__module_dependencies__ if '__module_dependencies__' in mod.__dict__ else [],
+                    'module': mod,
+                    'loaded time': time.time()
+                }
+                ModuleInterface.__modules_map__[mod_values['name']] = mod_values
+            except Exception as e:
+                log.error("At module: `{}`: {}".format(package_name, e))
+                log.error("Discarding module `{}`".format(package_name))
 
         log.debug("Found {} modules: {}".format( len(ModuleInterface.__modules_map__),
             ', '.join(list(ModuleInterface.__modules_map__.keys())) ) )

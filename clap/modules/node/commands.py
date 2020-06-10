@@ -21,7 +21,7 @@ class NodeParser(AbstractParser):
 
         node_subcom_parser = commands_parser.add_parser('start', help='Start nodes in the cluster (based on the template)')
         node_subcom_parser.add_argument(
-            'nodes', action='store', nargs='+', metavar='node_type:num', choices=node_templates,
+            'nodes', action='store', nargs='+', metavar='node_type:num',
             help='Type of the nodes to be instantiated (based on the cluster template). Format is <node_type>:<num>, '
                 'if num is not provided, default is 1')
         node_subcom_parser.add_argument('--group', action='store', nargs='+', help='Groups to add nodes after started')
@@ -41,7 +41,7 @@ class NodeParser(AbstractParser):
         node_subcom_parser.set_defaults(func=self.command_node_show)
 
         node_subcom_parser = commands_parser.add_parser('alive', help='Check if nodes are alive')
-        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', choices=node_list, 
+        node_subcom_parser.add_argument('node_ids', action='store', nargs='*', 
             help='ID of the nodes to be checked')
         node_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         node_subcom_parser.set_defaults(func=self.command_node_alive)

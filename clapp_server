@@ -2,11 +2,13 @@
 
 import sys
 import os
-from flask_socketio import SocketIO, emit
-os.environ['CLAP'] = os.getcwd()
+#from flask_socketio import SocketIO, emit
+#os.environ['CLAP'] = os.getcwd()
 
-from app.server.app import app
-app.secret_key = 'dev'
-socketio = SocketIO(app)
+from app.serverapp.app import app
+#app.secret_key = 'dev'
+
+#socketio = SocketIO(app)
 #socketio.run(app, debug=False, use_reloader=False)
-app.run(debug=False, use_reloader=False)
+#app.run(debug=False, use_reloader=False)
+app.run()

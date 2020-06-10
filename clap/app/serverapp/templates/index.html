@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block page %}
+
+<div id="cardHolder">
+</div>
+
+<script type="text/javascript">
+    $.get('/get-module-cards-html', function(response){
+        $("#cardHolder").replaceWith(response);
+    })
+</script>
+
+{% endblock %}

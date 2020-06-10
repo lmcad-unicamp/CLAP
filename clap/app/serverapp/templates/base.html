@@ -1,0 +1,41 @@
+{% from 'bootstrap/nav.html' import render_nav_item %}
+{% from 'bootstrap/utils.html' import render_messages %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>CLAPP</title>
+
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    {{ bootstrap.load_css() }}
+    
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/jquery-1.10.2.js') }}"></script>
+</head>
+
+<body>
+    <div id="navigationHolder"></div>
+
+    <script type="text/javascript">
+        $.get('/get-navigation-html', function(response){
+            $("#navigationHolder").replaceWith(response);
+        })
+    </script>
+
+    <main class="container p-2">
+        {% block page %}
+        {% endblock %}
+    </main>
+    
+    <footer class="page-footer font-small text-center py-3">
+            <a href="https://github.com/lmcad-unicamp/CLAP"> 2020: Unicamp CLAP </a>
+    </footer>
+
+    {{ bootstrap.load_js() }}
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/dataTables.jqueryui.min.js') }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/dataTables.bootstrap4.min.js') }}"></script>
+</body>
+</html>
