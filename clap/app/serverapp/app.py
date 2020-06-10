@@ -9,8 +9,6 @@ from . import common
 from .interface import ServerInterfaces
 
 # Default Entry point
-
-
 app = Flask(__name__, template_folder='templates')
 Bootstrap(app)
 
