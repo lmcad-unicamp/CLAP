@@ -28,43 +28,28 @@ function add_notification(msg_type, msg){
     div_notification = document.createElement('div');
     div_notification.setAttribute("id", div_id);
     $("#notificationHolder").prepend(div_notification)
-    now = moment().toString();
+    moment().locale()
+    now = moment().format('lll').toString();
+    text_to_replace = ""
 
-    if (msg_type == 'success'){
-        $("#"+div_id).replaceWith(`
-            <div class="alert alert-dismissible alert-success">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <div class="row justify-content-end">
-                    <div class="col-9">
-                        <p> ${msg} </p>
-                    </div>
-                    <div class="col-3">
-                        <div class="float-right">
-                            <small>${now}</small>
-                        </div>
-                    </div>
-                </div> 
-            </div>`
-        )
-    }
+    if (msg_type == 'success')
+        text_to_replace = ` <div class="alert alert-dismissible alert-success">`
+    else if(msg_type == 'fail')
+        text_to_replace = ` <div class="alert alert-dismissible alert-danger">`
+    else 
+        return ""
 
-    else if(msg_type == 'fail'){
-        $("#"+div_id).replaceWith(`
-            <div class="alert alert-dismissible alert-danger">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <div class="row justify-content-end">
-                    <div class="col-9">
-                        <p> ${msg} </p>
-                    </div>
-                    <div class="col-3">
-                        <div class="float-right">
-                            <small>${now}</small>
-                        </div>
-                    </div>
-                </div> 
-            </div>`
-        )
-    }
+    text_to_replace += `
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <div class="row justify-content-end">
+                <div class="col">
+                    <small> ${msg} </small>
+                </div>
+                <div class="col-12 col-sm-auto">
+                    <small>${now}</small>
+                </div>
+            </div> 
+        </div>`
 
-
+    $("#"+div_id).replaceWith(text_to_replace)
 }
