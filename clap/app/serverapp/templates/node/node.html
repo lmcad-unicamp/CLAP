@@ -6,26 +6,52 @@
     window.addEventListener('DOMContentLoaded', (event) => {
         put_navigation()
         update_node_list()
+        setInterval(update_node_list, 30000)
     });
 
     function put_navigation(){
-        // $("#navigation-items").replaceWith(`
-        //     <li class="nav-item" onClick="save_content()">Start</li>
-        //     <li class="nav-item" onClick="get_editor_content()">Reload</li>
-        // `);
+        $("#navigation-extra").replaceWith(`
+            <li class="nav-item"> <a class="nav-link" href="#" onclick="action_start()">Start</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="#" onclick="action_resume()">Resume</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="#" onclick="action_stop()">Stop</a> </li>`
+        )
     }
-
 
     function action_start() {
         console.log('start action called!')
     }
 
+    function action_resume() {
+        var table = $('#nodeTable').DataTable()
+        var ids = $.map(table.rows('.selected').data(), function (item) {
+            return item[0]
+        });
+        if (ids.length <= 0){
+            add_notification('fail', 'You must select at least one node!')
+            return
+        }
+        
+        add_notification('success', `Resuming nodes: ${ids}...`)
+        $.post('resume', {'node_ids': JSON.stringify(ids)}, function(response){
+            add_notification('success', response)
+            update_node_list()
+        }).fail(function(response){
+            add_notification('fail', response.responseText)
+            update_node_list()
+        });
+    }
+
+    function action_stop() {
+        console.log('stop action called!')
+    }
+
     function update_node_list(){
         $.get('get-node-list', function(response){
-            console.log(response)
-            table = $('#nodeTable').DataTable()
+            var table = $('#nodeTable').DataTable()
             table.rows().remove()
+            table.destroy()
 
+            table = $('#nodeTable').DataTable()
             for (node in response){
                 node_id = response[node]['node_id'];
                 node_instance_type = response[node]['instance_type']
@@ -39,6 +65,7 @@
 
             $('#nodeTable tbody').on('click', 'tr', function () {
                 $(this).toggleClass('table-active');
+                $(this).toggleClass('selected');
             });
         });
     }
