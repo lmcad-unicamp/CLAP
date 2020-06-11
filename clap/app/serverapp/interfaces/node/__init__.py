@@ -8,4 +8,6 @@ __routes__ = [
     ('get-node-list', get_node_list, ['GET', 'POST']),
     ('templates', get_node_templates, ['GET', 'POST']),
     ('resume', node_resume, ['GET', 'POST']),
+    ('pause', node_pause, ['GET', 'POST']),
+    ('stop', node_stop, ['GET', 'POST']),
 ]

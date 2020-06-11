@@ -11,14 +11,20 @@
 
     function put_navigation(){
         $("#navigation-extra").replaceWith(`
-            <li class="nav-item"> <a class="nav-link" href="#" onclick="action_start()">Start</a> </li>
-            <li class="nav-item"> <a class="nav-link" href="#" onclick="action_resume()">Resume</a> </li>
-            <li class="nav-item"> <a class="nav-link" href="#" onclick="action_stop()">Stop</a> </li>`
+            <li class="nav-item"><a class="nav-link" href="#" onclick="action_start()">Start</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="action_resume()">Resume</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="action_pause()">Pause</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="action_stop()">Stop</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="action_group_add()">Group</a></li>`
         )
     }
 
     function action_start() {
         console.log('start action called!')
+    }
+
+    function action_group_add() {
+
     }
 
     function action_resume() {
@@ -30,7 +36,6 @@
             add_notification('fail', 'You must select at least one node!')
             return
         }
-        
         add_notification('success', `Resuming nodes: ${ids}...`)
         $.post('resume', {'node_ids': JSON.stringify(ids)}, function(response){
             add_notification('success', response)
@@ -41,13 +46,48 @@
         });
     }
 
+    function action_pause() {
+        var table = $('#nodeTable').DataTable()
+        var ids = $.map(table.rows('.selected').data(), function (item) {
+            return item[0]
+        });
+        if (ids.length <= 0){
+            add_notification('fail', 'You must select at least one node!')
+            return
+        }
+        add_notification('success', `Pausing nodes: ${ids}...`)
+        $.post('pause', {'node_ids': JSON.stringify(ids)}, function(response){
+            add_notification('success', response)
+            update_node_list()
+        }).fail(function(response){
+            add_notification('fail', response.responseText)
+            update_node_list()
+        });
+    }
+
     function action_stop() {
-        console.log('stop action called!')
+        var table = $('#nodeTable').DataTable()
+        var ids = $.map(table.rows('.selected').data(), function (item) {
+            return item[0]
+        });
+        if (ids.length <= 0){
+            add_notification('fail', 'You must select at least one node!')
+            return
+        }
+        add_notification('success', `Stopping nodes: ${ids}...`)
+        $.post('stop', {'node_ids': JSON.stringify(ids)}, function(response){
+            add_notification('success', response)
+            update_node_list()
+        }).fail(function(response){
+            add_notification('fail', response.responseText)
+            update_node_list()
+        });
     }
 
     function update_node_list(){
         $.get('get-node-list', function(response){
             var table = $('#nodeTable').DataTable()
+            $('#nodeTable tbody').off('click')
             table.rows().remove()
             table.destroy()
 

@@ -29,10 +29,30 @@ def node_resume():
     node_module = __get_module__('node')
     try:
         resumed_nodes = node_module.resume_nodes(node_ids)
-        return "Resumed nodes {}".format(','.join(resumed_nodes)), 200
+        return "Resumed nodes {}".format(', '.join(resumed_nodes)), 200
     except Exception as e:
         print(e)
-        return "Failed to resume nodes {}".format(','.join(node_ids)), 400
+        return "Failed to resume nodes {}".format(', '.join(node_ids)), 400
+
+def node_pause():
+    node_ids = json.loads(request.form['node_ids'])
+    node_module = __get_module__('node')
+    try:
+        paused_nodes = node_module.pause_nodes(node_ids)
+        return "Paused nodes {}".format(', '.join(paused_nodes)), 200
+    except Exception as e:
+        print(e)
+        return "Failed to pause nodes {}".format(', '.join(node_ids)), 400
+
+def node_stop():
+    node_ids = json.loads(request.form['node_ids'])
+    node_module = __get_module__('node')
+    try:
+        stopped_nodes = node_module.stop_nodes(node_ids)
+        return "Stopped nodes {}".format(', '.join(stopped_nodes)), 200
+    except Exception as e:
+        print(e)
+        return "Failed to stop nodes {}".format(', '.join(node_ids)), 400
 
 def get_node_list():
     node_module = __get_module__('node')
@@ -41,6 +61,6 @@ def get_node_list():
 def node_list_update_periodically():
     node_module = __get_module__('node')
 
-    #while True:
-    #    node_module.is_alive([])
-    #    time.sleep(120)
+    while True:
+        node_module.is_alive([])
+        time.sleep(120)
