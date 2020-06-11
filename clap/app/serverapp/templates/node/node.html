@@ -6,6 +6,7 @@
     window.addEventListener('DOMContentLoaded', (event) => {
         put_navigation()
         update_node_list()
+        get_groups()
         setInterval(update_node_list, 30000)
     });
 
@@ -15,16 +16,65 @@
             <li class="nav-item"><a class="nav-link" href="#" onclick="action_resume()">Resume</a></li>
             <li class="nav-item"><a class="nav-link" href="#" onclick="action_pause()">Pause</a></li>
             <li class="nav-item"><a class="nav-link" href="#" onclick="action_stop()">Stop</a></li>
-            <li class="nav-item"><a class="nav-link" href="#" onclick="action_group_add()">Group</a></li>`
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Add to Group</a>
+                <div id="navigation-groups" class="dropdown-menu">
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Group Action</a>
+                <div id="navigation-group-actions" class="dropdown-menu">
+            </li>`
         )
+    }
+
+    function get_groups(){
+        $.get('get-groups', function(response){
+            console.log(response)
+            for (group in response){
+                group_name = response[group]['name'].toString()
+                $("#navigation-groups").append(`<a class="dropdown-item" href="#" onclick="action_group_add('${group_name}')"> ${group_name} </a>`)
+                $("#navigation-group-actions").append(`<a class="dropdown-item" href="#" onclick="action_group_action('${group_name}')"> ${group_name} </a>`)
+            }
+        })
     }
 
     function action_start() {
         console.log('start action called!')
     }
 
-    function action_group_add() {
+    function action_group_add(group_name) {
+        var table = $('#nodeTable').DataTable()
+        var ids = $.map(table.rows('.selected').data(), function (item) {
+            return item[0]
+        });
+        if (ids.length <= 0){
+            add_notification('fail', 'You must select at least one node!')
+            return
+        }
 
+        $.post('get-group-add-modal', {'group': group_name}, function(response){
+            div_id = "modalForm"
+            div_modal = document.createElement('div');
+            div_modal.setAttribute("id", div_id);
+            $("#modalFormHolder").empty()
+            $("#modalFormHolder").append(div_modal)
+            $("#"+div_id).replaceWith(response)
+            $('#group_add_modal').modal('show');
+            $('#group_add_modal_ok').click(function(){
+                add_notification('success', `Adding nodes to group ${group_name}`)
+                $('#group_add_modal').modal('hide');
+                var group_vars_values = $('#group_add_modal_values').serializeArray()
+                $.post('add-to-group', {'node_ids': JSON.stringify(ids), 'group_name': group_name, 'group_values': JSON.stringify(group_vars_values)}, function(response){
+                    add_notification('success', response)
+                }).fail(function(response){
+                    add_notification('fail', response.responseText)
+                })
+            })
+        })
+    }
+
+    function action_group_action(group_name) {
+        alert("Received group action: "+ group_name)
     }
 
     function action_resume() {
@@ -86,6 +136,7 @@
 
     function update_node_list(){
         $.get('get-node-list', function(response){
+            console.log(`Received nodes: ${response}`)
             var table = $('#nodeTable').DataTable()
             $('#nodeTable tbody').off('click')
             table.rows().remove()
@@ -100,7 +151,10 @@
                 node_lifecycle = response[node]['lifecycle']
                 node_update_time = moment.unix(response[node]['update_time']).toString()
                 
-                table.row.add([node_id, node_instance_type, node_status, node_ip, node_lifecycle, node_update_time]).draw(true)
+                r = table.row.add([node_id, node_instance_type, node_status, node_ip, node_lifecycle, node_update_time]).draw(true).node()
+                //if (node_status != 'reachable')
+                //    $(r).toggleClass('table-warning')
+                
             }
 
             $('#nodeTable tbody').on('click', 'tr', function () {
@@ -111,6 +165,10 @@
     }
     
 </script>
+
+<div id="modalFormHolder" class="container">
+
+</div>
 
 <div id="nodeListContainer">
     <div id="nodeListTableDiv" class="table-responsive">

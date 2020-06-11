@@ -10,4 +10,7 @@ __routes__ = [
     ('resume', node_resume, ['GET', 'POST']),
     ('pause', node_pause, ['GET', 'POST']),
     ('stop', node_stop, ['GET', 'POST']),
+    ('get-groups', get_group_list, ['GET', 'POST']),
+    ('get-group-add-modal', get_group_add_modal, ['GET', 'POST']),
+    ('add-to-group', node_add_group, ["GET", "POST"])
 ]
