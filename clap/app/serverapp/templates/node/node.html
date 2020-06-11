@@ -60,11 +60,14 @@
             $("#modalFormHolder").append(div_modal)
             $("#"+div_id).replaceWith(response)
             $('#group_add_modal').modal('show');
+
             $('#group_add_modal_ok').click(function(){
-                add_notification('success', `Adding nodes to group ${group_name}`)
+                add_notification('warning', `Adding nodes to group ${group_name}`)
                 $('#group_add_modal').modal('hide');
                 var group_vars_values = $('#group_add_modal_values').serializeArray()
-                $.post('add-to-group', {'node_ids': JSON.stringify(ids), 'group_name': group_name, 'group_values': JSON.stringify(group_vars_values)}, function(response){
+                
+                $.post('add-to-group', {'node_ids': JSON.stringify(ids), 'group_name': group_name, 
+                        'group_values': JSON.stringify(group_vars_values)}, function(response){
                     add_notification('success', response)
                 }).fail(function(response){
                     add_notification('fail', response.responseText)
@@ -136,7 +139,6 @@
 
     function update_node_list(){
         $.get('get-node-list', function(response){
-            console.log(`Received nodes: ${response}`)
             var table = $('#nodeTable').DataTable()
             $('#nodeTable tbody').off('click')
             table.rows().remove()

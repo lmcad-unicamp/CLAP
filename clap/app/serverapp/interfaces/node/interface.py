@@ -64,22 +64,29 @@ def get_group_add_modal():
     group_module = __get_module__('group')
     group_name = request.form['group']
 
-    actions = next(iter([group['actions'] for group in group_module.list_groups() if group['name'] == group_name]))
+    group_vals = next(iter([group for group in group_module.list_groups() if group['name'] == group_name]))
+    actions = group_vals['actions']
+    hosts = group_vals['hosts']
     
     if 'setup' in actions:
         if actions['setup']['vars']:
-            return render_template('node/node-group-add.html', group_name=group_name, action_vars=actions['setup']['vars']), 200
+            return render_template('node/node-group-add.html', group_name=group_name, hosts=hosts, action_vars=actions['setup']['vars']), 200
     # No vars or no setup action
-    return render_template('node/node-group-add.html', group_name=group_name), 200
+    return render_template('node/node-group-add.html', hosts=hosts, group_name=group_name), 200
 
 # Must Add hosts
 def node_add_group():
     group_module = __get_module__('group')
+
     group_name = request.form['group_name']
     group_values = json.loads(request.form['group_values'])
+    group_host = next(iter([g['value'] for g in group_values if g['name'] == 'hosts']), None)
     node_ids = json.loads(request.form['node_ids'])
 
-    actions = next(iter([group['actions'] for group in group_module.list_groups() if group['name'] == group_name]))
+    group = next(iter([group for group in group_module.list_groups() if group['name'] == group_name]))
+    actions = group['actions']
+    hosts = group['hosts']
+
     invalids = []
 
     if 'setup' in actions:
@@ -93,6 +100,11 @@ def node_add_group():
 
     if invalids:
         return "Variables: `{}` must be set!".format(", ".join(sorted(invalids))), 400
+
+    if hosts and not group_host:
+        return "A host must be selected!", 400
+
+    return "OK", 200
 
     group_args = {value['name']: value['value'] for value in group_values}
     try:

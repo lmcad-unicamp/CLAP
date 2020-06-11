@@ -34,6 +34,8 @@ function add_notification(msg_type, msg){
 
     if (msg_type == 'success')
         text_to_replace = ` <div class="alert alert-dismissible alert-success">`
+    else if(msg_type == 'warning')
+        text_to_replace = ` <div class="alert alert-dismissible alert-warning">`
     else if(msg_type == 'fail')
         text_to_replace = ` <div class="alert alert-dismissible alert-danger">`
     else 

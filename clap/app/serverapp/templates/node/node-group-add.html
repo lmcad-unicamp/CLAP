@@ -2,27 +2,45 @@
     <div class="modal-dialog" role="dialog" aria-hidden="true">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Adding nodes to group {{ group_name }}</h5>
+                <h4 class="modal-title">Adding nodes to group {{ group_name }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            {% if action_vars is defined %}
+            
                 <div class="modal-body">
-                    <h6 class="modal-title">Inform variables for setup's action of {{ group_name }}</h6>
                     <form id="group_add_modal_values">
                         <fieldset>
                             <div class="form-group">
+                                <h6 class="modal-title">Variables for setup action</h6>
+                                {% if action_vars is defined %}
                                 {% for action_var in action_vars %}
                                     <label for="var_{{ action_var.name }}">{{ action_var.name }}</label>
                                     <input type="text" class="form-control" id="value_{{ action_var.name }}" name="{{ action_var.name }}" aria-describedby="help_{{ action_var.name }}" placeholder="Variable value">
                                     <small id="help_{{ action_var.name }}" class="form-text text-muted">{{ action_var.description }}</small>
                                 {% endfor %}
+                                {% else %}
+                                    <p>No one</p>
+                                {% endif %}
+                                <h6 class="modal-title">Hosts</h6>
+
+                                {% if hosts|length > 0 %}
+                                <div class="form-group">
+                                    <select class="custom-select" name="hosts">
+                                        <option value="" selected="">Select a host type</option>
+                                        {% for host in hosts %}
+                                        <option value="{{ host }}" name="host_{{ host }}">{{ host }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% else %}
+                                    <p>No one</p>
+                                {% endif %}
                             </div>
                         </fieldset>
                     </form>
                 </div>
-            {% endif %}
+            
 
             <div class="modal-footer">
                 <button id="group_add_modal_ok" type="submit" class="btn btn-primary">Add to group!</button>
