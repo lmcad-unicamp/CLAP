@@ -61,9 +61,9 @@ class ConfigReader:
         self.login_configs = yaml_load(logins_file)
         self.instance_configs = yaml_load(instances_file)
 
-        self.__validate(PROVIDERS_SCHEMA, self.provider_configs)
-        self.__validate(LOGIN_SCHEMA, self.login_configs)
-        self.__validate(INSTANCE_SCHEMA, self.instance_configs)
+        self.__validate(self.PROVIDERS_SCHEMA, self.provider_configs)
+        self.__validate(self.LOGIN_SCHEMA, self.login_configs)
+        self.__validate(self.INSTANCE_SCHEMA, self.instance_configs)
 
         self.__check_instances()
 
