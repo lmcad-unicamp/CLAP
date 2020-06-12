@@ -379,12 +379,16 @@ class MultiInstanceAPI:
         :return: A dictionary telling which nodes are alive. The dictionary keys correspond to the node id and the value is a boolean that is true if node is alive or false otherwise. 
         :rtype: Dict[str, bool]
         """
+        # Get nodes information
         nodes = self.get_nodes(node_ids)
         checked_nodes = dict()
-        for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            node_ids = [node.node_id for node in nodes if node.cluster_id == cluster.cluster_id]
+        # Filter the drivers of all nodes and iterate over drivers
+        for driver_id in set([node.driver_id for node in nodes]):
+            # Filter nodes with the same driver_id
+            node_ids = [node.node_id for node in nodes if node.driver_id == driver_id]
             print("Cheking if nodes `{}` are alive...".format(', '.join(sorted(node_ids))))
-            checked_nodes.update(self._get_instance_iface(cluster.driver_id).check_nodes_alive(node_ids))
+            # Check if nodes are alive...
+            checked_nodes.update(self._get_instance_iface(driver_id).check_nodes_alive(node_ids))
         return checked_nodes
 
     def execute_playbook_in_nodes(self, playbook_path: str, hosts: Union[List[str], Dict[str, List[str]]],
