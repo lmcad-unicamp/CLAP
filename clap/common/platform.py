@@ -16,6 +16,7 @@ from clap.common.config import Defaults
 from clap.common.driver import AbstractInstanceInterface
 from clap.common.cluster_repository import RepositoryOperations, NodeInfo
 from clap.common.utils import path_extend, log, yaml_load
+from clap.common.exceptions import ConfigurationError
 
 
 class ModuleInterface:
@@ -98,6 +99,8 @@ class ModuleInterface:
 
 
 class GroupInterface:
+    """ This interface collects and maintains information about groups in the CLAP system
+    """
     __groups_actions_map__ = dict()
 
     @staticmethod
@@ -105,67 +108,91 @@ class GroupInterface:
         if GroupInterface.__groups_actions_map__:
             return
 
+        # Search for all files in the actions directory and parse then!
         for group_file in os.listdir(Defaults.actions_path):
             if not group_file.endswith('.yml'):
                 continue
             try:
+                # Get the group name (name of file without yml)
                 group_name = group_file[:-4]
+                # Load the YAML file as a dict
                 group_values = yaml_load(path_extend(Defaults.actions_path, group_file))
                 __new_group = dict()
 
+                # ************** HOST VALIDATION *****************
+                # Hosts does not exists?
                 if 'hosts' not in group_values:
                     __new_group['hosts'] = []
                 else:
+                    # Check if it is a list and if all elements are str
                     if type(group_values['hosts']) is not list:
-                        raise Exception("Host values must be a list")
-                    invalid_hosts = [host for host in group_values if type(host) is not str or not host]
+                        raise ConfigurationError("Host values must be a list")
+                    invalid_hosts = [host for host in group_values['hosts'] if type(host) is not str or not host]
                     if invalid_hosts:
-                        raise Exception("Hosts `{}` are invalid".format(', '.join(sorted(invalid_hosts))))
-                    
+                        raise ConfigurationError("Hosts `{}` are invalid".format(', '.join(sorted(invalid_hosts))))
+                    # Hosts validation -- ok
                     __new_group['hosts'] = list(group_values['hosts'])
 
+                # ************** ACTIONS VALIDATION *****************
                 if 'actions' not in group_values:
-                    raise Exception("All groups must have `actions` values") 
+                    raise ConfigurationError("All groups must have `actions` values") 
                 actions = {}
 
+                # Iterate through actions...
                 for action_name, action in group_values['actions'].items():
                     action_values = {}
 
+                    # Action's playbook variable is required!
                     if 'playbook' not in action:
-                        raise Exception("All actions must specify a playbook")
+                        raise ConfigurationError("All actions must specify a playbook")
+
                     action_values['playbook'] = action['playbook']
 
-                    if 'description' not in action:
-                        action_values['description'] = ''
-                    else:
-                        action_values['description'] = action['description']
+                    # Check if 'description' variable exists in the action or set it to default (empty string)
+                    action_values['description'] = '' if 'description' not in action else action['description']
                     
+                    # Check if 'vars' variable exists in action, else set to an empty list
                     action_vars = []
                     if 'vars' in action:
+                        # Iterate through vars variable
                         for var in action['vars']:
                             __vars = {}
-
+                            # Var name is required!
                             if 'name' not in var:
-                                raise Exception("All vars must have a name")
+                                raise ConfigurationError("All vars must have a name")
                             __vars['name'] = var['name']
 
-                            if 'description' not in var:
-                                __vars['description'] = ''
-                            else:
-                                __vars['description'] = var['description']
-                            
-                            if 'optional' not in var:
-                                __vars['optional'] = False
-                            else:
-                                __vars['optional'] = var['optional']
-
+                            # Check if description exists in the variable or set it to default (empty string)
+                            __vars['description'] = '' if 'description' not in var else var['description']
+                            # Check if the variable is optional or set it to default (false --> var is required for this action)
+                            __vars['optional'] = False if 'optional' not in var else var['optional']
+                            # Variable successfully validated!
                             action_vars.append(__vars)
 
                     action_values['vars'] = action_vars
+                    # Group's actions successfully validated!
                     actions[action_name] = action_values
 
                 __new_group['actions'] = actions
+
+                # ************** DEPENDENCIES VALIDATION *****************
+                # Check if group has any dependencies. If not, set to default: empty list
+                if 'dependencies' not in group_values:
+                    __new_group['dependencies'] = []
+                else:
+                    # Check if dependencies is a list of str
+                    if type(group_values['dependencies']) is not list:
+                        raise ConfigurationError("Dependencies must be a list")
+                    invalid_dependencies = [dep for dep in group_values['dependencies'] if type(dep) is not str or not dep]
+                    if invalid_dependencies:
+                        raise ConfigurationError("Dependencies `{}` are invalid".format(', '.join(sorted(invalid_dependencies))))
+                    # Dependencies validation -- ok
+                    __new_group['dependencies'] = list(group_values['dependencies'])
+
+                # ****************** OK *******************
+                # Group successfully validated!
                 GroupInterface.__groups_actions_map__[group_name] = __new_group
+                
             except Exception as e:
                 log.error("At group `{}`: {}".format(group_file, e))
                 log.error("Discarding group `{}`".format(group_file))
@@ -173,11 +200,11 @@ class GroupInterface:
     def __init__(self):
         self.__find_groups()
 
-    def get_group(self, group_name: str) -> Tuple[Dict[str, Any], List[str]]:
+    def get_group(self, group_name: str) -> Dict[str, Any]:
         if group_name not in GroupInterface.__groups_actions_map__:
             raise Exception("Invalid group: `{}`".format(group_name))
         group = GroupInterface.__groups_actions_map__[group_name]
-        return group['actions'], group['hosts']
+        return dict(name=group_name, actions=group['actions'], hosts=group['hosts'], dependencies=group['dependencies'])
 
     def get_group_names(self) -> List[str]:
         return list(GroupInterface.__groups_actions_map__.keys())
@@ -541,9 +568,9 @@ class MultiInstanceAPI:
         :rtype: List[Dict[str, Any]]
         """
         groups = []
+        # Iterate over all groups and get all dicts
         for group_name in GroupInterface().get_group_names():
-            group_actions, group_hosts = GroupInterface().get_group(group_name)
-            group_dict = dict(name=group_name, actions=group_actions, hosts=group_hosts)
+            group_dict = GroupInterface().get_group(group_name)
             groups.append(group_dict)
         return groups
 
@@ -598,7 +625,8 @@ class MultiInstanceAPI:
         node_ids = set()
 
         for group_name, hosts in group_hosts_map.items():
-            group_actions, group_hosts = GroupInterface().get_group(group_name)
+            group_dict = GroupInterface().get_group(group_name)
+            group_actions, group_hosts = group_dict['actions'], group_dict['hosts'] 
 
             if isinstance(hosts, dict):
                 host_names = list(hosts.keys())
@@ -677,7 +705,8 @@ class MultiInstanceAPI:
         split_vals = group_name.split('/')
         group_name = split_vals[0]
 
-        group_actions, group_hosts = GroupInterface().get_group(group_name)
+        group_dict = GroupInterface().get_group(group_name)
+        group_actions, group_hosts = group_dict['actions'], group_dict['hosts'] 
         hosts_map = dict()
         extra_args = {}
 
