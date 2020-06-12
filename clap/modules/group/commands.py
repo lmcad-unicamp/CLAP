@@ -33,6 +33,7 @@ class GroupsParser(AbstractParser):
         group_subcom_parser = commands_parser.add_parser('remove', help='Remove nodes from a group')
         group_subcom_parser.add_argument('group', action='store', help='Name of the group to be removed')
         group_subcom_parser.add_argument('node_ids', action='store', nargs='+', help='ID of the nodes to be removed from the group')
+        group_subcom_parser.add_argument('--tag', action='store', help='Select nodes with specified tag')
         group_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
                                         help="Keyworded (format: x=y) Arguments to be passed to the action")
         group_subcom_parser.set_defaults(func=self.command_remove_group_from_node)
@@ -117,4 +118,26 @@ class GroupsParser(AbstractParser):
 
 
     def command_remove_group_from_node(self, namespace: argparse.Namespace):
-        raise NotImplementedError("Not fully implemented yet...")
+        tag = None
+        extra_args = None
+
+        if namespace.tag:
+            try:
+                tag = {namespace.tag.split('=')[0]: '='.join(namespace.tag.split('=')[1:])}
+            except Exception:
+                raise Exception("Error mounting tag parameters. Please check the tag parameters passed")
+
+        try:
+            extra_args = {arg.split('=')[0]: '='.join(arg.split('=')[1:]) for arg in namespace.extra} if namespace.extra else {}
+        except Exception:
+            raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
+                            "Please check the extra parameters passed")
+
+        removed_nodes = remove_group_from_node(namespace.node_ids, namespace.group, group_args=extra_args, tags=tag)
+
+        if removed_nodes:
+            print("Nodes `{}` were successfully removed from group `{}`".format(', '.join(sorted(removed_nodes)), namespace.group))
+        else:
+            log.error("No nodes were removed from group `{}`".format(namespace.group))
+
+        return 0

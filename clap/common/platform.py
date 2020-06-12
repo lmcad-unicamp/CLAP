@@ -630,14 +630,14 @@ class MultiInstanceAPI:
 
         # Is this one already in processing? If true --> Cyclical dependency chain!
         if group_name in __processing_dependencies__:
-            raise Exception("Cyclical dependencies when processing group dependencies! Dependency chain: {}".format(', '.join(__processing_dependencies__)))
+            raise Exception("Cyclical dependencies when processing group dependencies! Dependency chain: `{}`".format(', '.join(__processing_dependencies__)))
 
         # Add this one to dependency chain
         __processing_dependencies__.append(group_name)
 
         # Get dependencies for this group and process each one
         for dependency in GroupInterface().get_group(group_name)['dependencies']:
-            log.info("Processing group `{}` dependency: `{}`...".format(group_name, dependency))
+            print("Processing group `{}` dependency: `{}`...".format(group_name, dependency))
             self.add_nodes_to_group( node_ids=node_ids, group_name=dependency, group_args=group_args, 
                                 __processing_dependencies__=__processing_dependencies__)
             log.info("Dependency `{}` sucessfully processed!".format(dependency))
@@ -777,18 +777,19 @@ class MultiInstanceAPI:
 
     def remove_nodes_from_group(self, group_name: str, node_ids: List[str] = None, remove_action: str = None,
                                 group_args: Dict = None):
+        # Split group_name variable
         split_vals = group_name.split('/')
-
+        # If not in format: group_name or group_name/hostname --> Error
         if len(split_vals) > 2:
-            raise Exception("Invalid group and hosts `{}`".format(group_name))
+            raise ValueError("Invalid group and hosts `{}`".format(group_name))
 
         if node_ids:
-            node_with_group = self.__get_nodes_in_group__(split_vals, node_ids)
+            node_with_group = self.__get_nodes_in_group__(group_name, node_ids)
             if len(node_ids) != len(node_with_group):
                 raise Exception("Nodes `{}` are not members of group `{}`".format(
                     ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
         else:
-            node_ids = self.__get_nodes_in_group__(split_vals)
+            node_ids = self.__get_nodes_in_group__(group_name)
 
         if not node_ids:
             raise Exception("No nodes in group `{}`".format(group_name))
