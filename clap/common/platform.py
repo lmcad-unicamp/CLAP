@@ -591,6 +591,7 @@ class MultiInstanceAPI:
         return list(executeds.keys())
 
     def __get_nodes_in_group__(self, group: str, node_ids: List[str] = None) -> List[str]:
+        # Get full node information from nodes that is in the group
         nodes = self.__repository_operations.get_nodes(node_ids) if node_ids else self.__repository_operations.get_all_nodes()
         members = []
         for node in nodes:
@@ -601,6 +602,38 @@ class MultiInstanceAPI:
                 members.append(node.node_id)
 
         return members
+
+    def __check_nodes_in_group__(self, group_name: str, node_ids: List[str] = None):
+        # Split group_name variable
+        split_vals = group_name.split('/')
+        # If not in format: group_name or group_name/hostname --> Error
+        if len(split_vals) > 2:
+            raise Exception("Invalid group and hosts `{}`".format(group_name))
+
+        # Node IDS are already passed, get list of nodes in the group
+        if node_ids:
+            node_with_group = self.__get_nodes_in_group__(group_name, node_ids)
+            # Check if all nodes passed belong to the group
+            if len(node_ids) != len(node_with_group):
+                raise Exception("Nodes `{}` are not members of group `{}`".format(
+                    ', '.join(sorted(set(node_ids).difference(set(node_with_group)))), group_name))
+        # Get all nodes belonging to the group and set the node ids
+        else:
+            node_ids = self.__get_nodes_in_group__(group_name)
+
+        # If no nodes belong to group, stop.
+        if not node_ids:
+            raise Exception("No nodes in group `{}`".format(group_name))
+
+        if len(split_vals) > 1:
+            # Check nodes of group with host (not only with group name)
+            node_with_group = [node.node_id for node in self.__repository_operations.get_nodes(node_ids)
+                               if group_name in list(node.groups.keys())]
+            # If nodes does not belong to group with same node, stop.
+            if len(node_ids) != len(node_with_group):
+                raise Exception("Nodes `{}` are not members of group `{}`".format(
+                    ', '.join(sorted(set(node_ids).difference(set(node_with_group)))), group_name))
+        return node_ids
 
     def add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict[str, str] = None, 
             __processing_dependencies__: List[str] = None) -> List[str]:
@@ -701,31 +734,8 @@ class MultiInstanceAPI:
         :return: A list of nodes that successfully performed the action.
         :rtype: List[str] 
         """
-        split_vals = group_name.split('/')
-        if len(split_vals) > 2:
-            raise Exception("Invalid group and hosts `{}`".format(group_name))
-
-        if node_ids:
-            node_with_group = self.__get_nodes_in_group__(group_name, node_ids)
-            if len(node_ids) != len(node_with_group):
-                raise Exception("Nodes `{}` are not members of group `{}`".format(
-                    ', '.join(sorted(set(node_ids).difference(set(node_with_group)))), group_name))
-        else:
-            node_ids = self.__get_nodes_in_group__(group_name)
-
-        if not node_ids:
-            raise Exception("No nodes in group `{}` to perform action `{}`".format(group_name, action))
-
-        # Verify in subgroup
-        # TODO check subgroup not group
-        if len(split_vals) > 1:
-            node_with_group = [node.node_id for node in self.__repository_operations.get_nodes(node_ids)
-                               if group_name in list(node.groups.keys())]
-
-            if len(node_ids) != len(node_with_group):
-                raise Exception("Nodes `{}` are not members of group `{}`".format(
-                    ', '.join(sorted(set(node_ids).difference(set(node_with_group)))), group_name))
-
+        # Check nodes of the group
+        node_ids = self.__check_nodes_in_group__(group_name, node_ids)
         return self.__execute_group_action(node_ids, group_name, action, group_args)
 
     def __execute_group_action(self, node_ids: List[str], group_name: str, action: str, group_args: Dict = None):
@@ -777,51 +787,31 @@ class MultiInstanceAPI:
 
     def remove_nodes_from_group(self, group_name: str, node_ids: List[str] = None, remove_action: str = None,
                                 group_args: Dict = None):
-        # Split group_name variable
+        # Check nodes of the group
         split_vals = group_name.split('/')
-        # If not in format: group_name or group_name/hostname --> Error
-        if len(split_vals) > 2:
-            raise ValueError("Invalid group and hosts `{}`".format(group_name))
+        node_ids = self.__check_nodes_in_group__(group_name, node_ids)
 
-        if node_ids:
-            node_with_group = self.__get_nodes_in_group__(group_name, node_ids)
-            if len(node_ids) != len(node_with_group):
-                raise Exception("Nodes `{}` are not members of group `{}`".format(
-                    ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
-        else:
-            node_ids = self.__get_nodes_in_group__(group_name)
-
-        if not node_ids:
-            raise Exception("No nodes in group `{}`".format(group_name))
-
-        # Verify in subgroup
-        # TODO check subgroup not group
-        if len(split_vals) > 1:
-            node_with_group = [node.node_id for node in self.__repository_operations.get_nodes(node_ids)
-                               if group_name in list(node.groups.keys())]
-
-            if len(node_ids) != len(node_with_group):
-                raise Exception("Nodes `{}` are not members of group `{}`".format(
-                    ', '.join(set(node_ids).difference(set(node_with_group))), group_name))
-
+        # Is there any remove action?
         if remove_action:
+            # Perform it!
             removeds = self.__execute_group_action(node_ids, group_name, remove_action, group_args)
             if len(removeds) != len(node_ids):
                 raise Exception("Nodes `{}` have failed to execute action `{}`".format(
                     ', '.join(set(node_ids).difference(set(removeds))), remove_action))
 
-        for node_id in node_ids:
-            node = self.__repository_operations.get_nodes(node_id)[0]
-
+        # Iterate over all nodes in the group
+        for node in self.get_nodes(node_ids):
+            # If group name is of format: group/host --> Remove group/host from list
             if len(split_vals) > 1:
                 node.groups.pop(group_name)
-
+            # Else, if is the format: groupname --> Must remove all hosts (if any) from nodes
             else:
+                # Iterate over all groups of the node
                 for gname in list(node.groups.keys()):
-                    if gname == group_name or gname.startswith("{}/".format(gname)):
+                    # If the got group is same as group_name or startswith 'group_name/'
+                    if gname == group_name or gname.startswith("{}/".format(group_name)):
                         node.groups.pop(gname)
-                    # else:
-                    #    raise Exception()
+            # Update repository
             self.__repository_operations.update_node(node)
 
         return node_ids
