@@ -363,12 +363,16 @@ class MultiInstanceAPI:
         :return: A list of resumed nodes 
         :rtype: List[str]
         """
+        # Get nodes information
         nodes = self.get_nodes(node_ids)
         resumed_nodes = []
-        for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            node_ids = [node.node_id for node in nodes if node.cluster_id == cluster.cluster_id]
+        # Filter the drivers of all nodes and iterate over drivers
+        for driver_id in set([node.driver_id for node in nodes]):
+            # Filter nodes with the same driver_id
+            node_ids = [node.node_id for node in nodes if node.driver_id == driver_id]
             print("Resuming nodes: `{}`...".format(', '.join(sorted(node_ids))))
-            resumed_nodes += self._get_instance_iface(cluster.driver_id).resume_nodes(node_ids)
+            # Resume nodes...
+            resumed_nodes += self._get_instance_iface(driver_id).resume_nodes(node_ids)
         return resumed_nodes
 
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
