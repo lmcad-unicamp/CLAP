@@ -1,0 +1,29 @@
+:mod:`clap.app.serverapp.app`
+=============================
+
+.. py:module:: clap.app.serverapp.app
+
+
+Module Contents
+---------------
+
+.. data:: app
+   
+
+   
+
+.. data:: route_name
+   
+
+   
+
+.. data:: server_ifaces
+   
+
+   
+
+.. data:: route_name
+   
+
+   
+

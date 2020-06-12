@@ -1,0 +1,22 @@
+:mod:`clap.app.serverapp.common.interface`
+==========================================
+
+.. py:module:: clap.app.serverapp.common.interface
+
+
+Module Contents
+---------------
+
+
+.. function:: __get_modules__()
+
+
+.. function:: get_navigation_html()
+
+
+.. function:: get_module_cards_html()
+
+
+.. function:: index(result=None)
+
+

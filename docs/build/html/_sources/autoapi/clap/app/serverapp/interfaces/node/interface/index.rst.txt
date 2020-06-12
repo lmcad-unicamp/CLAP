@@ -1,0 +1,25 @@
+:mod:`clap.app.serverapp.interfaces.node.interface`
+===================================================
+
+.. py:module:: clap.app.serverapp.interfaces.node.interface
+
+
+Module Contents
+---------------
+
+
+.. function:: __get_module__(name, **kwargs)
+
+
+.. function:: get_navigation_html()
+
+
+.. function:: node_index()
+
+
+.. function:: get_node_templates()
+
+
+.. function:: get_node_list()
+
+

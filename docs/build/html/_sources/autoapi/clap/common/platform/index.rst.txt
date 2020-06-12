@@ -10,7 +10,7 @@ Module Contents
 
 .. py:class:: ModuleInterface(module_paths: List[str] = None, force=False)
 
-   Interface to get clap modules from the modules repository
+   Interface to get clap modules from the modules repositories
        
 
    .. attribute:: __modules_map__
@@ -26,6 +26,13 @@ Module Contents
    .. method:: __find_modules__(module_paths: List[str] = None, force: bool = False)
       :staticmethod:
 
+
+      Find CLAP modules located at CLAP search paths
+
+      :param module_paths: List of pathsto search CLAP modules
+      :type module_paths: List[str]
+      :param force: Search even if it is already searched once
+      :type force: bool
 
 
    .. method:: get_module(self, module_name: str)
@@ -65,22 +72,46 @@ Module Contents
 
 .. py:class:: GroupInterface
 
+   This interface collects and maintains information about groups in the CLAP system
+       
+
    .. attribute:: __groups_actions_map__
       
 
       
 
-   .. method:: __find_groups()
+   .. method:: __find_groups(force: bool = False)
       :staticmethod:
 
+
+      Find CLAP groups at group's path
+
+      :param force: Force to research groups, even if it is already searched once
+      :type force: bool
 
 
    .. method:: get_group(self, group_name: str)
 
 
+      Get group based on the group name
+
+      :param group_name: Name of the group to get
+      :type group_name: str
+      :return: Dictionary with group's information. The dictionary contains the following keys:
+          * name: Group's name
+          * actions: List of group's actions
+          * hosts: List of group's hosts
+          * dependecies: List of group's dependencies
+      :rtype: Dict[str, Any]
+
 
    .. method:: get_group_names(self)
 
+
+      Get name of all groups in CLAP's system 
+
+      :return: List of group's names
+      :rtype: List[str]
 
 
 
@@ -287,7 +318,11 @@ Module Contents
 
 
 
-   .. method:: add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict[str, str] = None)
+   .. method:: __check_nodes_in_group__(self, group_name: str, node_ids: List[str] = None)
+
+
+
+   .. method:: add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict[str, str] = None, __processing_dependencies__: List[str] = None)
 
 
       Add nodes to a informed group
@@ -298,6 +333,8 @@ Module Contents
       :type group_name: str
       :param group_args: Key-valued dictionary with the extra arguments to be passed to the setup's action.
       :type group_args: Dict[str, str]
+      :param __processing_dependencies__: Internal parameter used to check ciclycal dependencies
+      :type __processing_dependencies__: List[str]
       :return: A list of nodes that was successfully added to group. A node is sucessfully added to the group if the setup action was sucessfully performed (if any)
       :rtype: List[str] 
 

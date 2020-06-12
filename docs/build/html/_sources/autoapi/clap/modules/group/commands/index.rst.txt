@@ -29,7 +29,6 @@ Module Contents
 
 
    .. method:: command_remove_group_from_node(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 

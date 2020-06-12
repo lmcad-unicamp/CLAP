@@ -95,17 +95,67 @@ Module Contents
    .. method:: new_cluster(self, cluster_id: str, provider_id: str, login_id: str, driver_id: str, extra: dict = None)
 
 
+      Create a new cluster in the repository
+
+      :param cluster_id: ID of the cluster to create (usually driver_id-provider_id-login_id)
+      :type cluster_id: str
+      :param provider_id: Name of the provider configuration (must match the provider ID in the provider's configuration file)
+      :type provider_id: str
+      :param login_id: Name of the login configuration (must match the login ID in the login's configuration file)
+      :type login_id: str
+      :param driver_id: ID of the in-use driver
+      :type driver_id: str
+      :param extra: Additional extra parameters to cluster
+      :type extra: dict
+      :return: A new created cluster in the repository
+      :rtype: ClusterInfo
+
 
    .. method:: new_node(self, cluster_id: str, instance_type: str, status: str, driver_id: str, ip: str = None, instance_id: str = None, tags: dict = None, groups: dict = None, extra: dict = None, lifecycle: str = 'on-demand')
 
+
+      Create a new node in the repository
+
+      :param cluster_id: Cluster which the node will be associated
+      :type cluster_id: str
+      :param instance_type: Type of the instance to be created (must match the instance ID from the instance configuration file)
+      :type instance_type: str
+      :param status: Status of the node (see PlatformCodes)
+      :type status: str
+      :param driver_id: ID of the in-use driver
+      :type driver_id: str
+      :param ip: IP of the node
+      :type ip: str
+      :param instance_id: ID of the instance from the provider
+      :type instance_id: str
+      :param tags: Additional tags from instance
+      :type tags: dict
+      :param groups: Groups which the nodes belong to. It is a dictionary, keys are group names and values are optional groups additional variables
+      :type groups: dict
+      :param extra: Additional extra parameters to the node
+      :type extra: dict
+      :param lifecycle: Cloud's instance lifecycle. On-demand or spot
+      :type lifecycle: str
+      :return: A new created node in the repository
+      :rtype: NodeInfo
 
 
    .. method:: update_cluster(self, cluster: ClusterInfo)
 
 
+      Update a cluster information in the repository
+
+      :param cluster: The cluster infromation to be updated
+      :type cluster: ClusterInfo
+
 
    .. method:: update_node(self, node: NodeInfo)
 
+
+      Update a node information in the repository
+
+      :param cluster: The node infromation to be updated
+      :type cluster: NodeInfo
 
 
    .. method:: get_clusters(self, cluster_ids: Union[str, List[str]])
@@ -162,9 +212,19 @@ Module Contents
    .. method:: remove_cluster(self, cluster_id: str)
 
 
+      Remove a cluster from repository based on it's ID
+
+      :param cluster_id: ID of the cluster to be removed
+      :type cluster_id: str
+
 
    .. method:: remove_node(self, node_id: str)
 
+
+      Remove a node from repository based on it's ID
+
+      :param node_id: ID of the node to be removed
+      :type node_id: str
 
 
 

@@ -1,0 +1,63 @@
+:mod:`clap.app.serverapp.common`
+================================
+
+.. py:module:: clap.app.serverapp.common
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   interface/index.rst
+
+
+Package Contents
+----------------
+
+
+.. py:class:: ServerInterfaces
+
+   .. attribute:: server_interfaces
+      
+
+      
+
+   .. method:: get_interfaces(self)
+
+
+
+
+.. function:: __get_modules__()
+
+
+.. function:: get_navigation_html()
+
+
+.. function:: get_module_cards_html()
+
+
+.. function:: index(result=None)
+
+
+.. data:: __module_name__
+   :annotation: = common
+
+   
+
+.. data:: __module_description__
+   :annotation: = Common
+
+   
+
+.. data:: __register__
+   
+
+   
+
+.. data:: __routes__
+   :annotation: = [None, None, None, None]
+
+   
+

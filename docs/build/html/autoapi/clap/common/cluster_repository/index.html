@@ -277,22 +277,75 @@ Each node is unique and is composed by the following elements:</p>
 <dl class="py method">
 <dt id="clap.common.cluster_repository.RepositoryOperations.new_cluster">
 <code class="sig-name descname">new_cluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">provider_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">login_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">driver_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">extra</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.new_cluster" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Create a new cluster in the repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to create (usually driver_id-provider_id-login_id)</p></li>
+<li><p><strong>provider_id</strong> (<em>str</em>) – Name of the provider configuration (must match the provider ID in the provider’s configuration file)</p></li>
+<li><p><strong>login_id</strong> (<em>str</em>) – Name of the login configuration (must match the login ID in the login’s configuration file)</p></li>
+<li><p><strong>driver_id</strong> (<em>str</em>) – ID of the in-use driver</p></li>
+<li><p><strong>extra</strong> (<em>dict</em>) – Additional extra parameters to cluster</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new created cluster in the repository</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#clap.common.cluster_repository.ClusterInfo" title="clap.common.cluster_repository.ClusterInfo">ClusterInfo</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.cluster_repository.RepositoryOperations.new_node">
 <code class="sig-name descname">new_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">instance_type</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">status</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">driver_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ip</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">instance_id</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">groups</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extra</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lifecycle</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'on-demand'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.new_node" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Create a new node in the repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – Cluster which the node will be associated</p></li>
+<li><p><strong>instance_type</strong> (<em>str</em>) – Type of the instance to be created (must match the instance ID from the instance configuration file)</p></li>
+<li><p><strong>status</strong> (<em>str</em>) – Status of the node (see PlatformCodes)</p></li>
+<li><p><strong>driver_id</strong> (<em>str</em>) – ID of the in-use driver</p></li>
+<li><p><strong>ip</strong> (<em>str</em>) – IP of the node</p></li>
+<li><p><strong>instance_id</strong> (<em>str</em>) – ID of the instance from the provider</p></li>
+<li><p><strong>tags</strong> (<em>dict</em>) – Additional tags from instance</p></li>
+<li><p><strong>groups</strong> (<em>dict</em>) – Groups which the nodes belong to. It is a dictionary, keys are group names and values are optional groups additional variables</p></li>
+<li><p><strong>extra</strong> (<em>dict</em>) – Additional extra parameters to the node</p></li>
+<li><p><strong>lifecycle</strong> (<em>str</em>) – Cloud’s instance lifecycle. On-demand or spot</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new created node in the repository</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../app/serverapp/interfaces/node/index.html#clap.app.serverapp.interfaces.node.NodeInfo" title="clap.app.serverapp.interfaces.node.NodeInfo">NodeInfo</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.cluster_repository.RepositoryOperations.update_cluster">
 <code class="sig-name descname">update_cluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">cluster</span><span class="p">:</span> <span class="n">ClusterInfo</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.update_cluster" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update a cluster information in the repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cluster</strong> (<a class="reference internal" href="#clap.common.cluster_repository.ClusterInfo" title="clap.common.cluster_repository.ClusterInfo"><em>ClusterInfo</em></a>) – The cluster infromation to be updated</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.cluster_repository.RepositoryOperations.update_node">
 <code class="sig-name descname">update_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node</span><span class="p">:</span> <span class="n">NodeInfo</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.update_node" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update a node information in the repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cluster</strong> (<a class="reference internal" href="../../app/serverapp/interfaces/node/index.html#clap.app.serverapp.interfaces.node.NodeInfo" title="clap.app.serverapp.interfaces.node.NodeInfo"><em>NodeInfo</em></a>) – The node infromation to be updated</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.cluster_repository.RepositoryOperations.get_clusters">
@@ -337,7 +390,7 @@ Each node is unique and is composed by the following elements:</p>
 <dd class="field-even"><p>Matched nodes information</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[<a class="reference internal" href="#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../../app/serverapp/interfaces/node/index.html#clap.app.serverapp.interfaces.node.NodeInfo" title="clap.app.serverapp.interfaces.node.NodeInfo">NodeInfo</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -351,7 +404,7 @@ Each node is unique and is composed by the following elements:</p>
 <dd class="field-odd"><p>List with the information of all created nodes</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>List[<a class="reference internal" href="#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+<dd class="field-even"><p>List[<a class="reference internal" href="../../app/serverapp/interfaces/node/index.html#clap.app.serverapp.interfaces.node.NodeInfo" title="clap.app.serverapp.interfaces.node.NodeInfo">NodeInfo</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -368,7 +421,7 @@ Each node is unique and is composed by the following elements:</p>
 <dd class="field-even"><p>All the nodes that matches the cluster ids passed</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[<a class="reference internal" href="#clap.common.cluster_repository.NodeInfo" title="clap.common.cluster_repository.NodeInfo">NodeInfo</a>]</p>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../../app/serverapp/interfaces/node/index.html#clap.app.serverapp.interfaces.node.NodeInfo" title="clap.app.serverapp.interfaces.node.NodeInfo">NodeInfo</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -376,12 +429,24 @@ Each node is unique and is composed by the following elements:</p>
 <dl class="py method">
 <dt id="clap.common.cluster_repository.RepositoryOperations.remove_cluster">
 <code class="sig-name descname">remove_cluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">cluster_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.remove_cluster" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove a cluster from repository based on it’s ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to be removed</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="clap.common.cluster_repository.RepositoryOperations.remove_node">
 <code class="sig-name descname">remove_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clap.common.cluster_repository.RepositoryOperations.remove_node" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove a node from repository based on it’s ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_id</strong> (<em>str</em>) – ID of the node to be removed</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

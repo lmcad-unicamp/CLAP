@@ -10,90 +10,110 @@ Module Contents
 
 .. py:class:: Defaults
 
+   Default values used in CLAP system. This is a class is global and changes in its values affects all places that uses it
+       
+
    .. attribute:: verbosity
       :annotation: = 0
 
-      
+      Log level for logging operations (based on logging package) 
+
 
    .. attribute:: log_level
       
 
-      
+      Default symbolic application name 
+
 
    .. attribute:: app_name
-      :annotation: = clap
+      :annotation: = CLAP
 
-      
+      Default repository implementation used 
+
 
    .. attribute:: REPOSITORY_TYPE
       :annotation: = tinydb
 
-      
+      Default driver implementation used 
+
 
    .. attribute:: DRIVER_ID
       :annotation: = ansible
 
-      
+      Default repository type used 
+
 
    .. attribute:: DEFAULT_CONF_TYPE
       :annotation: = json
 
-      
+      Path to configuration files 
+
 
    .. attribute:: configs_path
       
 
-      
+      Path to private files 
+
 
    .. attribute:: private_path
       
 
-      
+      Path to storage, where metadata information is placed 
+
 
    .. attribute:: storage_path
       
 
-      
+      Path to groups directory 
+
 
    .. attribute:: groups_path
       
 
-      
+      Path to group's actions directory 
+
 
    .. attribute:: actions_path
       
 
-      
+      Path to additional CLAP's modules directory 
+
 
    .. attribute:: modules_path
       
 
-      
+      Path to CLAP's modules metadata storage path 
+
 
    .. attribute:: modules_data
       
 
-      
+      NOT USED 
+
 
    .. attribute:: elasticluster_storage_path
       
 
-      
+      Default path to provider configuration file 
+
 
    .. attribute:: cloud_conf
       
 
-      
+      Default path to login configuration file 
+
 
    .. attribute:: login_conf
       
 
-      
+      Default path to instances configuration file 
+
 
    .. attribute:: instances_conf
       
 
-      
+      Default path to platform configuration file 
+
 
    .. attribute:: PLATFORM_REPOSITORY
       
@@ -101,22 +121,24 @@ Module Contents
       
 
 
-.. data:: PROVIDERS_SCHEMA
-   
-
-   
-
-.. data:: LOGIN_SCHEMA
-   
-
-   
-
-.. data:: INSTANCE_SCHEMA
-   
-
-   
-
 .. py:class:: ConfigReader(providers_file: str, logins_file: str, instances_file: str)
+
+   .. attribute:: PROVIDERS_SCHEMA
+      
+
+      
+
+   .. attribute:: LOGIN_SCHEMA
+      
+
+      
+
+   .. attribute:: INSTANCE_SCHEMA
+      
+
+      Class used to read and validate configurations from configuration files (provider, logins and instances)
+          
+
 
    .. method:: __validate(self, schema: dict, data: dict)
 

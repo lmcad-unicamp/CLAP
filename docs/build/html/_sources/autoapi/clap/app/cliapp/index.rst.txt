@@ -1,0 +1,16 @@
+:mod:`clap.app.cliapp`
+======================
+
+.. py:module:: clap.app.cliapp
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   app/index.rst
+   commands/index.rst
+
+

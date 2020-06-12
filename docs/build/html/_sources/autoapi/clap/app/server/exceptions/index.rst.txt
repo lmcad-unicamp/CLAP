@@ -1,0 +1,15 @@
+:mod:`clap.app.server.exceptions`
+=================================
+
+.. py:module:: clap.app.server.exceptions
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   exceptions/index.rst
+
+

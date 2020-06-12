@@ -1,0 +1,22 @@
+:mod:`clap.app.serverapp.interface`
+===================================
+
+.. py:module:: clap.app.serverapp.interface
+
+
+Module Contents
+---------------
+
+
+.. py:class:: ServerInterfaces
+
+   .. attribute:: server_interfaces
+      
+
+      
+
+   .. method:: get_interfaces(self)
+
+
+
+

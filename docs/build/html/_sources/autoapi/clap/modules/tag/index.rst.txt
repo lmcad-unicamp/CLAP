@@ -76,6 +76,9 @@ Package Contents
 
 .. py:class:: PlatformFactory
 
+   Class used to create common CLAP interfaces used
+       
+
    .. attribute:: __multi_instance_api__
       
 
