@@ -20,19 +20,28 @@ from clap.common.exceptions import ConfigurationError
 
 
 class ModuleInterface:
-    """ Interface to get clap modules from the modules repository
+    """ Interface to get clap modules from the modules repositories
     """
     __modules_map__ = dict()
 
     @staticmethod
+    # Check module dependencies, if any...
     def __check_dependencies__():
         pass
 
     @staticmethod
     def __find_modules__(module_paths: List[str] = None, force: bool = False):
+        """ Find CLAP modules located at CLAP search paths
+
+        :param module_paths: List of pathsto search CLAP modules
+        :type module_paths: List[str]
+        :param force: Search even if it is already searched once
+        :type force: bool
+        """
         if ModuleInterface.__modules_map__ and not force:
             return
 
+        # No additional module paths? Use CLAP clap.modules package directory. Else append clap.modules package directory
         if not module_paths:
             module_paths = [os.path.dirname(clap.modules.__file__)]
         else:
@@ -40,9 +49,12 @@ class ModuleInterface:
 
         log.debug("Searching modules in paths: {}".format(", ".join(module_paths)))
 
+        # Iterate through module packages...
         for importer, package_name, _ in pkgutil.iter_modules(module_paths):
+            # Skip pycache directories
             if 'pycache' in package_name or '.' in package_name:
                 continue
+            # Try to import the CLAP module package module...
             try:
                 mod =  importer.find_module(package_name).load_module(package_name) 
                 mod_values = {
@@ -52,6 +64,8 @@ class ModuleInterface:
                     'module': mod,
                     'loaded time': time.time()
                 }
+
+                # Append to module dict
                 ModuleInterface.__modules_map__[mod_values['name']] = mod_values
             except Exception as e:
                 log.error("At module: `{}`: {}".format(package_name, e))
@@ -60,6 +74,7 @@ class ModuleInterface:
         log.debug("Found {} modules: {}".format( len(ModuleInterface.__modules_map__),
             ', '.join(list(ModuleInterface.__modules_map__.keys())) ) )
 
+        # Check module dependencies
         ModuleInterface.__check_dependencies__()
 
     def __init__(self, module_paths: List[str] = None, force=False):
@@ -104,8 +119,13 @@ class GroupInterface:
     __groups_actions_map__ = dict()
 
     @staticmethod
-    def __find_groups():
-        if GroupInterface.__groups_actions_map__:
+    def __find_groups(force: bool = False):
+        """ Find CLAP groups at group's path
+
+        :param force: Force to research groups, even if it is already searched once
+        :type force: bool
+        """
+        if GroupInterface.__groups_actions_map__ and not force:
             return
 
         # Search for all files in the actions directory and parse then!
@@ -201,12 +221,28 @@ class GroupInterface:
         self.__find_groups()
 
     def get_group(self, group_name: str) -> Dict[str, Any]:
+        """ Get group based on the group name
+
+        :param group_name: Name of the group to get
+        :type group_name: str
+        :return: Dictionary with group's information. The dictionary contains the following keys:
+            * name: Group's name
+            * actions: List of group's actions
+            * hosts: List of group's hosts
+            * dependecies: List of group's dependencies
+        :rtype: Dict[str, Any]
+        """
         if group_name not in GroupInterface.__groups_actions_map__:
             raise Exception("Invalid group: `{}`".format(group_name))
         group = GroupInterface.__groups_actions_map__[group_name]
         return dict(name=group_name, actions=group['actions'], hosts=group['hosts'], dependencies=group['dependencies'])
 
     def get_group_names(self) -> List[str]:
+        """ Get name of all groups in CLAP's system 
+
+        :return: List of group's names
+        :rtype: List[str]
+        """
         return list(GroupInterface.__groups_actions_map__.keys())
 
 

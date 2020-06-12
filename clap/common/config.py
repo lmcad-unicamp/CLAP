@@ -2,45 +2,60 @@ import logging
 import os
 from clap.common.utils import path_extend, yaml_load
 
-#if 'CLAP' not in os.environ:
-#    raise ValueError('CLAP environment variable is not set. Please set the CLAP variable in your system, '
-#                     'pointing directly to the clap root directory!')
 
+# Set CLAP_PATH to ~/.clap if it is not set as an environment variable
 if 'CLAP_PATH' not in os.environ:
-    #raise ValueError('CLAP_PATH environment variable is not set. Please set the CLAP_PATH variable in your system!')
     os.environ['CLAP_PATH'] = path_extend('~', '.clap')
 
 class Defaults:
+    """ Default values used in CLAP system. This is a class is global and changes in its values affects all places that uses it
+    """
+
+    """ CLAP VERBOSITY LEVEL from 0 (less verbose) to 4 (more verbose) """
     verbosity = 0
+    """ Log level for logging operations (based on logging package) """
     log_level = logging.INFO
-    app_name = 'clap'
+    """ Default symbolic application name """
+    app_name = 'CLAP'
+    """ Default repository implementation used """
     REPOSITORY_TYPE = 'tinydb'
+    """ Default driver implementation used """
     DRIVER_ID = 'ansible'
+    """ Default repository type used """
     DEFAULT_CONF_TYPE = 'json'
-
+    """ Path to configuration files """
     configs_path = path_extend('$CLAP_PATH', 'configs')
+    """ Path to private files """
     private_path = path_extend('$CLAP_PATH', 'private')
+    """ Path to storage, where metadata information is placed """
     storage_path = path_extend('$CLAP_PATH', 'storage')
-   # execution_playbook = path_extend('$CLAP_PATH', 'groups', 'main.yml')
+    """ Path to groups directory """
     groups_path = path_extend('$CLAP_PATH', 'groups')
+    """ Path to group's actions directory """
     actions_path = path_extend(groups_path, 'actions.d')
+    """ Path to additional CLAP's modules directory """
     modules_path = path_extend('$CLAP_PATH', 'modules')
+    """ Path to CLAP's modules metadata storage path """
     modules_data = path_extend(storage_path, 'modules')
+    """ NOT USED """
     elasticluster_storage_path = path_extend(storage_path, 'clusters.d')
-
+    """ Default path to provider configuration file """
     cloud_conf = path_extend(configs_path, 'providers.yaml')
+    """ Default path to login configuration file """
     login_conf = path_extend(configs_path, 'logins.yaml')
+    """ Default path to instances configuration file """
     instances_conf = path_extend(configs_path, 'instances.yaml')
-
+    """ Default path to platform configuration file """
     PLATFORM_REPOSITORY = path_extend(storage_path, 'platform.'+DEFAULT_CONF_TYPE)
 
 
-PROVIDERS_SCHEMA = {}
-LOGIN_SCHEMA = {}
-INSTANCE_SCHEMA = {}
-
-
 class ConfigReader:
+    PROVIDERS_SCHEMA = {}
+    LOGIN_SCHEMA = {}
+    INSTANCE_SCHEMA = {}
+
+    """ Class used to read and validate configurations from configuration files (provider, logins and instances)
+    """
     def __init__(self, providers_file: str, logins_file: str, instances_file: str):
         self.provider_configs = yaml_load(providers_file)
         self.login_configs = yaml_load(logins_file)

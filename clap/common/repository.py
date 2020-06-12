@@ -429,6 +429,14 @@ def check_and_create_table(repository: AbstractRepository, table_name: str, exis
 
 @contextmanager
 def get_repository_connection(repository: AbstractRepository, *args, **kwargs):
+    """ Estabilishes and get an open connection to a repository, using Python's `with` statement 
+
+    :param repository: Repository to get a connection
+    :type repository: AbstractRepository
+
+    :return: An open repository connection 
+    :rtype: AbstractRepository
+    """
     conn = repository.open_connection(*args, **kwargs)
     try:
         yield conn
