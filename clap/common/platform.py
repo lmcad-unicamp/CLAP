@@ -602,7 +602,8 @@ class MultiInstanceAPI:
 
         return members
 
-    def add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict[str, str] = None) -> List[str]:
+    def add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict[str, str] = None, 
+            __processing_dependencies__: List[str] = None) -> List[str]:
         """ Add nodes to a informed group
 
         :param node_ids: List of node ids to add the the group.
@@ -611,14 +612,40 @@ class MultiInstanceAPI:
         :type group_name: str
         :param group_args: Key-valued dictionary with the extra arguments to be passed to the setup's action.
         :type group_args: Dict[str, str]
+        :param __processing_dependencies__: Internal parameter used to check ciclycal dependencies
+        :type __processing_dependencies__: List[str]
         :return: A list of nodes that was successfully added to group. A node is sucessfully added to the group if the setup action was sucessfully performed (if any)
         :rtype: List[str] 
         """
+        # Split group_name variable
         split_vals = group_name.split('/')
-
+        # If not in format: group_name or group_name/hostname --> Error
         if len(split_vals) > 2:
-            raise Exception("Invalid group and hosts `{}`".format(group_name))
+            raise ValueError("Invalid group and hosts `{}`".format(group_name))
 
+        group_name = split_vals[0]
+  
+          # Set dependency chain list if None
+        __processing_dependencies__ = [] if not __processing_dependencies__ else __processing_dependencies__
+
+        # Is this one already in processing? If true --> Cyclical dependency chain!
+        if group_name in __processing_dependencies__:
+            raise Exception("Cyclical dependencies when processing group dependencies! Dependency chain: {}".format(', '.join(__processing_dependencies__)))
+
+        # Add this one to dependency chain
+        __processing_dependencies__.append(group_name)
+
+        # Get dependencies for this group and process each one
+        for dependency in GroupInterface().get_group(group_name)['dependencies']:
+            log.info("Processing group `{}` dependency: `{}`...".format(group_name, dependency))
+            self.add_nodes_to_group( node_ids=node_ids, group_name=dependency, group_args=group_args, 
+                                __processing_dependencies__=__processing_dependencies__)
+            log.info("Dependency `{}` sucessfully processed!".format(dependency))
+
+        # Remove this one from dependency chain
+        __processing_dependencies__.pop()
+        
+        # And process!
         return self.__add_nodes_to_group({split_vals[0]: node_ids if len(split_vals) == 1 else {split_vals[1]: node_ids}}, group_args)
 
     def __add_nodes_to_group(self, group_hosts_map: Dict[str, Union[List[str], Dict[str, List[str]]]], group_args: Dict = None):
