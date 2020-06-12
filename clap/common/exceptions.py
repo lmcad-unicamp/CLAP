@@ -24,3 +24,8 @@ class ClusterError(Exception):
 
 class ClusterCreationError(ClusterError):
     pass
+
+class ConfigurationError(Exception):
+    """ This exception is raised if any invalid value or type exists in configuration files
+    """
+    pass

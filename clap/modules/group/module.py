@@ -79,16 +79,17 @@ def list_groups() -> List[Dict[str, Any]]:
     return groups
 
 
-def remove_group_from_node():
-    raise NotImplementedError("Not fully implemented yet...")
-    # multi_instance = __get_instance_api(namespace)
-    # try:
-    #     extra = {arg.split('=')[0]: arg.split('=')[1] for arg in namespace.extra} if namespace.extra else {}
-    # except Exception:
-    #     raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
-    #                     "Please check the extra parameters passed")
-    #
-    # removed_nodes = multi_instance.remove_node_from_group(namespace.node_ids, namespace.group, group_args=extra)
-    # if removed_nodes:
-    #     print("Nodes `{}` were successfully removed from group `{}`".format(', '.join(removed_nodes), namespace.group))
+def remove_group_from_node(node_ids: List[str], group: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None):
+    #raise NotImplementedError("Not fully implemented yet...")
+    multi_instance = PlatformFactory.get_instance_api()
+    node_ids = set(node_ids)
+    if tags:
+        node_ids.update([node.node_id for node in multi_instance.get_nodes_with_tags(tags)])
+    if not node_ids:
+        return []
+
+    node_ids = list(node_ids)
+    
+    removed_nodes = multi_instance.remove_nodes_from_group(group_name=group, node_ids=node_ids, group_args=group_args)
+    return removed_nodes
 
