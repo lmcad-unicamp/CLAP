@@ -402,36 +402,48 @@ class MultiInstanceAPI:
         :return: A dictionary telling which nodes have sucessfully executed the playbook. The dictionary keys correspond to the node id and the value is a boolean that is true if node successfully executed the playbook or false otherwise. 
         :rtype: Dict[str, bool]
         """
+        # Check if playbook file exists
         if not os.path.isfile(playbook_path):
             raise Exception("Invalid playbook at `{}`".format(playbook_path))
+        # Check if any host is set
         if not hosts:
             raise Exception("No nodes to execute playbook `{}`".format(playbook_path))
+        # If hosts var is  list. Create a inventory file with all hosts to a __default__ group
         if isinstance(hosts, list):
             hosts = {'default': hosts}
+        # Get all nodes ids, merging node ids from all host lists
         nodes = [node_id for group_name, node_list in hosts.items() for node_id in node_list]
         if not nodes:
             raise Exception("No nodes to execute playbook `{}`".format(playbook_path))
 
+        # Get nodes detailed information
         nodes = self.get_nodes(nodes)
         executed_nodes = {}
+        # Any extra args?
         extra_args = extra_args if extra_args else {}
 
-        for cluster in self.__repository_operations.get_clusters(list(set([node.cluster_id for node in nodes]))):
+        # Filter the drivers of all nodes and iterate over driver 
+        for driver_id in set([node.driver_id for node in nodes]):
             new_hosts = dict()
 
+            # Iterate over the hosts dict and filter only nodes with the same driver_id
             for group, node_list in hosts.items():
+                # Filter the host's node list only with nodes with the same driver_id
                 node_ids = [node.node_id for node in self.__repository_operations.get_nodes(node_list)
-                            if node.cluster_id == cluster.cluster_id]
+                            if node.driver_id == driver_id]
                 if len(node_ids) == 0:
                     log.error("Discarding group `{}` because there is no nodes".format(group))
                 else:
                     new_hosts[group] = node_ids
 
-            if not new_hosts:
-                raise Exception("No nodes to execute")
+            # Check if there is at least one node to execute at any host(redundant)
+            #if all(host_list for host_list in new_hosts.values()):
+            #    raise Exception("No nodes to execute")
 
-            executeds = self._get_instance_iface(cluster.driver_id).execute_playbook_in_nodes(playbook_path, new_hosts, extra_args)
-
+            # Execute the playbook with the driver at hosts
+            executeds = self._get_instance_iface(driver_id).execute_playbook_in_nodes(playbook_path, new_hosts, extra_args)
+            
+            # Map each host to a it's execution status (true, if sucessfully executed and false otherwise)
             for node_id, status in executeds.items():
                 if node_id in executed_nodes:
                     executed_nodes[node_id] = executed_nodes[node_id] and status
