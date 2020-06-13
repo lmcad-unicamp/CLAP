@@ -78,7 +78,7 @@ Package Contents
    :rtype: List[Dict[str, Any]]
 
 
-.. function:: remove_group_from_node()
+.. function:: remove_group_from_node(node_ids: List[str], group: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None)
 
 
 .. py:class:: GroupsParser
@@ -102,12 +102,14 @@ Package Contents
 
 
    .. method:: command_remove_group_from_node(self, namespace: argparse.Namespace)
-      :abstractmethod:
 
 
 
 
 .. py:class:: PlatformFactory
+
+   Class used to create common CLAP interfaces used
+       
 
    .. attribute:: __multi_instance_api__
       
@@ -217,7 +219,7 @@ Package Contents
    :rtype: List[Dict[str, Any]]
 
 
-.. function:: remove_group_from_node()
+.. function:: remove_group_from_node(node_ids: List[str], group: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None)
 
 
 .. data:: __module_name__

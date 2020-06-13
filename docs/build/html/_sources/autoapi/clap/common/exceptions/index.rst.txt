@@ -41,3 +41,11 @@ Module Contents
    Bases: :class:`clap.common.exceptions.ClusterError`
 
 
+.. py:exception:: ConfigurationError
+
+   Bases: :class:`Exception`
+
+   This exception is raised if any invalid value or type exists in configuration files
+       
+
+

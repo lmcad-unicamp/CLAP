@@ -1,0 +1,58 @@
+:mod:`clap.app.server.app`
+==========================
+
+.. py:module:: clap.app.server.app
+
+
+Module Contents
+---------------
+
+
+.. data:: app
+   
+
+   
+
+.. data:: bootstrap
+   
+
+   
+
+.. data:: db
+   
+
+   
+
+.. function:: start_nodes(result=None)
+
+
+.. function:: alive_nodes(result=None)
+
+
+.. function:: get_instances(result=None)
+
+
+.. function:: get_providers(result=None)
+
+
+.. function:: get_logins(result=None)
+
+
+.. function:: get_instance_templates(result=None)
+
+
+.. function:: save_providers(result=None)
+
+
+.. function:: save_logins(result=None)
+
+
+.. function:: save_instance_templates(result=None)
+
+
+.. function:: get_nodes(result=None)
+
+
+.. function:: index(result=None)
+
+

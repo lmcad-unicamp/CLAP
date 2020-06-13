@@ -3,6 +3,8 @@ from clap.common.config import Defaults
 
 
 class PlatformFactory:
+    """ Class used to create common CLAP interfaces used
+    """
     __multi_instance_api__ = None
     __module_iface__ = None
 

@@ -1,0 +1,25 @@
+:mod:`clap.app.server`
+======================
+
+.. py:module:: clap.app.server
+
+
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   exceptions/index.rst
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   app/index.rst
+   commands/index.rst
+
+

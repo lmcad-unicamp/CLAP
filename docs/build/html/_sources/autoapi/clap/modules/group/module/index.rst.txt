@@ -55,6 +55,6 @@ Module Contents
    :rtype: List[Dict[str, Any]]
 
 
-.. function:: remove_group_from_node()
+.. function:: remove_group_from_node(node_ids: List[str], group: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None)
 
 

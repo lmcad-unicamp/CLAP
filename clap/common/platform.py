@@ -20,19 +20,28 @@ from clap.common.exceptions import ConfigurationError
 
 
 class ModuleInterface:
-    """ Interface to get clap modules from the modules repository
+    """ Interface to get clap modules from the modules repositories
     """
     __modules_map__ = dict()
 
     @staticmethod
+    # Check module dependencies, if any...
     def __check_dependencies__():
         pass
 
     @staticmethod
     def __find_modules__(module_paths: List[str] = None, force: bool = False):
+        """ Find CLAP modules located at CLAP search paths
+
+        :param module_paths: List of pathsto search CLAP modules
+        :type module_paths: List[str]
+        :param force: Search even if it is already searched once
+        :type force: bool
+        """
         if ModuleInterface.__modules_map__ and not force:
             return
 
+        # No additional module paths? Use CLAP clap.modules package directory. Else append clap.modules package directory
         if not module_paths:
             module_paths = [os.path.dirname(clap.modules.__file__)]
         else:
@@ -40,9 +49,12 @@ class ModuleInterface:
 
         log.debug("Searching modules in paths: {}".format(", ".join(module_paths)))
 
+        # Iterate through module packages...
         for importer, package_name, _ in pkgutil.iter_modules(module_paths):
+            # Skip pycache directories
             if 'pycache' in package_name or '.' in package_name:
                 continue
+            # Try to import the CLAP module package module...
             try:
                 mod =  importer.find_module(package_name).load_module(package_name) 
                 mod_values = {
@@ -52,6 +64,8 @@ class ModuleInterface:
                     'module': mod,
                     'loaded time': time.time()
                 }
+
+                # Append to module dict
                 ModuleInterface.__modules_map__[mod_values['name']] = mod_values
             except Exception as e:
                 log.error("At module: `{}`: {}".format(package_name, e))
@@ -60,6 +74,7 @@ class ModuleInterface:
         log.debug("Found {} modules: {}".format( len(ModuleInterface.__modules_map__),
             ', '.join(list(ModuleInterface.__modules_map__.keys())) ) )
 
+        # Check module dependencies
         ModuleInterface.__check_dependencies__()
 
     def __init__(self, module_paths: List[str] = None, force=False):
@@ -104,8 +119,13 @@ class GroupInterface:
     __groups_actions_map__ = dict()
 
     @staticmethod
-    def __find_groups():
-        if GroupInterface.__groups_actions_map__:
+    def __find_groups(force: bool = False):
+        """ Find CLAP groups at group's path
+
+        :param force: Force to research groups, even if it is already searched once
+        :type force: bool
+        """
+        if GroupInterface.__groups_actions_map__ and not force:
             return
 
         # Search for all files in the actions directory and parse then!
@@ -201,12 +221,28 @@ class GroupInterface:
         self.__find_groups()
 
     def get_group(self, group_name: str) -> Dict[str, Any]:
+        """ Get group based on the group name
+
+        :param group_name: Name of the group to get
+        :type group_name: str
+        :return: Dictionary with group's information. The dictionary contains the following keys:
+            * name: Group's name
+            * actions: List of group's actions
+            * hosts: List of group's hosts
+            * dependecies: List of group's dependencies
+        :rtype: Dict[str, Any]
+        """
         if group_name not in GroupInterface.__groups_actions_map__:
             raise Exception("Invalid group: `{}`".format(group_name))
         group = GroupInterface.__groups_actions_map__[group_name]
         return dict(name=group_name, actions=group['actions'], hosts=group['hosts'], dependencies=group['dependencies'])
 
     def get_group_names(self) -> List[str]:
+        """ Get name of all groups in CLAP's system 
+
+        :return: List of group's names
+        :rtype: List[str]
+        """
         return list(GroupInterface.__groups_actions_map__.keys())
 
 
@@ -294,13 +330,17 @@ class MultiInstanceAPI:
         :type node_ids: List[str]
         :return: A list of stopped nodes 
         :rtype: List[str]
-        """      
+        """     
+        # Get nodes information 
         nodes = self.get_nodes(node_ids)
         stopped_nodes = []
-        for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            node_ids = [node.node_id for node in nodes if node.cluster_id == cluster.cluster_id]
+        # Filter the drivers of all nodes and iterate over drivers
+        for driver_id in set([node.driver_id for node in nodes]):
+            # Filter nodes with the same driver_id
+            node_ids = [node.node_id for node in nodes if node.driver_id == driver_id]
             print("Stopping nodes: `{}`...".format(', '.join(sorted(node_ids))))
-            stopped_nodes += self._get_instance_iface(cluster.driver_id).stop_nodes(node_ids, force)
+            # Stop nodes...
+            stopped_nodes += self._get_instance_iface(driver_id).stop_nodes(node_ids, force)
         return stopped_nodes
 
     def pause_nodes(self, node_ids: List[str]) -> List[str]:
@@ -311,12 +351,16 @@ class MultiInstanceAPI:
         :return: A list of paused nodes 
         :rtype: List[str]
         """
+        # Get nodes information
         nodes = self.get_nodes(node_ids)
         paused_nodes = []
-        for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            node_ids = [node.node_id for node in nodes if node.cluster_id == cluster.cluster_id]
+        # Filter the drivers of all nodes and iterate over drivers
+        for driver_id in set([node.driver_id for node in nodes]):
+            # Filter nodes with the same driver_id
+            node_ids = [node.node_id for node in nodes if node.driver_id == driver_id]
             print("Pausing nodes: `{}`...".format(', '.join(sorted(node_ids))))
-            paused_nodes += self._get_instance_iface(cluster.driver_id).pause_nodes(node_ids)
+            # Pause nodes...
+            paused_nodes += self._get_instance_iface(driver_id).pause_nodes(node_ids)
         return paused_nodes
 
     def resume_nodes(self, node_ids: List[str]) -> List[str]:
@@ -327,12 +371,16 @@ class MultiInstanceAPI:
         :return: A list of resumed nodes 
         :rtype: List[str]
         """
+        # Get nodes information
         nodes = self.get_nodes(node_ids)
         resumed_nodes = []
-        for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            node_ids = [node.node_id for node in nodes if node.cluster_id == cluster.cluster_id]
+        # Filter the drivers of all nodes and iterate over drivers
+        for driver_id in set([node.driver_id for node in nodes]):
+            # Filter nodes with the same driver_id
+            node_ids = [node.node_id for node in nodes if node.driver_id == driver_id]
             print("Resuming nodes: `{}`...".format(', '.join(sorted(node_ids))))
-            resumed_nodes += self._get_instance_iface(cluster.driver_id).resume_nodes(node_ids)
+            # Resume nodes...
+            resumed_nodes += self._get_instance_iface(driver_id).resume_nodes(node_ids)
         return resumed_nodes
 
     def check_nodes_alive(self, node_ids: List[str]) -> Dict[str, bool]:
@@ -343,12 +391,16 @@ class MultiInstanceAPI:
         :return: A dictionary telling which nodes are alive. The dictionary keys correspond to the node id and the value is a boolean that is true if node is alive or false otherwise. 
         :rtype: Dict[str, bool]
         """
+        # Get nodes information
         nodes = self.get_nodes(node_ids)
         checked_nodes = dict()
-        for cluster in self.__repository_operations.get_clusters(list(set(node.cluster_id for node in nodes))):
-            node_ids = [node.node_id for node in nodes if node.cluster_id == cluster.cluster_id]
+        # Filter the drivers of all nodes and iterate over drivers
+        for driver_id in set([node.driver_id for node in nodes]):
+            # Filter nodes with the same driver_id
+            node_ids = [node.node_id for node in nodes if node.driver_id == driver_id]
             print("Cheking if nodes `{}` are alive...".format(', '.join(sorted(node_ids))))
-            checked_nodes.update(self._get_instance_iface(cluster.driver_id).check_nodes_alive(node_ids))
+            # Check if nodes are alive...
+            checked_nodes.update(self._get_instance_iface(driver_id).check_nodes_alive(node_ids))
         return checked_nodes
 
     def execute_playbook_in_nodes(self, playbook_path: str, hosts: Union[List[str], Dict[str, List[str]]],
@@ -366,36 +418,48 @@ class MultiInstanceAPI:
         :return: A dictionary telling which nodes have sucessfully executed the playbook. The dictionary keys correspond to the node id and the value is a boolean that is true if node successfully executed the playbook or false otherwise. 
         :rtype: Dict[str, bool]
         """
+        # Check if playbook file exists
         if not os.path.isfile(playbook_path):
             raise Exception("Invalid playbook at `{}`".format(playbook_path))
+        # Check if any host is set
         if not hosts:
             raise Exception("No nodes to execute playbook `{}`".format(playbook_path))
+        # If hosts var is  list. Create a inventory file with all hosts to a __default__ group
         if isinstance(hosts, list):
             hosts = {'default': hosts}
+        # Get all nodes ids, merging node ids from all host lists
         nodes = [node_id for group_name, node_list in hosts.items() for node_id in node_list]
         if not nodes:
             raise Exception("No nodes to execute playbook `{}`".format(playbook_path))
 
+        # Get nodes detailed information
         nodes = self.get_nodes(nodes)
         executed_nodes = {}
+        # Any extra args?
         extra_args = extra_args if extra_args else {}
 
-        for cluster in self.__repository_operations.get_clusters(list(set([node.cluster_id for node in nodes]))):
+        # Filter the drivers of all nodes and iterate over driver 
+        for driver_id in set([node.driver_id for node in nodes]):
             new_hosts = dict()
 
+            # Iterate over the hosts dict and filter only nodes with the same driver_id
             for group, node_list in hosts.items():
+                # Filter the host's node list only with nodes with the same driver_id
                 node_ids = [node.node_id for node in self.__repository_operations.get_nodes(node_list)
-                            if node.cluster_id == cluster.cluster_id]
+                            if node.driver_id == driver_id]
                 if len(node_ids) == 0:
                     log.error("Discarding group `{}` because there is no nodes".format(group))
                 else:
                     new_hosts[group] = node_ids
 
-            if not new_hosts:
-                raise Exception("No nodes to execute")
+            # Check if there is at least one node to execute at any host(redundant)
+            #if all(host_list for host_list in new_hosts.values()):
+            #    raise Exception("No nodes to execute")
 
-            executeds = self._get_instance_iface(cluster.driver_id).execute_playbook_in_nodes(playbook_path, new_hosts, extra_args)
-
+            # Execute the playbook with the driver at hosts
+            executeds = self._get_instance_iface(driver_id).execute_playbook_in_nodes(playbook_path, new_hosts, extra_args)
+            
+            # Map each host to a it's execution status (true, if sucessfully executed and false otherwise)
             for node_id, status in executeds.items():
                 if node_id in executed_nodes:
                     executed_nodes[node_id] = executed_nodes[node_id] and status
