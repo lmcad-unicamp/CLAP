@@ -2,7 +2,7 @@ import argparse
 
 from clap.common.module import AbstractParser
 from clap.common.utils import log
-from .module import add_group_to_node, execute_group_action, list_groups, remove_group_from_node
+from .module import add_group_to_node, add_group_to_node_2, execute_group_action, list_groups, remove_group_from_node
 
 # TODO add even with invalid ip
 # TODO remove group
@@ -17,6 +17,14 @@ class GroupsParser(AbstractParser):
         group_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
                                         help="Keyworded (format: x=y) Arguments to be passed to the action")
         group_subcom_parser.set_defaults(func=self.command_add_group_to_node)
+
+        group_subcom_parser = commands_parser.add_parser('add2', help='Add nodes to a group')
+        group_subcom_parser.add_argument('group', action='store', help='Name of the group to be added')
+        group_subcom_parser.add_argument('--host', action='append', required=True, nargs='+', 
+                help='Hostname follwed by the ID of the nodes to be added to the group/hostname')
+        group_subcom_parser.add_argument('--extra', nargs=argparse.REMAINDER, metavar='arg=val',
+                                        help="Keyworded (format: x=y) Arguments to be passed to the action")
+        group_subcom_parser.set_defaults(func=self.command_add_group_to_node_2)
 
         group_subcom_parser = commands_parser.add_parser('list', help='List available groups')
         group_subcom_parser.set_defaults(func=self.command_list_groups)
@@ -63,6 +71,30 @@ class GroupsParser(AbstractParser):
             log.error("No nodes were added to group `{}`".format(namespace.group))
 
         return 0
+
+    def command_add_group_to_node_2(self, namespace: argparse.Namespace):
+        extra_args = None
+        try:
+            extra_args = {arg.split('=')[0]: '='.join(arg.split('=')[1:]) for arg in namespace.extra} if namespace.extra else {}
+        except Exception:
+            raise Exception("Error mounting extra parameters. Are you putting spaces after `=`? "
+                            "Please check the extra parameters passed")
+
+        hosts = {}
+        for host_nodes in namespace.host:
+            if len(host_nodes) < 2:
+                raise Exception("A group's host cannot be empty (without any node)")
+            hosts[host_nodes[0]] = host_nodes[1:]
+
+        added_nodes = add_group_to_node_2(hosts, namespace.group, group_args=extra_args)
+
+        if added_nodes:
+            print("Nodes `{}` were successfully added to group `{}`".format(', '.join(sorted(added_nodes)), namespace.group))
+        else:
+            log.error("No nodes were added to group `{}`".format(namespace.group))
+
+        return 0
+
 
 
     def command_execute_group_action(self, namespace: argparse.Namespace):

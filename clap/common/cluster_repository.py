@@ -73,6 +73,7 @@ class NodeInfo(AbstractEntry):
         self.status = None
         self.tags = dict()
         self.groups = dict()
+        self.roles = list()
         self.driver_id = None
         self.instance_id = None
         self.extra = None
@@ -80,10 +81,10 @@ class NodeInfo(AbstractEntry):
         super(NodeInfo, self).__init__(**kwargs)
 
     def __repr__(self):
-        return 'Node(id=`{}`, type=`{}`, status=`{}`, public_ip=`{}`, groups=`{}`, tags=`{}`, last_update=`{}`'.format(
+        return 'Node(id=`{}`, type=`{}`, status=`{}`, public_ip=`{}`, groups=`{}`, tags=`{}`, roles=`{}`, last_update=`{}`'.format(
             self.node_id, self.instance_type, self.status, self.ip,
             ', '.join(list(self.groups.keys())), '; '.join(["{}={}".format(k, ','.join(v)) for k, v in self.tags.items()]),
-            float_time_to_string(self.update_time))
+            ', '.join(sorted(self.roles)), float_time_to_string(self.update_time))
 
 class RepositoryOperations:
     def __init__(self, platform_repository: str, repository_type: str, node_prefix = 'node'):

@@ -430,6 +430,38 @@ class AnsibleInterface(AbstractInstanceInterface):
             extra_args.update(self.__create_extra_vars__(dir, list(all_nodes)))
             ret = ansible_runner.run(private_data_dir=dir, inventory=inventory_filepath, playbook=playbook_path, quiet=quiet,
                                     verbosity=Defaults.verbosity, extravars=extra_args, debug=True if Defaults.verbosity>3 else False)
+            
+            # Check set_fact variables for add roles...
+            roles = {}
+            for e in ret.events:
+                try:
+                    if e['event_data']['task_action'] == 'set_fact' and e['event'] == 'runner_on_ok':
+                        params = e['event_data']['res']['ansible_facts']['clap_role']
+                        host = e['event_data']['host']
+                        to_add_role = []
+                        
+                        if type(params) is str:
+                            to_add_role = [params]
+                        elif type(params) is list:
+                            to_add_role = [str(p) for p in params]
+                        else:
+                            raise Exception
+                        
+                        if not to_add_role:
+                            continue
+
+                        if host in roles:
+                            roles[host] += to_add_role
+                        else:
+                            roles[host] = to_add_role 
+                except Exception as e:
+                    print(e)
+
+            if roles:
+                nodes = self.repository_operator.get_nodes(list(roles.keys()))
+                for node in nodes:
+                    node.roles = list(set(node.roles+roles[node.node_id]))
+                    self.repository_operator.update_node(node)
 
             status_event = [e for e in ret.events if e['event'] == 'playbook_on_stats'][-1]['event_data']
             
