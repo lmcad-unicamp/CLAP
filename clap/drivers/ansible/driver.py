@@ -463,8 +463,11 @@ class AnsibleInterface(AbstractInstanceInterface):
                     node.roles = list(set(node.roles+roles[node.node_id]))
                     self.repository_operator.update_node(node)
 
-            status_event = [e for e in ret.events if e['event'] == 'playbook_on_stats'][-1]['event_data']
-            
+            try:
+                status_event = [e for e in ret.events if e['event'] == 'playbook_on_stats'][-1]['event_data']
+            except IndexError:
+                raise Exception("Playbook does not finished successfully")
+
             #ok_nodes = set(list(status_event['ok'].keys()) + list(status_event['ignored'].keys()) + list(status_event['skipped'].keys()))
             not_ok_nodes = set(list(status_event['dark'].keys()) + list(status_event['failures'].keys()) + list(status_event['rescued'].keys()))
         
