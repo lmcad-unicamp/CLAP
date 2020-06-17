@@ -6,6 +6,9 @@ from clap.common.repository import (AbstractEntry, AbstractRepository, Repositor
                                     generic_write_entry)
 from clap.common.utils import log, path_extend
 from clap.common.config import Defaults
+from typing import List
+
+
 
 class ParamountIndexingData(AbstractEntry):
 
@@ -15,9 +18,11 @@ class ParamountIndexingData(AbstractEntry):
 
 
 class ParamountClusterData(AbstractEntry):
-    def __init__(self, paramount_id, descr=None, **kwargs):
-        self.paramount_id = paramount_id
-        self.descr = descr
+    def __init__(self, paramount_id, cluster_id, nodes, descr=None, **kwargs):
+        self.paramount_id = paramount_id # Id internal to cluster table
+        self.cluster_id = cluster_id #Id referencing the actual cluster instance (used to perform actions)
+        self.descr = descr #optional, verbal description of a cluster
+        self.nodes = nodes
 
         super(ParamountClusterData, self).__init__(**kwargs)
 
@@ -40,18 +45,32 @@ class ParamountClusterRepositoryOperations:
         #TinyDBRepository é retornado aqui
         self.repository = RepositoryFactory.get_repository(self.repository_path, self.repository_type)
         self.create_repository()
-        self.paramount_prefix = paramount_prefix
 
 
     #Creates the table "control" and "paramount"
-    def create_repository():
+    def create_repository(self):
         with get_repository_connection(self.repository) as conn:
-            if check_and_create_table(rep, 'control', exists):
+            if check_and_create_table(conn, 'control'):
                 conn.create_element('control', ParamountIndexingData())
 
-            check_and_create_table(repository, 'paramount', exists)
+            check_and_create_table(conn, 'paramount')
 
-    def new_paramount_cluster(descr=None):
+    def new_paramount_cluster(self, cluster_id,nodes, descr=None):
 
-        _cluster = ParamountClusterData(descr)
+        with get_repository_connection(self.repository) as conn:
+            
+            _control = next(iter(generic_read_entry(ParamountIndexingData, conn, 'control')))
+            _control.current_index += 1
+            #conn.update_element('control', _control)
+            generic_write_entry(_control, conn, 'control', create=False)
+            _cluster = ParamountClusterData(
+                                nodes=nodes,
+                                cluster_id= cluster_id,
+                                paramount_id= _control.current_index ,
+                                descr=descr)
+            generic_write_entry(_cluster, conn, 'paramount', create=True)
 
+
+    def list_paramount_clusters(self) -> List[ParamountClusterData] : 
+        with get_repository_connection(self.repository) as conn:
+            return conn.retrieve_elements('paramount', ParamountClusterData)
