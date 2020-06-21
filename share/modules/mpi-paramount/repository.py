@@ -14,15 +14,16 @@ class ParamountIndexingData(AbstractEntry):
 
     def __init__(self,**kwargs):
         self.current_index = 0
-        super(ParamountIndexingData. self).__init__(**kwargs)
+        super(ParamountIndexingData, self).__init__(**kwargs)
 
 
 class ParamountClusterData(AbstractEntry):
-    def __init__(self, paramount_id, cluster_id, nodes, descr=None, **kwargs):
+    def __init__(self, paramount_id, cluster_id, nodes, coordinator, descr=None, **kwargs):
         self.paramount_id = paramount_id # Id internal to cluster table
         self.cluster_id = cluster_id #Id referencing the actual cluster instance (used to perform actions)
         self.descr = descr #optional, verbal description of a cluster
         self.nodes = nodes
+        self.coordinator = coordinator
 
         super(ParamountClusterData, self).__init__(**kwargs)
 
@@ -50,12 +51,12 @@ class ParamountClusterRepositoryOperations:
     #Creates the table "control" and "paramount"
     def create_repository(self):
         with get_repository_connection(self.repository) as conn:
-            if check_and_create_table(conn, 'control'):
+            if check_and_create_table(conn, 'control', exists='pass'):
                 conn.create_element('control', ParamountIndexingData())
 
-            check_and_create_table(conn, 'paramount')
+            check_and_create_table(conn, 'paramount', exists='pass')
 
-    def new_paramount_cluster(self, cluster_id,nodes, descr=None):
+    def new_paramount_cluster(self, cluster_id,nodes, coordinator, descr=None):
 
         with get_repository_connection(self.repository) as conn:
             
@@ -65,6 +66,7 @@ class ParamountClusterRepositoryOperations:
             generic_write_entry(_control, conn, 'control', create=False)
             _cluster = ParamountClusterData(
                                 nodes=nodes,
+                                coordinator=coordinator,
                                 cluster_id= cluster_id,
                                 paramount_id= _control.current_index ,
                                 descr=descr)
