@@ -61,7 +61,7 @@ actions:
       over passwordless ssh communication
      vars:
          - name: key_name
-           description: Name of the RSA key which will be stored in remote node's .ssh/ folder
+           description: Name of the RSA key which will be stored in ~/.clap/private
            optional: yes
 
   compile-c:

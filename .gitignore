@@ -1,3 +1,6 @@
+install.sh
+update.sh
+
 __pycache__/
 .idea/
 

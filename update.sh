@@ -14,16 +14,16 @@ function abort() {
 
 CLAP_PATH=~/.clap
 
-echo -n "Pulling repository for updates... "
-date
-git checkout master
-git pull
-echo "OK"
+#echo -n "Pulling repository for updates... "
+#date
+#git checkout master
+#git pull
+#echo "OK"
 
 source clap-env/bin/activate || abort "Activating venv"
-green_print "Updating clap...."
-pip --no-cache-dir install . || abort "Updating clap..."
-green_print "OK"
+#green_print "Updating clap...."
+#pip --no-cache-dir install . || abort "Updating clap..."
+#green_print "OK"
 
 green_print "Updating CLAP path: $CLAP_PATH"
 cp -r -n ./share/configs/ $CLAP_PATH
