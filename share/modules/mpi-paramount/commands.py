@@ -59,5 +59,5 @@ class MpiParamountParser(AbstractParser):
                 log.error("The size must be a list o integers")
 
 
-        create_paramount(nodes=_nodes,descr=_desc)
+        _paramount_cluster = create_paramount(nodes=_nodes,descr=_desc)
         return
