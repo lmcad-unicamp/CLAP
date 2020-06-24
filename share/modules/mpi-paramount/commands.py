@@ -60,4 +60,5 @@ class MpiParamountParser(AbstractParser):
 
 
         _paramount_cluster = create_paramount(nodes=_nodes,descr=_desc)
+        print(_paramount_cluster)
         return

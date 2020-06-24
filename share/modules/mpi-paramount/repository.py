@@ -18,16 +18,25 @@ class ParamountIndexingData(AbstractEntry):
 
 
 class ParamountClusterData(AbstractEntry):
-    def __init__(self, paramount_id, cluster_id, nodes, coordinator, descr=None, **kwargs):
+    def __init__(self, paramount_id, cluster_id, slaves, coordinator, descr=None, **kwargs):
         self.paramount_id = paramount_id # Id internal to cluster table
         self.cluster_id = cluster_id #Id referencing the actual cluster instance (used to perform actions)
         self.descr = descr #optional, verbal description of a cluster
-        self.nodes = nodes
+        self.slaves = slaves
         self.coordinator = coordinator
 
         super(ParamountClusterData, self).__init__(**kwargs)
 
+    def __repr__(self):
+        _string = "Paramount cluster of id: " +self.paramount_id + " coordinator is: " +self.coordinator
+        if self.slaves and self.slaves.__len__() > 0:
+            _string = _string + " slaves are: {"
+            for _slave in self.slaves:
+                _string = _string + "{}, ".format(_slave)
 
+            _string = _string + "}"
+
+        return _string
 
 class ParamountClusterRepositoryOperations:
     def __init__(self, repository_name: str = 'paramount_clusters.json', repository_type: str = Defaults.REPOSITORY_TYPE, paramount_prefix = 'paramount'):
@@ -64,7 +73,7 @@ class ParamountClusterRepositoryOperations:
                 conn.create_element('control', ParamountIndexingData())
             check_and_create_table(conn, 'paramount', _typeOfCreateClusterData)
 
-    def new_paramount_cluster(self, cluster_id,nodes, coordinator, descr=None) -> ParamountClusterData:
+    def new_paramount_cluster(self, cluster_id,slaves, coordinator, descr=None) -> ParamountClusterData:
 
         _cluster = None
         with get_repository_connection(self.repository) as conn:
@@ -74,7 +83,7 @@ class ParamountClusterRepositoryOperations:
             #conn.update_element('control', _control)
             generic_write_entry(_control, conn, 'control', create=False)
             _cluster = ParamountClusterData(
-                                nodes=nodes,
+                                slaves=slaves,
                                 coordinator=coordinator,
                                 cluster_id= cluster_id,
                                 paramount_id= Info.CLUSTER_PREFIX + str( _control.current_index) ,

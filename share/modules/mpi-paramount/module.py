@@ -32,8 +32,11 @@ def create_paramount(nodes: List[str], descr = None) -> int:
             f.write(rendered_template)
         cluster, nodes, is_setup = cluster_module.cluster_create([filename], cluster_name='mpi-paramount-cluster')
 
-    _coordinator = cluster.cluster_config['nodes'][Info.COORDINATOR]
-    _paramount_cluster = repository.new_paramount_cluster(cluster_id=cluster.cluster_id, nodes=nodes, coordinator= _coordinator, descr=descr)
+    _coordinator = list(filter(lambda x: x.tags['cluster_node_type'][0].split(':')[1] == Info.COORDINATOR, nodes))[0].node_id
+    _slaves  =[ x.node_id for x  in list(filter(lambda x: x.tags['cluster_node_type'][0].split(':')[1] == Info.SLAVES, nodes)) ]
+
+
+    _paramount_cluster = repository.new_paramount_cluster(cluster_id=cluster.cluster_id, slaves=_slaves, coordinator= _coordinator, descr=descr)
     # Pega o módulo group. Este módulo é responsável por adicionar, remover e executar ações em grupo. As funções disponíveis estão em [2]
     #repository.new_paramount_cluster()
     return _paramount_cluster
