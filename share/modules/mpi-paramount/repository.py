@@ -95,3 +95,7 @@ class ParamountClusterRepositoryOperations:
     def list_paramount_clusters(self) -> List[ParamountClusterData] : 
         with get_repository_connection(self.repository) as conn:
             return conn.retrieve_elements('paramount', ParamountClusterData)
+
+    def get_paramount_data(self, paramount_id):
+        with get_repository_connection(self.repository) as conn:
+            return conn.retrieve_elements('paramount', ParamountClusterData, **{'paramount_id': paramount_id})

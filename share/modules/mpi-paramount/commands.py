@@ -37,8 +37,29 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.set_defaults(func=self.start_paramount_cluster)
 
+        ## Listing paramount clusters
+        paramount_subcom_parser = commands_parser.add_parser('list', help='List started mpi-paramount clusters')
 
-       
+        paramount_subcom_parser.set_defaults(func=self.list_paramount_command)
+
+        ## Setup cluster
+        paramount_subcom_parser = commands_parser.add_parser('setup', help='Given an instance type(defined in instance.yml) and a number \
+            this command will create a number of nodes matching the instance and add them to a new paramount cluster. \
+                ')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Mpi-paramount cluster id')
+
+        paramount_subcom_parser.add_argument('--mount_ip', action='store', nargs='?',
+                                             help='Mount ip address')
+
+        paramount_subcom_parser.add_argument('--skip-mpi', action='store_true',
+                                             help='Flag to skip mpi related package installation ')
+
+        paramount_subcom_parser.add_argument('--no_instance_key', action='store_true',
+                                             help='Flag indicating to not use the instance key (in .clap/configs/instance.yml ')
+
+        paramount_subcom_parser.set_defaults(func=self.setup_cluster)
 
 
     def start_paramount_cluster(self, namespace: argparse.Namespace ):
@@ -60,5 +81,22 @@ class MpiParamountParser(AbstractParser):
 
 
         _paramount_cluster = create_paramount(nodes=_nodes,descr=_desc)
+        print("MPI-Paramount cluster created: \n")
         print(_paramount_cluster)
+        return
+
+    def list_paramount_command(self, namespace: argparse.Namespace):
+        _clusters = list_paramount_clusters()
+        print("Current mpi-paramount clusters are: \n")
+        for _cluster in _clusters:
+            print(_cluster)
+        return
+
+
+    def setup_cluster(self, namespace: argparse.Namespace):
+        #TODO: Validate input?
+        setup_paramount_cluster(paramount_id=namespace.id,
+                                mount_ip=namespace.mount_ip,
+                                skip_mpi=namespace.skip_mpi,
+                                no_instance_key=namespace.no_instance_key)
         return

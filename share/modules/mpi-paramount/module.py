@@ -12,6 +12,12 @@ def list_paramount_clusters():
     return repository.list_paramount_clusters()
 
 
+def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
+    repository = ParamountClusterRepositoryOperations()
+
+    _cluster= repository.get_paramount_data(paramount_id)
+    pass
+
 def create_paramount(nodes: List[str], descr = None) -> int:
 
 
