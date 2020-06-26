@@ -1,24 +1,13 @@
-setups:
-  paramount-setup-master:
-    groups:
-    - name: mpi/coordinator
-  paramount-setup-slave:
-    groups:
-    - name: mpi/slave
-
 clusters:
   mpi-paramount-cluster:
     nodes:
       mpi-paramount-coordinator:
         type: {{ node_type }}
         count: 1
-        setups:
-        - paramount-setup-master
-
 
       {% if node_count and node_count > 1 %}
       mpi-paramount-slave:
         type: {{ node_type }}
         count: {{ node_count-1 }}
-        - paramount-setup-slave
+
       {% endif %}

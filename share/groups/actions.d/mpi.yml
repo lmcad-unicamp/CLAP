@@ -94,6 +94,8 @@ actions:
           
   run:
     playbook: roles/mpi/tasks/mpi-run.yml
+    description: >
+      Runs a binary file. (Will automatically generate the hosts from all nodes in the cluster)
     vars:
           - name: execution_dir
             optional: no

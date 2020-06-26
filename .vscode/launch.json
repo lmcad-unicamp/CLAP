@@ -4,14 +4,25 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
+
+
         {
-            "name": "Node start type-a",
+            "name": "mpi-paramount ",
             "type": "python",
             "request": "launch",
-            "program": "/home/napoli/clap/clapp",
-            "args": ["-vv", "node", "start", "type-a"],
+            "program": "/home/gabriel/Documents/SCI/CLAP/CLAP/clapp",
+            "args": ["-vv", "mpi-paramount", "cluster-from-instances",  "type-a:2"],
             "console": "integratedTerminal"
         },
+        {
+            "name": "List paramount(otavio)",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/gabriel/Documents/SCI/CLAP/CLAP/clapp",
+            "args": ["-vv", "paramount", "list"],
+            "console": "integratedTerminal"
+        }
         {
             "name": "Node start type-b",
             "type": "python",
@@ -128,7 +139,7 @@
             "name": "Create paramount cluster",
             "type": "python",
             "request": "launch",
-            "program": "/home/napoli/clap/clapp",
+            "program": "/home/gabriel/Documents/SCI/CLAP/CLAP/clapp",
             "args": ["-vv", "paramount", "start", "NAS.C", "paramount-t2.medium", "2", "4"],
             "console": "integratedTerminal"
         },

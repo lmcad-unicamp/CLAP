@@ -14,8 +14,36 @@ def list_paramount_clusters():
 
 def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
     repository = ParamountClusterRepositoryOperations()
+    cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
     _cluster= repository.get_paramount_data(paramount_id)
+    _cluster= next(iter(repository.get_paramount_data(paramount_id)))
+
+    extra = {}
+    if mount_ip:
+        extra.update({'mount_ip':mount_ip})
+
+    if skip_mpi:
+        extra.update({'skip_mpi':'True'})
+    if no_instance_key:
+        extra.update({'use_instance_key':'False'})
+
+
+    #Teste: adicionando o coordinator
+    cluster_module.cluster_group_add(cluster_id=_cluster.cluster_id,
+                                     group_name='mpi/coordinator',
+                                     node_ids=[_cluster.coordinator],
+                                     extra_args= extra
+                                     )
+
+
+    if _cluster.slaves.__len__() > 0:
+        cluster_module.cluster_group_add(cluster_id=_cluster.cluster_id,
+                                         group_name='mpi/slave',
+                                         node_ids=_cluster.slaves,
+                                         extra_args=extra
+                                         )
+
     pass
 
 def create_paramount(nodes: List[str], descr = None) -> int:
