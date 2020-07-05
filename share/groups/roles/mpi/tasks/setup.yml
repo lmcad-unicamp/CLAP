@@ -103,6 +103,8 @@
 
 - name: File system setup
   vars:
+
+#      group_name: "{{ '/' + nodes_group_name | default('') }}"
       efs_mount_point: "~{{ user }}/efs"
       user: "ubuntu"
       group: "ubuntu"
@@ -120,8 +122,14 @@
         path: ~/efs
         state: directory
         mode: "0755"
-  
-  when:  mount_ip is defined
+
+  - name: Creates group directory
+    become: no
+    file:
+      path: ~/efs/{{ nodes_group_name }}
+      state: directory
+      mode: "0755"
+#  when:  mount_ip is defined
 
 
 

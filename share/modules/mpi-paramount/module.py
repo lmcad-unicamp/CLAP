@@ -6,6 +6,8 @@ from clap.common.factory import PlatformFactory
 from clap.common.utils import tmpdir, path_extend
 from jinja2 import Template
 
+debug = True
+
 
 def list_paramount_clusters():
     repository = ParamountClusterRepositoryOperations()
@@ -20,8 +22,11 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
     _cluster= next(iter(repository.get_paramount_data(paramount_id)))
 
     extra = {}
-    if mount_ip:
-        extra.update({'mount_ip':mount_ip})
+
+    #Folder in the shared filesystem where this cluster operates
+    _mount_point_partition=  _cluster.paramount_id
+    extra.update({'mount_ip':mount_ip})
+    extra.update({'nodes_group_name':_mount_point_partition })
 
     if skip_mpi:
         extra.update({'skip_mpi':'True'})
@@ -43,6 +48,18 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
                                          node_ids=_cluster.slaves,
                                          extra_args=extra
                                          )
+
+    _cluster.mount_point_partition = _mount_point_partition
+
+
+    ######TODO: fazer update do objeto cluster
+    repository.update_paramount(_cluster)
+
+    if debug:
+        _cluster = repository.get_paramount_data(paramount_id)
+        _cluster = next(iter(repository.get_paramount_data(paramount_id)))
+        print("New mount_point_partition (After updating) is {}".format(_cluster.mount_point_partition))
+
 
     pass
 

@@ -4,9 +4,14 @@ actions:
   setup:
     playbook: roles/mpi.yml
     vars:
-    - name: mount_ip
-      description: if not specified the file system mounting step will be skipped
+    - name: nodes_group_name
+      description: >
+        The name of the group which wants to use a partition of the shared filesystem (generally
+        the group is a cluster-id). If not provided it will simply default to the mount point's root.
       optional: yes
+    - name: mount_ip
+      description: Mount-point ip.
+      optional: no
     - name: skip_mpi
       description: Assign to "True" if want to skip, default is to install mpi
       optional: yes

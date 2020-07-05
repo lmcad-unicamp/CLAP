@@ -18,12 +18,13 @@ class ParamountIndexingData(AbstractEntry):
 
 
 class ParamountClusterData(AbstractEntry):
-    def __init__(self, paramount_id, cluster_id, slaves, coordinator, descr=None, **kwargs):
+    def __init__(self, paramount_id, cluster_id, slaves, coordinator, descr=None, mount_point_partition=None, **kwargs):
         self.paramount_id = paramount_id # Id internal to cluster table
         self.cluster_id = cluster_id #Id referencing the actual cluster instance (used to perform actions)
         self.descr = descr #optional, verbal description of a cluster
         self.slaves = slaves
         self.coordinator = coordinator
+        self.mount_point_partition = mount_point_partition
 
         super(ParamountClusterData, self).__init__(**kwargs)
 
@@ -99,3 +100,9 @@ class ParamountClusterRepositoryOperations:
     def get_paramount_data(self, paramount_id):
         with get_repository_connection(self.repository) as conn:
             return conn.retrieve_elements('paramount', ParamountClusterData, **{'paramount_id': paramount_id})
+
+
+    def update_paramount(self, paramount_cluster_data: ParamountClusterData) -> str:
+        with get_repository_connection(self.repository) as repository:
+            generic_write_entry(paramount_cluster_data, repository, 'paramount', create=False,
+                paramount_id=paramount_cluster_data.paramount_id)
