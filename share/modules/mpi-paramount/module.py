@@ -2,6 +2,7 @@ import jinja2
 
 from .repository import *
 from .conf import Info
+from .jobs import *
 from clap.common.factory import PlatformFactory
 from clap.common.utils import tmpdir, path_extend
 from jinja2 import Template
@@ -91,3 +92,18 @@ def create_paramount(nodes: List[str], descr = None) -> int:
     # Pega o módulo group. Este módulo é responsável por adicionar, remover e executar ações em grupo. As funções disponíveis estão em [2]
     #repository.new_paramount_cluster()
     return _paramount_cluster
+
+
+def new_job_from_cluster( paramount_id, name=None):
+    repositoryParamount = ParamountClusterRepositoryOperations()
+    _cluster= repositoryParamount.get_paramount_data(paramount_id)
+    _cluster= next(iter(repositoryParamount.get_paramount_data(paramount_id)))
+
+    repositoryJob = JobDataRepositoryOperations()
+
+    _job = repositoryJob.new_job(cluster_obj= _cluster, absolute_path_mount=_cluster.mount_point_partition, name=name)
+
+    #Update the object
+    _cluster.jobs.append(_job.jobId)
+
+    repositoryParamount.update_paramount(_cluster)

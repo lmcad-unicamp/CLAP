@@ -126,6 +126,16 @@ actions:
            optional: no
 
 
+  start-job:
+    playbook: roles/mpi/tasks/start-job.yml
+    description: >
+      Start a job in the cluster (intended as api to module not as standalone action)
+    vars:
+      - name: directory
+        optional: no
+
+
+
 
 hosts:                      # (optional) List of hosts that are used in this group (and in the playbooks)
 - coordinator

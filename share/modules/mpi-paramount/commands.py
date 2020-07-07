@@ -62,22 +62,18 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.setup_cluster)
 
         ## push files
-        paramount_subcom_parser = commands_parser.add_parser('push-files', help='Push files \
+        paramount_subcom_parser = commands_parser.add_parser('start-job', help='Start a new job at the desired cluster \
                   ')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
                                              help='Mpi-paramount cluster id')
 
-        paramount_subcom_parser.add_argument('--mount_ip', action='store', nargs='?',
-                                             help='Mount ip address')
+        paramount_subcom_parser.add_argument('--job_name', action='store', nargs='?',
+                                             help='Optional job name')
 
-        paramount_subcom_parser.add_argument('--skip-mpi', action='store_true',
-                                             help='Flag to skip mpi related package installation ')
 
-        paramount_subcom_parser.add_argument('--no_instance_key', action='store_true',
-                                             help='Flag indicating to not use the instance key (in .clap/configs/instance.yml ')
 
-        paramount_subcom_parser.set_defaults(func=self.setup_cluster)
+        paramount_subcom_parser.set_defaults(func=self.new_job_handler)
 
 
     def start_paramount_cluster(self, namespace: argparse.Namespace ):
@@ -118,3 +114,6 @@ class MpiParamountParser(AbstractParser):
                                 skip_mpi=namespace.skip_mpi,
                                 no_instance_key=namespace.no_instance_key)
         return
+
+    def new_job_handler(self, namespace: argparse.Namespace):
+        new_job_from_cluster(namespace.id, name= namespace.job_name)

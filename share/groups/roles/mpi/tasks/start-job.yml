@@ -1,0 +1,11 @@
+---
+- hosts: coordinator
+  gather_facts: yes
+  become: no
+  tasks:
+
+  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
+  - name: Creates directory
+    file:
+      path: "{{ directory }}"
+      state: directory

@@ -25,7 +25,7 @@ class ParamountClusterData(AbstractEntry):
         self.slaves = slaves
         self.coordinator = coordinator
         self.mount_point_partition = mount_point_partition
-
+        self.jobs = []
         super(ParamountClusterData, self).__init__(**kwargs)
 
     def __repr__(self):
@@ -62,12 +62,21 @@ class ParamountClusterRepositoryOperations:
     def create_repository(self):
         with get_repository_connection(self.repository) as conn:
             # debug
-            _elemsControl = conn.retrieve_elements('control', ParamountIndexingData)
-            _elemsClusterData = conn.retrieve_elements('paramount', ParamountClusterData)
 
-            _typeOfCreateControl = 'overwrite' if _elemsControl.__len__() == 0 else 'pass'
-            _typeOfCreateClusterData  = 'overwrite' if _elemsClusterData.__len__() == 0 else 'pass'
-            #Há um bug no qual a table pode ter sido criada mas não há elementos
+            _typeOfCreateControl = 'overwrite'
+            _typeOfCreateClusterData = 'overwrite'
+
+            try:
+                # Há um bug no qual a table pode ter sido criada mas não há elementos
+
+                _elemsControl = conn.retrieve_elements('control', ParamountIndexingData)
+                _elemsClusterData = conn.retrieve_elements('paramount', ParamountClusterData)
+                _typeOfCreateControl = 'overwrite' if _elemsControl.__len__() == 0 else 'pass'
+                _typeOfCreateClusterData = 'overwrite' if _elemsClusterData.__len__() == 0 else 'pass'
+            except ValueError:
+                pass
+
+
 
             if check_and_create_table(conn, 'control', _typeOfCreateControl):
 
