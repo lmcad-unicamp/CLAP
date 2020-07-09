@@ -100,7 +100,6 @@ def create_paramount(nodes: List[str], descr = None) -> int:
 
 def new_job_from_cluster( paramount_id, name=None):
     repositoryParamount = ParamountClusterRepositoryOperations()
-    _cluster= repositoryParamount.get_paramount_data(paramount_id)
     _cluster= next(iter(repositoryParamount.get_paramount_data(paramount_id)))
 
     repositoryJob = JobDataRepositoryOperations()
@@ -111,3 +110,25 @@ def new_job_from_cluster( paramount_id, name=None):
     _cluster.jobs.append(_job.jobId)
 
     repositoryParamount.update_paramount(_cluster)
+
+
+def push_files(job_id, src):
+    repositoryParamount = ParamountClusterRepositoryOperations()
+    repositoryJobs = JobDataRepositoryOperations()
+    cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
+
+    _job =  next(iter(repositoryJobs.get_job_data(job_id)))
+    _mpcObj =  next(iter(repositoryParamount.get_paramount_data(_job.paramount_id)))
+
+    _dest = _job.absolutePath
+
+
+    extra = {}
+    extra.update({'execution_dir':_dest})
+    extra.update({'src_dir':src})
+
+    cluster_module.perform_group_action(cluster_id= _mpcObj.cluster_id,
+                                        group_name= 'mpi',
+                                        action_name= 'sync',
+                                        node_ids= [_mpcObj.coordinator],
+                                        extra_args= extra)

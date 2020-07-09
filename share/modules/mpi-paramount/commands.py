@@ -61,7 +61,7 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.set_defaults(func=self.setup_cluster)
 
-        ## push files
+        ## Start a job
         paramount_subcom_parser = commands_parser.add_parser('start-job', help='Start a new job at the desired cluster \
                   ')
 
@@ -79,6 +79,18 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser = commands_parser.add_parser('job-list', help='List started jobs')
 
         paramount_subcom_parser.set_defaults(func=self.list_jobs_handler)
+
+        ## push files
+        paramount_subcom_parser = commands_parser.add_parser('push-files', help='Push files to job a directory \
+                  ')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Job id')
+
+        paramount_subcom_parser.add_argument('src', action='store',
+                                             help='Source folder')
+
+        paramount_subcom_parser.set_defaults(func=self.push_files_handler)
 
 
     def start_paramount_cluster(self, namespace: argparse.Namespace ):
@@ -129,3 +141,9 @@ class MpiParamountParser(AbstractParser):
         for _job  in _jobs:
             print('* ' + str(_job))
         return
+
+
+    def push_files_handler(self, namespace: argparse.Namespace):
+        _job_id = namespace.id
+        _src = namespace.src
+        push_files(job_id=_job_id, src= _src)

@@ -112,6 +112,10 @@ class JobDataRepositoryOperations:
 
         return _job
 
+
+    def get_job_data(self, job_id):
+        with get_repository_connection(self.repository) as conn:
+            return conn.retrieve_elements('job', JobData, **{'jobId': job_id})
     def list_jobs(self):
         with get_repository_connection(self.repository) as conn:
             return conn.retrieve_elements('job', JobData)
