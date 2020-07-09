@@ -14,6 +14,9 @@ def list_paramount_clusters():
     repository = ParamountClusterRepositoryOperations()
     return repository.list_paramount_clusters()
 
+def list_jobs():
+    repository = JobDataRepositoryOperations()
+    return repository.list_jobs()
 
 def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
     repository = ParamountClusterRepositoryOperations()
@@ -25,9 +28,10 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
     extra = {}
 
     #Folder in the shared filesystem where this cluster operates
-    _mount_point_partition=  _cluster.paramount_id
+
+    _mount_point_partition=  Info.MOUNT_POINT_ROOT + _cluster.paramount_id
     extra.update({'mount_ip':mount_ip})
-    extra.update({'nodes_group_name':_mount_point_partition })
+    extra.update({'nodes_group_name': _cluster.paramount_id })
 
     if skip_mpi:
         extra.update({'skip_mpi':'True'})

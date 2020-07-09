@@ -29,13 +29,16 @@ class ParamountClusterData(AbstractEntry):
         super(ParamountClusterData, self).__init__(**kwargs)
 
     def __repr__(self):
-        _string = "Paramount cluster of id: " +self.paramount_id + " coordinator is: " +self.coordinator
+        _string = "Paramount cluster of id: " +self.paramount_id + " cluster id is: "+ self.cluster_id+ " coordinator is: " +self.coordinator
         if self.slaves and self.slaves.__len__() > 0:
             _string = _string + " slaves are: {"
             for _slave in self.slaves:
                 _string = _string + "{}, ".format(_slave)
 
             _string = _string + "}"
+
+
+        _string =  _string + ' Jobs configured are: ' + ', '.join(self.jobs)
 
         return _string
 

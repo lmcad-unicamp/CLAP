@@ -75,6 +75,11 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.set_defaults(func=self.new_job_handler)
 
+        ## Listing jobs
+        paramount_subcom_parser = commands_parser.add_parser('job-list', help='List started jobs')
+
+        paramount_subcom_parser.set_defaults(func=self.list_jobs_handler)
+
 
     def start_paramount_cluster(self, namespace: argparse.Namespace ):
         #TODO: decidi começar pela start em que cria as intancias,
@@ -103,7 +108,7 @@ class MpiParamountParser(AbstractParser):
         _clusters = list_paramount_clusters()
         print("Current mpi-paramount clusters are: \n")
         for _cluster in _clusters:
-            print(_cluster)
+            print('* ' + str(_cluster))
         return
 
 
@@ -117,3 +122,10 @@ class MpiParamountParser(AbstractParser):
 
     def new_job_handler(self, namespace: argparse.Namespace):
         new_job_from_cluster(namespace.id, name= namespace.job_name)
+
+    def list_jobs_handler(self, namespace: argparse.Namespace):
+        _jobs = list_jobs()
+        print("Current mpi-paramount clusters are: \n")
+        for _job  in _jobs:
+            print('* ' + str(_job))
+        return

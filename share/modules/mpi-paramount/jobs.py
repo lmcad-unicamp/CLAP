@@ -28,7 +28,10 @@ class JobData(AbstractEntry):
         super(JobData, self).__init__(**kwargs)
 
     def __repr__(self):
-        _string = "job: {} from cluster {}".format(self.name, self.paramount_id)
+        if self.name:
+            _string = "Job: {}@{} (alias:'{}')  in path: {}".format(self.jobId, self.paramount_id, self.name, self.absolutePath)
+        else:
+            _string = "Job: {}@{}, in path: {}".format(self.jobId, self.paramount_id,self.absolutePath)
 
         return _string
 
@@ -108,3 +111,7 @@ class JobDataRepositoryOperations:
             generic_write_entry(_job, conn, 'job', create=True)
 
         return _job
+
+    def list_jobs(self):
+        with get_repository_connection(self.repository) as conn:
+            return conn.retrieve_elements('job', JobData)
