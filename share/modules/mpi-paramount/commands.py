@@ -93,6 +93,28 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.push_files_handler)
 
 
+        ## compile
+        paramount_subcom_parser = commands_parser.add_parser('compile', help='Compile a job, if no sub_path is specified the script'
+                                                                             ' will be executed in the job root, otherwise it will be acessed in a subdirectory'
+                                                                             'specified in the sub argument \
+                  ')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Job id')
+
+        paramount_subcom_parser.add_argument('script', action='store',
+                                             help='Compiling script to be executed')
+
+        paramount_subcom_parser.add_argument('--sub_path', action='store', nargs='?',
+                                             help='Subdirectory inside job folder where the script should be executed, if left' \
+                                                  'unspecified it will execute in the job root')
+
+        paramount_subcom_parser.set_defaults(func=self.compile_handler)
+
+
+
+
+
     def start_paramount_cluster(self, namespace: argparse.Namespace ):
         #TODO: decidi começar pela start em que cria as intancias,
         #  pois é compativel com o modulo do otavio
@@ -147,3 +169,9 @@ class MpiParamountParser(AbstractParser):
         _job_id = namespace.id
         _src = namespace.src
         push_files(job_id=_job_id, src= _src)
+
+    def compile_handler(self, namespace: argparse.Namespace):
+        _job_id = namespace.id
+        _script_path = namespace.script
+        _subpath = namespace.sub_path
+        compile(job_id=_job_id, script=_script_path, subpath=_subpath)

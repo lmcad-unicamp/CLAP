@@ -132,3 +132,27 @@ def push_files(job_id, src):
                                         action_name= 'sync',
                                         node_ids= [_mpcObj.coordinator],
                                         extra_args= extra)
+
+
+def compile(job_id, script, subpath):
+    repositoryParamount = ParamountClusterRepositoryOperations()
+    repositoryJobs = JobDataRepositoryOperations()
+    cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
+
+    _job =  next(iter(repositoryJobs.get_job_data(job_id)))
+    _mpcObj =  next(iter(repositoryParamount.get_paramount_data(_job.paramount_id)))
+
+    _path = _job.absolutePath
+    if  subpath is not  None:
+        _path = _path + '/' + subpath
+
+
+    extra = {}
+    extra.update({'compile_script': script})
+    extra.update({'execution_dir': _path})
+
+    cluster_module.perform_group_action(cluster_id= _mpcObj.cluster_id,
+                                        group_name= 'mpi',
+                                        action_name= 'compile',
+                                        node_ids= [_mpcObj.coordinator],
+                                        extra_args= extra)
