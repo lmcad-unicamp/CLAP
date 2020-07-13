@@ -136,6 +136,15 @@ actions:
 
 
 
+  get-infos:
+    playbook: roles/mpi/tasks/get-infos.yml
+    description: >
+      Task that allows to get some selected infos (as of now  only node's $HOME possible $PATH, current Distro, Current Time on nodes in
+      the future) and "dump it" in the file "dest" on the localhost
+    vars:
+      - name: dest
+        optional: no
+
 
 hosts:                      # (optional) List of hosts that are used in this group (and in the playbooks)
 - coordinator

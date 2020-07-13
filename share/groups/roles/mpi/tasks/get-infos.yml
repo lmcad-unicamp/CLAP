@@ -1,0 +1,27 @@
+- hosts: coordinator
+  gather_facts: yes
+
+  tasks:
+  - name: Get home path
+    debug: var=ansible_env.HOME
+    register: homePath
+
+  - name: Make vars persistant
+    set_fact:
+      homePath: "{{ homePath }}"
+
+
+
+- hosts: localhost
+
+  tasks:
+
+  - debug:
+      msg: "{{ hostvars[groups['coordinator']] }}"
+  - name: "Writing on the file"
+    blockinfile:
+      marker: ""
+      path: "{{ dest }} "
+      block: |
+        "{{ homePath  }}"
+

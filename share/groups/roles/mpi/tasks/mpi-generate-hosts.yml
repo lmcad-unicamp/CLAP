@@ -25,7 +25,7 @@
   - name: "Add Ansible inventory mappings to {{ exec_dir }}/hosts"
     blockinfile:
       marker: ""
-      path: "{{ exec_dir }}/hosts"
+      path: "{{ dest }}"
       block: |
         {% for host in groups['all'] %}
         {{ hostvars[host].ansible_host }} slots={{ hostvars[host].host_cpus.stdout }}
