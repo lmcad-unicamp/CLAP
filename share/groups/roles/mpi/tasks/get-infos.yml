@@ -9,19 +9,30 @@
   - name: Make vars persistant
     set_fact:
       homePath: "{{ homePath }}"
+      cacheable: yes
 
+  - debug:
+      msg: "{{ groups['coordinator'] }}"
+      #with_items: "{{ groups[
 
 
 - hosts: localhost
-
+  gather_facts: no
+  vars:
+    node_id: "{{ groups['coordinator'].0 }}"
   tasks:
-
   - debug:
-      msg: "{{ hostvars[groups['coordinator']] }}"
-  - name: "Writing on the file"
-    blockinfile:
-      marker: ""
-      path: "{{ dest }} "
-      block: |
-        "{{ homePath  }}"
+      msg: "{{ node_id }}"
+
+  #################Importante (perdi um dia inteiro nisso) a VARIAVEL esta em hostvars['node-xx'][VARIAVEL],
+  ### EXEMPLO: {{ hostvars['node-104']['homePath'] }}
+  - debug:
+      msg: "{{ hostvars[ node_id ]['homePath'] }}"
+
+#  - name: "Writing on the file"
+#    blockinfile:
+#      marker: ""
+#      path: "{{ dest }} "
+#      block: |
+#        "{{ homePath  }}"
 
