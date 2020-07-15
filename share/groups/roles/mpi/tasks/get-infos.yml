@@ -34,11 +34,15 @@
 #        ""
 
 
-  - name: Writing on the file
-    blockinfile:
-      create: yes
-      marker: ""
-      path: "{{ dest }} "
-      block: |
-        "{{ hostvars[ node_id ]['homePath'] | to_nice_json  }}"
+#  - name: Writing on the file
+#    blockinfile:
+#      create: yes
+#      marker: ""
+#      path: "{{ dest }}"
+#      block: |
+#        "{{ hostvars[ node_id ]['homePath'] | to_nice_json  }}"
 
+  - name: Write my_variables to
+    copy:
+      content: "{{ hostvars[ node_id ]['homePath'] | to_nice_json  }}"
+      dest: "{{ dest }}"

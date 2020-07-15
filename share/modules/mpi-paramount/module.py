@@ -1,5 +1,5 @@
 import jinja2
-
+import json
 from .repository import *
 from .conf import Info
 from .jobs import *
@@ -27,8 +27,9 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
 
     extra = {}
 
-    #Folder in the shared filesystem where this cluster operates
 
+
+    #Folder in the shared filesystem where this cluster operates ($PATH not evaluated, fixed later)
     _mount_point_partition=  Info.MOUNT_POINT_ROOT + _cluster.paramount_id
     extra.update({'mount_ip':mount_ip})
     extra.update({'nodes_group_name': _cluster.paramount_id })
@@ -37,6 +38,8 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
         extra.update({'skip_mpi':'True'})
     if no_instance_key:
         extra.update({'use_instance_key':'False'})
+
+
 
 
     #Teste: adicionando o coordinator
@@ -54,6 +57,26 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
                                          extra_args=extra
                                          )
 
+    with tmpdir() as dir:
+        filename = path_extend(dir, 'mpi-paramount-cluster.yml')
+        # with open(filename, 'w') as f:
+        #     print("gah")
+        extra = {}
+        extra.update({'dest': filename})
+
+        cluster_module.perform_group_action(cluster_id= _cluster.cluster_id,
+                                        group_name= 'mpi',
+                                        action_name= 'get-infos',
+                                        node_ids= [_cluster.coordinator],
+                                        extra_args= extra)
+
+        with open(filename, 'r') as f:
+
+            _data = json.loads(f.read())
+            _home= _data['ansible_env.HOME']
+            _mount_point_partition = _home + _mount_point_partition
+            print(_home)
+
     _cluster.mount_point_partition = _mount_point_partition
 
 
@@ -67,6 +90,11 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
 
 
     pass
+
+
+
+
+
 
 def create_paramount(nodes: List[str], descr = None) -> int:
 
