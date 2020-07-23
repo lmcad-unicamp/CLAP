@@ -1,6 +1,6 @@
 ---
-- name: MPI playbook
-  hosts: master
+- name: SPITS Playbook
+  hosts: jobmanager
   gather_facts: yes
   tasks:
   - include_role:
