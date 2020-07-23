@@ -94,7 +94,7 @@ class MpiParamountParser(AbstractParser):
 
 
         ## compile
-        paramount_subcom_parser = commands_parser.add_parser('compile', help='Compile a job, if no sub_path is specified the script'
+        paramount_subcom_parser = commands_parser.add_parser('compile-script', help='Compile a job, if no sub_path is specified the script'
                                                                              ' will be executed in the job root, otherwise it will be acessed in a subdirectory'
                                                                              'specified in the sub argument \
                   ')
@@ -109,7 +109,7 @@ class MpiParamountParser(AbstractParser):
                                              help='Subdirectory inside job folder where the script should be executed, if left' \
                                                   'unspecified it will execute in the job root')
 
-        paramount_subcom_parser.set_defaults(func=self.compile_handler)
+        paramount_subcom_parser.set_defaults(func=self.compile_script_handler)
 
 
 
@@ -170,7 +170,7 @@ class MpiParamountParser(AbstractParser):
         _src = namespace.src
         push_files(job_id=_job_id, src= _src)
 
-    def compile_handler(self, namespace: argparse.Namespace):
+    def compile_script_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
         _script_path = namespace.script
         _subpath = namespace.sub_path

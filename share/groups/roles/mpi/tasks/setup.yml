@@ -56,20 +56,29 @@
       name:
         - "{{ item  }}"
       state: latest
+    async: 360
+    poll: 30
 
     loop: "{{ osSetup.libraries}}"
     register: resultMPI
 
-  - name: testing env variables
-    become: yes
-    shell: |
-          stringTemp="export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/openmpi/lib
-          " &&
-          echo "$(echo -n "$stringTemp"; cat .bashrc)" > .bashrc
 
-  - name: Check whether the bin files were properly exported
-    shell: "which -a orted"
-    register: output
+#  - name: testing env variables
+#    become: yes
+#    shell: |
+#        prefix="-I" &&
+#        parsed=$(mpicc --showme:compile) &&
+#        stringarray=($parsed) &&
+#        stringTemp="" &&
+#        for i in "${stringarray[@]}"
+#        do
+#           stringTemp+="${i/#$prefix} "
+#        done
+#
+#        stringTemp+=$'\n'
+#        echo $stringTemp
+#
+
 
   - name: Getting gcc, make
     become: yes
@@ -79,6 +88,14 @@
 
   when: not skip_mpi|bool 
 
+- name: Properly setting env
+  script: environment.sh
+  register: output
+
+
+
+
+- meta: end_host
 
 
 #TODO: criar dicionario com o tipo da instancia e como o pacote se chama no respectivo sistema, na instancia AMI linux o nome eh "openmpi-devel", Com ubuntu o nome eh: openmpi-bin

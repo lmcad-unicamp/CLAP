@@ -46,7 +46,8 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
     cluster_module.cluster_group_add(cluster_id=_cluster.cluster_id,
                                      group_name='mpi/coordinator',
                                      node_ids=[_cluster.coordinator],
-                                     extra_args= extra
+                                     extra_args= extra,
+                                     re_add_to_group=True
                                      )
 
 
@@ -54,7 +55,8 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
         cluster_module.cluster_group_add(cluster_id=_cluster.cluster_id,
                                          group_name='mpi/slave',
                                          node_ids=_cluster.slaves,
-                                         extra_args=extra
+                                         extra_args=extra,
+                                         re_add_to_group=True
                                          )
 
     with tmpdir() as dir:
@@ -183,4 +185,5 @@ def compile(job_id, script, subpath):
                                         group_name= 'mpi',
                                         action_name= 'compile',
                                         node_ids= [_mpcObj.coordinator],
-                                        extra_args= extra)
+                                        extra_args= extra,
+                                        )
