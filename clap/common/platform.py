@@ -699,12 +699,12 @@ class MultiInstanceAPI:
                     ', '.join(sorted(set(node_ids).difference(set(node_with_group)))), group_name))
         return node_ids
 
-    def add_nodes_to_group(self, node_ids: List[str], group_name: str, group_args: Dict[str, str] = None, 
+    def add_nodes_to_group(self, node_ids: Union[Dict[str, List[str]], List[str]], group_name: str, group_args: Dict[str, str] = None, 
             __processing_dependencies__: List[str] = None) -> List[str]:
         """ Add nodes to a informed group
 
-        :param node_ids: List of node ids to add the the group.
-        :type node_ids: List[str]
+        :param node_ids: List of node ids to add the the group or a dictionary with host and a list of nodes
+        :type node_ids: Union[Dict[str, List[str]], List[str]]
         :param group_name: Name of the group which the nodes will be added. If the group has a setup action, the setup action will be executed.
         :type group_name: str
         :param group_args: Key-valued dictionary with the extra arguments to be passed to the setup's action.
@@ -714,6 +714,10 @@ class MultiInstanceAPI:
         :return: A list of nodes that was successfully added to group. A node is sucessfully added to the group if the setup action was sucessfully performed (if any)
         :rtype: List[str] 
         """
+        # Check if it is dict or list
+        # ...
+        # There is a problem when group has dependencies....
+
         # Split group_name variable
         split_vals = group_name.split('/')
         # If not in format: group_name or group_name/hostname --> Error

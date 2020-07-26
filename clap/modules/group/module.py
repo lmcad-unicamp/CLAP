@@ -11,8 +11,8 @@ def add_group_to_node(  node_ids: List[str], group: str, group_args: Dict[str, s
 
     :param node_ids: List of node ids to add the the group.
     :type node_ids: List[str]
-    :param group_name: Name of the group which the nodes will be added. If the group has a setup action, the setup action will be executed.
-    :type group_name: str
+    :param group: Name of the group which the nodes will be added. If the group has a setup action, the setup action will be executed.
+    :type group: str
     :param group_args: Key-valued dictionary with the extra arguments to be passed to the setup's action.
     :type group_args: Dict[str, str]
     :param tags: Optionally add nodes that match the tags informed to the group
@@ -39,6 +39,37 @@ def add_group_to_node(  node_ids: List[str], group: str, group_args: Dict[str, s
             return already_added_nodes
 
     return multi_instance.add_nodes_to_group(node_ids, group, group_args=group_args) + already_added_nodes
+
+def add_group_to_node_2(  host_nodes_map: Dict[str, List[str]], group: str, group_args: Dict[str, str] = None, 
+                          re_add_to_group: bool = True) -> List[str]:
+    """ Add nodes to a informed group
+
+    :param host_nodes_map: Dictionay with host as key and a list of nodes as value 
+    :type host_nodes_map: Dict[str, List[str]]
+    :param group_name: Name of the group which the nodes will be added. If the group has a setup action, the setup action will be executed.
+    :type group_name: str
+    :param group_args: Key-valued dictionary with the extra arguments to be passed to the setup's action.
+    :type group_args: Dict[str, str]
+    :param tags: Optionally add nodes that match the tags informed to the group
+    :type tags: Dict[str, str]
+    :param re_add_to_group: Boolean variable that if is set to true, does not readd node to a group, if the node already belongs to it (Default: True)
+    :type re_add_to_group: bool
+    :return: A list of nodes that was successfully added to group. A node is sucessfully added to the group if the setup action was sucessfully performed (if any)
+    :rtype: List[str] 
+    """
+    multi_instance = PlatformFactory.get_instance_api()
+    already_added_nodes = []
+
+    if not re_add_to_group:
+        hosts = {}
+        for host, node_list in host_nodes_map.items():
+            node_ids = list(set([node.node_id for node in multi_instance.get_nodes(node_list) if '{}/{}'.format(group, host) not in node.groups]))
+            if not node_ids:
+                raise Exception("Host {} does not have any nodes".format(host))
+            hosts[host] = node_ids
+        host_nodes_map = hosts
+
+    return multi_instance.add_nodes_to_group(host_nodes_map, group, group_args=group_args)
 
 def execute_group_action(node_ids: List[str], group: str, action: str, group_args: Dict[str, str] = None, tags: Dict[str, str] = None) -> List[str]:
     """ Perform a group action to nodes
