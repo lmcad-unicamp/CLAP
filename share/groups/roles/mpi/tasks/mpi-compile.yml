@@ -28,3 +28,7 @@
       chdir: "{{ execution_dir  }}"
     register: script_execution
 
+
+  - debug: var=script_execution.stderr
+
+  - debug: var=script_execution.stdout

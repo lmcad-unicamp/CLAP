@@ -7,29 +7,43 @@
   tasks:
   
   
-  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
-  - name: Execute compile script
-    poll: 15
-    script: 
-      cmd: "{{ run_script }}"
-      chdir: "{{ execution_dir  }}"
-    register: script_execution
+#
+#  - name: Passing file
+#    copy:
+#      content: "{{ run_script }}"
+#      dest: "{{ execution_dir }}PARAMOUNT-RUN.sh"
+#      mode: ugo+x
 
-  - debug: var=script_execution
+  - name: passing file
+    synchronize:
+      src: "{{ run_script }}"
+      dest: "{{ execution_dir }}PARAMOUNT-RUN.sh"
 
 
 
-  - name: Save output
-    copy:
-      content: "{{ script_execution.stdout }}"
-      dest: "{{ execution_dir }}{{ job_name }}.out"
+#Poll with time 0 only works with some async defined
 
-  - name: Save error
-    copy:
-      content: "{{ script_execution.stderr }}"
-      dest: "{{ execution_dir }}{{ job_name }}.err"
-    
+  - name: Generate output files
+    async: 100
+    poll: 0
 
-  # - name: Generate output files
-  #   shell: "cd {{ execution_dir  }} && echo \"{{ script_execution.stdout_lines }}\" > {{ job_name }}.out &&
-  #   \"{{ script_execution.stderr_lines }}\" >  {{ job_name }}.err"
+    shell:     "cd {{ execution_dir  }} &&
+     chmod +x PARAMOUNT-RUN.sh &&
+      ./PARAMOUNT-RUN.sh > {{ job_full_path }}/.paramount-logs/paramount@{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}.txt"
+
+
+
+#  - name: Save output
+#    copy:
+#      content: "{{ script_execution.stdout }}"
+#      dest: "{{ execution_dir }}{{ job_name }}.out"
+#
+#  - name: Save error
+#    copy:
+#      content: "{{ script_execution.stderr }}"
+#      dest: "{{ execution_dir }}{{ job_name }}.err"
+#
+
+#   - name: Generate output files
+#     shell: "cd {{ execution_dir  }} && echo \"{{ script_execution.stdout_lines }}\" > job_full_path}.out &&
+#     \"{{ script_execution.stderr_lines }}\" >  {{ job_name }}.err"

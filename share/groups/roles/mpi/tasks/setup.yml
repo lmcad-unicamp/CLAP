@@ -79,6 +79,10 @@
 #        echo $stringTemp
 #
 
+  - name: Properly setting env
+    script: environment.sh
+    register: output
+
 
   - name: Getting gcc, make
     become: yes
@@ -88,14 +92,10 @@
 
   when: not skip_mpi|bool 
 
-- name: Properly setting env
-  script: environment.sh
-  register: output
 
 
 
 
-- meta: end_host
 
 
 #TODO: criar dicionario com o tipo da instancia e como o pacote se chama no respectivo sistema, na instancia AMI linux o nome eh "openmpi-devel", Com ubuntu o nome eh: openmpi-bin
@@ -158,9 +158,16 @@
 
 
 
+#- name: Disable Strict Host Key Checking in SSH Config
+#  lineinfile: >
+#      dest=/etc/ssh/ssh_config
+#      line="StrictHostKeyChecking no"
+#      insertafter='EOF'
+#      state=present
+
 - name: Disable Strict Host Key Checking in SSH Config
-  lineinfile: >
-      dest=/etc/ssh/ssh_config
-      line="StrictHostKeyChecking no"
-      insertafter='EOF'
-      state=present
+  lineinfile:
+      path: /etc/ssh/ssh_config
+      line: "StrictHostKeyChecking no"
+      insertafter: 'EOF'
+      state: present

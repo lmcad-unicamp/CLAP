@@ -96,7 +96,10 @@ actions:
     vars:
           - name: execution_dir
             optional: yes
-          
+
+          - name: file_name
+            description: The name of the hostfile, defaults to 'hosts.txt'
+            optional: yes
   run:
     playbook: roles/mpi/tasks/mpi-run.yml
     description: >
@@ -120,7 +123,7 @@ actions:
      vars:
          - name: execution_dir
            optional: no
-         - name: job_name
+         - name: job_full_path
            optional: no
          - name: run_script
            optional: no

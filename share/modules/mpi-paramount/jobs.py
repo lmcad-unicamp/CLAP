@@ -88,7 +88,7 @@ class JobDataRepositoryOperations:
             _control = next(iter(generic_read_entry(JobsIndexingData, conn, 'job_control')))
             _control.current_index += 1
             # conn.update_element('control', _control)
-            generic_write_entry(_control, conn, 'job_control', create=False)
+
             _id = Info.JOB_PREFIX +  str(_control.current_index )
             _job = JobData(
                 paramount_id=cluster_obj.paramount_id,
@@ -106,6 +106,7 @@ class JobDataRepositoryOperations:
                                                 node_ids=[cluster_obj.coordinator],
                                                 extra_args=extra)
 
+            generic_write_entry(_control, conn, 'job_control', create=False)
             print("Successfully created job:")
             print(_job)
             generic_write_entry(_job, conn, 'job', create=True)

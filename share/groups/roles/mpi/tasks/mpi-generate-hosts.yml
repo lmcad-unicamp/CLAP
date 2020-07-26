@@ -9,23 +9,28 @@
   gather_facts: yes
   vars:
     exec_dir: "{{ execution_dir | default(ansible_env.HOME) }}"
+    fileName : "{{ file_name | default('hosts') }}"
   tasks:
+
+  - debug: var=fileName
+
+#  - meta: end_play
 
   - name: Remove hosts file
     file:
-      path: "{{ exec_dir }}/hosts"
+      path: "{{ exec_dir }}/{{ fileName }}"
       state: absent
 
 
   - name: Create hosts file
     file:
-      path: "{{ exec_dir }}/hosts"
+      path: "{{ exec_dir }}/{{ fileName }}"
       state: touch
 
   - name: "Add Ansible inventory mappings to {{ exec_dir }}/hosts"
     blockinfile:
       marker: ""
-      path: "{{ dest }}"
+      path: "{{ exec_dir }}/{{ fileName }}"
       block: |
         {% for host in groups['all'] %}
         {{ hostvars[host].ansible_host }} slots={{ hostvars[host].host_cpus.stdout }}

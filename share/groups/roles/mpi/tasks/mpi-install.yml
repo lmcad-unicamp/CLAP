@@ -15,10 +15,6 @@
     when: src_dir is defined
 
 
-  - debug: var=ansible_env.HOME
-
-
-  - debug: var="{{ ansible_user  + '/' + execution_dir  }}"
 
 
   #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir

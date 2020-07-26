@@ -112,6 +112,44 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.compile_script_handler)
 
 
+        #Running script
+        paramount_subcom_parser = commands_parser.add_parser('run-script',
+                                                             help='Run a job, if no sub_path is specified the script'
+                                                                  ' will be executed in the job root, otherwise it will be acessed in a subdirectory'
+                                                                  'specified in the sub argument \
+                         ')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Job id')
+
+        paramount_subcom_parser.add_argument('script', action='store',
+                                             help='Script that specifies how to run the application')
+
+        paramount_subcom_parser.add_argument('--sub_path', action='store', nargs='?',
+                                             help='Subdirectory inside job folder where the script should be executed, if left ' \
+                                                  'unspecified it will execute in the job root')
+
+        paramount_subcom_parser.set_defaults(func=self.run_script_handler)
+
+
+        #Generate host
+        paramount_subcom_parser = commands_parser.add_parser('generate-hosts',
+                                                             help='Generate a hostfile containing ' \
+                                                                  'all nodes from the paramount clustster')
+
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Job id')
+
+
+        paramount_subcom_parser.add_argument('--sub_path', action='store', nargs='?',
+                                             help='Subdirectory inside job folder where the script should be executed, if left ' \
+                                                  'unspecified it will execute in the job root')
+
+        paramount_subcom_parser.add_argument('--file_name', action='store', nargs='?',
+                                             help='What name should the file be, defaults to \'host\'')
+        paramount_subcom_parser.set_defaults(func=self.generate_host_handler)
+
 
 
 
@@ -174,4 +212,18 @@ class MpiParamountParser(AbstractParser):
         _job_id = namespace.id
         _script_path = namespace.script
         _subpath = namespace.sub_path
-        compile(job_id=_job_id, script=_script_path, subpath=_subpath)
+        compile_script(job_id=_job_id, script=_script_path, subpath=_subpath)
+
+
+    def run_script_handler(self, namespace: argparse.Namespace):
+        _job_id = namespace.id
+        _script_path = namespace.script
+        _subpath = namespace.sub_path
+        run_script(job_id=_job_id, script=_script_path, subpath=_subpath)
+
+
+    def generate_host_handler(self, namespace: argparse.Namespace):
+        _job_id = namespace.id
+        _file_name = namespace.file_name
+        _subpath = namespace.sub_path
+        generate_hosts(job_id=_job_id, _file_name=_file_name, subpath=_subpath)

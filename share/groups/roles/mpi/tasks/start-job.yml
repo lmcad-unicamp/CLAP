@@ -9,3 +9,27 @@
     file:
       path: "{{ directory }}"
       state: directory
+
+
+  - name: Creates directory which will contain meta infos
+    file:
+      path: "{{ directory }}/.paramount-logs"
+      state: directory
+    register: folder_created
+    ignore_errors: yes
+
+
+
+
+########## Error handling
+
+  - name: Remove job folder if it failed
+    file:
+      path: "{{ directory }}"
+      state: absent
+    when: folder_created.failed
+
+  - name: Fail job creation if creation not successful
+    fail:
+      msg: "job creation failed"
+    when: folder_created.failed
