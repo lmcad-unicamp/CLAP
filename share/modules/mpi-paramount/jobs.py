@@ -80,7 +80,7 @@ class JobDataRepositoryOperations:
             check_and_create_table(conn, 'job', _typeOfCreateClusterData)
 
 
-    def new_job(self,cluster_obj, absolute_path_mount,name=None):
+    def new_job(self,cluster_obj, absolute_path_mount,job_name=None):
 
         cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
@@ -94,12 +94,18 @@ class JobDataRepositoryOperations:
                 paramount_id=cluster_obj.paramount_id,
                 jobId=_id,
                 absolutePath=absolute_path_mount+ '/'+ _id,
-                name = name
+                name = job_name
                 )
 
             #Run playbook first then add to the table...
             extra = {}
             extra.update({'directory': _job.absolutePath})
+            extra.update({'cluster_name': cluster_obj.paramount_id})
+            if cluster_obj.descr is not None:
+                extra.update({'cluster_descr':cluster_obj.descr})
+
+            if job_name is not None:
+                extra.update({'job_name': job_name})
 
             cluster_module.perform_group_action(cluster_id= cluster_obj.cluster_id, group_name='mpi/coordinator',
                                                 action_name='start-job',

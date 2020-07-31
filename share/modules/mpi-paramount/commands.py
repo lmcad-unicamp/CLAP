@@ -128,6 +128,8 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('--sub_path', action='store', nargs='?',
                                              help='Subdirectory inside job folder where the script should be executed, if left ' \
                                                   'unspecified it will execute in the job root')
+        paramount_subcom_parser.add_argument('--exec_desr', action='store', nargs='?',
+                                             help='Description of this specific execution (problem size, algorithm used...)')
 
         paramount_subcom_parser.set_defaults(func=self.run_script_handler)
 
@@ -150,7 +152,18 @@ class MpiParamountParser(AbstractParser):
                                              help='What name should the file be, defaults to \'host\'')
         paramount_subcom_parser.set_defaults(func=self.generate_host_handler)
 
+        # Fetch paramount  info
+        paramount_subcom_parser = commands_parser.add_parser('fetch-paramount',
+                                                             help='Fetch the paramount info')
 
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Job id')
+
+        paramount_subcom_parser.add_argument('dest', action='store',
+                                             help='The directory where the logs should be saved')
+
+
+        paramount_subcom_parser.set_defaults(func=self.fetch_paramount_handler)
 
 
     def start_paramount_cluster(self, namespace: argparse.Namespace ):
@@ -193,7 +206,7 @@ class MpiParamountParser(AbstractParser):
         return
 
     def new_job_handler(self, namespace: argparse.Namespace):
-        new_job_from_cluster(namespace.id, name= namespace.job_name)
+        new_job_from_cluster(namespace.id, job_name= namespace.job_name)
 
     def list_jobs_handler(self, namespace: argparse.Namespace):
         _jobs = list_jobs()
@@ -219,7 +232,8 @@ class MpiParamountParser(AbstractParser):
         _job_id = namespace.id
         _script_path = namespace.script
         _subpath = namespace.sub_path
-        run_script(job_id=_job_id, script=_script_path, subpath=_subpath)
+        _exec_descr = namespace.exec_desr
+        run_script(job_id=_job_id, script=_script_path, subpath=_subpath, exec_descr=_exec_descr)
 
 
     def generate_host_handler(self, namespace: argparse.Namespace):
@@ -227,3 +241,8 @@ class MpiParamountParser(AbstractParser):
         _file_name = namespace.file_name
         _subpath = namespace.sub_path
         generate_hosts(job_id=_job_id, _file_name=_file_name, subpath=_subpath)
+
+    def fetch_paramount_handler(self, namespace: argparse.Namespace):
+        _job_id = namespace.id
+        _dest = namespace.dest
+        fetch_job_paramount(job_id=_job_id, dest=_dest)

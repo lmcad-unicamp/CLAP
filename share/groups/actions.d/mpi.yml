@@ -127,7 +127,9 @@ actions:
            optional: no
          - name: run_script
            optional: no
-
+         - name: exec_descr
+           description: Name of this specific run execution
+           optional: yes
 
   start-job:
     playbook: roles/mpi/tasks/start-job.yml
@@ -136,7 +138,14 @@ actions:
     vars:
       - name: directory
         optional: no
-
+      - name: cluster_name
+        optional: no
+      - name: cluster_descr
+        description: Alias/nickame of the cluster (for data analysis purposes)
+        optional: yes
+      - name: job_name
+        description: Alias/nickame of the job (for data analysis purposes)
+        optional: yes
 
 
   get-infos:
@@ -149,6 +158,28 @@ actions:
         optional: no
 
 
+  fetch-job-info:
+    playbook: roles/mpi/tasks/fetch-job-paramount.yml
+    description: >
+      Fetch a job's paramount infos (for module use)
+    vars:
+      - name: src
+        description: where to get the paramount info (.paramount-infos folder)
+        optional: no
+      - name: dest
+        description: Destination director where the job's info should be saved
+        optional: no
+      - name: job_name
+        description: job id
+        optional: no
+#      - name: cluster_name
+#        optional: no
+#      - name: cluster_descr
+#        description: Alias/nickame of the cluster (for data analysis purposes)
+#        optional: yes
+#      - name: job_descr
+#        description: Alias/nickame of the job (for data analysis purposes)
+#        optional: yes
 hosts:                      # (optional) List of hosts that are used in this group (and in the playbooks)
 - coordinator
 - slave

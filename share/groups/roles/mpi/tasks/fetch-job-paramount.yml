@@ -1,0 +1,29 @@
+
+#Src should be paramount-logs folder
+
+---
+- hosts: coordinator
+  gather_facts: no
+  tasks:
+#  - name: "Get meta info"
+#    blockinfile:
+#      marker: ""
+#      path: "{{ src }}/job-meta-info.txt"
+#      block: |
+#
+#        ClusterName={{ cluster_name }}{% if  cluster_descr %}({{ cluster_descr }} ) {% endif %}
+#        JobId={{ job_name }}{% if  job_name  %}({{ job_descr }} ) {% endif %}
+
+  - name: Create job specific folder
+    file:
+      path: "{{ dest }}/{{ job_name }}"
+      state: directory
+    delegate_to: localhost
+
+  - name: "Fetch paramount info (.log and .err)"
+    become: no
+    synchronize:
+      src: "{{ src }}"
+      dest: "{{ dest }}/{{ job_name }}"
+      mode: pull
+      recursive: yes

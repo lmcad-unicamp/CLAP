@@ -128,13 +128,13 @@ def create_paramount(nodes: List[str], descr = None) -> int:
     return _paramount_cluster
 
 
-def new_job_from_cluster( paramount_id, name=None):
+def new_job_from_cluster( paramount_id, job_name=None):
     repositoryParamount = ParamountClusterRepositoryOperations()
     _cluster= next(iter(repositoryParamount.get_paramount_data(paramount_id)))
 
     repositoryJob = JobDataRepositoryOperations()
 
-    _job = repositoryJob.new_job(cluster_obj= _cluster, absolute_path_mount=_cluster.mount_point_partition, name=name)
+    _job = repositoryJob.new_job(cluster_obj= _cluster, absolute_path_mount=_cluster.mount_point_partition, job_name=job_name)
 
     #Update the object
     _cluster.jobs.append(_job.jobId)
@@ -191,7 +191,7 @@ def compile_script(job_id, script, subpath):
 
 
 
-def run_script(job_id, script, subpath):
+def run_script(job_id, script, subpath, exec_descr):
     repositoryParamount = ParamountClusterRepositoryOperations()
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
@@ -208,6 +208,9 @@ def run_script(job_id, script, subpath):
     extra.update({'run_script': script})
     extra.update({'execution_dir': _path})
     extra.update({'job_full_path': _job.absolutePath})
+
+    if exec_descr is not None:
+        extra.update({'exec_descr': _job.exec_descr})
 
     cluster_module.perform_group_action(cluster_id= _mpcObj.cluster_id,
                                         group_name= 'mpi',
@@ -240,4 +243,27 @@ def generate_hosts(job_id, _file_name, subpath):
                                         group_name= 'mpi',
                                         action_name= 'generate-hosts',
                                         extra_args= extra,
+                                        )
+
+
+def fetch_job_paramount(job_id, dest):
+    repositoryParamount = ParamountClusterRepositoryOperations()
+    repositoryJobs = JobDataRepositoryOperations()
+    cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
+
+    _job = next(iter(repositoryJobs.get_job_data(job_id)))
+    _mpcObj = next(iter(repositoryParamount.get_paramount_data(_job.paramount_id)))
+
+    _path = _job.absolutePath + '/.paramount-logs'
+
+
+    extra = {}
+    extra.update({'src': _path})
+    extra.update({'dest': dest})
+    extra.update({'job_name': _job.jobId})
+
+    cluster_module.perform_group_action(cluster_id=_mpcObj.cluster_id,
+                                        group_name='mpi',
+                                        action_name='fetch-job-info',
+                                        extra_args=extra,
                                         )

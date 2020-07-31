@@ -21,16 +21,70 @@
 
 
 
-#Poll with time 0 only works with some async defined
+#Besides executing the script, it will properly create the paramount(both .log and .err files) and the meta
+# info file which contains the semantics/categorization of this execution (for data analysis purposes)
 
-  - name: Generate output files
-    async: 100
-    poll: 0
+  - name: Generating the files for output and runnign script
 
-    shell:     "cd {{ execution_dir  }} &&
-     chmod +x PARAMOUNT-RUN.sh &&
-      ./PARAMOUNT-RUN.sh > {{ job_full_path }}/.paramount-logs/paramount@{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}.txt"
 
+    block:
+
+    - name: Make time permanent (simply setting as variable will make the time to be reevaluated every time)
+      set_fact:
+        start_time:  "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+
+    - name: Generate output files
+      shell:    "cd {{ job_full_path }}/.paramount-logs/ &&
+         mkdir  paramount@{{ start_time}} &&
+        cp info.txt  paramount@{{ start_time }}/meta.info"
+
+#    - name: Append execution specific info
+#      blockinfile:
+#        marker: ""
+#        path: "{{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/meta.info"
+#        block: |
+#
+#           exec_descr={{ exec_descr }}
+#      when: exec_descr is defined
+
+    - name: get time
+      shell: "echo \"tempo e {{ start_time }}\" "
+
+    - name: Run application
+      async: 3600
+      poll: 0
+
+      shell:    "cd {{ execution_dir  }} &&
+       chmod +x PARAMOUNT-RUN.sh &&
+       ./PARAMOUNT-RUN.sh > {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/paramount.txt
+       2> {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/paramount.err"
+      register: application_execution
+
+
+
+#
+#- name: Generate output files
+#    async: 3600
+#    poll: 0
+#    vars:
+#      start_time: "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+#
+#    shell:     "cd {{ execution_dir  }} &&
+#     chmod +x PARAMOUNT-RUN.sh &&
+#     mkdir  {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }} &&
+#     cp {{ job_full_path }}/.paramount-logs/info.meta  {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/meta.info &&
+#      ./PARAMOUNT-RUN.sh > {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/paramount.log
+#      2> {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/paramount.err"
+#    register: application_execution
+
+
+#  - name: Wait for asynchronous job to end
+#    async_status:
+#      jid: '{{ application_execution.ansible_job_id }}'
+#    register: job_result
+#    until: job_result.finished
+#    retries: 30
+#
 
 
 #  - name: Save output

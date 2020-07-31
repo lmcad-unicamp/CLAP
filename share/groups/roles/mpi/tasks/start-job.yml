@@ -18,6 +18,22 @@
     register: folder_created
     ignore_errors: yes
 
+  - name: Create meta info file
+    file:
+      path: "{{ directory }}/.paramount-logs/info.txt"
+      state: touch
+
+
+  - name: "Save job and cluster info in the info file (for data processing purposes)"
+    blockinfile:
+      marker: ""
+      path: "{{ directory }}/.paramount-logs/info.txt"
+      block: |
+        ClusterName: {{ cluster_name }}{% if  cluster_descr  is defined %}({{ cluster_descr }} ) {% endif %}
+
+        {% if  job_name  is defined  %}
+        (Job-alias: {{ job_name }} )
+         {% endif %}
 
 
 
