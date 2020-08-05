@@ -15,14 +15,46 @@
     when: src_dir is defined
 
 
+  - name: Executing the install script as a shell command (to enable polling) some precautions were made to accommodate long running installation times
+    block:
+    - name: Make time permanent (simply setting as variable will make the time to be reevaluated every time)
+      set_fact:
+        start_time:  "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+
+    - name: passing file #Rsync bugs here (parallel rsync is faulty...)
+      copy:
+        src: "{{ install_script }}"
+        dest: "{{ execution_dir }}/script@{{ start_time}}"
 
 
-  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
-  - name: Execute install script
-    poll: 15
-    script: 
-      cmd: "{{ install_script }}"
-      chdir: "{{ execution_dir  }}/"
-    register: script_execution
 
-  - debug: msg={{ script_execution.stdout }}
+    - name: Install script (up to an hour)
+      async: 3600
+      poll: 15
+
+      shell:    "cd {{ execution_dir  }} &&
+         chmod +x script@{{ start_time}} &&
+         ./script@{{ start_time}}
+        "
+      register: application_execution
+
+    - name: 'Keep probing install progression'
+      async_status:
+        jid: "{{ application_execution.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 30000
+
+
+
+
+#  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
+#  - name: Execute install script
+#    poll: 25
+#    become: yes
+#    script:
+#      cmd: "{{ install_script }}"
+#      chdir: "{{ execution_dir  }}/"
+#    register: script_execution
+#
+#  - debug: msg={{ script_execution.stdout }}

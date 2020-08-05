@@ -166,6 +166,40 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.fetch_paramount_handler)
 
 
+        #Install script
+
+        paramount_subcom_parser = commands_parser.add_parser('install-script',
+                                                             help='Install a script in every node')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Job id')
+
+        paramount_subcom_parser.add_argument('script', action='store',
+                                             help='Installation script')
+
+        paramount_subcom_parser.add_argument('--file', action='store', nargs='?',
+                                             help='Files (if any) that should be passed to execute the script')
+
+        paramount_subcom_parser.add_argument('--subpath', action='store', nargs='?',
+                                             help='Subdirectory inside job folder where the script should be executed, if left ' \
+                                                  'unspecified it will execute in the job root')
+
+        paramount_subcom_parser.set_defaults(func=self.install_script_handler)
+
+        # Run command
+
+        paramount_subcom_parser = commands_parser.add_parser('run-command',
+                                                             help='Install a script in every node')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Cluster id')
+
+        paramount_subcom_parser.add_argument('command', action='store',
+                                             help='Simple quote delimitated command')
+
+
+        paramount_subcom_parser.set_defaults(func=self.run_command_handler)
+
     def start_paramount_cluster(self, namespace: argparse.Namespace ):
         #TODO: decidi começar pela start em que cria as intancias,
         #  pois é compativel com o modulo do otavio
@@ -246,3 +280,20 @@ class MpiParamountParser(AbstractParser):
         _job_id = namespace.id
         _dest = namespace.dest
         fetch_job_paramount(job_id=_job_id, dest=_dest)
+
+    def install_script_handler(self, namespace: argparse.Namespace):
+
+
+        _job_id = namespace.id
+        _script = namespace.script
+        _file = namespace.file
+        _subpath = namespace.subpath
+
+        install_script(job_id=_job_id, script=_script, additionalFile=_file, subpath= _subpath)
+
+
+    def run_command_handler(self, namespace: argparse.Namespace):
+        _mpc_id= namespace.id
+        _command = namespace.command
+
+        run_command(mpc_id=_mpc_id, command=_command)
