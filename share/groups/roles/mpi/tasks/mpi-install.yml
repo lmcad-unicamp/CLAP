@@ -46,7 +46,11 @@
       retries: 30000
 
 
-
+    always:
+      - name: Remove file (delete file)
+        file:
+          path: "{{ execution_dir }}/script@{{ start_time}}"
+          state: absent
 
 #  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
 #  - name: Execute install script
