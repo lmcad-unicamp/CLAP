@@ -2,6 +2,7 @@ import jinja2
 import json
 from .repository import *
 from .conf import Info
+from typing import List, Dict
 from .jobs import *
 from clap.common.factory import PlatformFactory
 from clap.common.utils import tmpdir, path_extend
@@ -34,8 +35,11 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
     extra.update({'mount_ip':mount_ip})
     extra.update({'nodes_group_name': _cluster.paramount_id })
 
+    _cluster.mount_point_id = mount_ip
+
     if skip_mpi:
         extra.update({'skip_mpi':'True'})
+
     if no_instance_key:
         extra.update({'use_instance_key':'False'})
 
@@ -59,29 +63,29 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
                                          re_add_to_group=True
                                          )
 
-    with tmpdir() as dir:
-        filename = path_extend(dir, 'mpi-paramount-cluster.yml')
-        # with open(filename, 'w') as f:
-        #     print("gah")
-        extra = {}
-        extra.update({'dest': filename})
+    if _cluster.mount_point_partition is None:
+        with tmpdir() as dir:
+            filename = path_extend(dir, 'mpi-paramount-cluster.yml')
 
-        cluster_module.perform_group_action(cluster_id= _cluster.cluster_id,
-                                        group_name= 'mpi',
-                                        action_name= 'get-infos',
-                                        node_ids= [_cluster.coordinator],
-                                        extra_args= extra)
+            extra = {}
+            extra.update({'dest': filename})
 
-        with open(filename, 'r') as f:
+            cluster_module.perform_group_action(cluster_id= _cluster.cluster_id,
+                                            group_name= 'mpi',
+                                            action_name= 'get-infos',
+                                            node_ids= [_cluster.coordinator],
+                                            extra_args= extra)
 
-            _data = json.loads(f.read())
-            _home= _data['ansible_env.HOME']
-            _mount_point_partition = _home + _mount_point_partition
-            print(_home)
+            with open(filename, 'r') as f:
 
-    _cluster.mount_point_partition = _mount_point_partition
+                _data = json.loads(f.read())
+                _home= _data['ansible_env.HOME']
+                _mount_point_partition = _home + _mount_point_partition
+
+        _cluster.mount_point_partition = _mount_point_partition
 
 
+    _cluster.isSetup = True
     ######TODO: fazer update do objeto cluster
     repository.update_paramount(_cluster)
 
@@ -98,17 +102,26 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
 
 
 
-def create_paramount(nodes: List[str], descr = None) -> int:
+def create_paramount(nodes: List[str], descr = None, coord = None) -> int:
 
 
-    _type, _size =nodes[0].split(':')
+    _type, _sizeSlaves =nodes[0].split(':')
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
     #Argumento loader indica a pasta, no caso o lugar coincide com onde o src code está
     # isto é os.path.abspath(__file__) retorna o endereço absoluto e os.path.dirname pega o diretorio
-    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(os.path.abspath(__file__))), 
+    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(os.path.abspath(__file__))),
         trim_blocks=True, lstrip_blocks=True)
     template = jinjaenv.get_template("mpi-paramount-cluster.j2")
-    rendered_template = template.render({'node_type': _type, 'node_count': int(_size)})
+
+    #Neste caso coord e um dos slaves, aleatoriamente selecionado
+    if coord is None:
+        node_type_coord = _type
+        _sizeSlaves = int(_sizeSlaves) -1 #Um sera o coord
+
+    else:
+        node_type_coord = coord
+
+    rendered_template = template.render({'node_type_coord': node_type_coord, 'node_type': _type, 'node_count': int(_sizeSlaves)})
 
     repository = ParamountClusterRepositoryOperations()
 
@@ -126,6 +139,7 @@ def create_paramount(nodes: List[str], descr = None) -> int:
     # Pega o módulo group. Este módulo é responsável por adicionar, remover e executar ações em grupo. As funções disponíveis estão em [2]
     #repository.new_paramount_cluster()
     return _paramount_cluster
+
 
 
 def new_job_from_cluster( paramount_id, job_name=None):
@@ -306,3 +320,100 @@ def run_command(mpc_id, command):
 
 
     cluster_module.run_command(node_ids=_nodes, command_string=command)
+
+
+# Add new instances to a existing mpc, all nodes are added as slaves, if wanted  a node can be later promoted
+# to coordinator with "change_coordinator". Although it will make an unnecessary addition as slave, it is worth
+# to keep the modules simpler (each method has its own functionality) and therefore
+# delegate coordinator exchange to another method
+
+def add_from_instances(paramount_id, node_type: Dict[str, int]):
+    #Creates nodes, add them to the cluster them call setup with saved cluster configuration
+
+    repository = ParamountClusterRepositoryOperations()
+    cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
+
+    _cluster = repository.get_paramount_data(paramount_id)
+    _cluster = next(iter(repository.get_paramount_data(paramount_id)))
+    node_type = {node_type[0].split(':')[0]:node_type[0].split(':')[1]}
+
+    cluster, created_nodes = cluster_module.add_nodes_to_cluster(_cluster.cluster_id, node_types= node_type)
+
+    # TODO: update paramount cluster to include these nodes (created nodes)
+    _cluster.slaves = _cluster.slave.extend(created_nodes)
+
+    log.info("The nodes '{}' have been added to mpc cluster of id: '{}".format(created_nodes, _cluster.paramount_id ))
+
+
+
+
+    #call setup such that these nodes can be successfully integrated to the cluster (key passing, etc...)
+
+    if _cluster.isSetup:
+        setup_paramount_cluster(paramount_id=_cluster.paramount_id,
+                                mount_ip= _cluster.mount_point_id,
+                                skip_mpi= _cluster.skip_mpi,
+                                no_instance_key= _cluster.no_instance_key
+                                )
+
+
+    return created_nodes
+
+# Given a mpc demote the current coordinator and exchange by a slave
+def change_coordinator(mpc_id, new_coordinator):
+    repositoryParamount = ParamountClusterRepositoryOperations()
+    _cluster= next(iter(repositoryParamount.get_paramount_data(mpc_id)))
+    group_module = PlatformFactory.get_module_interface().get_module('group')
+    cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
+
+    #TODO: checar se eh slave antes de prosseguir
+
+
+    oldCoordinator = _cluster.coordinator
+
+    #Removes the old coordinator
+    group_module.remove_group_from_node(node_ids=_cluster.coordinator, group='mpi/coordinator')
+    _cluster.coordinator = None
+
+    #Re-adds as a slave:
+    cluster_module.cluster_group_add(cluster_id=mpc_id.cluster_id,
+                                     group_name='mpi/slave',
+                                     node_ids=[oldCoordinator],
+                                     re_add_to_group=True
+                                     )
+
+    _cluster.slaves = _cluster.slaves.append(oldCoordinator)
+
+    # Removes the slave and add as the coordinator
+
+    group_module.remove_group_from_node(node_ids=[new_coordinator], group='mpi/slave')
+    _cluster.slaves = _cluster.slaves.remove(new_coordinator)
+
+    # Re-adds as a coordinator:
+    cluster_module.cluster_group_add(cluster_id=mpc_id.cluster_id,
+                                     group_name='mpi/coordinator',
+                                     node_ids=[new_coordinator],
+                                     re_add_to_group=True
+                                     )
+
+
+    _cluster.coordinator = new_coordinator
+
+
+    # extra = {}
+    # extra.update({'execution_dir': _path})
+    #
+    # if additionalFile is not None:
+    #     extra.update({'src_dir': additionalFile})
+    # extra.update({'install_script': script})
+    #
+    # cluster_module.perform_group_action(cluster_id=_mpcObj.cluster_id,
+    #                                     group_name='mpi',
+    #                                     action_name='install',
+    #                                     extra_args=extra,
+    #                                     )
+
+
+
+
+    repositoryParamount.update_paramount(_cluster)

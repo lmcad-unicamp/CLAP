@@ -199,7 +199,8 @@ class AnsibleInterface(AbstractInstanceInterface):
             return []
 
         # Check SSH connection
-        alive_nodes = self.check_nodes_alive(created_nodes, retries=10, retry_timeout=15)
+        alive_nodes = self.check_nodes_alive(created_nodes, retries=25, retry_timeout=15)
+        print("mudou###################################################################################################################################")
 
         # Return last updated nodes
         return self.repository_operator.get_nodes(list(alive_nodes.keys()))

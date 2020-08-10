@@ -1,6 +1,5 @@
 import argparse
 
-
 from typing import List
 
 from clap.common.module import AbstractParser
@@ -8,32 +7,33 @@ from clap.common.utils import log, path_extend, float_time_to_string
 from .module import *
 
 
-
 class MpiParamountParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         # cluster start commands 
         # start
-        paramount_subcom_parser = commands_parser.add_parser('cluster-from-nodes', help='Start a paramount cluster from the node list')
- 
-        paramount_subcom_parser.add_argument('nodes', action='store', nargs='+',
-                help='List with the id of the nodes: node-01, node-02...')
-       
-        paramount_subcom_parser.set_defaults(func=self.start_paramount_cluster)
-
-
-
+        # paramount_subcom_parser = commands_parser.add_parser('cluster-from-nodes', help='Start a paramount cluster from the node list')
+        #
+        # paramount_subcom_parser.add_argument('nodes', action='store', nargs='+',
+        #         help='List with the id of the nodes: node-01, node-02...')
+        #
+        # paramount_subcom_parser.set_defaults(func=self.start_paramount_cluster)
+        #
 
         ## Start paramount cluster from instance
-        paramount_subcom_parser = commands_parser.add_parser('cluster-from-instances', help='Given an instance type(defined in instance.yml) and a number \
-           this command will create a number of nodes matching the instance and add them to a new paramount cluster. \
-               ')
+        paramount_subcom_parser = commands_parser.add_parser('cluster-from-instances', help='Given an instance type(defined in .clap/config/instances.yaml) and a number \
+           this command will create a number of nodes matching the instance and add them to a new paramount cluster. If the optional command '
+                                                                                            ' --coord is set then the coordinator will be set to this specific type, else (default) a random node is selected as a coordinator" \
+                                                                                                ')
 
         paramount_subcom_parser.add_argument('--desc', action='store', nargs='?',
-                help='List with the instance:number separeted by spaces (type-a:10 type-b:15 ...')        
+                                             help='List with the instance:number separeted by spaces (type-a:10 type-b:15 ...')
 
         paramount_subcom_parser.add_argument('nodes', action='store', metavar='node_type:num', nargs='+',
-                help='Nodes to be initialized of the form instance:number ')
-       
+                                             help='Nodes to be initialized of the form instance:number ')
+
+        paramount_subcom_parser.add_argument('--coord', action='store', nargs='?',
+                                             help='A string containing a type (defined in .clap/config/instances.yaml to be'
+                                                  'set as a coordinator')
 
         paramount_subcom_parser.set_defaults(func=self.start_paramount_cluster)
 
@@ -71,8 +71,6 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('--job_name', action='store', nargs='?',
                                              help='Optional job name')
 
-
-
         paramount_subcom_parser.set_defaults(func=self.new_job_handler)
 
         ## Listing jobs
@@ -92,12 +90,12 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.set_defaults(func=self.push_files_handler)
 
-
         ## compile
-        paramount_subcom_parser = commands_parser.add_parser('compile-script', help='Compile a job, if no sub_path is specified the script'
-                                                                             ' will be executed in the job root, otherwise it will be acessed in a subdirectory'
-                                                                             'specified in the sub argument \
-                  ')
+        paramount_subcom_parser = commands_parser.add_parser('compile-script',
+                                                             help='Compile a job, if no sub_path is specified the script'
+                                                                  ' will be executed in the job root, otherwise it will be acessed in a subdirectory'
+                                                                  'specified in the sub argument \
+                         ')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
                                              help='Job id')
@@ -111,8 +109,7 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.set_defaults(func=self.compile_script_handler)
 
-
-        #Running script
+        # Running script
         paramount_subcom_parser = commands_parser.add_parser('run-script',
                                                              help='Run a job, if no sub_path is specified the script'
                                                                   ' will be executed in the job root, otherwise it will be acessed in a subdirectory'
@@ -133,15 +130,14 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.set_defaults(func=self.run_script_handler)
 
-
-        #Generate host
+        # Generate host
         paramount_subcom_parser = commands_parser.add_parser('generate-hosts',
                                                              help='Generate a hostfile containing ' \
                                                                   'all nodes from the paramount clustster')
 
-
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
                                              help='Job id')
+
 
 
         paramount_subcom_parser.add_argument('--sub_path', action='store', nargs='?',
@@ -162,11 +158,9 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('dest', action='store',
                                              help='The directory where the logs should be saved')
 
-
         paramount_subcom_parser.set_defaults(func=self.fetch_paramount_handler)
 
-
-        #Install script
+        # Install script
 
         paramount_subcom_parser = commands_parser.add_parser('install-script',
                                                              help='Install a script in every node')
@@ -197,19 +191,38 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('command', action='store',
                                              help='Simple quote delimitated command')
 
-
         paramount_subcom_parser.set_defaults(func=self.run_command_handler)
 
-    def start_paramount_cluster(self, namespace: argparse.Namespace ):
-        #TODO: decidi começar pela start em que cria as intancias,
+        # Add nodes to existing mpi-paramount cluster
+
+        paramount_subcom_parser = commands_parser.add_parser('add-new-nodes',
+                                                             help='Given instance:number tuple this command will'
+                                                                  'start these instances then add to the given mpc '
+                                                                  'and perform a setup operation in a way that these nodes '
+                                                                  'can be successfully added to the cluster ')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Cluster id')
+
+        paramount_subcom_parser.add_argument('--coord', action='store',
+                                             help='If set one of (or the only) node will be selected as a coordinator')
+
+        paramount_subcom_parser.add_argument('nodes', action='store', metavar='node_type:num', nargs='+',
+                                             help='Nodes to be initialized of the form instance:number ')
+
+        paramount_subcom_parser.set_defaults(func=self.add_new_node_handler)
+
+    def start_paramount_cluster(self, namespace: argparse.Namespace):
+        # TODO: decidi começar pela start em que cria as intancias,
         #  pois é compativel com o modulo do otavio
         _nodes = namespace.nodes
         _desc = namespace.desc
+        _coord = namespace.coord
+
 
         for _nodeTemplate in _nodes:
             _splitted = _nodeTemplate.split(':')
             if _splitted.__len__() != 2:
-                
                 raise Exception("Plese insert in the type:number format")
             try:
                 val = int(_splitted[1])
@@ -218,7 +231,7 @@ class MpiParamountParser(AbstractParser):
                 log.error("The size must be a list o integers")
 
 
-        _paramount_cluster = create_paramount(nodes=_nodes,descr=_desc)
+        _paramount_cluster = create_paramount(nodes=_nodes, descr=_desc, coord=_coord)
         print("MPI-Paramount cluster created: \n")
         print(_paramount_cluster)
         return
@@ -230,9 +243,8 @@ class MpiParamountParser(AbstractParser):
             print('* ' + str(_cluster))
         return
 
-
     def setup_cluster(self, namespace: argparse.Namespace):
-        #TODO: Validate input?
+        # TODO: Validate input?
         setup_paramount_cluster(paramount_id=namespace.id,
                                 mount_ip=namespace.mount_ip,
                                 skip_mpi=namespace.skip_mpi,
@@ -240,27 +252,25 @@ class MpiParamountParser(AbstractParser):
         return
 
     def new_job_handler(self, namespace: argparse.Namespace):
-        new_job_from_cluster(namespace.id, job_name= namespace.job_name)
+        new_job_from_cluster(namespace.id, job_name=namespace.job_name)
 
     def list_jobs_handler(self, namespace: argparse.Namespace):
         _jobs = list_jobs()
         print("Current mpi-paramount clusters are: \n")
-        for _job  in _jobs:
+        for _job in _jobs:
             print('* ' + str(_job))
         return
-
 
     def push_files_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
         _src = namespace.src
-        push_files(job_id=_job_id, src= _src)
+        push_files(job_id=_job_id, src=_src)
 
     def compile_script_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
         _script_path = namespace.script
         _subpath = namespace.sub_path
         compile_script(job_id=_job_id, script=_script_path, subpath=_subpath)
-
 
     def run_script_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
@@ -269,10 +279,10 @@ class MpiParamountParser(AbstractParser):
         _exec_descr = namespace.exec_desr
         run_script(job_id=_job_id, script=_script_path, subpath=_subpath, exec_descr=_exec_descr)
 
-
     def generate_host_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
         _file_name = namespace.file_name
+        _no_coord = namespace.no_coord
         _subpath = namespace.sub_path
         generate_hosts(job_id=_job_id, _file_name=_file_name, subpath=_subpath)
 
@@ -283,17 +293,32 @@ class MpiParamountParser(AbstractParser):
 
     def install_script_handler(self, namespace: argparse.Namespace):
 
-
         _job_id = namespace.id
         _script = namespace.script
         _file = namespace.file
         _subpath = namespace.subpath
 
-        install_script(job_id=_job_id, script=_script, additionalFile=_file, subpath= _subpath)
-
+        install_script(job_id=_job_id, script=_script, additionalFile=_file, subpath=_subpath)
 
     def run_command_handler(self, namespace: argparse.Namespace):
-        _mpc_id= namespace.id
+        _mpc_id = namespace.id
         _command = namespace.command
 
         run_command(mpc_id=_mpc_id, command=_command)
+
+    def add_new_node_handler(self, namespace: argparse.Namespace):
+        _mpc_id = namespace.id
+        _coordinator = namespace.coord
+        _nodes = namespace.nodes
+
+        for _nodeTemplate in _nodes:
+            _splitted = _nodeTemplate.split(':')
+            if _splitted.__len__() != 2:
+                raise Exception("Plese insert in the type:number format")
+            try:
+                val = int(_splitted[1])
+            except ValueError as e:
+                log.error(e)
+                log.error("The size must be a list o integers")
+
+        add_from_instances(paramount_id=_mpc_id, node_type=_nodes)

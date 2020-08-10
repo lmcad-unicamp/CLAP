@@ -18,7 +18,7 @@ class ParamountIndexingData(AbstractEntry):
 
 
 class ParamountClusterData(AbstractEntry):
-    def __init__(self, paramount_id, cluster_id, slaves, coordinator, descr=None, mount_point_partition=None, **kwargs):
+    def __init__(self, paramount_id, cluster_id, slaves, coordinator, isSetup= False,  mount_point_id= None,  no_instance_key = None, skip_mpi = None, descr=None, mount_point_partition=None, **kwargs):
         self.paramount_id = paramount_id # Id internal to cluster table
         self.cluster_id = cluster_id #Id referencing the actual cluster instance (used to perform actions)
         self.descr = descr #optional, verbal description of a cluster
@@ -26,6 +26,9 @@ class ParamountClusterData(AbstractEntry):
         self.coordinator = coordinator
         self.mount_point_partition = mount_point_partition
         self.jobs = []
+        self.mount_point_id = mount_point_id
+        self.skip_mpi = skip_mpi
+        self.no_instance_key = no_instance_key
         super(ParamountClusterData, self).__init__(**kwargs)
 
     def __repr__(self):

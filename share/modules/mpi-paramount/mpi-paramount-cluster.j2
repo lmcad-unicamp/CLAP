@@ -2,12 +2,12 @@ clusters:
   mpi-paramount-cluster:
     nodes:
       mpi-paramount-coordinator:
-        type: {{ node_type }}
+        type: {{ node_type_coord }}
         count: 1
 
-      {% if node_count and node_count > 1 %}
+      {% if node_count and node_count > 0 %}
       mpi-paramount-slave:
         type: {{ node_type }}
-        count: {{ node_count-1 }}
+        count: {{ node_count }}
 
       {% endif %}
