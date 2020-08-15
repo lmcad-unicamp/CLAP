@@ -30,7 +30,7 @@
 
     - name: Install script (up to an hour)
       async: 3600
-      poll: 15
+      poll: 0
 
       shell:    "cd {{ execution_dir  }} &&
          chmod +x script@{{ start_time}} &&
@@ -43,7 +43,8 @@
         jid: "{{ application_execution.ansible_job_id }}"
       register: job_result
       until: job_result.finished
-      retries: 30000
+      retries: 65
+      delay: 60
 
 
     always:

@@ -15,20 +15,62 @@
 
 ---
 - hosts: all
-  gather_facts: yes  
-
+  gather_facts: yes
   tasks:
-  
-  
-  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
-  - name: Execute compile script
-    poll: 15
-    script: 
-      cmd: "{{ compile_script }}"
-      chdir: "{{ execution_dir  }}"
-    register: script_execution
+  - name: create the execution path recursively if the same does not exist
+    file:
+      path: "{{ execution_dir }}"
+      state: directory
 
 
-  - debug: var=script_execution.stderr
 
-  - debug: var=script_execution.stdout
+
+
+    #  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
+#  - name: Execute compile script
+#    poll: 15
+#    script:
+#      cmd: "{{ compile_script }}"
+#      chdir: "{{ execution_dir  }}"
+#    register: script_execution
+#
+#
+#  - debug: var=script_execution.stderr
+#
+#  - debug: var=script_execution.stdout
+
+  - name: Executing the install script as a shell command (to enable polling) some precautions were made to accommodate long running installation times
+    block:
+
+    - name: Make time permanent (simply setting as variable will make the time to be reevaluated every time)
+      set_fact:
+       start_time:  "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+
+    - name: passing file #Rsync bugs here (parallel rsync is faulty...)
+      copy:
+        src: "{{ compile_script }}"
+        dest: "{{ execution_dir }}/script@{{ start_time}}"
+    - name: Compile script (up to an hour)
+      async: 3600
+      poll: 0
+
+      shell:    "cd {{ execution_dir  }} &&
+         chmod +x script@{{ start_time}} &&
+         ./script@{{ start_time}}
+        "
+      register: application_execution
+
+    - name: 'Keep probing install progression'
+      async_status:
+        jid: "{{ application_execution.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 65
+      delay: 60
+
+
+    always:
+      - name: Remove file (delete file)
+        file:
+          path: "{{ execution_dir }}/script@{{ start_time}}"
+          state: absent

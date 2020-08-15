@@ -100,6 +100,10 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
 
 
 
+def add_node_to_mpi_group(paramount_cluster_obj,group_name, mount_ip, paramount_id, skip_mpi, use_instance_key):
+
+
+
 
 
 def create_paramount(nodes: List[str], descr = None, coord = None) -> int:
@@ -360,7 +364,9 @@ def add_from_instances(paramount_id, node_type: Dict[str, int]):
     return created_nodes
 
 # Given a mpc demote the current coordinator and exchange by a slave
-def change_coordinator(mpc_id, new_coordinator):
+def change_coordinator(mpc_id) -> str:
+
+
     repositoryParamount = ParamountClusterRepositoryOperations()
     _cluster= next(iter(repositoryParamount.get_paramount_data(mpc_id)))
     group_module = PlatformFactory.get_module_interface().get_module('group')
@@ -369,20 +375,26 @@ def change_coordinator(mpc_id, new_coordinator):
     #TODO: checar se eh slave antes de prosseguir
 
 
+    if not _cluster.isSetup:
+        raise Exception("Please set up the cluster first before changing the coordinator ")
+
+
+
     oldCoordinator = _cluster.coordinator
+    new_coordinator = next(iter(_cluster.slaves))
 
     #Removes the old coordinator
-    group_module.remove_group_from_node(node_ids=_cluster.coordinator, group='mpi/coordinator')
+    group_module.remove_group_from_node(node_ids=[_cluster.coordinator], group='mpi/coordinator')
     _cluster.coordinator = None
 
     #Re-adds as a slave:
-    cluster_module.cluster_group_add(cluster_id=mpc_id.cluster_id,
-                                     group_name='mpi/slave',
-                                     node_ids=[oldCoordinator],
-                                     re_add_to_group=True
-                                     )
-
-    _cluster.slaves = _cluster.slaves.append(oldCoordinator)
+    # cluster_module.cluster_group_add(cluster_id=mpc_id.cluster_id,
+    #                                  group_name='mpi/slave',
+    #                                  node_ids=[oldCoordinator],
+    #                                  re_add_to_group=True
+    #                                  )
+    #
+    # _cluster.slaves = _cluster.slaves.append(oldCoordinator)
 
     # Removes the slave and add as the coordinator
 
@@ -400,20 +412,9 @@ def change_coordinator(mpc_id, new_coordinator):
     _cluster.coordinator = new_coordinator
 
 
-    # extra = {}
-    # extra.update({'execution_dir': _path})
-    #
-    # if additionalFile is not None:
-    #     extra.update({'src_dir': additionalFile})
-    # extra.update({'install_script': script})
-    #
-    # cluster_module.perform_group_action(cluster_id=_mpcObj.cluster_id,
-    #                                     group_name='mpi',
-    #                                     action_name='install',
-    #                                     extra_args=extra,
-    #                                     )
-
 
 
 
     repositoryParamount.update_paramount(_cluster)
+
+    return new_coordinator

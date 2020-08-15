@@ -212,6 +212,22 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.set_defaults(func=self.add_new_node_handler)
 
+
+
+
+        paramount_subcom_parser = commands_parser.add_parser('remove-coord',
+                                                             help='Given instance:number tuple this command will'
+                                                                  'start these instances then add to the given mpc '
+                                                                  'and perform a setup operation in a way that these nodes '
+                                                                  'can be successfully added to the cluster ')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Cluster id')
+
+
+        paramount_subcom_parser.set_defaults(func=self.remove_coord_handler)
+
+
     def start_paramount_cluster(self, namespace: argparse.Namespace):
         # TODO: decidi começar pela start em que cria as intancias,
         #  pois é compativel com o modulo do otavio
@@ -322,3 +338,9 @@ class MpiParamountParser(AbstractParser):
                 log.error("The size must be a list o integers")
 
         add_from_instances(paramount_id=_mpc_id, node_type=_nodes)
+
+    def remove_coord_handler(self, namespace: argparse.Namespace):
+        _mpc_id = namespace.id
+
+        _newCoord = change_coordinator(_mpc_id)
+        print("Coordinator successfully removed, new coordinator is `{}` ".format(_newCoord))

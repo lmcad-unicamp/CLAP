@@ -29,6 +29,7 @@ class ParamountClusterData(AbstractEntry):
         self.mount_point_id = mount_point_id
         self.skip_mpi = skip_mpi
         self.no_instance_key = no_instance_key
+        self.isSetup = isSetup
         super(ParamountClusterData, self).__init__(**kwargs)
 
     def __repr__(self):
