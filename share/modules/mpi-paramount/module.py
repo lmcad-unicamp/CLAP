@@ -394,15 +394,42 @@ def add_from_instances(paramount_id, node_type: Dict[str, int]):
 
 # Given a mpc demote the current coordinator and exchange by a slave
 def change_coordinator(mpc_id) -> str:
+
+    '''
+    To change a coordinator this module will:
+    -Remove the coord from the cluster (it will not stop/terminate the node simply disassociate from the mpi-paramount cluster)
+    -Change the cluster config file (in a way to make it consistent with the new node configuration)
+    -Remove the newcoord from the group/role 'mpi/slave' (because cluster module does not implement it, a call from
+    group module must be made
+    - Add the newcoord to the group mpi/coordinator
+    :param mpc_id:
+    :return:
+    '''
+
+
+
     repositoryParamount = ParamountClusterRepositoryOperations()
     _cluster = next(iter(repositoryParamount.get_paramount_data(mpc_id)))
-    group_module = PlatformFactory.get_module_interface().get_module('group')
+    tag_module = PlatformFactory.get_module_interface().get_module('tag')
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+
+    if not _cluster.isSetup:
+        raise Exception("Please set up the cluster first before changing the coordinator ")
+
+
+    nodesList = node_module.list_nodes(cluster_module.get_nodes_from_cluster(_cluster.cluster_id))
+    _slaves  =[ x for x  in list(filter(lambda x: x.tags['cluster_node_type'][0].split(':')[1] == Info.SLAVES, nodesList)) ]
+    _newCoord = _slaves[0]
+
+        # raise Exception("Removing the only coordinator does not make sense! Just terminate the cluster ")
 
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(os.path.abspath(__file__))),
                                   trim_blocks=True, lstrip_blocks=True)
+
+
     template = jinjaenv.get_template("mpi-paramount-cluster.j2")
-    rendered_template = template.render({'node_type_coord': 'compiler', 'node_type': 'compiler-light', 'node_count': int(3)})
+    rendered_template = template.render({'node_type_coord': _newCoord.instance_type, 'node_type': _newCoord.instance_type, 'node_count': len(_slaves) - 1})
 
     # TODO: checar se eh slave antes de prosseguir
 
@@ -416,8 +443,6 @@ def change_coordinator(mpc_id) -> str:
     return
 
 
-    if not _cluster.isSetup:
-        raise Exception("Please set up the cluster first before changing the coordinator ")
 
     extra = {}
     extra.update({'mount_ip': _cluster.mount_ip})
@@ -429,13 +454,10 @@ def change_coordinator(mpc_id) -> str:
         extra.update({'use_instance_key': 'False'})
 
     oldCoordinator = _cluster.coordinator
-    try:
-        new_coordinator = next(iter(_cluster.slaves))
-    except:
-        raise Exception("Removing the only coordinator does not make sense! Just terminate the cluster ")
 
-    # Removes the old coordinator
-    group_module.remove_group_from_node(node_ids=[_cluster.coordinator], group='mpi/coordinator')
+
+    # Removes the old coordinator -> remove_tags_from_nodes (from platform)
+    _removed = tag_module.node_remove_tag()
     _cluster.coordinator = None
 
     # Re-adds as a slave:
