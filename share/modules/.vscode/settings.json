@@ -1,0 +1,27 @@
+{
+    "python.pythonPath": "/home/gabriel/Documents/SCI/CLAP/CLAP/clap-env",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "restructuredtext.confPath": "${workspaceFolder}/docs/source",
+    "cSpell.enableFiletypes": [
+        "!c",
+        "!cpp",
+        "!csharp",
+        "!css",
+        "!javascript",
+        "!javascriptreact",
+        "!python"
+    ],
+    "cSpell.words": [
+        "clapp",
+        "jobmanager",
+        "taskmanager",
+        "workdir"
+    ],
+    "spellright.language": [],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ]
+}

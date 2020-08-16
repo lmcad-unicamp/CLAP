@@ -20,6 +20,17 @@ def list_jobs():
     return repository.list_jobs()
 
 def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
+    '''
+    Method that sets up the cluster. Not only the cluster is configured with the parameters
+    but the "settings" are saved in the cluster variable, such that when adding a new node
+    or exchanging the coordinator the settings used in this method will be used (example
+    the same mount_ip will be used)
+    :param paramount_id:
+    :param mount_ip:
+    :param skip_mpi:
+    :param no_instance_key:
+    :return:
+    '''
     repository = ParamountClusterRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
@@ -35,13 +46,15 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
     extra.update({'mount_ip':mount_ip})
     extra.update({'nodes_group_name': _cluster.paramount_id })
 
-    _cluster.mount_point_id = mount_ip
+    _cluster.mount_ip = mount_ip
 
     if skip_mpi:
         extra.update({'skip_mpi':'True'})
+        _cluster.skip_mpi = skip_mpi
 
     if no_instance_key:
         extra.update({'use_instance_key':'False'})
+        _cluster.no_instance_key = no_instance_key
 
 
 
@@ -100,7 +113,23 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
 
 
 
-def add_node_to_mpi_group(paramount_cluster_obj,group_name, mount_ip, paramount_id, skip_mpi, use_instance_key):
+# def add_nodes_to_mpc_cluster__(paramount_id, node_group_map: Dict[str, str]):
+#     '''
+#
+#     For internal use.
+#     :param paramount_id: The mpc id
+#     :param node_group_map:  node-xx:group
+#     :return:
+#     '''
+#
+#
+#     repository = ParamountClusterRepositoryOperations()
+#     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
+#
+#     _cluster= repository.get_paramount_data(paramount_id)
+#     _cluster= next(iter(repository.get_paramount_data(paramount_id)))
+#
+#
 
 
 
@@ -365,29 +394,51 @@ def add_from_instances(paramount_id, node_type: Dict[str, int]):
 
 # Given a mpc demote the current coordinator and exchange by a slave
 def change_coordinator(mpc_id) -> str:
-
-
     repositoryParamount = ParamountClusterRepositoryOperations()
-    _cluster= next(iter(repositoryParamount.get_paramount_data(mpc_id)))
+    _cluster = next(iter(repositoryParamount.get_paramount_data(mpc_id)))
     group_module = PlatformFactory.get_module_interface().get_module('group')
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    #TODO: checar se eh slave antes de prosseguir
+    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(os.path.abspath(__file__))),
+                                  trim_blocks=True, lstrip_blocks=True)
+    template = jinjaenv.get_template("mpi-paramount-cluster.j2")
+    rendered_template = template.render({'node_type_coord': 'compiler', 'node_type': 'compiler-light', 'node_count': int(3)})
+
+    # TODO: checar se eh slave antes de prosseguir
+
+    with tmpdir() as dir:
+        filename = path_extend(dir, 'mpi-paramount-cluster.yml')
+        with open(filename, 'w') as f:
+            f.write(rendered_template)
+        data = cluster_module.update_cluster_config([filename],cluster_id=_cluster.cluster_id )
+        print('debug')
+
+    return
 
 
     if not _cluster.isSetup:
         raise Exception("Please set up the cluster first before changing the coordinator ")
 
+    extra = {}
+    extra.update({'mount_ip': _cluster.mount_ip})
+    extra.update({'nodes_group_name': _cluster.paramount_id})
+    if _cluster.skip_mpi:
+        extra.update({'skip_mpi': 'True'})
 
+    if _cluster.no_instance_key:
+        extra.update({'use_instance_key': 'False'})
 
     oldCoordinator = _cluster.coordinator
-    new_coordinator = next(iter(_cluster.slaves))
+    try:
+        new_coordinator = next(iter(_cluster.slaves))
+    except:
+        raise Exception("Removing the only coordinator does not make sense! Just terminate the cluster ")
 
-    #Removes the old coordinator
+    # Removes the old coordinator
     group_module.remove_group_from_node(node_ids=[_cluster.coordinator], group='mpi/coordinator')
     _cluster.coordinator = None
 
-    #Re-adds as a slave:
+    # Re-adds as a slave:
     # cluster_module.cluster_group_add(cluster_id=mpc_id.cluster_id,
     #                                  group_name='mpi/slave',
     #                                  node_ids=[oldCoordinator],
@@ -399,21 +450,17 @@ def change_coordinator(mpc_id) -> str:
     # Removes the slave and add as the coordinator
 
     group_module.remove_group_from_node(node_ids=[new_coordinator], group='mpi/slave')
-    _cluster.slaves = _cluster.slaves.remove(new_coordinator)
+    _cluster.slaves.remove(new_coordinator)
 
     # Re-adds as a coordinator:
-    cluster_module.cluster_group_add(cluster_id=mpc_id.cluster_id,
+    cluster_module.cluster_group_add(cluster_id=_cluster.cluster_id,
                                      group_name='mpi/coordinator',
                                      node_ids=[new_coordinator],
+                                     extra_args=extra,
                                      re_add_to_group=True
                                      )
 
-
     _cluster.coordinator = new_coordinator
-
-
-
-
 
     repositoryParamount.update_paramount(_cluster)
 
