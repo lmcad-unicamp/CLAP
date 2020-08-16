@@ -400,7 +400,7 @@ def change_coordinator(mpc_id) -> str:
     -Remove the coord from the cluster (it will not stop/terminate the node simply disassociate from the mpi-paramount cluster)
     -Change the cluster config file (in a way to make it consistent with the new node configuration)
     -Remove the newcoord from the group/role 'mpi/slave' (because cluster module does not implement it, a call from
-    group module must be made
+    group module must be made)
     - Add the newcoord to the group mpi/coordinator
     :param mpc_id:
     :return:
@@ -411,6 +411,7 @@ def change_coordinator(mpc_id) -> str:
     repositoryParamount = ParamountClusterRepositoryOperations()
     _cluster = next(iter(repositoryParamount.get_paramount_data(mpc_id)))
     tag_module = PlatformFactory.get_module_interface().get_module('tag')
+    group_module = PlatformFactory.get_module_interface().get_module('group')
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
     node_module = PlatformFactory.get_module_interface().get_module('node')
 
@@ -418,7 +419,7 @@ def change_coordinator(mpc_id) -> str:
         raise Exception("Please set up the cluster first before changing the coordinator ")
 
 
-    nodesList = node_module.list_nodes(cluster_module.get_nodes_from_cluster(_cluster.cluster_id))
+    nodesList = node_module.list_nodes(cluster_module.get_nodes_from_cluster(_cluster.cluster_id) )
     _slaves  =[ x for x  in list(filter(lambda x: x.tags['cluster_node_type'][0].split(':')[1] == Info.SLAVES, nodesList)) ]
     _newCoord = _slaves[0]
 
@@ -440,7 +441,7 @@ def change_coordinator(mpc_id) -> str:
         data = cluster_module.update_cluster_config([filename],cluster_id=_cluster.cluster_id )
         print('debug')
 
-    return
+
 
 
 
@@ -457,7 +458,12 @@ def change_coordinator(mpc_id) -> str:
 
 
     # Removes the old coordinator -> remove_tags_from_nodes (from platform)
-    _removed = tag_module.node_remove_tag()
+    _removed = tag_module.node_remove_tag(node_ids=[oldCoordinator],
+                                          tags= 'clusters')
+    _removed = tag_module.node_remove_tag(node_ids=[oldCoordinator],
+                                          tags= 'cluster_node_type')
+    #Done twice because node_remove_tag does not allow to pass list, only string
+
     _cluster.coordinator = None
 
     # Re-adds as a slave:
@@ -471,19 +477,24 @@ def change_coordinator(mpc_id) -> str:
 
     # Removes the slave and add as the coordinator
 
-    group_module.remove_group_from_node(node_ids=[new_coordinator], group='mpi/slave')
-    _cluster.slaves.remove(new_coordinator)
+    group_module.remove_group_from_node(node_ids=[_newCoord.node_id], group='mpi/slave')
+    _cluster.slaves.remove(_newCoord.node_id)
+
+    print("Adding the new coordinator to the mpi/coordinator group. The mpi/coordinator will be set up with the"
+          "same configurations which the cluster was first set up (mount_ip, use instance key or not ...")
 
     # Re-adds as a coordinator:
     cluster_module.cluster_group_add(cluster_id=_cluster.cluster_id,
                                      group_name='mpi/coordinator',
-                                     node_ids=[new_coordinator],
+                                     node_ids=[_newCoord.node_id],
                                      extra_args=extra,
                                      re_add_to_group=True
                                      )
 
-    _cluster.coordinator = new_coordinator
+    cluster_module.add_existing_nodes_to_cluster(cluster_id=_cluster.cluster_id, node_types={Info.COORDINATOR:[_newCoord.node_id]} )
+    _cluster.coordinator = _newCoord.node_id
 
+    #TODO: remover a tag de slave do novo coordinator
     repositoryParamount.update_paramount(_cluster)
 
-    return new_coordinator
+    return _newCoord.node_id
