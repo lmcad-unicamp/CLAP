@@ -1,3 +1,11 @@
+- block:
+    - name: "end play if no_setup"
+      debug:
+        msg: "nothing to do, ending play"
+
+    - meta: end_play
+  when:  no_setup|bool
+
 #Key passed as argument and the inventory containing the nodes should be reachable
 # (either as argument or in the correct folder)
 
@@ -14,7 +22,7 @@
 
 - name: Key passing part
   #By default, clapp already puts the public key in the authorized_key of each 
-  # node (so that the localhost, who has the private part can connect to the node), therefore this part only pass the private parted
+  # node (so that the localhost, who has the private part can connect to the node), therefore this part only pass the private part
   # such that each node has the capability to connected to other node
   vars:
     user: "{{ ansible_user }}"
@@ -46,7 +54,7 @@
     update_cache: yes
   
 
-- debug: var=skip_mpi|bool 
+
 
 - name: basic mpi packages installation
   block:
@@ -101,11 +109,6 @@
 #TODO: criar dicionario com o tipo da instancia e como o pacote se chama no respectivo sistema, na instancia AMI linux o nome eh "openmpi-devel", Com ubuntu o nome eh: openmpi-bin
 
 
-
-
-
-# - debug:
-#     msg: resultMPI.stdout
 
 
 

@@ -179,6 +179,8 @@ def new_job_from_cluster( paramount_id, job_name=None):
     repositoryParamount = ParamountClusterRepositoryOperations()
     _cluster= next(iter(repositoryParamount.get_paramount_data(paramount_id)))
 
+    validate_cluster(_cluster)
+
     repositoryJob = JobDataRepositoryOperations()
 
     _job = repositoryJob.new_job(cluster_obj= _cluster, absolute_path_mount=_cluster.mount_point_partition, job_name=job_name)
@@ -266,7 +268,7 @@ def run_script(job_id, script, subpath, exec_descr):
                                         extra_args= extra)
 
 
-def generate_hosts(job_id, _file_name, subpath):
+def generate_hosts(job_id, _file_name, subpath,mpich_style):
     repositoryParamount = ParamountClusterRepositoryOperations()
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
@@ -284,6 +286,11 @@ def generate_hosts(job_id, _file_name, subpath):
     # Tem que ser assim, passar direto não funciona, pq se não for definido o ansible recebe 'None' e buga...
     if _file_name is not None:
         extra.update({'file_name': _file_name})
+
+    if mpich_style:
+        extra.update({'mpich_style': 'True'})
+
+
     extra.update({'execution_dir': _path})
 
     cluster_module.perform_group_action(cluster_id= _mpcObj.cluster_id,
@@ -444,6 +451,27 @@ def change_coordinator(mpc_id) -> str:
 
 
 
+    oldCoordinator = _cluster.coordinator
+
+
+    # Removes the old coordinator -> remove_tags_from_nodes (from platform)
+    _removed = tag_module.node_remove_tag(node_ids=[oldCoordinator],
+                                          tags= 'clusters')
+    _removed = tag_module.node_remove_tag(node_ids=[oldCoordinator],
+                                          tags= 'cluster_node_type')
+    #Done twice because node_remove_tag does not allow to pass list, only string
+    node_module.stop_nodes([oldCoordinator])
+
+    _cluster.coordinator = None
+
+
+
+    # Removes the slave and add as the coordinator
+
+    group_module.remove_group_from_node(node_ids=[_newCoord.node_id], group='mpi/slave')
+    _cluster.slaves.remove(_newCoord.node_id)
+
+    print("Adding the new coordinator to the mpi/coordinator group. No setup will be done")
 
     extra = {}
     extra.update({'mount_ip': _cluster.mount_ip})
@@ -454,34 +482,7 @@ def change_coordinator(mpc_id) -> str:
     if _cluster.no_instance_key:
         extra.update({'use_instance_key': 'False'})
 
-    oldCoordinator = _cluster.coordinator
-
-
-    # Removes the old coordinator -> remove_tags_from_nodes (from platform)
-    _removed = tag_module.node_remove_tag(node_ids=[oldCoordinator],
-                                          tags= 'clusters')
-    _removed = tag_module.node_remove_tag(node_ids=[oldCoordinator],
-                                          tags= 'cluster_node_type')
-    #Done twice because node_remove_tag does not allow to pass list, only string
-
-    _cluster.coordinator = None
-
-    # Re-adds as a slave:
-    # cluster_module.cluster_group_add(cluster_id=mpc_id.cluster_id,
-    #                                  group_name='mpi/slave',
-    #                                  node_ids=[oldCoordinator],
-    #                                  re_add_to_group=True
-    #                                  )
-    #
-    # _cluster.slaves = _cluster.slaves.append(oldCoordinator)
-
-    # Removes the slave and add as the coordinator
-
-    group_module.remove_group_from_node(node_ids=[_newCoord.node_id], group='mpi/slave')
-    _cluster.slaves.remove(_newCoord.node_id)
-
-    print("Adding the new coordinator to the mpi/coordinator group. The mpi/coordinator will be set up with the"
-          "same configurations which the cluster was first set up (mount_ip, use instance key or not ...")
+    extra.update({'no_setup': 'True'})
 
     # Re-adds as a coordinator:
     cluster_module.cluster_group_add(cluster_id=_cluster.cluster_id,
@@ -498,3 +499,11 @@ def change_coordinator(mpc_id) -> str:
     repositoryParamount.update_paramount(_cluster)
 
     return _newCoord.node_id
+
+
+def add_new_coord()
+
+
+def validate_cluster(cluster_obj):
+    if not cluster_obj.isSetup :
+        raise Exception("Paramount Cluster `{}´  is not setup, be sure to setup properly the cluster".format(cluster_obj.paramount_id))

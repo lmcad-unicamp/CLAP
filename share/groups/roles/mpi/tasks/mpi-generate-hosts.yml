@@ -10,9 +10,12 @@
   vars:
     exec_dir: "{{ execution_dir | default(ansible_env.HOME) }}"
     fileName : "{{ file_name | default('hosts') }}"
+    mpich_style_: "{{ mpich_style | default(False) }}"
+
+
   tasks:
 
-  - debug: var=fileName
+
 
 #  - meta: end_play
 
@@ -27,6 +30,18 @@
       path: "{{ exec_dir }}/{{ fileName }}"
       state: touch
 
+
+  - name: "Add Ansible inventory mappings to {{ exec_dir }}/hosts"
+    blockinfile:
+      marker: ""
+      path: "{{ exec_dir }}/{{ fileName }}"
+      block: |
+        {% for host in groups['all'] %}
+        {{ hostvars[host].ansible_host }}:{{ hostvars[host].host_cpus.stdout }}
+        {% endfor %}
+    when: mpich_style_|bool
+
+
   - name: "Add Ansible inventory mappings to {{ exec_dir }}/hosts"
     blockinfile:
       marker: ""
@@ -35,3 +50,4 @@
         {% for host in groups['all'] %}
         {{ hostvars[host].ansible_host }} slots={{ hostvars[host].host_cpus.stdout }}
         {% endfor %}
+    when: not mpich_style_|bool

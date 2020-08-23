@@ -19,13 +19,16 @@
     block:
     - name: Make time permanent (simply setting as variable will make the time to be reevaluated every time)
       set_fact:
-        start_time:  "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+        start_time:  "{{ lookup('pipe','date +%Y-%m-%d-%H') }}"
+        #There was a problem if start_time has second precision, because nodes may not agree. Hours is a small fix
+        # but there can be the case where a node has time 10:59 and another has 11:00. Not sure if it is better to simply ignore
+        # it and therefore when the problem happens just try to run again instead of making the time consistent...
 
     - name: passing file #Rsync bugs here (parallel rsync is faulty...)
       copy:
         src: "{{ install_script }}"
         dest: "{{ execution_dir }}/script@{{ start_time}}"
-
+        unsafe_writes: yes
 
 
     - name: Install script (up to an hour)

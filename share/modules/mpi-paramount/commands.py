@@ -146,6 +146,10 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.add_argument('--file_name', action='store', nargs='?',
                                              help='What name should the file be, defaults to \'host\'')
+
+        paramount_subcom_parser.add_argument('--mpich_style', action='store_true',
+                                             help='What name should the file be, defaults to \'host\'')
+
         paramount_subcom_parser.set_defaults(func=self.generate_host_handler)
 
         # Fetch paramount  info
@@ -298,9 +302,9 @@ class MpiParamountParser(AbstractParser):
     def generate_host_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
         _file_name = namespace.file_name
-        _no_coord = namespace.no_coord
         _subpath = namespace.sub_path
-        generate_hosts(job_id=_job_id, _file_name=_file_name, subpath=_subpath)
+        _mpich_style = namespace.mpich_style
+        generate_hosts(job_id=_job_id, _file_name=_file_name, subpath=_subpath, mpich_style=_mpich_style)
 
     def fetch_paramount_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id

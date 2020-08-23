@@ -20,7 +20,13 @@ actions:
                   Set to False if instance key from .clap/private/x.pem does not exist or you don't want to use it(
                   possibly to generate a new RSA key).
       optional: yes
- 
+
+    - name: no_setup
+      description: >
+                  When true setup will be skipped altogether (Clapp does not allow to add to a group and skip the setup)
+
+      optional: yes
+
   sync:
      playbook: roles/mpi/tasks/mpi-sync.yml
      vars:
@@ -99,6 +105,10 @@ actions:
 
           - name: file_name
             description: The name of the hostfile, defaults to 'hosts.txt'
+            optional: yes
+
+          - name: mpich_style
+            description: If set to true the mpich style of hostfile will be used
             optional: yes
   run:
     playbook: roles/mpi/tasks/mpi-run.yml
