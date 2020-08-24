@@ -2,16 +2,18 @@
 - hosts: all
   gather_facts: yes  
   become: no
+  vars:
+    execution_dir_: "{{ execution_dir | default(ansible_env.HOME)}}"
   tasks:
   - name: create the execution path recursively if the same does not exist
     file:
-      path: "{{ execution_dir }}"
+      path: "{{ execution_dir_ }}"
       state: directory
 
   - name: Pass relevant files to  execution_dir
     synchronize:
       src: "{{ src_dir  }}"
-      dest: "{{ execution_dir }}"
+      dest: "{{ execution_dir_ }}"
     when: src_dir is defined
 
 
@@ -27,7 +29,7 @@
     - name: passing file #Rsync bugs here (parallel rsync is faulty...)
       copy:
         src: "{{ install_script }}"
-        dest: "{{ execution_dir }}/script@{{ start_time}}"
+        dest: "{{ execution_dir_ }}/script@{{ start_time}}"
         unsafe_writes: yes
 
 
@@ -35,7 +37,7 @@
       async: 3600
       poll: 0
 
-      shell:    "cd {{ execution_dir  }} &&
+      shell:    "cd {{ execution_dir_  }} &&
          chmod +x script@{{ start_time}} &&
          ./script@{{ start_time}}
         "
@@ -53,7 +55,7 @@
     always:
       - name: Remove file (delete file)
         file:
-          path: "{{ execution_dir }}/script@{{ start_time}}"
+          path: "{{ execution_dir_ }}/script@{{ start_time}}"
           state: absent
 
 #  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir

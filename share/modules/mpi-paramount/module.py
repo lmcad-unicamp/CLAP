@@ -259,7 +259,7 @@ def run_script(job_id, script, subpath, exec_descr):
     extra.update({'job_full_path': _job.absolutePath})
 
     if exec_descr is not None:
-        extra.update({'exec_descr': _job.exec_descr})
+        extra.update({'exec_descr': exec_descr})
 
     cluster_module.perform_group_action(cluster_id= _mpcObj.cluster_id,
                                         group_name= 'mpi',
@@ -323,21 +323,21 @@ def fetch_job_paramount(job_id, dest):
                                         )
 
 
-def install_script(job_id, script, additionalFile = None, subpath = None):
+def install_script(mpc_id, script, additionalFile = None, path = None):
     repositoryParamount = ParamountClusterRepositoryOperations()
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    _job = next(iter(repositoryJobs.get_job_data(job_id)))
-    _mpcObj = next(iter(repositoryParamount.get_paramount_data(_job.paramount_id)))
+    #_job = next(iter(repositoryJobs.get_job_data(job_id)))
+    _mpcObj = next(iter(repositoryParamount.get_paramount_data(mpc_id)))
 
-    _path = _job.absolutePath
+    #_path = _job.absolutePath
 
-    if subpath is not None:
-        _path = _path + subpath + '/'
 
     extra = {}
-    extra.update({'execution_dir': _path})
+
+    if path:
+        extra.update({'execution_dir': path})
 
     if additionalFile is not None:
         extra.update({'src_dir': additionalFile})

@@ -20,6 +20,12 @@
       file: "{{ ansible_distribution }}Setup.yml"
       name: osSetup
 
+
+- name: Check that if clusterKey exists (then skip this part because this node is already setup)
+  stat:
+    path: ~{{ ansible_user }}/.ssh/clusterKey
+  register: keyAlreadySetUp
+
 - name: Key passing part
   #By default, clapp already puts the public key in the authorized_key of each 
   # node (so that the localhost, who has the private part can connect to the node), therefore this part only pass the private part
@@ -27,6 +33,9 @@
   vars:
     user: "{{ ansible_user }}"
   block:
+
+
+
     - name: passing key
       copy:
         src: "{{ ansible_ssh_private_key_file }}" #Key should be here
@@ -45,8 +54,9 @@
       shell: |
         cd ~{{ user }}/.ssh/
         cat clusterKey >> ~{{ user }}/.ssh/id_rsa
+        echo '\n' >>  ~{{ user }}/.ssh/id_rsa
   
-  when:   use_instance_key|bool
+  when:   use_instance_key|bool and   not keyAlreadySetUp.stat.exists
 
 
 - name: Update apt

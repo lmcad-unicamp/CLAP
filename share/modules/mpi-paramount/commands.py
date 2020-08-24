@@ -170,7 +170,7 @@ class MpiParamountParser(AbstractParser):
                                                              help='Install a script in every node')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Job id')
+                                             help='Mpc on which the installation should happen')
 
         paramount_subcom_parser.add_argument('script', action='store',
                                              help='Installation script')
@@ -178,7 +178,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('--file', action='store', nargs='?',
                                              help='Files (if any) that should be passed to execute the script')
 
-        paramount_subcom_parser.add_argument('--subpath', action='store', nargs='?',
+        paramount_subcom_parser.add_argument('--path', action='store', nargs='?',
                                              help='Subdirectory inside job folder where the script should be executed, if left ' \
                                                   'unspecified it will execute in the job root')
 
@@ -328,12 +328,12 @@ class MpiParamountParser(AbstractParser):
 
     def install_script_handler(self, namespace: argparse.Namespace):
 
-        _job_id = namespace.id
+        _mpc_id = namespace.id
         _script = namespace.script
         _file = namespace.file
-        _subpath = namespace.subpath
+        _path = namespace.path
 
-        install_script(job_id=_job_id, script=_script, additionalFile=_file, subpath=_subpath)
+        install_script(mpc_id=_mpc_id, script=_script, additionalFile=_file, path=_path)
 
     def run_command_handler(self, namespace: argparse.Namespace):
         _mpc_id = namespace.id

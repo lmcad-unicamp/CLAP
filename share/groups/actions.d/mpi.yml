@@ -45,8 +45,9 @@ actions:
      vars:
          - name: execution_dir
            description: >
-                        Directory where the script should be executed on remote host
-           optional: no
+                        Directory where the script should be executed on remote host. Defaults to simply being executed at
+                        $HOME directory
+           optional: yes
          - name: src_dir
            description: >
                       Directory containing files which the script depends(optional if script does not need such files)
