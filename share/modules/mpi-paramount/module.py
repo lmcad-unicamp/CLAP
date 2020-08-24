@@ -400,16 +400,13 @@ def add_from_instances(paramount_id, node_type: Dict[str, int]):
     return created_nodes
 
 # Given a mpc demote the current coordinator and exchange by a slave
-def change_coordinator(mpc_id) -> str:
+def change_coordinator(mpc_id, new_coord_inst= None) -> str:
 
     '''
-    To change a coordinator this module will:
-    -Remove the coord from the cluster (it will not stop/terminate the node simply disassociate from the mpi-paramount cluster)
-    -Change the cluster config file (in a way to make it consistent with the new node configuration)
-    -Remove the newcoord from the group/role 'mpi/slave' (because cluster module does not implement it, a call from
-    group module must be made)
-    - Add the newcoord to the group mpi/coordinator
+    Changes the coordinator. If new_coord_inst is unspecified (for a remove-coord call) then a slave is selected
+    to be promoted as a coordinator. Else, a node from this specified type will be created and inserted as a coordinator
     :param mpc_id:
+
     :return:
     '''
 
@@ -422,13 +419,42 @@ def change_coordinator(mpc_id) -> str:
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
     node_module = PlatformFactory.get_module_interface().get_module('node')
 
-    if not _cluster.isSetup:
-        raise Exception("Please set up the cluster first before changing the coordinator ")
+
+
+    validate_cluster(_cluster)
 
 
     nodesList = node_module.list_nodes(cluster_module.get_nodes_from_cluster(_cluster.cluster_id) )
-    _slaves  =[ x for x  in list(filter(lambda x: x.tags['cluster_node_type'][0].split(':')[1] == Info.SLAVES, nodesList)) ]
-    _newCoord = _slaves[0]
+    _slaves = [x for x in
+               list(filter(lambda x: x.tags['cluster_node_type'][0].split(':')[1] == Info.SLAVES, nodesList))]
+
+    _slaveSize = len(_slaves)
+
+    if new_coord_inst is None and _slaveSize == 0:
+        raise ValueError("Cannot remove the single coordinator, there is no slaves nodes to promote! ")
+
+    _slaveType = next(iter(_slaves)).instance_type if _slaveSize > 0 else None
+
+
+    if new_coord_inst is None:
+
+
+
+        #In this case the coord is picked from the slaves
+        _newCoord = _slaves[0]
+        #slave size invariant kept
+        _slaveSize = _slaveSize -1
+
+        group_module.remove_group_from_node(node_ids=[_newCoord.node_id], group='mpi/slave')
+        _cluster.slaves.remove(_newCoord.node_id)
+
+
+
+    else:
+        #TODO criar coord
+        created_node = node_module.start_nodes({new_coord_inst:1})
+        _newCoord = next(iter(created_node))
+
 
         # raise Exception("Removing the only coordinator does not make sense! Just terminate the cluster ")
 
@@ -436,8 +462,9 @@ def change_coordinator(mpc_id) -> str:
                                   trim_blocks=True, lstrip_blocks=True)
 
 
+    # template is such that if node_count is zero then node_type needs not to be specified (this whole part is not rendered)
     template = jinjaenv.get_template("mpi-paramount-cluster.j2")
-    rendered_template = template.render({'node_type_coord': _newCoord.instance_type, 'node_type': _newCoord.instance_type, 'node_count': len(_slaves) - 1})
+    rendered_template = template.render({'node_type_coord': _newCoord.instance_type, 'node_type': _slaveType, 'node_count': _slaveSize})
 
     # TODO: checar se eh slave antes de prosseguir
 
@@ -468,8 +495,6 @@ def change_coordinator(mpc_id) -> str:
 
     # Removes the slave and add as the coordinator
 
-    group_module.remove_group_from_node(node_ids=[_newCoord.node_id], group='mpi/slave')
-    _cluster.slaves.remove(_newCoord.node_id)
 
     print("Adding the new coordinator to the mpi/coordinator group. No setup will be done")
 
@@ -482,7 +507,15 @@ def change_coordinator(mpc_id) -> str:
     if _cluster.no_instance_key:
         extra.update({'use_instance_key': 'False'})
 
-    extra.update({'no_setup': 'True'})
+
+    #If no new node is to be added as coordinator, that is a slave should be promoted as coord, do not run setup (node is already setup)
+    if new_coord_inst is None:
+        extra.update({'no_setup': 'True'})
+
+
+
+    cluster_module.add_existing_nodes_to_cluster(cluster_id=_cluster.cluster_id, node_types={Info.COORDINATOR:[_newCoord.node_id]} )
+
 
     # Re-adds as a coordinator:
     cluster_module.cluster_group_add(cluster_id=_cluster.cluster_id,
@@ -492,7 +525,6 @@ def change_coordinator(mpc_id) -> str:
                                      re_add_to_group=True
                                      )
 
-    cluster_module.add_existing_nodes_to_cluster(cluster_id=_cluster.cluster_id, node_types={Info.COORDINATOR:[_newCoord.node_id]} )
     _cluster.coordinator = _newCoord.node_id
 
     #TODO: remover a tag de slave do novo coordinator
@@ -501,7 +533,7 @@ def change_coordinator(mpc_id) -> str:
     return _newCoord.node_id
 
 
-def add_new_coord()
+
 
 
 def validate_cluster(cluster_obj):

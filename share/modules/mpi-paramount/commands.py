@@ -232,6 +232,21 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.remove_coord_handler)
 
 
+        paramount_subcom_parser = commands_parser.add_parser('add-coord',
+                                                             help='Given instance:number tuple this command will'
+                                                                  'start these instances then add to the given mpc '
+                                                                  'and perform a setup operation in a way that these nodes '
+                                                                  'can be successfully added to the cluster ')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Cluster id')
+
+        paramount_subcom_parser.add_argument('type', metavar='ID', action='store',
+                                             help='Given instance type which the new coordinator will be created')
+
+        paramount_subcom_parser.set_defaults(func=self.add_coord_handler)
+
+
     def start_paramount_cluster(self, namespace: argparse.Namespace):
         # TODO: decidi começar pela start em que cria as intancias,
         #  pois é compativel com o modulo do otavio
@@ -347,4 +362,12 @@ class MpiParamountParser(AbstractParser):
         _mpc_id = namespace.id
 
         _newCoord = change_coordinator(_mpc_id)
+        print("Coordinator successfully removed, new coordinator is `{}` ".format(_newCoord))
+
+
+    def add_coord_handler(self, namespace: argparse.Namespace):
+        _mpc_id = namespace.id
+        _new_coord= namespace.type
+
+        _newCoord = change_coordinator(_mpc_id, _new_coord)
         print("Coordinator successfully removed, new coordinator is `{}` ".format(_newCoord))
