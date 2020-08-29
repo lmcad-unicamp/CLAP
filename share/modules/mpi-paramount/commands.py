@@ -88,6 +88,12 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('src', action='store',
                                              help='Source folder')
 
+        paramount_subcom_parser.add_argument('--from_coord', action='store_true',
+                                             help='Flag that indicates the the coordinator already has the files'
+                                                  'somewhere  in the system, and therefore these files'
+                                                  'should be pushed from the coordinator to the job folder in the file'
+                                                  'system')
+
         paramount_subcom_parser.set_defaults(func=self.push_files_handler)
 
         ## compile
@@ -175,6 +181,9 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('script', action='store',
                                              help='Installation script')
 
+        paramount_subcom_parser.add_argument('--only_coord', action='store_true',
+                                             help='If Installation script should be executed only in the coord')
+
         paramount_subcom_parser.add_argument('--file', action='store', nargs='?',
                                              help='Files (if any) that should be passed to execute the script')
 
@@ -247,6 +256,24 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.add_coord_handler)
 
 
+
+        paramount_subcom_parser = commands_parser.add_parser('run-playbook',
+                                                             help='Runs the playbook in the paramount cluster.'
+                                                                  'If --only_coord evoker, executes only in the  coordinator node'
+                                                                  ' ')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Cluster id')
+
+        paramount_subcom_parser.add_argument('file', metavar='ID', action='store',
+                                             help='Given instance type which the new coordinator will be created')
+
+        paramount_subcom_parser.add_argument('--only_coord', action='store_true',
+                                             help='If Installation script should be executed only in the coord')
+
+        paramount_subcom_parser.set_defaults(func=self.run_playbook_handler)
+
+
     def start_paramount_cluster(self, namespace: argparse.Namespace):
         # TODO: decidi começar pela start em que cria as intancias,
         #  pois é compativel com o modulo do otavio
@@ -299,7 +326,8 @@ class MpiParamountParser(AbstractParser):
     def push_files_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
         _src = namespace.src
-        push_files(job_id=_job_id, src=_src)
+        _from_coord = namespace.from_coord
+        push_files(job_id=_job_id, src=_src, from_coord=_from_coord)
 
     def compile_script_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
@@ -332,8 +360,9 @@ class MpiParamountParser(AbstractParser):
         _script = namespace.script
         _file = namespace.file
         _path = namespace.path
+        _only_coord= namespace.only_coord
 
-        install_script(mpc_id=_mpc_id, script=_script, additionalFile=_file, path=_path)
+        install_script(mpc_id=_mpc_id, script=_script, additionalFile=_file, path=_path, only_coord=_only_coord)
 
     def run_command_handler(self, namespace: argparse.Namespace):
         _mpc_id = namespace.id
@@ -371,3 +400,10 @@ class MpiParamountParser(AbstractParser):
 
         _newCoord = change_coordinator(_mpc_id, _new_coord)
         print("Coordinator successfully removed, new coordinator is `{}` ".format(_newCoord))
+
+
+    def run_playbook_handler(self, namespace: argparse.Namespace):
+        _mpc_id = namespace.id
+        _file = namespace.file
+        _oc= namespace.only_coord
+        run_playbook(mpc_id=_mpc_id, playbook_file=_file, only_coord=_oc)

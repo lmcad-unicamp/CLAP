@@ -38,7 +38,18 @@ actions:
          - name: execution_dir
            description: The script to be executed
            optional: no
-    
+
+  sync-remote:
+    playbook: roles/mpi/tasks/mpi-sync-remote.yml
+    vars:
+
+      - name: src_dir
+        description: >
+          Source directory (on localhost)
+        optional: no
+      - name: execution_dir
+        description: The script to be executed
+        optional: no
 
   install:
      playbook: roles/mpi/tasks/mpi-install.yml

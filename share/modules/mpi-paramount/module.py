@@ -191,7 +191,7 @@ def new_job_from_cluster( paramount_id, job_name=None):
     repositoryParamount.update_paramount(_cluster)
 
 
-def push_files(job_id, src):
+def push_files(job_id, src, from_coord):
     repositoryParamount = ParamountClusterRepositoryOperations()
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
@@ -206,12 +206,19 @@ def push_files(job_id, src):
     extra.update({'execution_dir':_dest})
     extra.update({'src_dir':src})
 
-    cluster_module.perform_group_action(cluster_id= _mpcObj.cluster_id,
+    if not from_coord:
+        cluster_module.perform_group_action(cluster_id= _mpcObj.cluster_id,
                                         group_name= 'mpi',
                                         action_name= 'sync',
                                         node_ids= [_mpcObj.coordinator],
                                         extra_args= extra)
 
+    else:
+        cluster_module.perform_group_action(cluster_id=_mpcObj.cluster_id,
+                                            group_name='mpi',
+                                            action_name='sync-remote',
+                                            node_ids=[_mpcObj.coordinator],
+                                            extra_args=extra)
 
 def compile_script(job_id, script, subpath):
     repositoryParamount = ParamountClusterRepositoryOperations()
@@ -323,7 +330,7 @@ def fetch_job_paramount(job_id, dest):
                                         )
 
 
-def install_script(mpc_id, script, additionalFile = None, path = None):
+def install_script(mpc_id, script, only_coord, additionalFile = None, path = None):
     repositoryParamount = ParamountClusterRepositoryOperations()
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
@@ -343,10 +350,13 @@ def install_script(mpc_id, script, additionalFile = None, path = None):
         extra.update({'src_dir': additionalFile})
     extra.update({'install_script': script})
 
+    node_ids = [_mpcObj.coordinator] if only_coord else None
+
     cluster_module.perform_group_action(cluster_id=_mpcObj.cluster_id,
                                         group_name='mpi',
                                         action_name='install',
                                         extra_args=extra,
+                                        node_ids=node_ids
                                         )
 
 
@@ -534,7 +544,17 @@ def change_coordinator(mpc_id, new_coord_inst= None) -> str:
 
 
 
+def run_playbook(mpc_id, playbook_file, only_coord=None):
+    repositoryParamount = ParamountClusterRepositoryOperations()
+    cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
+    _mpcObj = next(iter(repositoryParamount.get_paramount_data(mpc_id)))
+    _nodes = [_mpcObj.coordinator] + _mpcObj.slaves if only_coord is None else [_mpcObj.coordinator]
+
+
+    cluster_module.execute_playbook(cluster_id= _mpcObj.cluster_id,
+                                    playbook_path= playbook_file,
+                                    node_ids=_nodes)
 
 def validate_cluster(cluster_obj):
     if not cluster_obj.isSetup :
