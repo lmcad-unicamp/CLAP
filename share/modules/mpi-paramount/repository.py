@@ -118,6 +118,13 @@ class ParamountClusterRepositoryOperations:
             return conn.retrieve_elements('paramount', ParamountClusterData, **{'paramount_id': paramount_id})
 
 
+    def get_newest_paramount_id(self, ):
+        with get_repository_connection(self.repository) as conn:
+            _control = next(iter(generic_read_entry(ParamountIndexingData, conn, 'control')))
+            return _control.current_index
+
+
+
     def update_paramount(self, paramount_cluster_data: ParamountClusterData) -> str:
         with get_repository_connection(self.repository) as repository:
             generic_write_entry(paramount_cluster_data, repository, 'paramount', create=False,

@@ -34,8 +34,7 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
     repository = ParamountClusterRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    _cluster= repository.get_paramount_data(paramount_id)
-    _cluster= next(iter(repository.get_paramount_data(paramount_id)))
+    _cluster= validate_and_get_cluster(paramount_id)
 
     extra = {}
 
@@ -113,24 +112,6 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
 
 
 
-# def add_nodes_to_mpc_cluster__(paramount_id, node_group_map: Dict[str, str]):
-#     '''
-#
-#     For internal use.
-#     :param paramount_id: The mpc id
-#     :param node_group_map:  node-xx:group
-#     :return:
-#     '''
-#
-#
-#     repository = ParamountClusterRepositoryOperations()
-#     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
-#
-#     _cluster= repository.get_paramount_data(paramount_id)
-#     _cluster= next(iter(repository.get_paramount_data(paramount_id)))
-#
-#
-
 
 
 
@@ -177,9 +158,9 @@ def create_paramount(nodes: List[str], descr = None, coord = None) -> int:
 
 def new_job_from_cluster( paramount_id, job_name=None):
     repositoryParamount = ParamountClusterRepositoryOperations()
-    _cluster= next(iter(repositoryParamount.get_paramount_data(paramount_id)))
+    _cluster= validate_and_get_cluster(paramount_id)
 
-    validate_cluster(_cluster)
+    validate_cluster_setup(_cluster)
 
     repositoryJob = JobDataRepositoryOperations()
 
@@ -192,12 +173,11 @@ def new_job_from_cluster( paramount_id, job_name=None):
 
 
 def push_files(job_id, src, from_coord):
-    repositoryParamount = ParamountClusterRepositoryOperations()
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    _job =  next(iter(repositoryJobs.get_job_data(job_id)))
-    _mpcObj =  next(iter(repositoryParamount.get_paramount_data(_job.paramount_id)))
+    _job =  validate_and_get_job(job_id)
+    _mpcObj = validate_and_get_cluster(_job.paramount_id)
 
     _dest = _job.absolutePath
 
@@ -221,12 +201,10 @@ def push_files(job_id, src, from_coord):
                                             extra_args=extra)
 
 def compile_script(job_id, script, subpath):
-    repositoryParamount = ParamountClusterRepositoryOperations()
-    repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    _job =  next(iter(repositoryJobs.get_job_data(job_id)))
-    _mpcObj =  next(iter(repositoryParamount.get_paramount_data(_job.paramount_id)))
+    _job =  validate_and_get_job(job_id)
+    _mpcObj = validate_and_get_cluster(_job.paramount_id)
 
     _path = _job.absolutePath
     if  subpath is not  None:
@@ -248,12 +226,11 @@ def compile_script(job_id, script, subpath):
 
 
 def run_script(job_id, script, subpath, exec_descr):
-    repositoryParamount = ParamountClusterRepositoryOperations()
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
     _job =  next(iter(repositoryJobs.get_job_data(job_id)))
-    _mpcObj =  next(iter(repositoryParamount.get_paramount_data(_job.paramount_id)))
+    _mpcObj = validate_and_get_cluster(_job.paramount_id)
 
     _path = _job.absolutePath
     if  subpath is not  None:
@@ -276,12 +253,11 @@ def run_script(job_id, script, subpath, exec_descr):
 
 
 def generate_hosts(job_id, _file_name, subpath,mpich_style):
-    repositoryParamount = ParamountClusterRepositoryOperations()
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    _job =  next(iter(repositoryJobs.get_job_data(job_id)))
-    _mpcObj =  next(iter(repositoryParamount.get_paramount_data(_job.paramount_id)))
+    _job =  validate_and_get_job(job_id)
+    _mpcObj = validate_and_get_cluster(_job.paramount_id)
 
     _path = _job.absolutePath
     if  subpath is not  None:
@@ -308,12 +284,11 @@ def generate_hosts(job_id, _file_name, subpath,mpich_style):
 
 
 def fetch_job_paramount(job_id, dest):
-    repositoryParamount = ParamountClusterRepositoryOperations()
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    _job = next(iter(repositoryJobs.get_job_data(job_id)))
-    _mpcObj = next(iter(repositoryParamount.get_paramount_data(_job.paramount_id)))
+    _job =  validate_and_get_job(job_id)
+    _mpcObj = validate_and_get_cluster(_job.paramount_id)
 
     _path = _job.absolutePath + '/.paramount-logs'
 
@@ -331,12 +306,9 @@ def fetch_job_paramount(job_id, dest):
 
 
 def install_script(mpc_id, script, only_coord, additionalFile = None, path = None):
-    repositoryParamount = ParamountClusterRepositoryOperations()
-    repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    #_job = next(iter(repositoryJobs.get_job_data(job_id)))
-    _mpcObj = next(iter(repositoryParamount.get_paramount_data(mpc_id)))
+    _mpcObj = validate_and_get_cluster(mpc_id)
 
     #_path = _job.absolutePath
 
@@ -362,10 +334,9 @@ def install_script(mpc_id, script, only_coord, additionalFile = None, path = Non
 
 
 def run_command(mpc_id, command):
-    repositoryParamount = ParamountClusterRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    _mpcObj = next(iter(repositoryParamount.get_paramount_data(mpc_id)))
+    _mpcObj =  validate_and_get_cluster(mpc_id)
     _nodes = [_mpcObj.coordinator] + _mpcObj.slaves
 
 
@@ -380,11 +351,9 @@ def run_command(mpc_id, command):
 def add_from_instances(paramount_id, node_type: Dict[str, int]):
     #Creates nodes, add them to the cluster them call setup with saved cluster configuration
 
-    repository = ParamountClusterRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    _cluster = repository.get_paramount_data(paramount_id)
-    _cluster = next(iter(repository.get_paramount_data(paramount_id)))
+    _cluster = validate_and_get_cluster(paramount_id)
     node_type = {node_type[0].split(':')[0]:node_type[0].split(':')[1]}
 
     cluster, created_nodes = cluster_module.add_nodes_to_cluster(_cluster.cluster_id, node_types= node_type)
@@ -423,7 +392,7 @@ def change_coordinator(mpc_id, new_coord_inst= None) -> str:
 
 
     repositoryParamount = ParamountClusterRepositoryOperations()
-    _cluster = next(iter(repositoryParamount.get_paramount_data(mpc_id)))
+    _cluster = _cluster = validate_and_get_cluster(mpc_id)
     tag_module = PlatformFactory.get_module_interface().get_module('tag')
     group_module = PlatformFactory.get_module_interface().get_module('group')
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
@@ -431,7 +400,7 @@ def change_coordinator(mpc_id, new_coord_inst= None) -> str:
 
 
 
-    validate_cluster(_cluster)
+    validate_cluster_setup(_cluster)
 
 
     nodesList = node_module.list_nodes(cluster_module.get_nodes_from_cluster(_cluster.cluster_id) )
@@ -548,7 +517,7 @@ def run_playbook(mpc_id, playbook_file, only_coord=None):
     repositoryParamount = ParamountClusterRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    _mpcObj = next(iter(repositoryParamount.get_paramount_data(mpc_id)))
+    _mpcObj = validate_and_get_cluster(mpc_id)
     _nodes = [_mpcObj.coordinator] + _mpcObj.slaves if only_coord is None else [_mpcObj.coordinator]
 
 
@@ -556,6 +525,38 @@ def run_playbook(mpc_id, playbook_file, only_coord=None):
                                     playbook_path= playbook_file,
                                     node_ids=_nodes)
 
-def validate_cluster(cluster_obj):
+
+def validate_and_get_cluster(mpc_id) -> ParamountClusterData:
+
+    _mpc_id = mpc_id
+    repositoryParamount = ParamountClusterRepositoryOperations()
+
+    if mpc_id == Info.LAST_PARAMOUNT:
+        _mpc_id = repositoryParamount.get_newest_paramount_id()
+
+
+    try:
+        return next(iter(repositoryParamount.get_paramount_data(_mpc_id)))
+
+    except:
+        raise Exception("There is no paramount cluster of id '{}' in the database".format(_mpc_id))
+
+
+def validate_and_get_job(job_id) -> JobData:
+
+    _job_id = job_id
+    repositoryJob = JobDataRepositoryOperations()
+
+    if job_id == Info.LAST_JOB:
+        _job_id = repositoryJob.get_newest_paramount_job_id()
+
+
+    try:
+        return next(iter(repositoryJob.get_job_data(_job_id)))
+
+    except:
+        raise Exception("There is no job of id '{}' in the database".format(_job_id))
+
+def validate_cluster_setup(cluster_obj):
     if not cluster_obj.isSetup :
         raise Exception("Paramount Cluster `{}´  is not setup, be sure to setup properly the cluster".format(cluster_obj.paramount_id))

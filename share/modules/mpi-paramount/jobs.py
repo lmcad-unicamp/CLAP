@@ -123,6 +123,12 @@ class JobDataRepositoryOperations:
     def get_job_data(self, job_id):
         with get_repository_connection(self.repository) as conn:
             return conn.retrieve_elements('job', JobData, **{'jobId': job_id})
+
+    def get_newest_paramount_job_id(self) -> str:
+        with get_repository_connection(self.repository) as conn:
+            _control = next(iter(generic_read_entry(JobsIndexingData, conn, 'job_control')))
+            return _control.current_index
+
     def list_jobs(self):
         with get_repository_connection(self.repository) as conn:
             return conn.retrieve_elements('job', JobData)

@@ -5,4 +5,5 @@ class Info:
     CLUSTER_PREFIX = 'mpc-'
     JOB_PREFIX = 'job-'
     MOUNT_POINT_ROOT= '/efs/'
-    
+    LAST_PARAMOUNT='mpc-$_'
+    LAST_JOB='job-$_'
