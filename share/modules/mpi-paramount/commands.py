@@ -10,14 +10,7 @@ from .module import *
 class MpiParamountParser(AbstractParser):
     def add_parser(self, commands_parser: argparse._SubParsersAction):
         # cluster start commands 
-        # start
-        # paramount_subcom_parser = commands_parser.add_parser('cluster-from-nodes', help='Start a paramount cluster from the node list')
-        #
-        # paramount_subcom_parser.add_argument('nodes', action='store', nargs='+',
-        #         help='List with the id of the nodes: node-01, node-02...')
-        #
-        # paramount_subcom_parser.set_defaults(func=self.start_paramount_cluster)
-        #
+
 
         ## Start paramount cluster from instance
         paramount_subcom_parser = commands_parser.add_parser('cluster-from-instances', help='Given an instance type(defined in .clap/config/instances.yaml) and a number \
@@ -26,7 +19,7 @@ class MpiParamountParser(AbstractParser):
                                                                                                 ')
 
         paramount_subcom_parser.add_argument('--desc', action='store', nargs='?',
-                                             help='List with the instance:number separeted by spaces (type-a:10 type-b:15 ...')
+                                             help='Nickname for this cluster')
 
         paramount_subcom_parser.add_argument('nodes', action='store', metavar='node_type:num', nargs='+',
                                              help='Nodes to be initialized of the form instance:number ')
@@ -67,7 +60,7 @@ class MpiParamountParser(AbstractParser):
                   ')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Mpi-paramount cluster id, or \'{}\' if the last one created (highest ID) should'
+                                             help='Mpi-paramount cluster id, or \'{}\' if the last one created (highest ID) should '
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
         paramount_subcom_parser.add_argument('--job_name', action='store', nargs='?',
@@ -85,7 +78,8 @@ class MpiParamountParser(AbstractParser):
                   ')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Job id')
+                                             help='Job id or \'{}\' if the last one created (highest ID) should'
+                                                  'be used'.format(Info.LAST_JOB))
 
         paramount_subcom_parser.add_argument('src', action='store',
                                              help='Source folder')
@@ -106,7 +100,8 @@ class MpiParamountParser(AbstractParser):
                          ')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Job id')
+                                             help='Job id, or \'{}\' if the last one created (highest ID) should'
+                                                  'be used'.format(Info.LAST_JOB))
 
         paramount_subcom_parser.add_argument('script', action='store',
                                              help='Compiling script to be executed')
@@ -125,7 +120,8 @@ class MpiParamountParser(AbstractParser):
                          ')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Job id')
+                                             help='Job id, or \'{}\' if the last one created (highest ID) should'
+                                                  'be used'.format(Info.LAST_JOB))
 
         paramount_subcom_parser.add_argument('script', action='store',
                                              help='Script that specifies how to run the application')
@@ -144,8 +140,8 @@ class MpiParamountParser(AbstractParser):
                                                                   'all nodes from the paramount clustster')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Job id')
-
+                                             help='Job id, or \'{}\' if the last one created (highest ID) should'
+                                                  'be used'.format(Info.LAST_JOB))
 
 
         paramount_subcom_parser.add_argument('--sub_path', action='store', nargs='?',
@@ -156,7 +152,7 @@ class MpiParamountParser(AbstractParser):
                                              help='What name should the file be, defaults to \'host\'')
 
         paramount_subcom_parser.add_argument('--mpich_style', action='store_true',
-                                             help='What name should the file be, defaults to \'host\'')
+                                             help='If the hostfile should be written in a mpich style way')
 
         paramount_subcom_parser.set_defaults(func=self.generate_host_handler)
 
@@ -165,7 +161,8 @@ class MpiParamountParser(AbstractParser):
                                                              help='Fetch the paramount info')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Job id')
+                                             help='Job id, or \'{}\' if the last one created (highest ID) should'
+                                                  'be used'.format(Info.LAST_JOB))
 
         paramount_subcom_parser.add_argument('dest', action='store',
                                              help='The directory where the logs should be saved')
@@ -212,31 +209,31 @@ class MpiParamountParser(AbstractParser):
 
         # Add nodes to existing mpi-paramount cluster
 
-        paramount_subcom_parser = commands_parser.add_parser('add-new-nodes',
-                                                             help='Given instance:number tuple this command will'
-                                                                  'start these instances then add to the given mpc '
-                                                                  'and perform a setup operation in a way that these nodes '
-                                                                  'can be successfully added to the cluster ')
-
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Paramount cluster  ID, or \'{}\' if the last one created (highest ID) should'
-                                                  'be used'.format(Info.LAST_PARAMOUNT))
-
-        paramount_subcom_parser.add_argument('--coord', action='store',
-                                             help='If set one of (or the only) node will be selected as a coordinator')
-
-        paramount_subcom_parser.add_argument('nodes', action='store', metavar='node_type:num', nargs='+',
-                                             help='Nodes to be initialized of the form instance:number ')
-
-        paramount_subcom_parser.set_defaults(func=self.add_new_node_handler)
+        # paramount_subcom_parser = commands_parser.add_parser('add-new-nodes',
+        #                                                      help='Given instance:number tuple this command will'
+        #                                                           'start these instances then add to the given mpc '
+        #                                                           'and perform a setup operation in a way that these nodes '
+        #                                                           'can be successfully added to the cluster ')
+        #
+        # paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+        #                                      help='Paramount cluster  ID, or \'{}\' if the last one created (highest ID) should'
+        #                                           'be used'.format(Info.LAST_PARAMOUNT))
+        #
+        # paramount_subcom_parser.add_argument('--coord', action='store',
+        #                                      help='If set one of (or the only) node will be selected as a coordinator')
+        #
+        # paramount_subcom_parser.add_argument('nodes', action='store', metavar='node_type:num', nargs='+',
+        #                                      help='Nodes to be initialized of the form instance:number ')
+        #
+        # paramount_subcom_parser.set_defaults(func=self.add_new_node_handler)
 
 
 
 
         paramount_subcom_parser = commands_parser.add_parser('remove-coord',
-                                                             help='Given instance:number tuple this command will'
-                                                                  'start these instances then add to the given mpc '
-                                                                  'and perform a setup operation in a way that these nodes '
+                                                             help='Given instance:number tuple this command will' \
+                                                                  'start these instances then add to the given mpc ' \
+                                                                  'and perform a setup operation in a way that these nodes ' \
                                                                   'can be successfully added to the cluster ')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
@@ -257,7 +254,7 @@ class MpiParamountParser(AbstractParser):
                                              help='Paramount cluster ID, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
-        paramount_subcom_parser.add_argument('type', metavar='ID', action='store',
+        paramount_subcom_parser.add_argument('type',  action='store',
                                              help='Given instance type which the new coordinator will be created')
 
         paramount_subcom_parser.set_defaults(func=self.add_coord_handler)

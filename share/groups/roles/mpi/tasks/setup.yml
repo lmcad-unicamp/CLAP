@@ -129,7 +129,6 @@
 
 
 
-- debug: var=mount_ip|bool
 
 - name: File system setup
   vars:

@@ -229,7 +229,7 @@ def run_script(job_id, script, subpath, exec_descr):
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
-    _job =  next(iter(repositoryJobs.get_job_data(job_id)))
+    _job =   validate_and_get_job(job_id)
     _mpcObj = validate_and_get_cluster(_job.paramount_id)
 
     _path = _job.absolutePath
@@ -284,13 +284,12 @@ def generate_hosts(job_id, _file_name, subpath,mpich_style):
 
 
 def fetch_job_paramount(job_id, dest):
-    repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
     _job =  validate_and_get_job(job_id)
     _mpcObj = validate_and_get_cluster(_job.paramount_id)
 
-    _path = _job.absolutePath + '/.paramount-logs'
+    _path = _job.absolutePath + '/.paramount-logs/*'
 
 
     extra = {}
@@ -322,13 +321,13 @@ def install_script(mpc_id, script, only_coord, additionalFile = None, path = Non
         extra.update({'src_dir': additionalFile})
     extra.update({'install_script': script})
 
-    node_ids = [_mpcObj.coordinator] if only_coord else None
+    _nodes = [_mpcObj.coordinator] + _mpcObj.slaves if not only_coord  else [_mpcObj.coordinator]
 
     cluster_module.perform_group_action(cluster_id=_mpcObj.cluster_id,
                                         group_name='mpi',
                                         action_name='install',
                                         extra_args=extra,
-                                        node_ids=node_ids
+                                        node_ids=_nodes
                                         )
 
 
@@ -513,12 +512,11 @@ def change_coordinator(mpc_id, new_coord_inst= None) -> str:
 
 
 
-def run_playbook(mpc_id, playbook_file, only_coord=None):
-    repositoryParamount = ParamountClusterRepositoryOperations()
+def run_playbook(mpc_id, playbook_file, only_coord=False):
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
     _mpcObj = validate_and_get_cluster(mpc_id)
-    _nodes = [_mpcObj.coordinator] + _mpcObj.slaves if only_coord is None else [_mpcObj.coordinator]
+    _nodes = [_mpcObj.coordinator] + _mpcObj.slaves if not only_coord  else [_mpcObj.coordinator]
 
 
     cluster_module.execute_playbook(cluster_id= _mpcObj.cluster_id,
@@ -532,7 +530,7 @@ def validate_and_get_cluster(mpc_id) -> ParamountClusterData:
     repositoryParamount = ParamountClusterRepositoryOperations()
 
     if mpc_id == Info.LAST_PARAMOUNT:
-        _mpc_id = repositoryParamount.get_newest_paramount_id()
+        _mpc_id = Info.CLUSTER_PREFIX + str(repositoryParamount.get_newest_paramount_id())
 
 
     try:
@@ -548,7 +546,7 @@ def validate_and_get_job(job_id) -> JobData:
     repositoryJob = JobDataRepositoryOperations()
 
     if job_id == Info.LAST_JOB:
-        _job_id = repositoryJob.get_newest_paramount_job_id()
+        _job_id = Info.JOB_PREFIX + str(repositoryJob.get_newest_paramount_job_id())
 
 
     try:
