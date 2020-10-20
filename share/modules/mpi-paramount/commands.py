@@ -68,6 +68,21 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.set_defaults(func=self.new_job_handler)
 
+        ## Pull files from coord #TODO: refactor to get job specific?
+        paramount_subcom_parser = commands_parser.add_parser('fetch-data-coord', help='Fetch data from coord \
+                       ')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Mpi-paramount cluster id, or \'{}\' if the last one created (highest ID) should '
+                                                  'be used'.format(Info.LAST_PARAMOUNT))
+
+        paramount_subcom_parser.add_argument('src', action='store',
+                                             help='src (on coord)')
+        paramount_subcom_parser.add_argument('dest', action='store',
+                                             help='dest (on localhost)')
+
+        paramount_subcom_parser.set_defaults(func=self.fetch_data_coord_handler)
+
         ## Listing jobs
         paramount_subcom_parser = commands_parser.add_parser('job-list', help='List started jobs')
 
@@ -317,6 +332,12 @@ class MpiParamountParser(AbstractParser):
                                 skip_mpi=namespace.skip_mpi,
                                 no_instance_key=namespace.no_instance_key)
         return
+
+
+
+    def fetch_data_coord_handler(self, namespace: argparse.Namespace):
+        fetch_data_coord(namespace.id, namespace.src, namespace.dest)
+
 
     def new_job_handler(self, namespace: argparse.Namespace):
         new_job_from_cluster(namespace.id, job_name=namespace.job_name)

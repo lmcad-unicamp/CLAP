@@ -180,7 +180,17 @@ actions:
         optional: no
 
 
-
+  fetch-data-coord:
+    playbook: roles/mpi/tasks/mpi-fetch.yml
+    description: >
+      Fetch data from coordinator
+    vars:
+      - name: src
+        description: where to get the files from coord
+        optional: no
+      - name: dest
+        description: where to save the files pulled
+        optional: no
 
 
   fetch-job-info:
@@ -197,6 +207,7 @@ actions:
       - name: job_name
         description: job id
         optional: no
+
 #      - name: cluster_name
 #        optional: no
 #      - name: cluster_descr

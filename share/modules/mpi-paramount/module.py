@@ -102,8 +102,7 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
     repository.update_paramount(_cluster)
 
     if debug:
-        _cluster = repository.get_paramount_data(paramount_id)
-        _cluster = next(iter(repository.get_paramount_data(paramount_id)))
+        _cluster = validate_and_get_cluster(paramount_id)
         print("New mount_point_partition (After updating) is {}".format(_cluster.mount_point_partition))
 
 
@@ -304,6 +303,24 @@ def fetch_job_paramount(job_id, dest):
                                         )
 
 
+def fetch_data_coord(mpc_id, src, dest):
+    cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
+
+    _mpcObj = validate_and_get_cluster(mpc_id)
+
+
+
+    extra = {}
+    extra.update({'src': src})
+    extra.update({'dest': dest})
+
+
+    cluster_module.perform_group_action(cluster_id=_mpcObj.cluster_id,
+                                        group_name='mpi',
+                                        action_name='fetch-data-coord',
+                                        extra_args=extra,
+                                        )
+
 def install_script(mpc_id, script, only_coord, additionalFile = None, path = None):
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
@@ -474,7 +491,7 @@ def change_coordinator(mpc_id, new_coord_inst= None) -> str:
     # Removes the slave and add as the coordinator
 
 
-    print("Adding the new coordinator to the mpi/coordinator group. No setup will be done")
+    #print("Adding the new coordinator to the mpi/coordinator group. No setup will be done")
 
     extra = {}
     extra.update({'mount_ip': _cluster.mount_ip})
