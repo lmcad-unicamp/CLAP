@@ -64,7 +64,7 @@ class MpiParamountParser(AbstractParser):
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
         paramount_subcom_parser.add_argument('--job_name', action='store', nargs='?',
-                                             help='Optional job name')
+                                             help='Optional job description. ')
 
         paramount_subcom_parser.set_defaults(func=self.new_job_handler)
 
@@ -295,8 +295,7 @@ class MpiParamountParser(AbstractParser):
 
 
     def start_paramount_cluster(self, namespace: argparse.Namespace):
-        # TODO: decidi começar pela start em que cria as intancias,
-        #  pois é compativel com o modulo do otavio
+
         _nodes = namespace.nodes
         _desc = namespace.desc
         _coord = namespace.coord
@@ -314,8 +313,7 @@ class MpiParamountParser(AbstractParser):
 
 
         _paramount_cluster = create_paramount(nodes=_nodes, descr=_desc, coord=_coord)
-        print("MPI-Paramount cluster created: \n")
-        print(_paramount_cluster)
+
         return
 
     def list_paramount_command(self, namespace: argparse.Namespace):

@@ -98,7 +98,6 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
 
 
     _cluster.isSetup = True
-    ######TODO: fazer update do objeto cluster
     repository.update_paramount(_cluster)
 
     if debug:
@@ -115,8 +114,15 @@ def setup_paramount_cluster(paramount_id, mount_ip, skip_mpi, no_instance_key ):
 
 
 
-def create_paramount(nodes: List[str], descr = None, coord = None) -> int:
-
+def create_paramount(nodes: List[str], descr = None, coord = None):
+    '''
+    Method that creates the paramount cluster. Basically it passes the info to the jinja template, after some
+    parsing, and then calls a write operation on the repository
+    :param nodes: The list of nodes
+    :param descr: Description of the cluster. Defaults to None
+    :param coord:  Type of the coordinator. Defaults to a randomly chosen node.
+    :return:
+    '''
 
     _type, _sizeSlaves =nodes[0].split(':')
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
@@ -151,11 +157,21 @@ def create_paramount(nodes: List[str], descr = None, coord = None) -> int:
     _paramount_cluster = repository.new_paramount_cluster(cluster_id=cluster.cluster_id, slaves=_slaves, coordinator= _coordinator, descr=descr)
     # Pega o módulo group. Este módulo é responsável por adicionar, remover e executar ações em grupo. As funções disponíveis estão em [2]
     #repository.new_paramount_cluster()
-    return _paramount_cluster
+    print("MPI-Paramount cluster created: \n")
+    print(_paramount_cluster)
+    return
 
 
 
 def new_job_from_cluster( paramount_id, job_name=None):
+    '''
+       Given a paramount cluster id, a job is created on it.
+       :param paramount_id: The paramount cluster id.
+       :param job_name: Description of the job. Defaults to None
+
+       :return:
+       '''
+
     repositoryParamount = ParamountClusterRepositoryOperations()
     _cluster= validate_and_get_cluster(paramount_id)
 
