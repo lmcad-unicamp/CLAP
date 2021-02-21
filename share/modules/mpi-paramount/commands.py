@@ -285,8 +285,8 @@ class MpiParamountParser(AbstractParser):
                                              help='Paramount cluster ID, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
-        paramount_subcom_parser.add_argument('file', metavar='ID', action='store',
-                                             help='Given instance type which the new coordinator will be created')
+        paramount_subcom_parser.add_argument('--file', action='store', nargs='?',
+                                             help='Files (if any) that should be passed to execute the script')
 
         paramount_subcom_parser.add_argument('--only_coord', action='store_true',
                                              help='If Installation script should be executed only in the coord')

@@ -37,9 +37,10 @@
       async: 3600
       poll: 0
 
+
       shell:    "cd {{ execution_dir_  }} &&
          chmod +x script@{{ start_time}} &&
-         ./script@{{ start_time}}
+         sudo ./script@{{ start_time}}
         "
       register: application_execution
 

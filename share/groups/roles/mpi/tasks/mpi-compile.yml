@@ -50,8 +50,8 @@
       copy:
         src: "{{ compile_script }}"
         dest: "{{ execution_dir }}/script@{{ start_time}}"
-    - name: Compile script (up to an hour)
-      async: 3600
+    - name: Compile script (up to two hours)
+      async: 7200
       poll: 0
 
       shell:    "cd {{ execution_dir  }} &&

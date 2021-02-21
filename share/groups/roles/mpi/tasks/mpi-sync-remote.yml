@@ -7,7 +7,7 @@
       path: "{{ execution_dir }}"
       state: directory
 
-  - name: passing file
+  - name: passing file from coord
     synchronize:
       src: "{{ src_dir }}"
       dest: "{{ execution_dir }}"
