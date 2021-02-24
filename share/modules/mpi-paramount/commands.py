@@ -25,7 +25,7 @@ class MpiParamountParser(AbstractParser):
                                              help='Nodes to be initialized of the form instance:number ')
 
         paramount_subcom_parser.add_argument('--coord', action='store', nargs='?',
-                                             help='A string containing a type (defined in .clap/config/instances.yaml to be'
+                                             help='A string containing a type (defined in .clap/config/instances.yaml to be '
                                                   'set as a coordinator')
 
         paramount_subcom_parser.set_defaults(func=self.start_paramount_cluster)
@@ -99,6 +99,9 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('src', action='store',
                                              help='Source folder')
 
+        paramount_subcom_parser.add_argument('--sub_path', action='store', nargs='?',
+                                             help='Subdirectory inside job folder where the script should be executed, if left' \
+                                                  'unspecified it will execute in the job root')
         paramount_subcom_parser.add_argument('--from_coord', action='store_true',
                                              help='Flag that indicates the the coordinator already has the files'
                                                   'somewhere  in the system, and therefore these files'
@@ -293,6 +296,15 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.set_defaults(func=self.run_playbook_handler)
 
+        paramount_subcom_parser = commands_parser.add_parser('terminate',
+                                                             help='Terminates the mpc. Effectively cleaning up the volume'\
+                                                                  'from the data created and shutting down all nodes')
+
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='mpc id, or \'{}\' if the last one created (highest ID) should'
+                                                  'be used'.format(Info.LAST_PARAMOUNT))
+        paramount_subcom_parser.set_defaults(func=self.terminate_handler)
+
 
     def start_paramount_cluster(self, namespace: argparse.Namespace):
 
@@ -316,11 +328,18 @@ class MpiParamountParser(AbstractParser):
 
         return
 
+    def terminate_handler(self, namespace: argparse.Namespace):
+        _mpc_id = namespace.id
+
+        terminate_cluster(_mpc_id)
+        return
+
     def list_paramount_command(self, namespace: argparse.Namespace):
         _clusters = list_paramount_clusters()
         print("Current mpi-paramount clusters are: \n")
         for _cluster in _clusters:
-            print('* ' + str(_cluster))
+            if _cluster.status == 'alive':
+                print('* ' + str(_cluster))
         return
 
     def setup_cluster(self, namespace: argparse.Namespace):
@@ -351,7 +370,9 @@ class MpiParamountParser(AbstractParser):
         _job_id = namespace.id
         _src = namespace.src
         _from_coord = namespace.from_coord
-        push_files(job_id=_job_id, src=_src, from_coord=_from_coord)
+        _subpath = namespace.sub_path
+
+        push_files(job_id=_job_id, src=_src, from_coord=_from_coord, subpath=_subpath)
 
     def compile_script_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id

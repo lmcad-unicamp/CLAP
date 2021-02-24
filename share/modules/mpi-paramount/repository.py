@@ -18,7 +18,7 @@ class ParamountIndexingData(AbstractEntry):
 
 
 class ParamountClusterData(AbstractEntry):
-    def __init__(self, paramount_id, cluster_id, slaves, coordinator, isSetup= False,  mount_ip= None,  no_instance_key = None, skip_mpi = None, descr=None, mount_point_partition=None, **kwargs):
+    def __init__(self, paramount_id, cluster_id, slaves, coordinator,status='alive', isSetup= False,  mount_ip= None,  no_instance_key = None, skip_mpi = None, descr=None, mount_point_partition=None, **kwargs):
         self.paramount_id = paramount_id # Id internal to cluster table
         self.cluster_id = cluster_id #Id referencing the actual cluster instance (used to perform actions)
         self.descr = descr #optional, verbal description of a cluster
@@ -30,21 +30,25 @@ class ParamountClusterData(AbstractEntry):
         self.skip_mpi = skip_mpi
         self.no_instance_key = no_instance_key
         self.isSetup = isSetup
+        self.status = status
         super(ParamountClusterData, self).__init__(**kwargs)
 
     def __repr__(self):
-        _string = "Paramount cluster of id: " +self.paramount_id + " cluster id is: "+ self.cluster_id+ " coordinator is: " +self.coordinator
-        if self.slaves and self.slaves.__len__() > 0:
-            _string = _string + " slaves are: {"
-            for _slave in self.slaves:
-                _string = _string + "{}, ".format(_slave)
+        if self.status != 'alive':
+            return ''
+        else:
+            _string = "Paramount cluster of id: " +self.paramount_id + " cluster id is: "+ self.cluster_id+ " coordinator is: " +self.coordinator
+            if self.slaves and self.slaves.__len__() > 0:
+                _string = _string + " slaves are: {"
+                for _slave in self.slaves:
+                    _string = _string + "{}, ".format(_slave)
 
-            _string = _string + "}"
+                _string = _string + "}"
 
 
-        _string =  _string + ' Jobs configured are: ' + ', '.join(self.jobs)
+            _string =  _string + ' Jobs configured are: ' + ', '.join(self.jobs)
 
-        return _string
+            return _string
 
 class ParamountClusterRepositoryOperations:
     def __init__(self, repository_name: str = 'paramount_clusters.json', repository_type: str = Defaults.REPOSITORY_TYPE, paramount_prefix = 'paramount'):

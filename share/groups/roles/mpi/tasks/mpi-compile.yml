@@ -60,7 +60,7 @@
         "
       register: application_execution
 
-    - name: 'Keep probing install progression'
+    - name: 'Keep probing compiling progression'
       async_status:
         jid: "{{ application_execution.ansible_job_id }}"
       register: job_result

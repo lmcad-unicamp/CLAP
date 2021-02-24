@@ -187,7 +187,7 @@ def new_job_from_cluster( paramount_id, job_name=None):
     repositoryParamount.update_paramount(_cluster)
 
 
-def push_files(job_id, src, from_coord):
+def push_files(job_id, src, from_coord, subpath=None):
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
@@ -195,6 +195,10 @@ def push_files(job_id, src, from_coord):
     _mpcObj = validate_and_get_cluster(_job.paramount_id)
 
     _dest = _job.absolutePath
+
+    if subpath is not None:
+        _dest = _dest  +'/' + subpath
+
 
 
     extra = {}
@@ -214,6 +218,39 @@ def push_files(job_id, src, from_coord):
                                             action_name='sync-remote',
                                             node_ids=[_mpcObj.coordinator],
                                             extra_args=extra)
+
+def terminate_cluster(mpc_id):
+    _mpcObj = validate_and_get_cluster(mpc_id)
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+    repository = ParamountClusterRepositoryOperations()
+
+
+    _mount_point_partition = _mpcObj.mount_point_partition
+
+    extra ={}
+    _all_nodes = [_mpcObj.coordinator] + _mpcObj.slaves
+    extra.update({'cluster_folder': _mount_point_partition})
+    cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
+    cluster_module.perform_group_action(cluster_id=_mpcObj.cluster_id,
+                                        group_name='mpi',
+                                        action_name='mpi-terminate',
+                                        node_ids=[_mpcObj.coordinator],
+                                        extra_args=extra)
+
+    # extra ={}
+    # extra.update({'mount_point': _mount_point_partition})
+    #
+    # cluster_module.perform_group_action(cluster_id=_mpcObj.cluster_id,
+    #                                     group_name='ec2-efs',
+    #                                     action_name='unmount',
+    #                                     node_ids=_all_nodes,
+    #                                     extra_args=extra)
+
+    node_module.stop_nodes(_all_nodes)
+    _mpcObj.status = 'dead'
+    repository.update_paramount(_mpcObj)
+
+    return
 
 def compile_script(job_id, script, subpath):
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')

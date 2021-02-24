@@ -208,6 +208,16 @@ actions:
         description: job id
         optional: no
 
+  mpi-terminate:
+    playbook: roles/mpi/tasks/mpi-terminate.yml
+    description: >
+      Terminate a mpc
+    vars:
+      - name: cluster_folder
+        description: The mpc folder
+        optional: no
+
+
 #      - name: cluster_name
 #        optional: no
 #      - name: cluster_descr
