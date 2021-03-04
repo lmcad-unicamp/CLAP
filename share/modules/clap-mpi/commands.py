@@ -13,7 +13,7 @@ class MpiParamountParser(AbstractParser):
 
 
         ## Start paramount cluster from instance
-        paramount_subcom_parser = commands_parser.add_parser('cluster-from-instances', help='Given an instance type(defined in .clap/config/instances.yaml) and a number \
+        paramount_subcom_parser = commands_parser.add_parser('create-cluster', help='Given an instance type(defined in .clap/config/instances.yaml) and a number \
            this command will create a number of nodes matching the instance and add them to a new paramount cluster. If the optional command '
                                                                                             ' --coord is set then the coordinator will be set to this specific type, else (default) a random node is selected as a coordinator" \
                                                                                                 ')
@@ -84,12 +84,12 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.fetch_data_coord_handler)
 
         ## Listing jobs
-        paramount_subcom_parser = commands_parser.add_parser('job-list', help='List started jobs')
+        paramount_subcom_parser = commands_parser.add_parser('list-jobs', help='List started jobs')
 
         paramount_subcom_parser.set_defaults(func=self.list_jobs_handler)
 
         ## push files
-        paramount_subcom_parser = commands_parser.add_parser('push-files', help='Push files to job a directory \
+        paramount_subcom_parser = commands_parser.add_parser('push-job-files', help='Push files to job a directory \
                   ')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
@@ -131,7 +131,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.compile_script_handler)
 
         # Running script
-        paramount_subcom_parser = commands_parser.add_parser('_old_run-script',
+        paramount_subcom_parser = commands_parser.add_parser('run-task',
                                                              help='Run a job, if no sub_path is specified the script'
                                                                   ' will be executed in the job root, otherwise it will be acessed in a subdirectory'
                                                                   'specified in the sub argument \
