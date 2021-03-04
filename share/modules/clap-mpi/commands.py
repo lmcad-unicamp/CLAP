@@ -31,7 +31,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.start_paramount_cluster)
 
         ## Listing paramount clusters
-        paramount_subcom_parser = commands_parser.add_parser('list', help='List started mpi-paramount clusters')
+        paramount_subcom_parser = commands_parser.add_parser('list', help='List started clap-mpi clusters')
 
         paramount_subcom_parser.set_defaults(func=self.list_paramount_command)
 
@@ -131,7 +131,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.compile_script_handler)
 
         # Running script
-        paramount_subcom_parser = commands_parser.add_parser('run-script',
+        paramount_subcom_parser = commands_parser.add_parser('_old_run-script',
                                                              help='Run a job, if no sub_path is specified the script'
                                                                   ' will be executed in the job root, otherwise it will be acessed in a subdirectory'
                                                                   'specified in the sub argument \
@@ -189,18 +189,18 @@ class MpiParamountParser(AbstractParser):
 
         # Install script
 
-        paramount_subcom_parser = commands_parser.add_parser('install-script',
-                                                             help='Install a script in every node')
+        paramount_subcom_parser = commands_parser.add_parser('run-script',
+                                                             help='Runs a script on every node (or only on the coordinator, if wanted')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Mpc on which the installation should happen, or \'{}\' if the last one created (highest ID) should'
+                                             help='Mpc on which the script  should be run, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
-        paramount_subcom_parser.add_argument('script', action='store',
-                                             help='Installation script')
+        paramount_subcom_parser.add_argument('script_path', action='store',
+                                             help='The full directory where the script resides on the localhost (your machine)')
 
         paramount_subcom_parser.add_argument('--only_coord', action='store_true',
-                                             help='If Installation script should be executed only in the coord')
+                                             help='If the script should be executed only in the coord')
 
         paramount_subcom_parser.add_argument('--file', action='store', nargs='?',
                                              help='Files (if any) that should be passed to execute the script')
@@ -214,7 +214,7 @@ class MpiParamountParser(AbstractParser):
         # Run command
 
         paramount_subcom_parser = commands_parser.add_parser('run-command',
-                                                             help='Install a script in every node')
+                                                             help='Runs the shell command passed as string in every node')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
                                              help='Paramount cluster ID, or \'{}\' if the last one created (highest ID) should'
@@ -223,9 +223,12 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('command', action='store',
                                              help='Simple quote delimitated command')
 
+        paramount_subcom_parser.add_argument('--only_coord', action='store_true',
+                                             help='If the command should be executed only in the coord')
+
         paramount_subcom_parser.set_defaults(func=self.run_command_handler)
 
-        # Add nodes to existing mpi-paramount cluster
+        # Add nodes to existing clap-mpi cluster
 
         # paramount_subcom_parser = commands_parser.add_parser('add-new-nodes',
         #                                                      help='Given instance:number tuple this command will'
@@ -289,7 +292,7 @@ class MpiParamountParser(AbstractParser):
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
         paramount_subcom_parser.add_argument('--file', action='store', nargs='?',
-                                             help='Files (if any) that should be passed to execute the script')
+                                             help='Files (if any) that should be passed to execute the playbook')
 
         paramount_subcom_parser.add_argument('--only_coord', action='store_true',
                                              help='If Installation script should be executed only in the coord')
@@ -336,7 +339,7 @@ class MpiParamountParser(AbstractParser):
 
     def list_paramount_command(self, namespace: argparse.Namespace):
         _clusters = list_paramount_clusters()
-        print("Current mpi-paramount clusters are: \n")
+        print("Current clap-mpi clusters are: \n")
         for _cluster in _clusters:
             if _cluster.status == 'alive':
                 print('* ' + str(_cluster))
@@ -361,7 +364,7 @@ class MpiParamountParser(AbstractParser):
 
     def list_jobs_handler(self, namespace: argparse.Namespace):
         _jobs = list_jobs()
-        print("Current mpi-paramount clusters are: \n")
+        print("Current clap-mpi clusters are: \n")
         for _job in _jobs:
             print('* ' + str(_job))
         return
@@ -402,7 +405,7 @@ class MpiParamountParser(AbstractParser):
     def install_script_handler(self, namespace: argparse.Namespace):
 
         _mpc_id = namespace.id
-        _script = namespace.script
+        _script = namespace.script_path
         _file = namespace.file
         _path = namespace.path
         _only_coord= namespace.only_coord
@@ -412,8 +415,9 @@ class MpiParamountParser(AbstractParser):
     def run_command_handler(self, namespace: argparse.Namespace):
         _mpc_id = namespace.id
         _command = namespace.command
+        _only_coord = namespace.only_coord
 
-        run_command(mpc_id=_mpc_id, command=_command)
+        run_command(mpc_id=_mpc_id, command=_command, only_coord=_only_coord)
 
     def add_new_node_handler(self, namespace: argparse.Namespace):
         _mpc_id = namespace.id
