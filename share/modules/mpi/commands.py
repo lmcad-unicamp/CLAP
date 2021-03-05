@@ -175,8 +175,8 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.generate_host_handler)
 
         # Fetch paramount  info
-        paramount_subcom_parser = commands_parser.add_parser('fetch-paramount',
-                                                             help='Fetch the paramount info')
+        paramount_subcom_parser = commands_parser.add_parser('fetch-tasks-results',
+                                                             help='Fetch the tasks\' results ')
 
         paramount_subcom_parser.add_argument('id', metavar='JOBID', action='store',
                                              help='Job id, or \'{}\' if the last one created (highest ID) should'
@@ -185,7 +185,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('dest', action='store',
                                              help='The directory where the logs should be saved')
 
-        paramount_subcom_parser.set_defaults(func=self.fetch_paramount_handler)
+        paramount_subcom_parser.set_defaults(func=self.fetch_tasks_handler)
 
         # Install script
 
@@ -252,33 +252,34 @@ class MpiParamountParser(AbstractParser):
 
 
         paramount_subcom_parser = commands_parser.add_parser('remove-coord',
-                                                             help='Given instance:number tuple this command will' \
-                                                                  'start these instances then add to the given mpc ' \
-                                                                  'and perform a setup operation in a way that these nodes ' \
-                                                                  'can be successfully added to the cluster ')
+                                                             help='Removes the current coord, adding a new coord (if the user '
+                                                                  'desires) or simply promoves a slave as coordinator (default) ')
 
         paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
                                              help='Mcluster ID, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
+        paramount_subcom_parser.add_argument('--add_coord', metavar='NEW_COORD_TYPE', action='store', nargs='?',
+                                             help='Subdirectory inside job folder where the script should be executed, if left ' \
+                                                  'unspecified it will execute in the job root')
 
         paramount_subcom_parser.set_defaults(func=self.remove_coord_handler)
 
 
-        paramount_subcom_parser = commands_parser.add_parser('add-coord',
-                                                             help='Given instance:number tuple this command will'
-                                                                  'start these instances then add to the given mpc '
-                                                                  'and perform a setup operation in a way that these nodes '
-                                                                  'can be successfully added to the cluster ')
-
-        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
-                                             help='Mcluster ID, or \'{}\' if the last one created (highest ID) should'
-                                                  'be used'.format(Info.LAST_PARAMOUNT))
-
-        paramount_subcom_parser.add_argument('type',  action='store',
-                                             help='Given instance type which the new coordinator will be created')
-
-        paramount_subcom_parser.set_defaults(func=self.add_coord_handler)
+        # paramount_subcom_parser = commands_parser.add_parser('add-coord',
+        #                                                      help='Given instance:number tuple this command will'
+        #                                                           'start these instances then add to the given mpc '
+        #                                                           'and perform a setup operation in a way that these nodes '
+        #                                                           'can be successfully added to the cluster ')
+        #
+        # paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
+        #                                      help='Mcluster ID, or \'{}\' if the last one created (highest ID) should'
+        #                                           'be used'.format(Info.LAST_PARAMOUNT))
+        #
+        # paramount_subcom_parser.add_argument('type',  action='store',
+        #                                      help='Given instance type which the new coordinator will be created')
+        #
+        # paramount_subcom_parser.set_defaults(func=self.add_coord_handler)
 
 
 
@@ -397,7 +398,7 @@ class MpiParamountParser(AbstractParser):
         _mpich_style = namespace.mpich_style
         generate_hosts(job_id=_job_id, _file_name=_file_name, subpath=_subpath, mpich_style=_mpich_style)
 
-    def fetch_paramount_handler(self, namespace: argparse.Namespace):
+    def fetch_tasks_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
         _dest = namespace.dest
         fetch_job_paramount(job_id=_job_id, dest=_dest)
@@ -438,17 +439,18 @@ class MpiParamountParser(AbstractParser):
 
     def remove_coord_handler(self, namespace: argparse.Namespace):
         _mpc_id = namespace.id
-
-        _newCoord = change_coordinator(_mpc_id)
-        print("Coordinator successfully removed, new coordinator is `{}` ".format(_newCoord))
-
-
-    def add_coord_handler(self, namespace: argparse.Namespace):
-        _mpc_id = namespace.id
-        _new_coord= namespace.type
+        _new_coord= namespace.add_coord
 
         _newCoord = change_coordinator(_mpc_id, _new_coord)
         print("Coordinator successfully removed, new coordinator is `{}` ".format(_newCoord))
+
+
+    # def add_coord_handler(self, namespace: argparse.Namespace):
+    #     _mpc_id = namespace.id
+    #     _new_coord= namespace.type
+    #
+    #     _newCoord = change_coordinator(_mpc_id, _new_coord)
+    #     print("Coordinator successfully removed, new coordinator is `{}` ".format(_newCoord))
 
 
     def run_playbook_handler(self, namespace: argparse.Namespace):

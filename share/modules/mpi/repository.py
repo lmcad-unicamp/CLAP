@@ -37,7 +37,7 @@ class ParamountClusterData(AbstractEntry):
         if self.status != 'alive':
             return ''
         else:
-            _string = "Paramount cluster of id: " +self.paramount_id + " cluster id is: "+ self.cluster_id+ " coordinator is: " +self.coordinator
+            _string = "MPI cluster (mcluster) of id: " +self.paramount_id + " cluster id is: "+ self.cluster_id+ " coordinator is: " +self.coordinator
             if self.slaves and self.slaves.__len__() > 0:
                 _string = _string + " slaves are: {"
                 for _slave in self.slaves:
