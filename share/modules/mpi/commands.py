@@ -47,7 +47,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('--mount_ip', action='store', nargs='?',
                                              help='Mount ip address')
 
-        paramount_subcom_parser.add_argument('--skip-mpi', action='store_true',
+        paramount_subcom_parser.add_argument('--skip_mpi', action='store_true',
                                              help='Flag to skip mpi related package installation ')
 
         paramount_subcom_parser.add_argument('--no_instance_key', action='store_true',
@@ -141,7 +141,7 @@ class MpiParamountParser(AbstractParser):
                                              help='Job id, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_JOB))
 
-        paramount_subcom_parser.add_argument('script', action='store',
+        paramount_subcom_parser.add_argument('script_path', action='store',
                                              help='Script that specifies how to run the application')
 
         paramount_subcom_parser.add_argument('--sub_path', action='store', nargs='?',
@@ -385,7 +385,7 @@ class MpiParamountParser(AbstractParser):
 
     def run_script_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
-        _script_path = namespace.script
+        _script_path = namespace.script_path
         _subpath = namespace.sub_path
         _exec_descr = namespace.exec_desr
         run_script(job_id=_job_id, script=_script_path, subpath=_subpath, exec_descr=_exec_descr)
