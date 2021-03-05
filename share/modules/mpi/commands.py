@@ -111,18 +111,15 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.push_files_handler)
 
         ## compile
-        paramount_subcom_parser = commands_parser.add_parser('compile-script',
-                                                             help='Compile a job, if no sub_path is specified the script'
-                                                                  ' will be executed in the job root, otherwise it will be acessed in a subdirectory'
-                                                                  'specified in the sub argument \
-                         ')
+        paramount_subcom_parser = commands_parser.add_parser('setup-job',
+                                                             help='Used to setup the job (example: compiling the application) ')
 
         paramount_subcom_parser.add_argument('id', metavar='JOBID', action='store',
                                              help='Job id, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_JOB))
 
-        paramount_subcom_parser.add_argument('script', action='store',
-                                             help='Compiling script to be executed')
+        paramount_subcom_parser.add_argument('script_path', action='store',
+                                             help='Script path which will be used to setup the job')
 
         paramount_subcom_parser.add_argument('--sub_path', action='store', nargs='?',
                                              help='Subdirectory inside job folder where the script should be executed, if left' \
