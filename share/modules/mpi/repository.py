@@ -6,6 +6,9 @@ from clap.common.repository import (AbstractEntry, AbstractRepository, Repositor
                                     generic_write_entry)
 from clap.common.utils import log, path_extend
 from clap.common.config import Defaults
+from clap.common.factory import PlatformFactory
+
+
 from typing import List
 from .conf import Info
 
@@ -34,14 +37,23 @@ class ParamountClusterData(AbstractEntry):
         super(ParamountClusterData, self).__init__(**kwargs)
 
     def __repr__(self):
+        node_module = PlatformFactory.get_module_interface().get_module('node')
+
         if self.status != 'alive':
             return ''
         else:
-            _string = "MPI cluster (mcluster) of id: " +self.paramount_id + " cluster id is: "+ self.cluster_id+ " coordinator is: " +self.coordinator
+            _coord_node_obj = node_module.list_nodes([self.coordinator])
+            _coord_type = _coord_node_obj[0].instance_type
+            _string = "MPI cluster (mcluster) of id: " +self.paramount_id + " cluster id is: "+ self.cluster_id+ " coordinator is: " +self.coordinator \
+                      +  ' (type: {})'.format(_coord_type)
             if self.slaves and self.slaves.__len__() > 0:
                 _string = _string + " slaves are: {"
+
                 for _slave in self.slaves:
-                    _string = _string + "{}, ".format(_slave)
+                    _node_obj = node_module.list_nodes([_slave])
+                    _slave_type = _node_obj[0].instance_type
+                    _string = _string + "{} (type: {}), ".format(_slave, _slave_type)
+
 
                 _string = _string + "}"
 

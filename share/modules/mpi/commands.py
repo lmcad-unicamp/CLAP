@@ -31,7 +31,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.start_paramount_cluster)
 
         ## Listing paramount clusters
-        paramount_subcom_parser = commands_parser.add_parser('list-clusters', help='List started clap-mpi clusters')
+        paramount_subcom_parser = commands_parser.add_parser('list-mclusters', help='List started clap-mpi clusters')
 
         paramount_subcom_parser.set_defaults(func=self.list_paramount_command)
 
@@ -340,7 +340,7 @@ class MpiParamountParser(AbstractParser):
 
     def list_paramount_command(self, namespace: argparse.Namespace):
         _clusters = list_paramount_clusters()
-        print("Current clap-mpi clusters are: \n")
+        print("Active mclusters are: \n")
         for _cluster in _clusters:
             if _cluster.status == 'alive':
                 print('* ' + str(_cluster))
