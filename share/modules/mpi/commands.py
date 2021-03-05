@@ -31,7 +31,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.start_paramount_cluster)
 
         ## Listing paramount clusters
-        paramount_subcom_parser = commands_parser.add_parser('list', help='List started clap-mpi clusters')
+        paramount_subcom_parser = commands_parser.add_parser('list-clusters', help='List started clap-mpi clusters')
 
         paramount_subcom_parser.set_defaults(func=self.list_paramount_command)
 
