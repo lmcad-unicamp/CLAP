@@ -40,7 +40,7 @@ class MpiParamountParser(AbstractParser):
             this command will create a number of nodes matching the instance and add them to a new Mcluster. \
                 ')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
                                              help='Mcluster id, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
@@ -59,7 +59,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser = commands_parser.add_parser('start-job', help='Start a new job at the desired cluster \
                   ')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
                                              help='Mclusterluster id, or \'{}\' if the last one created (highest ID) should '
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
@@ -72,7 +72,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser = commands_parser.add_parser('fetch-data-coord', help='Fetch data from coord \
                        ')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
                                              help='Mcluster  id, or \'{}\' if the last one created (highest ID) should '
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
@@ -92,7 +92,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser = commands_parser.add_parser('push-job-files', help='Push files to job a directory \
                   ')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+        paramount_subcom_parser.add_argument('id', metavar='JOBID', action='store',
                                              help='Job id or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_JOB))
 
@@ -117,7 +117,7 @@ class MpiParamountParser(AbstractParser):
                                                                   'specified in the sub argument \
                          ')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+        paramount_subcom_parser.add_argument('id', metavar='JOBID', action='store',
                                              help='Job id, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_JOB))
 
@@ -137,7 +137,7 @@ class MpiParamountParser(AbstractParser):
                                                                   'specified in the sub argument \
                          ')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+        paramount_subcom_parser.add_argument('id', metavar='JOBID', action='store',
                                              help='Job id, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_JOB))
 
@@ -157,7 +157,7 @@ class MpiParamountParser(AbstractParser):
                                                              help='Generate a hostfile containing ' \
                                                                   'all nodes from the mcluster')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+        paramount_subcom_parser.add_argument('id', metavar='JOBID', action='store',
                                              help='Job id, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_JOB))
 
@@ -178,7 +178,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser = commands_parser.add_parser('fetch-paramount',
                                                              help='Fetch the paramount info')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+        paramount_subcom_parser.add_argument('id', metavar='JOBID', action='store',
                                              help='Job id, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_JOB))
 
@@ -192,7 +192,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser = commands_parser.add_parser('run-script',
                                                              help='Runs a script on every node (or only on the coordinator, if wanted')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
                                              help='Mpc on which the script  should be run, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
@@ -216,8 +216,8 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser = commands_parser.add_parser('run-command',
                                                              help='Runs the shell command passed as string in every node')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Paramount cluster ID, or \'{}\' if the last one created (highest ID) should'
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
+                                             help='Mcluster ID, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
         paramount_subcom_parser.add_argument('command', action='store',
@@ -257,8 +257,8 @@ class MpiParamountParser(AbstractParser):
                                                                   'and perform a setup operation in a way that these nodes ' \
                                                                   'can be successfully added to the cluster ')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Paramount cluster ID, or \'{}\' if the last one created (highest ID) should'
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
+                                             help='Mcluster ID, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
 
@@ -271,8 +271,8 @@ class MpiParamountParser(AbstractParser):
                                                                   'and perform a setup operation in a way that these nodes '
                                                                   'can be successfully added to the cluster ')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Paramount cluster ID, or \'{}\' if the last one created (highest ID) should'
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
+                                             help='Mcluster ID, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
         paramount_subcom_parser.add_argument('type',  action='store',
@@ -287,8 +287,8 @@ class MpiParamountParser(AbstractParser):
                                                                   'If --only_coord evoker, executes only in the  coordinator node'
                                                                   ' ')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Paramount cluster ID, or \'{}\' if the last one created (highest ID) should'
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
+                                             help='Mcluster ID, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
         paramount_subcom_parser.add_argument('--file', action='store', nargs='?',
@@ -303,8 +303,8 @@ class MpiParamountParser(AbstractParser):
                                                              help='Terminates the mpc. Effectively cleaning up the volume'\
                                                                   'from the data created and shutting down all nodes')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='mpc id, or \'{}\' if the last one created (highest ID) should'
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
+                                             help='Mcluster id, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
         paramount_subcom_parser.set_defaults(func=self.terminate_handler)
 
