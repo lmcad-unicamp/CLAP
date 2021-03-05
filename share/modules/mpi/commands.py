@@ -56,7 +56,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.setup_cluster)
 
         ## Start a job
-        paramount_subcom_parser = commands_parser.add_parser('start-job', help='Start a new job at the desired cluster \
+        paramount_subcom_parser = commands_parser.add_parser('create-job', help='Creates a new job at the desired cluster \
                   ')
 
         paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
