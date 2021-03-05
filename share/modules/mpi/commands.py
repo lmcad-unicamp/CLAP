@@ -14,7 +14,7 @@ class MpiParamountParser(AbstractParser):
 
         ## Start paramount cluster from instance
         paramount_subcom_parser = commands_parser.add_parser('create-cluster', help='Given an instance type(defined in .clap/config/instances.yaml) and a number \
-           this command will create a number of nodes matching the instance and add them to a new paramount cluster. If the optional command '
+           this command will create a number of nodes matching the instance and add them to a new Mcluster. If the optional command '
                                                                                             ' --coord is set then the coordinator will be set to this specific type, else (default) a random node is selected as a coordinator" \
                                                                                                 ')
 
@@ -37,11 +37,11 @@ class MpiParamountParser(AbstractParser):
 
         ## Setup cluster
         paramount_subcom_parser = commands_parser.add_parser('setup', help='Given an instance type(defined in instance.yml) and a number \
-            this command will create a number of nodes matching the instance and add them to a new paramount cluster. \
+            this command will create a number of nodes matching the instance and add them to a new Mcluster. \
                 ')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Mpi-paramount cluster id, or \'{}\' if the last one created (highest ID) should'
+                                             help='Mcluster id, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
         paramount_subcom_parser.add_argument('--mount_ip', action='store', nargs='?',
@@ -60,7 +60,7 @@ class MpiParamountParser(AbstractParser):
                   ')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Mpi-paramount cluster id, or \'{}\' if the last one created (highest ID) should '
+                                             help='Mclusterluster id, or \'{}\' if the last one created (highest ID) should '
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
         paramount_subcom_parser.add_argument('--job_name', action='store', nargs='?',
@@ -73,7 +73,7 @@ class MpiParamountParser(AbstractParser):
                        ')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
-                                             help='Mpi-paramount cluster id, or \'{}\' if the last one created (highest ID) should '
+                                             help='Mcluster  id, or \'{}\' if the last one created (highest ID) should '
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
         paramount_subcom_parser.add_argument('src', action='store',
@@ -155,7 +155,7 @@ class MpiParamountParser(AbstractParser):
         # Generate host
         paramount_subcom_parser = commands_parser.add_parser('generate-hosts',
                                                              help='Generate a hostfile containing ' \
-                                                                  'all nodes from the paramount clustster')
+                                                                  'all nodes from the mcluster')
 
         paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
                                              help='Job id, or \'{}\' if the last one created (highest ID) should'
