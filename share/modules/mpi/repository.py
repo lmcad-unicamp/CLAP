@@ -8,10 +8,32 @@ from clap.common.utils import log, path_extend
 from clap.common.config import Defaults
 from clap.common.factory import PlatformFactory
 
-
+import enum
 from typing import List
 from .conf import Info
 
+
+class Mcluster_states(enum.Enum):
+   MCLUSTER_RUNNING = 1
+   MCLUSTER_PAUSED = 2
+   MCLUSTER_TERMINATED= 3
+
+Mcluster_states_dict = {
+    1: 'RUNNING',
+    2: 'PAUSED',
+    3: 'TERMINATED'
+
+}
+
+
+
+def translate_state(mcluster_state):
+    _str = 'UNK STATE'
+    _state = Mcluster_states_dict.get(mcluster_state, None)
+    if _state is None:
+        return _str
+    else:
+        return  _state
 
 class ParamountIndexingData(AbstractEntry):
 
@@ -21,7 +43,8 @@ class ParamountIndexingData(AbstractEntry):
 
 
 class ParamountClusterData(AbstractEntry):
-    def __init__(self, paramount_id, cluster_id, slaves, coordinator,status='alive', isSetup= False,  mount_ip= None,  no_instance_key = None, skip_mpi = None, descr=None, mount_point_partition=None, **kwargs):
+    def __init__(self, paramount_id, cluster_id, slaves, coordinator, status=1, isSetup= False,  mount_ip= None, \
+                 no_instance_key = None, skip_mpi = None, descr=None, mount_point_partition=None, **kwargs):
         self.paramount_id = paramount_id # Id internal to cluster table
         self.cluster_id = cluster_id #Id referencing the actual cluster instance (used to perform actions)
         self.descr = descr #optional, verbal description of a cluster
@@ -39,12 +62,14 @@ class ParamountClusterData(AbstractEntry):
     def __repr__(self):
         node_module = PlatformFactory.get_module_interface().get_module('node')
 
-        if self.status != 'alive':
+        if self.status == Mcluster_states.MCLUSTER_TERMINATED:
             return ''
         else:
             _coord_node_obj = node_module.list_nodes([self.coordinator])
             _coord_type = _coord_node_obj[0].instance_type
-            _string = "MPI cluster (mcluster) of id: " +self.paramount_id + " cluster id is: "+ self.cluster_id+ " coordinator is: " +self.coordinator \
+            _string = "MPI cluster (mcluster) of id: \'" +self.paramount_id + '\'.' " Cluster id: \'"+ self.cluster_id+ '\'. '+\
+                      "Status: "+ translate_state(self.status) +  '. ' \
+                      "Coordinator is: " +self.coordinator \
                       +  ' (type: {})'.format(_coord_type)
             if self.slaves and self.slaves.__len__() > 0:
                 _string = _string + " slaves are: {"
@@ -58,9 +83,20 @@ class ParamountClusterData(AbstractEntry):
                 _string = _string + "}"
 
 
-            _string =  _string + ' Jobs configured are: ' + ', '.join(self.jobs)
+            _string =  _string + '. Jobs configured are: ' + ', '.join(self.jobs)
 
             return _string
+
+    def change_state(self, new_state_enum):
+        '''Methods use the enum (due to ease and flexibility), however the ParamountClusterData cannot have status as enum
+            because a enum is not JSON serializable, so this method converts a enum to the number
+
+
+        '''
+
+        #_state_number = Mcluster_states_dict.get(new_state_enum.value)
+        self.status = new_state_enum.value
+
 
 class ParamountClusterRepositoryOperations:
     def __init__(self, repository_name: str = 'paramount_clusters.json', repository_type: str = Defaults.REPOSITORY_TYPE, paramount_prefix = 'paramount'):
@@ -106,7 +142,7 @@ class ParamountClusterRepositoryOperations:
                 conn.create_element('control', ParamountIndexingData())
             check_and_create_table(conn, 'paramount', _typeOfCreateClusterData)
 
-    def new_paramount_cluster(self, cluster_id,slaves, coordinator, descr=None) -> ParamountClusterData:
+    def new_paramount_cluster(self, cluster_id,slaves, coordinator, descr=None, status=1) -> ParamountClusterData:
 
         _cluster = None
         with get_repository_connection(self.repository) as conn:
@@ -120,7 +156,8 @@ class ParamountClusterRepositoryOperations:
                                 coordinator=coordinator,
                                 cluster_id= cluster_id,
                                 paramount_id= Info.CLUSTER_PREFIX + str( _control.current_index) ,
-                                descr=descr)
+                                descr=descr,
+                                status=status)
             generic_write_entry(_cluster, conn, 'paramount', create=True)
 
         return _cluster

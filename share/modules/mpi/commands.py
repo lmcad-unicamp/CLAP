@@ -128,8 +128,8 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.compile_script_handler)
 
         # Running script
-        paramount_subcom_parser = commands_parser.add_parser('run-task',
-                                                             help='Run a job, if no sub_path is specified the script'
+        paramount_subcom_parser = commands_parser.add_parser('run-job-task',
+                                                             help='Run a job\'s task, if no sub_path is specified the script'
                                                                   ' will be executed in the job root, otherwise it will be acessed in a subdirectory'
                                                                   'specified in the sub argument \
                          ')
@@ -150,7 +150,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.run_script_handler)
 
         # Generate host
-        paramount_subcom_parser = commands_parser.add_parser('generate-hosts',
+        paramount_subcom_parser = commands_parser.add_parser('gen-job-hostfile',
                                                              help='Generate a hostfile containing ' \
                                                                   'all nodes from the mcluster')
 
@@ -297,7 +297,7 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.set_defaults(func=self.run_playbook_handler)
 
-        paramount_subcom_parser = commands_parser.add_parser('terminate',
+        paramount_subcom_parser = commands_parser.add_parser('terminate-cluster',
                                                              help='Terminates the mpc. Effectively cleaning up the volume'\
                                                                   'from the data created and shutting down all nodes')
 
@@ -306,6 +306,23 @@ class MpiParamountParser(AbstractParser):
                                                   'be used'.format(Info.LAST_PARAMOUNT))
         paramount_subcom_parser.set_defaults(func=self.terminate_handler)
 
+
+        paramount_subcom_parser = commands_parser.add_parser('pause-cluster',
+                                                             help='Pauses the cluster')
+
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
+                                             help='Mcluster id, or \'{}\' if the last one created (highest ID) should'
+                                                  'be used'.format(Info.LAST_PARAMOUNT))
+        paramount_subcom_parser.set_defaults(func=self.pause_handler)
+
+
+        paramount_subcom_parser = commands_parser.add_parser('resume-cluster',
+                                                             help='Resumes the cluster')
+
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
+                                             help='Mcluster id, or \'{}\' if the last one created (highest ID) should'
+                                                  'be used'.format(Info.LAST_PARAMOUNT))
+        paramount_subcom_parser.set_defaults(func=self.resume_handler)
 
     def start_paramount_cluster(self, namespace: argparse.Namespace):
 
@@ -335,11 +352,24 @@ class MpiParamountParser(AbstractParser):
         terminate_cluster(_mpc_id)
         return
 
-    def list_paramount_command(self, namespace: argparse.Namespace):
+    def pause_handler(self, namespace: argparse.Namespace):
+        _mpc_id = namespace.id
+
+        pause_cluster(_mpc_id)
+        return
+
+
+    def resume_handler(self, namespace: argparse.Namespace):
+        _mpc_id = namespace.id
+
+        resume_cluster(_mpc_id)
+        return
+
+    def list_paramount_command(self, namespace: argparse.Namespace ):
         _clusters = list_paramount_clusters()
         print("Active mclusters are: \n")
         for _cluster in _clusters:
-            if _cluster.status == 'alive':
+            if _cluster.status != Mcluster_states.MCLUSTER_TERMINATED.value:
                 print('* ' + str(_cluster))
         return
 
@@ -377,7 +407,7 @@ class MpiParamountParser(AbstractParser):
 
     def compile_script_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
-        _script_path = namespace.script
+        _script_path = namespace.script_path
         _subpath = namespace.sub_path
         compile_script(job_id=_job_id, script=_script_path, subpath=_subpath)
 

@@ -154,7 +154,8 @@ def create_paramount(nodes: List[str], descr = None, coord = None):
     _slaves  =[ x.node_id for x  in list(filter(lambda x: x.tags['cluster_node_type'][0].split(':')[1] == Info.SLAVES, nodes)) ]
 
 
-    _paramount_cluster = repository.new_paramount_cluster(cluster_id=cluster.cluster_id, slaves=_slaves, coordinator= _coordinator, descr=descr)
+    _paramount_cluster = repository.new_paramount_cluster(cluster_id=cluster.cluster_id, slaves=_slaves, \
+                                                          coordinator= _coordinator, descr=descr, status= 1)
     # Pega o módulo group. Este módulo é responsável por adicionar, remover e executar ações em grupo. As funções disponíveis estão em [2]
     #repository.new_paramount_cluster()
     print("MPI-Paramount cluster created: \n")
@@ -188,7 +189,6 @@ def new_job_from_cluster( paramount_id, job_name=None):
 
 
 def push_files(job_id, src, from_coord, subpath=None):
-    repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
     _job =  validate_and_get_job(job_id)
@@ -247,10 +247,47 @@ def terminate_cluster(mpc_id):
     #                                     extra_args=extra)
 
     node_module.stop_nodes(_all_nodes)
-    _mpcObj.status = 'dead'
+    _mpcObj.change_state(Mcluster_states.MCLUSTER_TERMINATED)
     repository.update_paramount(_mpcObj)
 
     return
+
+
+
+def pause_cluster(mpc_id):
+    _mpcObj = validate_and_get_cluster(mpc_id)
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+    repository = ParamountClusterRepositoryOperations()
+
+
+    _mount_point_partition = _mpcObj.mount_point_partition
+
+    _all_nodes = [_mpcObj.coordinator] + _mpcObj.slaves
+
+
+    node_module.pause_nodes(_all_nodes)
+    _mpcObj.change_state(Mcluster_states.MCLUSTER_PAUSED)
+    repository.update_paramount(_mpcObj)
+
+    return
+
+def resume_cluster(mpc_id):
+    _mpcObj = validate_and_get_cluster(mpc_id)
+    node_module = PlatformFactory.get_module_interface().get_module('node')
+    repository = ParamountClusterRepositoryOperations()
+
+
+    _mount_point_partition = _mpcObj.mount_point_partition
+
+    _all_nodes = [_mpcObj.coordinator] + _mpcObj.slaves
+
+
+    node_module.resume_nodes(_all_nodes)
+    _mpcObj.change_state(Mcluster_states.MCLUSTER_RUNNING)
+    repository.update_paramount(_mpcObj)
+
+    return
+
 
 def compile_script(job_id, script, subpath):
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
