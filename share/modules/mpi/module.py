@@ -219,7 +219,7 @@ def push_files(job_id, src, from_coord, subpath=None):
                                             node_ids=[_mpcObj.coordinator],
                                             extra_args=extra)
 
-def terminate_cluster(mpc_id):
+def terminate_cluster(mpc_id, _remove_data_from_sfs=False):
     _mpcObj = validate_and_get_cluster(mpc_id)
     node_module = PlatformFactory.get_module_interface().get_module('node')
     repository = ParamountClusterRepositoryOperations()
@@ -230,6 +230,8 @@ def terminate_cluster(mpc_id):
     extra ={}
     _all_nodes = [_mpcObj.coordinator] + _mpcObj.slaves
     extra.update({'cluster_folder': _mount_point_partition})
+    if _remove_data_from_sfs:
+        extra.update({'remove_data_from_sfs':'True'})
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
     cluster_module.perform_group_action(cluster_id=_mpcObj.cluster_id,
                                         group_name='mpi',

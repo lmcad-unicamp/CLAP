@@ -15,6 +15,7 @@
       file:
         state: absent
         path: "{{ cluster_folder }}/"
+    when:  remove_data_from_sfs|bool
 
 - hosts: all
   gather_facts: yes

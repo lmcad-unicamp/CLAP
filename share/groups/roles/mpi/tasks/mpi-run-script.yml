@@ -36,15 +36,15 @@
 
     - name: Setting CLAPP_MPI_CLUSTER, CLAPP_MPI_JOB CLAPP_MPI_TASK
       set_fact:
-          CLAPP_MPI_TASK: "{{ job_full_path }}/tasks/task@{{ start_time }}"
-          CLAPP_MPI_JOB:  "{{ job_full_path }}"
-          CLAPP_MPI_CLUSTER: "{{ mcluster_dir }}"     #Enviroment var set up at cluster setup time
+          CLAPP_MPI_TASK_DIR: "{{ job_full_path }}/tasks/task@{{ start_time }}"
+          CLAPP_MPI_JOB_DIR:  "{{ job_full_path }}"
+          CLAPP_MPI_CLUSTER_DIR: "{{ mcluster_dir }}"     #Enviroment var set up at cluster setup time
 
 
-    - debug: msg={{ CLAPP_MPI_TASK }}
-    - debug: msg={{ CLAPP_MPI_JOB }}
+    - debug: msg={{ CLAPP_MPI_TASK_DIR }}
+    - debug: msg={{ CLAPP_MPI_JOB_DIR }}
 
-    - debug: msg={{ CLAPP_MPI_CLUSTER }}
+    - debug: msg={{ CLAPP_MPI_CLUSTER_DIR }}
 
 
     - name: Generate output files
@@ -56,7 +56,7 @@
     - name: Append execution specific info
       blockinfile:
         marker: ""
-        path: "{{ CLAPP_MPI_TASK }}/meta.info"
+        path: "{{ CLAPP_MPI_TASK_DIR }}/meta.info"
         block: |
 
            exec_descr={{ exec_descr }}
@@ -80,14 +80,14 @@
       async: 3600
       poll: 0
 
-      shell:  "export CLAPP_MPI_TASK={{ CLAPP_MPI_TASK }} &&
-              export CLAPP_MPI_JOB={{ CLAPP_MPI_JOB }} &&
-              export CLAPP_MPI_CLUSTER={{ CLAPP_MPI_CLUSTER }} &&
+      shell:  "export CLAPP_MPI_TASK_DIR={{ CLAPP_MPI_TASK_DIR }} &&
+              export CLAPP_MPI_JOB_DIR={{ CLAPP_MPI_JOB_DIR }} &&
+              export CLAPP_MPI_CLUSTER_DIR={{ CLAPP_MPI_CLUSTER_DIR }} &&
               cd {{ execution_dir  }} &&
               chmod +x TASK-RUN.sh &&
-              ./TASK-RUN.sh > {{ CLAPP_MPI_TASK }}/result.out
-              2> {{ CLAPP_MPI_TASK }}/result.err &&
-              mv TASK-RUN.sh {{ CLAPP_MPI_TASK }}/task-run-script.sh "
+              ./TASK-RUN.sh > {{ CLAPP_MPI_TASK_DIR }}/result.out
+              2> {{ CLAPP_MPI_TASK_DIR }}/result.err &&
+              mv TASK-RUN.sh {{ CLAPP_MPI_TASK_DIR }}/task-run-script.sh "
       register: application_execution
 
 

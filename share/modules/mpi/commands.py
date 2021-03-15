@@ -36,7 +36,7 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.list_paramount_command)
 
         ## Setup cluster
-        paramount_subcom_parser = commands_parser.add_parser('setup', help='Given an instance type(defined in instance.yml) and a number \
+        paramount_subcom_parser = commands_parser.add_parser('setup-mcluster', help='Given an instance type(defined in instance.yml) and a number \
             this command will create a number of nodes matching the instance and add them to a new Mcluster. \
                 ')
 
@@ -199,10 +199,10 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('--only_coord', action='store_true',
                                              help='If the script should be executed only in the coord')
 
-        paramount_subcom_parser.add_argument('--file', action='store', nargs='?',
+        paramount_subcom_parser.add_argument('--file', metavar='LOCAL_FILE_PATH', action='store', nargs='?',
                                              help='Files (if any) that should be passed to execute the script')
 
-        paramount_subcom_parser.add_argument('--path', action='store', nargs='?',
+        paramount_subcom_parser.add_argument('--path', metavar='REMOTE_DIR_PATH', action='store', nargs='?',
                                              help='Subdirectory inside job folder where the script should be executed, if left ' \
                                                   'unspecified it will execute in the job root')
 
@@ -256,14 +256,23 @@ class MpiParamountParser(AbstractParser):
                                              help='Mcluster ID, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
-        paramount_subcom_parser.add_argument('--add_coord', metavar='NEW_COORD_TYPE', action='store', nargs='?',
-                                             help='Subdirectory inside job folder where the script should be executed, if left ' \
-                                                  'unspecified it will execute in the job root')
 
         paramount_subcom_parser.set_defaults(func=self.remove_coord_handler)
 
+        paramount_subcom_parser = commands_parser.add_parser('add-coord',
+                                                             help='Given instance:number tuple this command will'
+                                                                  'start these instances then add to the given mpc '
+                                                                  'and perform a setup operation in a way that these nodes '
+                                                                  'can be successfully added to the cluster ')
 
+        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+                                             help='Paramount cluster ID, or \'{}\' if the last one created (highest ID) should'
+                                                  'be used'.format(Info.LAST_PARAMOUNT))
 
+        paramount_subcom_parser.add_argument('type', action='store',
+                                             help='Given instance type which the new coordinator will be created')
+
+        paramount_subcom_parser.set_defaults(func=self.add_coord_handler)
 
 
         paramount_subcom_parser = commands_parser.add_parser('run-playbook',
@@ -290,6 +299,10 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
                                              help='Mcluster id, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
+        paramount_subcom_parser.add_argument('--remove_data_from_sfs', action='store_true',
+                                             help='If set the files from the cluster on \
+                                              the shared filesystem will be removed \
+                                               (defaults to simply keep there)')
         paramount_subcom_parser.set_defaults(func=self.terminate_handler)
 
 
@@ -334,8 +347,9 @@ class MpiParamountParser(AbstractParser):
 
     def terminate_handler(self, namespace: argparse.Namespace):
         _mpc_id = namespace.id
+        _remove_data_from_sfs = namespace.remove_data_from_sfs
 
-        terminate_cluster(_mpc_id)
+        terminate_cluster(_mpc_id, _remove_data_from_sfs=_remove_data_from_sfs)
         return
 
     def pause_handler(self, namespace: argparse.Namespace):
