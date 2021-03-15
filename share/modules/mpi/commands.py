@@ -13,7 +13,7 @@ class MpiParamountParser(AbstractParser):
 
 
         ## Start paramount cluster from instance
-        paramount_subcom_parser = commands_parser.add_parser('create-cluster', help='Given an instance type(defined in .clap/config/instances.yaml) and a number \
+        paramount_subcom_parser = commands_parser.add_parser('create-mcluster', help='Given an instance type(defined in .clap/config/instances.yaml) and a number \
            this command will create a number of nodes matching the instance and add them to a new Mcluster. If the optional command '
                                                                                             ' --coord is set then the coordinator will be set to this specific type, else (default) a random node is selected as a coordinator" \
                                                                                                 ')
@@ -263,20 +263,6 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.set_defaults(func=self.remove_coord_handler)
 
 
-        # paramount_subcom_parser = commands_parser.add_parser('add-coord',
-        #                                                      help='Given instance:number tuple this command will'
-        #                                                           'start these instances then add to the given mpc '
-        #                                                           'and perform a setup operation in a way that these nodes '
-        #                                                           'can be successfully added to the cluster ')
-        #
-        # paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
-        #                                      help='Mcluster ID, or \'{}\' if the last one created (highest ID) should'
-        #                                           'be used'.format(Info.LAST_PARAMOUNT))
-        #
-        # paramount_subcom_parser.add_argument('type',  action='store',
-        #                                      help='Given instance type which the new coordinator will be created')
-        #
-        # paramount_subcom_parser.set_defaults(func=self.add_coord_handler)
 
 
 
@@ -297,7 +283,7 @@ class MpiParamountParser(AbstractParser):
 
         paramount_subcom_parser.set_defaults(func=self.run_playbook_handler)
 
-        paramount_subcom_parser = commands_parser.add_parser('terminate-cluster',
+        paramount_subcom_parser = commands_parser.add_parser('destroy-mcluster',
                                                              help='Terminates the mpc. Effectively cleaning up the volume'\
                                                                   'from the data created and shutting down all nodes')
 

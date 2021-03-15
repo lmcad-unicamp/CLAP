@@ -20,7 +20,7 @@
       state: directory
     delegate_to: localhost
 
-  - name: "Fetch paramount info (.log and .err)"
+  - name: "Fetch tasks info (.out and .err)"
     become: no
     synchronize:
       src: "{{ src }}"

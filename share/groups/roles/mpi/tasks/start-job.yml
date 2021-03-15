@@ -11,23 +11,29 @@
       state: directory
 
 
-  - name: Creates directory which will contain meta infos
+#  - name: Creates directory which will contain meta infos
+#    file:
+#      path: "{{ directory }}/.job-infos"
+#      state: directory
+#    register: folder_created
+#    ignore_errors: yes
+
+  - name: Create meta info file
     file:
-      path: "{{ directory }}/.paramount-logs"
+      path: "{{ directory }}/info.txt"
+      state: touch
+
+  - name: Creates directory which will contain tasks infos
+    file:
+      path: "{{ directory }}/tasks"
       state: directory
     register: folder_created
     ignore_errors: yes
 
-  - name: Create meta info file
-    file:
-      path: "{{ directory }}/.paramount-logs/info.txt"
-      state: touch
-
-
   - name: "Save job and cluster info in the info file (for data processing purposes)"
     blockinfile:
       marker: ""
-      path: "{{ directory }}/.paramount-logs/info.txt"
+      path: "{{ directory }}/info.txt"
       block: |
         ClusterName: {{ cluster_name }}{% if  cluster_descr  is defined %}({{ cluster_descr }} ) {% endif %}
 

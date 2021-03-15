@@ -12,7 +12,7 @@
   - name: passing file
     synchronize:
       src: "{{ run_script }}"
-      dest: "{{ execution_dir }}PARAMOUNT-RUN.sh"
+      dest: "{{ execution_dir }}/TASK-RUN.sh"
 
 
 
@@ -28,37 +28,70 @@
       set_fact:
         start_time:  "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
 
+#    - name: Generate output files
+#      shell:    "cd {{ job_full_path }}/.paramount-logs/ &&
+#         mkdir  paramount@{{ start_time}} &&
+#        cp info.txt  paramount@{{ start_time }}/meta.info"
+
+
+    - name: Setting CLAPP_MPI_CLUSTER, CLAPP_MPI_JOB CLAPP_MPI_TASK
+      set_fact:
+          CLAPP_MPI_TASK: "{{ job_full_path }}/tasks/task@{{ start_time }}"
+          CLAPP_MPI_JOB:  "{{ job_full_path }}"
+          CLAPP_MPI_CLUSTER: "{{ mcluster_dir }}"     #Enviroment var set up at cluster setup time
+
+
+    - debug: msg={{ CLAPP_MPI_TASK }}
+    - debug: msg={{ CLAPP_MPI_JOB }}
+
+    - debug: msg={{ CLAPP_MPI_CLUSTER }}
+
+
     - name: Generate output files
-      shell:    "cd {{ job_full_path }}/.paramount-logs/ &&
-         mkdir  paramount@{{ start_time}} &&
-        cp info.txt  paramount@{{ start_time }}/meta.info"
+      shell:    "cd {{ job_full_path }}/tasks/ &&
+         mkdir  task@{{ start_time}} &&
+         cp {{ job_full_path }}/info.txt  task@{{ start_time }}/meta.info
+         "
 
     - name: Append execution specific info
       blockinfile:
         marker: ""
-        path: "{{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/meta.info"
+        path: "{{ CLAPP_MPI_TASK }}/meta.info"
         block: |
 
            exec_descr={{ exec_descr }}
       when: exec_descr is defined
 
-    - name: get time
-      shell: "echo \"tempo e {{ start_time }}\" "
+
+
+#    - name: Run application
+#      async: 3600
+#      poll: 0
+#
+#      shell:    "cd {{ execution_dir  }} &&
+#       chmod +x PARAMOUNT-RUN.sh &&
+#       ./PARAMOUNT-RUN.sh > {{ CLAPP_MPI_TASK }}/result.out
+#       2> {{ CLAPP_MPI_TASK }}/result.err | tee "
+#      register: application_execution
+#
+#    - debug: msg={{ application_execution.stdout }}
 
     - name: Run application
       async: 3600
       poll: 0
 
-      shell:    "cd {{ execution_dir  }} &&
-       chmod +x PARAMOUNT-RUN.sh &&
-       ./PARAMOUNT-RUN.sh > {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/paramount.txt
-       2> {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/paramount.err"
+      shell:  "export CLAPP_MPI_TASK={{ CLAPP_MPI_TASK }} &&
+              export CLAPP_MPI_JOB={{ CLAPP_MPI_JOB }} &&
+              export CLAPP_MPI_CLUSTER={{ CLAPP_MPI_CLUSTER }} &&
+              cd {{ execution_dir  }} &&
+              chmod +x TASK-RUN.sh &&
+              ./TASK-RUN.sh > {{ CLAPP_MPI_TASK }}/result.out
+              2> {{ CLAPP_MPI_TASK }}/result.err &&
+              mv TASK-RUN.sh {{ CLAPP_MPI_TASK }}/task-run-script.sh "
       register: application_execution
 
 
-
 #
-#- name: Generate output files
 #    async: 3600
 #    poll: 0
 #    vars:
@@ -68,7 +101,7 @@
 #     chmod +x PARAMOUNT-RUN.sh &&
 #     mkdir  {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }} &&
 #     cp {{ job_full_path }}/.paramount-logs/info.meta  {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/meta.info &&
-#      ./PARAMOUNT-RUN.sh > {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/paramount.log
+#      ./PARAMOUNT-RUN.sh > {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/task.log
 #      2> {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/paramount.err"
 #    register: application_execution
 

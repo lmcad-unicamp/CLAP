@@ -81,21 +81,6 @@
     register: resultMPI
 
 
-#  - name: testing env variables
-#    become: yes
-#    shell: |
-#        prefix="-I" &&
-#        parsed=$(mpicc --showme:compile) &&
-#        stringarray=($parsed) &&
-#        stringTemp="" &&
-#        for i in "${stringarray[@]}"
-#        do
-#           stringTemp+="${i/#$prefix} "
-#        done
-#
-#        stringTemp+=$'\n'
-#        echo $stringTemp
-#
 
   - name: Properly setting env
     script: environment.sh
@@ -116,7 +101,6 @@
 
 
 
-#TODO: criar dicionario com o tipo da instancia e como o pacote se chama no respectivo sistema, na instancia AMI linux o nome eh "openmpi-devel", Com ubuntu o nome eh: openmpi-bin
 
 
 
@@ -152,15 +136,14 @@
         state: directory
         mode: "0755"
 
-  - name: Creates group directory
+  - name: Creates mcluster directory and sets the environment variable on each node
     become: no
     file:
       path: ~/efs/{{ nodes_group_name }}
       state: directory
       mode: "0755"
+
 #  when:  mount_ip is defined
-
-
 
 
 

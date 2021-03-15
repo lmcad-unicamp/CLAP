@@ -321,7 +321,7 @@ def run_script(job_id, script, subpath, exec_descr):
     _job =   validate_and_get_job(job_id)
     _mpcObj = validate_and_get_cluster(_job.paramount_id)
 
-    _path = _job.absolutePath
+    _path = _job.absolutePath + '/'
     if  subpath is not  None:
         _path = _path + '/' + subpath
 
@@ -330,6 +330,7 @@ def run_script(job_id, script, subpath, exec_descr):
     extra.update({'run_script': script})
     extra.update({'execution_dir': _path})
     extra.update({'job_full_path': _job.absolutePath})
+    extra.update({'mcluster_dir': _mpcObj.mount_point_partition})
 
     if exec_descr is not None:
         extra.update({'exec_descr': exec_descr})
@@ -378,7 +379,7 @@ def fetch_job_paramount(job_id, dest):
     _job =  validate_and_get_job(job_id)
     _mpcObj = validate_and_get_cluster(_job.paramount_id)
 
-    _path = _job.absolutePath + '/.paramount-logs/*'
+    _path = _job.absolutePath + '/tasks/*'
 
 
     extra = {}
