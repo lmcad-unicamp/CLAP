@@ -466,9 +466,8 @@ class MpiParamountParser(AbstractParser):
 
     def remove_coord_handler(self, namespace: argparse.Namespace):
         _mpc_id = namespace.id
-        _new_coord= namespace.add_coord
 
-        _newCoord = change_coordinator(_mpc_id, _new_coord)
+        _newCoord = change_coordinator(_mpc_id)
         print("Coordinator successfully removed, new coordinator is `{}` ".format(_newCoord))
 
 

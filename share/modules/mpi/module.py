@@ -561,7 +561,6 @@ def change_coordinator(mpc_id, new_coord_inst= None) -> str:
         with open(filename, 'w') as f:
             f.write(rendered_template)
         data = cluster_module.update_cluster_config([filename],cluster_id=_cluster.cluster_id )
-        print('debug')
 
 
 
