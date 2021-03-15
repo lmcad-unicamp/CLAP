@@ -265,11 +265,11 @@ class MpiParamountParser(AbstractParser):
                                                                   'and perform a setup operation in a way that these nodes '
                                                                   'can be successfully added to the cluster ')
 
-        paramount_subcom_parser.add_argument('id', metavar='ID', action='store',
+        paramount_subcom_parser.add_argument('id', metavar='MCLUSTERID', action='store',
                                              help='Paramount cluster ID, or \'{}\' if the last one created (highest ID) should'
                                                   'be used'.format(Info.LAST_PARAMOUNT))
 
-        paramount_subcom_parser.add_argument('type', action='store',
+        paramount_subcom_parser.add_argument('coord_type', action='store',
                                              help='Given instance type which the new coordinator will be created')
 
         paramount_subcom_parser.set_defaults(func=self.add_coord_handler)
@@ -472,12 +472,12 @@ class MpiParamountParser(AbstractParser):
         print("Coordinator successfully removed, new coordinator is `{}` ".format(_newCoord))
 
 
-    # def add_coord_handler(self, namespace: argparse.Namespace):
-    #     _mpc_id = namespace.id
-    #     _new_coord= namespace.type
-    #
-    #     _newCoord = change_coordinator(_mpc_id, _new_coord)
-    #     print("Coordinator successfully removed, new coordinator is `{}` ".format(_newCoord))
+    def add_coord_handler(self, namespace: argparse.Namespace):
+        _mpc_id = namespace.id
+        _new_coord= namespace.coord_type
+
+        _newCoord = change_coordinator(_mpc_id, _new_coord)
+        print("Coordinator successfully removed, new coordinator is `{}` ".format(_newCoord))
 
 
     def run_playbook_handler(self, namespace: argparse.Namespace):
