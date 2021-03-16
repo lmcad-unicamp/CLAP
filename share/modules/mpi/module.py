@@ -316,7 +316,7 @@ def compile_script(job_id, script, subpath):
 
 
 
-def run_script(job_id, script, subpath, exec_descr):
+def run_script(job_id, script, subpath, exec_descr, run_on_taskdir):
     repositoryJobs = JobDataRepositoryOperations()
     cluster_module = PlatformFactory.get_module_interface().get_module('cluster')
 
@@ -324,11 +324,14 @@ def run_script(job_id, script, subpath, exec_descr):
     _mpcObj = validate_and_get_cluster(_job.paramount_id)
 
     _path = _job.absolutePath + '/'
+    extra = {}
+
     if  subpath is not  None:
         _path = _path + '/' + subpath
 
+    if run_on_taskdir:
+        extra.update({'run_on_taskdir': 'True'})
 
-    extra = {}
     extra.update({'run_script': script})
     extra.update({'execution_dir': _path})
     extra.update({'job_full_path': _job.absolutePath})
@@ -336,6 +339,9 @@ def run_script(job_id, script, subpath, exec_descr):
 
     if exec_descr is not None:
         extra.update({'exec_descr': exec_descr})
+
+
+
 
     cluster_module.perform_group_action(cluster_id= _mpcObj.cluster_id,
                                         group_name= 'mpi',

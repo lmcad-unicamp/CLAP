@@ -141,12 +141,14 @@ class MpiParamountParser(AbstractParser):
         paramount_subcom_parser.add_argument('script_path', action='store',
                                              help='Script that specifies how to run the application')
 
-        paramount_subcom_parser.add_argument('--sub_path', action='store', nargs='?',
+        paramount_subcom_parser.add_argument('--run_on_path', metavar='SUB_PATH',action='store', nargs='?',
                                              help='Subdirectory inside job folder where the script should be executed, if left ' \
                                                   'unspecified it will execute in the job root')
         paramount_subcom_parser.add_argument('--exec_desr', action='store', nargs='?',
                                              help='Description of this specific execution (problem size, algorithm used...)')
 
+        paramount_subcom_parser.add_argument('--run_on_taskdir', action='store', nargs='?',
+                                             help='Flag that specifies if the application should run on the respective task folder')
         paramount_subcom_parser.set_defaults(func=self.run_script_handler)
 
         # Generate host
@@ -414,8 +416,12 @@ class MpiParamountParser(AbstractParser):
     def run_script_handler(self, namespace: argparse.Namespace):
         _job_id = namespace.id
         _script_path = namespace.script_path
-        _subpath = namespace.sub_path
+        _subpath = namespace.run_on_path
         _exec_descr = namespace.exec_desr
+        _run_on_task_dir = namespace.run_on_taskdir
+        if _run_on_task_dir and (_subpath is not None):
+            raise Exception("You cannot simultaneously specify run_on_taskdir and a subpath on the jobfolder")
+
         run_script(job_id=_job_id, script=_script_path, subpath=_subpath, exec_descr=_exec_descr)
 
     def generate_host_handler(self, namespace: argparse.Namespace):

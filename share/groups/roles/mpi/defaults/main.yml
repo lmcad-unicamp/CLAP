@@ -3,4 +3,5 @@ skip_mpi: False
 use_instance_key: True
 no_setup: False
 remove_data_from_sfs: False
+run_on_taskdir: False
 #Filesystem path, any implementation other
