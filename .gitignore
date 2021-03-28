@@ -1,9 +1,3 @@
-install.sh
-update.sh
-
-__pycache__/
-.idea/
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -18,8 +12,6 @@ eggs/
 sdist/
 var/
 *.egg-info/
-*.egg
-downloads/
 
 # Unit test / coverage reports
 htmlcov/
@@ -53,4 +45,7 @@ clap-env/
 .vscode/*
 .idea/
 .vscode/launch.json
-.vscode/launch.json
+.vscode/settings.json
+
+# OTHERS
+.pytest_cache/

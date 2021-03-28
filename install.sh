@@ -14,11 +14,11 @@ function abort() {
 	exit 1
 }
 
-green_print "Creating clap virtualenv..."
-virtualenv -p python3 clap-env || abort "Creating venv"
+green_print "Creating clap's virtualenv..."
+python3 -m venv clap-env || abort "Creating venv"
 echo "export CLAP=$PWD" >> clap-env/bin/activate || abort "Error writting on activate"
 echo "export CLAP_PATH=$CLAP_PATH" >> clap-env/bin/activate || abort "Error writting on activate"
-#echo "export PATH=\$PATH:$PWD" >> clap-env/bin/activate || abort "Error writting on activate"
+echo "export PATH=\$PATH:$PWD" >> clap-env/bin/activate || abort "Error writting on activate"
 source clap-env/bin/activate || abort "Activating venv"
 green_print "OK"
 
@@ -26,23 +26,21 @@ green_print "Upgrading PIP..."
 pip install --upgrade 'pip>=9.0.0' || abort "Upgrading PIP"
 green_print "OK"
 
-green_print "Installing clap...."
-pip --no-cache-dir install . || abort "Installing clap..."
+green_print "Installing clap's requirements...."
+pip install -r requirements.txt || abort "Installing clap requirements..."
 green_print "OK"
 
-echo 'eval "$(register-python-argcomplete clapp)"' >> clap-env/bin/activate || abort "Error writting on activate"
+# echo 'eval "$(register-python-argcomplete clapp)"' >> clap-env/bin/activate || abort "Error writting on activate"
 
 green_print "Creating default folders"
 green_print "Using default CLAP path: $CLAP_PATH"
 mkdir -p $CLAP_PATH/configs/
 mkdir -p $CLAP_PATH/configs/clusters/
-mkdir -p $CLAP_PATH/modules/
 mkdir -p $CLAP_PATH/groups/
 mkdir -p $CLAP_PATH/private/
 mkdir -p $CLAP_PATH/storage/
-mkdir -p $CLAP_PATH/storage/clusters.d
 cp -r -n ./share/configs/ $CLAP_PATH
 cp -r ./share/groups/ $CLAP_PATH
-cp -r ./share/modules/ $CLAP_PATH
 
 green_print "OK"
+green_print "Use: 'source ./clap-env/bin/activate' to use CLAP"

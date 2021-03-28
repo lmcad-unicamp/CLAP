@@ -1,0 +1,6 @@
+---
+- gather_facts: False
+  hosts: all
+  tasks:
+  - name: Testing SSH Connection...
+    shell: "echo OK"

@@ -1,0 +1,48 @@
+---
+- gather_facts: no
+  hosts: localhost
+  tasks:
+  - name: {{ task_name }}
+    register: ec2_vals
+    ec2: 
+      key_name: {{ keypair_name }}
+      instance_type: {{ instance_type }}
+      image: {{ image_id }}
+      wait: {{ wait }}
+      wait_timeout: {{ instance_wait_timeout }}
+      group: {{ security_group }}
+{% if spot_price is defined %}
+      spot_price: {{ spot_price }}
+      spot_wait_timeout: {{ spot_timeout }}
+      instance_initiated_shutdown_behavior: terminate
+      count_tag: {{ count_tag }}
+      exact_count: {{ count }}
+{% else %}
+      count: {{ count }}
+{% endif %}
+      instance_tags: 
+{% for key, val in instance_tags.items() %}
+        {{key}}: {{val}}
+{% endfor %}
+{% if placement_group is defined %}
+      placement_group: {{ placement_group }}
+{% endif %}
+{% if vpc_subnet_id is defined %}
+      vpc_subnet_id: {{ vpc_subnet_id }}
+      assign_public_ip: yes
+{% endif %}
+{% if device_name is defined %}
+      volumes:
+      - device_name: {{ device_name }}
+        delete_on_termination: true
+        volume_type: {{ volume_type }}
+{% if volume_size is defined %}
+        volume_size: {{ volume_size }}
+{% endif %}
+{% if snapshot is defined %}
+        snapshot: {{ snapshot }}
+{% endif %}
+{% if iops is defined %}
+        iops: {{ iops }}
+{% endif %}
+{% endif %}

@@ -1,6 +1,0 @@
-:mod:`clap.app.server.exceptions.exceptions`
-============================================
-
-.. py:module:: clap.app.server.exceptions.exceptions
-
-

@@ -6,7 +6,6 @@ with open("version.txt", "r") as f:
     version = f.read()
 
 setuptools.setup(
-    scripts=['clapp'],
     name="clap",
     version=version,
     author="Otavio Napoli",

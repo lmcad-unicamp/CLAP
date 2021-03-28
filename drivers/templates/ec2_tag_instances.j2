@@ -1,0 +1,15 @@
+- gather_facts: no
+  hosts: localhost
+  tasks: 
+  - name: {{ task_check_name }}
+    vars:
+      names: 
+      {% for item in names %}
+      - id: {{item.id}}
+        name: {{item.name}}
+      {% endfor %}
+    loop: "{{ '{{' }} names {{ '}}' }}"
+    ec2_tag:
+      resource: "{{ '{{' }} item.id {{ '}}' }}"
+      tags:
+        Name: "{{ '{{' }} item.name {{ '}}' }}"

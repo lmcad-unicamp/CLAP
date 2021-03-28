@@ -118,16 +118,18 @@
   vars:
 
 #      group_name: "{{ '/' + nodes_group_name | default('') }}"
-      efs_mount_point: "~{{ user }}/efs"
+      mount_point: "~{{ user }}/efs"
+      mount_owner: "ubuntu"
+      mount_group: "ubuntu"
+      mount_permissions: "0755"
       user: "ubuntu"
-      group: "ubuntu"
-      mount_permissions: "0755"   
+      group: "ubuntu"   
   block:  
   - name: Including efs
     include_role:
           #become_user: "ubuntu"
       name: 'ec2-efs'
-      tasks_from: main
+      tasks_from: mount
 
   - name: Creates directory
     become: no

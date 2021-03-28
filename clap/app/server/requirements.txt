@@ -1,5 +1,0 @@
-Flask
-Bootstrap-Flask
-Flask-SQLAlchemy
-Flask-WTF
-python-socketio

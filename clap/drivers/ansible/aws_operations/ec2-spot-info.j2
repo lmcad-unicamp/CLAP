@@ -1,8 +1,0 @@
----
-- gather_facts: {{ gather_facts }}
-  hosts: {{ hosts }}
-  tasks: 
-  - name: {{ task_name }}
-    ec2_instance_info: 
-      filters:
-        {{ tag_name }}: {{ tag_val }}

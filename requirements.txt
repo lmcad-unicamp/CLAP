@@ -11,6 +11,15 @@ netaddr
 paramiko>=2.7
 schema
 subprocess32
+ipykernel
+jinja2>=2.7
+names
+sqlitedict
+marshmallow
+marshmallow_dataclass
+pytest
+numpy
+typeguard
 
 # AWS requirements
 pycrypto
@@ -28,11 +37,3 @@ argcomplete
 sphinx
 sphinx-autoapi
 sphinx_rtd_theme
-
-# Server app
-Flask
-Bootstrap-Flask
-Flask-SQLAlchemy
-Flask-WTF
-python-socketio
-

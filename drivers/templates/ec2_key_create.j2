@@ -1,0 +1,18 @@
+---
+- gather_facts: no
+  hosts: localhost
+  tasks: 
+  - name: Create an EC2 key
+    register: ec2_key
+    ec2_key:
+      name: {{ keypair_name }}
+  - name: Check keypair existence at server and at host
+    when: not ec2_key.changed
+    fail:
+      msg: The keypair {{ keypair_name }} exists in the server but not in our computer. Please remove the keypair at server or locate it at your computer.
+  - name: Store the created cluster's private EC2 key at CLAP private folder
+    when: ec2_key.changed
+    copy:
+      content: "{{ '{{' }} ec2_key.key.private_key {{ '}}' }}"
+      dest: {{ key_destination }}
+      mode: 0600

@@ -1,27 +1,7 @@
 {
     "python.pythonPath": "clap-env/bin/python",
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true,
-    "restructuredtext.confPath": "${workspaceFolder}/docs/source",
-    "cSpell.enableFiletypes": [
-        "!c",
-        "!cpp",
-        "!csharp",
-        "!css",
-        "!javascript",
-        "!javascriptreact",
-        "!python"
-    ],
-    "cSpell.words": [
-        "clapp",
-        "jobmanager",
-        "taskmanager",
-        "workdir"
-    ],
-    "spellright.language": [],
-    "spellright.documentTypes": [
-        "markdown",
-        "latex",
-        "plaintext"
+    "python.linting.pylintArgs": [
+        "--init-hook",
+        "import sys; sys.path.insert(0, '.')"
     ]
 }

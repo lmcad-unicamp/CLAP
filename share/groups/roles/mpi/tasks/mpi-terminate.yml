@@ -4,10 +4,11 @@
 - hosts: coordinator
   gather_facts: yes  
   become: no
+  vars:
+      remove_data_from_sfs: no
   tasks:
 #Besides executing the script, it will properly create the paramount(both .log and .err files) and the meta
 # info file which contains the semantics/categorization of this execution (for data analysis purposes)
-
   - name: Deleting the data from the volume
     block:
 
