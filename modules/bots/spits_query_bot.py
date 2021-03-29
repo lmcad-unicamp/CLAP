@@ -38,16 +38,16 @@ class SpitsMetricsRepositoryOperator(RepositoryOperator):
     def get_metric_id(self):
         return f'{self.metric_prefix}-{time.time()}'
 
-    def upsert_metric(self, d: dict):
+    def upsert(self, d: dict):
         with self.repository.connect(self.metrics_table) as db:
             metric_id = self.get_metric_id
             db.upsert(metric_id, d)
 
-    def get_metric(self, metric_id: str) -> dict:
+    def get(self, metric_id: str) -> dict:
         with self.repository.connect(self.metrics_table) as db:
             return db.get(metric_id) 
 
-    def get_all_metrics(self) -> Dict[str, dict]:
+    def get_all(self) -> Dict[str, dict]:
         with self.repository.connect(self.metrics_table) as db:
             return db.get_all()
 
@@ -95,4 +95,4 @@ class SpitsQueryBot(Bot):
                     instance_config_id=node.configuration.instance.instance_config_id,
                     time=m['time']))
 
-        self.repository.upsert_metric(dict(d))
+        self.repository.upsert(dict(d))
