@@ -6,9 +6,9 @@ import jinja2
 from typing import List, Any, Dict, Tuple, Union
 from dataclasses import dataclass, asdict, field
 
-from common.clap import AbstractModule, Runner
+from common.provider import AbstractModule, Runner
 from common.repository import RepositoryController, Repository, InvalidEntryError, SQLiteRepository
-from common.utils import get_logger, get_random_name, path_extend, Serializable, Singleton, tmpdir
+from common.utils import get_logger, get_random_name, path_extend, Dictable, Singleton, tmpdir
 from common.config import Config as BaseDefaults
 
 from modules.node import NodeModule
@@ -54,7 +54,7 @@ class JobIndexingData:
     current_index: int = 0
 
 @dataclass
-class ParamountClusterData(Serializable):
+class ParamountClusterData(Dictable):
     paramount_id: str
     cluster_id: str
     description: str = None
@@ -79,7 +79,7 @@ class ParamountClusterData(Serializable):
         return cluster
 
 @dataclass
-class JobData(Serializable):
+class JobData(Dictable):
     job_id: str
     paramount_id: str
     name: str = None

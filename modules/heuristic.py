@@ -9,7 +9,7 @@ from collections import defaultdict
 from dataclasses import dataclass, asdict, field
 from typing import Dict, Any, List, Tuple, Type
 
-from common.clap import AbstractModule
+from common.provider import AbstractModule
 from common.schemas import InstanceInfo
 from common.utils import default_dict_to_dict, get_logger
 from modules.cluster import ClusterModule

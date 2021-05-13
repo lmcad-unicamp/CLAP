@@ -112,7 +112,7 @@ class SQLiteRepository(Repository):
         return list(self.sqlite_repository.keys())
 
     def update(self, key: str, update_obj: dict):
-        obj = self.sqlite_repository[key] = obj
+        self.sqlite_repository[key] = update_obj
 
     def upsert(self, key: str, obj: dict):
         self.sqlite_repository[key] = obj
@@ -156,6 +156,7 @@ class RepositoryController:
         self.repository = repository
         self.metadata_table = metadata_table
 
+    # TODO may generate a race condition. Increment must be atomic
     def increment_key(self, key: str) -> int:
         with self.repository.connect(self.metadata_table) as db:
             try:

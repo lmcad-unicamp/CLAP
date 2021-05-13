@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 
-from common.clap import AbstractModule
+from common.provider import AbstractModule
 from common.utils import get_logger
 from modules.group import GroupModule
 

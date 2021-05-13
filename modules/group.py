@@ -5,7 +5,7 @@ from typing import List, Dict, Union, Optional
 from dataclasses import dataclass, field
 from marshmallow_dataclass import class_schema
 
-from common.clap import AbstractModule, Runner
+from common.provider import AbstractModule, Runner
 from common.config import Config as BaseDefaults
 from common.utils import path_extend, yaml_load, get_logger, Singleton
 from modules.node import NodeModule

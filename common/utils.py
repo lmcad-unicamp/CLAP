@@ -108,7 +108,7 @@ def get_logger(name):
     return logging.getLogger(f'{APP_NAME}.{name}')
 
 
-class Serializable:
+class Dictable:
     @staticmethod
     @abstractmethod
     def from_dict(d: dict):
@@ -117,3 +117,4 @@ class Serializable:
     @abstractmethod
     def to_dict(self):
         pass
+

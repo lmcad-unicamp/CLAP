@@ -4,7 +4,7 @@ from typing import List, Any
 from dataclasses import dataclass, field, asdict
 
 from common.repository import RepositoryController
-from common.utils import get_logger, Serializable
+from common.utils import get_logger, Dictable
 from modules.bot import Bot
 from modules.node import NodeModule
 from modules.cluster import ClusterModule
@@ -13,7 +13,7 @@ from modules.spits import SpitsModule
 logger = get_logger(__name__)
 
 @dataclass
-class Value(Serializable):
+class Value(Dictable):
     value: Any
     node_id: str
     instance_config_id: str

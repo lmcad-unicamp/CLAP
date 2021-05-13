@@ -12,7 +12,7 @@ from typing import List, Dict, Tuple, Any
 from common.config import Config
 from common.node import NodeDescriptor, NodeRepositoryController, NodeStatus, NodeLifecycle, \
     NodeType
-from common.clap import AbstractInstanceProvider
+from common.provider import AbstractInstanceProvider
 from common.repository import RepositoryController, InvalidEntryError
 from common.schemas import InstanceInfo, ProviderConfigAWS
 from common.utils import path_extend, tmpdir, get_logger

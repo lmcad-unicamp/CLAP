@@ -6,7 +6,7 @@ from typing import List, Any, Dict, Union
 
 from common.repository import Repository, RepositoryController
 from common.schemas import InstanceInfo, ProviderConfigLocal, LoginConfig, InstanceConfigAWS
-from common.utils import get_random_name, get_logger, Serializable
+from common.utils import get_random_name, get_logger, Dictable
 
 logger = get_logger(__name__)
 
@@ -31,10 +31,12 @@ class NodeLifecycle:
 
 
 @dataclass
-class NodeDescriptor(Serializable):
+class NodeDescriptor(Dictable):
     node_id: str
     configuration: InstanceInfo
     nickname: str = ''
+    # TODO: use connection IP
+    connection_ip: str = None
     ip: str = None
     type: str = NodeType.TYPE_CLOUD
     cloud_instance_id: str = None
@@ -43,9 +45,12 @@ class NodeDescriptor(Serializable):
     creation_time: float = 0.0
     update_time: float = 0.0
     roles: List[str] = field(default_factory=list)
+    # TODO: Change to tag's field type to Dict[str, str]
     tags: Dict[str, List[str]] = field(default_factory=dict)
+    # TODO: Remove field facts
     facts: Dict[str, str] = field(default_factory=dict)
     extra: Dict[str, Any] = field(default_factory=dict)
+    # TODO: Remove field groups
     groups: Dict[str, List[str]] = field(default_factory=dict)
 
     def __str__(self):
@@ -66,13 +71,16 @@ class NodeDescriptor(Serializable):
         return node
 
 
+# TODO: Remove
 def get_local_node(node_id: str = 'node-local') -> NodeDescriptor:
     provider = ProviderConfigLocal(provider_config_id='provider-local')
     login = LoginConfig(login_config_id='login-local', user='')
-    instance = InstanceConfigAWS(instance_config_id='instance-local', provider='provider-local', login='login-local',
+    instance = InstanceConfigAWS(instance_config_id='instance-local',
+                                 provider='provider-local', login='login-local',
                                  flavor='', image_id='')
     descriptor = InstanceInfo(provider=provider, login=login, instance=instance)
-    return NodeDescriptor(node_id=node_id, configuration=descriptor, nickname=get_random_name(), ip='0.0.0.0')
+    return NodeDescriptor(node_id=node_id, configuration=descriptor,
+                          nickname=get_random_name(), ip='0.0.0.0')
 
 
 class NodeRepositoryController(RepositoryController):
@@ -80,22 +88,29 @@ class NodeRepositoryController(RepositoryController):
         super().__init__(repository)
         self.node_prefix = node_prefix
 
-    def create_node(self, instance_descriptor: InstanceInfo, node_id: str = None, cloud_instance_id: str = None,
-                    ip: str = None, status: str = NodeStatus.UNKNOWN, cloud_lifecycle: str = NodeLifecycle.NORMAL,
-                    node_type: str = NodeType.TYPE_CLOUD, extra: dict = None) -> NodeDescriptor:
+    def create_node(self, instance_descriptor: InstanceInfo,
+                    node_id: str = None,
+                    cloud_instance_id: str = None,
+                    ip: str = None,
+                    status: str = NodeStatus.UNKNOWN,
+                    cloud_lifecycle: str = NodeLifecycle.NORMAL,
+                    node_type: str = NodeType.TYPE_CLOUD,
+                    extra: dict = None) -> NodeDescriptor:
         name = get_random_name(in_use_names=[n.nickname for n in self.get_all_nodes()])
         extra = extra or dict()
         node_id = node_id or self.get_unique_node_id()
         creation_time = time.time()
         new_node = NodeDescriptor(
             node_id=node_id, configuration=instance_descriptor, nickname=name,
-            ip=ip, type=node_type, cloud_instance_id=cloud_instance_id, cloud_lifecycle=cloud_lifecycle,
-            status=status, creation_time=creation_time, update_time=creation_time, extra=extra)
+            ip=ip, type=node_type, cloud_instance_id=cloud_instance_id,
+            cloud_lifecycle=cloud_lifecycle, status=status,
+            creation_time=creation_time, update_time=creation_time, extra=extra)
         self.upsert_node(new_node)
         return new_node
 
     @staticmethod
-    def __update__(nodes: Union[NodeDescriptor, List[NodeDescriptor]]) -> List[NodeDescriptor]:
+    def __update__(nodes: Union[NodeDescriptor, List[NodeDescriptor]]) -> \
+            List[NodeDescriptor]:
         nodes = nodes if type(nodes) is list else [nodes]
         return nodes
 
@@ -118,8 +133,10 @@ class NodeRepositoryController(RepositoryController):
 
     def get_nodes_by_id(self, node_ids: List[str]) -> List[NodeDescriptor]:
         with self.repository.connect('node') as db:
-            return self.__update__([NodeDescriptor.from_dict(node) for node in db.get_multiple(node_ids).values()])
+            return self.__update__([NodeDescriptor.from_dict(node) for node in
+                                    db.get_multiple(node_ids).values()])
 
     def get_all_nodes(self) -> List[NodeDescriptor]:
         with self.repository.connect('node') as db:
-            return self.__update__([NodeDescriptor.from_dict(node) for node in db.get_all().values()])
+            return self.__update__([NodeDescriptor.from_dict(node) for node in
+                                    db.get_all().values()])

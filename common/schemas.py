@@ -6,14 +6,12 @@ from typing import List, Optional, Dict, Union
 import marshmallow.validate
 
 from marshmallow_dataclass import class_schema
-from common.utils import yaml_load, get_logger, Serializable
+from common.utils import yaml_load, get_logger, Dictable
 
 logger = get_logger(__name__)
 
 
-# Provider decorator
-
-# Exceptions
+# --------------------    Exceptions    --------------------
 class ConfigurationError(Exception):
     pass
 
@@ -33,6 +31,7 @@ class InvalidLogin(ConfigurationError):
         super().__init__(f'Invalid login configuration: {name}')
 
 
+# --------------------    Providers    --------------------
 @dataclass
 class ProviderConfigAWS:
     provider_config_id: str
@@ -50,6 +49,7 @@ class ProviderConfigLocal:
     provider: str = 'local'
 
 
+# --------------------    Logins    --------------------
 @dataclass
 class LoginConfig:
     login_config_id: str
@@ -62,6 +62,7 @@ class LoginConfig:
     sudo_user: Optional[str] = 'root'
 
 
+# --------------------    Instances    --------------------
 @dataclass
 class InstanceConfigAWS:
     instance_config_id: str
@@ -78,9 +79,11 @@ class InstanceConfigAWS:
     placement_group: str = None
     price: Optional[float] = field(default=0.0)
     network_ids: Optional[List[str]] = field(default_factory=list)
-    timeout: Optional[int] = field(default=0, metadata=dict(validate=marshmallow.validate.Range(min=0)))
+    timeout: Optional[int] = field(default=0, metadata=dict(
+        validate=marshmallow.validate.Range(min=0)))
 
 
+# --------------------    Handlers and Generalizations    --------------------
 provider_handlers = {
     'aws': ProviderConfigAWS,
     'local': ProviderConfigLocal
@@ -91,6 +94,7 @@ _LoginConfig = Union[LoginConfig]
 _InstanceConfig = Union[InstanceConfigAWS]
 
 
+# --------------------    Validators    --------------------
 def validate_provider_config(d: dict):
     provider_name = d.get('provider', None)
     if not provider_name:
@@ -110,7 +114,7 @@ def validate_instance_config(d: dict) -> InstanceConfigAWS:
 
 
 @dataclass
-class InstanceInfo(Serializable):
+class InstanceInfo(Dictable):
     provider: _ProviderConfig
     login: _LoginConfig
     instance: _InstanceConfig

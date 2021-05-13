@@ -11,11 +11,14 @@ import paramiko
 import yaml
 from paramiko import SSHClient
 
-from common.node import NodeRepositoryController, NodeDescriptor, logger
+from common.node import NodeRepositoryController, NodeDescriptor
 from common.schemas import InstanceInfo
-from common.utils import path_extend, default_dict_to_dict, tmpdir
+from common.utils import path_extend, default_dict_to_dict, tmpdir, get_logger
+
+logger = get_logger(__name__)
 
 
+# TODO remove this class
 class AbstractModule:
     module_name = 'abstract module'
     module_version = '0.0.0'
@@ -61,6 +64,40 @@ class AbstractInstanceProvider(ABC):
         pass
 
 
+class _AbstractInstanceProvider(ABC):
+    def __init__(self, repository: NodeRepositoryController,
+                 verbosity: int = 0):
+        self.repository = repository
+        self.verbosity = verbosity
+
+    @abstractmethod
+    def start_instances(self, instance_count_list: List[Tuple[InstanceInfo, int]],
+                        timeout: int = 600) -> List[str]:
+        pass
+
+    @abstractmethod
+    def stop_instances(self, nodes_to_stop: List[str], force: bool = True,
+                       timeout: int = 600) -> List[str]:
+        pass
+
+    @abstractmethod
+    def pause_instances(self, nodes_to_pause: List[str],
+                        timeout: int = 600) -> List[str]:
+        pass
+
+    @abstractmethod
+    def resume_instances(self, nodes_to_resume: List[str],
+                         timeout: int = 600) -> List[str]:
+        pass
+
+    @abstractmethod
+    def update_instance_info(self, nodes_to_check: List[str],
+                             timeout: int = 600) -> Dict[str, str]:
+        pass
+
+
+
+# TODO remove this class
 class Runner:
     @dataclass
     class CommandResult:
@@ -234,8 +271,8 @@ class Runner:
 
     # TODO filter tags
     def execute_playbook(self, playbook_path: str, group_hosts_map: Union[List[NodeDescriptor], Dict[str, List[NodeDescriptor]]],
-                         extra_args: Dict[str, str] = None, group_vars: Dict[str, Dict[str, str]] = None,
-                         host_vars: Dict[str, Dict[str, str]] = None, tags: List[str] = None,
+                             extra_args: Dict[str, str] = None, group_vars: Dict[str, Dict[str, str]] = None,
+                             host_vars: Dict[str, Dict[str, str]] = None, tags: List[str] = None,
                          quiet: bool = False) -> PlaybookResult:
         if not group_hosts_map:
             raise ValueError("No nodes provided")

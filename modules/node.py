@@ -12,7 +12,7 @@ from itertools import groupby
 from common.config import Config as BaseDefaults
 from common.node import NodeRepositoryController, NodeDescriptor, NodeStatus, \
     get_local_node
-from common.clap import AbstractModule, AbstractInstanceProvider, Runner
+from common.provider import AbstractModule, AbstractInstanceProvider, Runner
 from common.repository import SQLiteRepository, InvalidEntryError
 from common.schemas import ConfigurationDatabase, InstanceInfo, ProviderConfig, LoginConfig, InstanceConfigAWS, \
     YAMLConfigurationDatabase, ProviderConfigLocal
