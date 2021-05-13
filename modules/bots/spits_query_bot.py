@@ -3,7 +3,7 @@ import time
 from typing import List, Any
 from dataclasses import dataclass, field, asdict
 
-from common.repository import RepositoryOperator
+from common.repository import RepositoryController
 from common.utils import get_logger, Serializable
 from modules.bot import Bot
 from modules.node import NodeModule
@@ -29,7 +29,7 @@ class Value(Serializable):
         return Value(**d)
 
 
-class SpitsMetricsRepositoryOperator(RepositoryOperator):
+class SpitsMetricsRepositoryController(RepositoryController):
     def __init__(repository: Repository, metric_prefix: str = 'metric'):
         super().__init__(repository)
         self.metric_prefix = metric_prefix
@@ -53,7 +53,7 @@ class SpitsMetricsRepositoryOperator(RepositoryOperator):
 
 
 class SpitsQueryBot(Bot):
-    def __init__(self, repository_operator: SpitsMetricsRepositoryOperator, cluster_id: str, jobid: str, pypits_path: str = None, spits_jobs_path: str = None):
+    def __init__(self, repository_operator: SpitsMetricsRepositoryController, cluster_id: str, jobid: str, pypits_path: str = None, spits_jobs_path: str = None):
         self.repository = repository_operator
         self.cluster_id = cluster_id
         self.jobid = jobid

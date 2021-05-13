@@ -6,7 +6,7 @@ from typing import List, Dict
 from collections import defaultdict
 from paramiko import SSHException
 
-from common.clap import NodeInfo
+from common.node import NodeDescriptor
 from common.utils import path_extend, float_time_to_string, get_logger
 from modules.node import NodeDefaults, NodeModule
 from app.module import clap_command
@@ -32,7 +32,7 @@ def get_tags(tags: List[str]):
             for tag in tags}
 
 
-def get_nodes_filter(node_module: NodeModule, node_ids: List[str] = None, tags: Dict[str, str] = None) -> List[NodeInfo]:
+def get_nodes_filter(node_module: NodeModule, node_ids: List[str] = None, tags: Dict[str, str] = None) -> List[NodeDescriptor]:
     node_ids = node_ids or []
     tags = tags or {}
     nodes = dict()

@@ -1,4 +1,6 @@
-from typing import List, Dict, Any
+import dataclasses
+from dataclasses import dataclass
+from typing import List, Dict, Any, Tuple
 from abc import abstractmethod
 
 from common.clap import AbstractModule
@@ -7,6 +9,37 @@ from modules.group import GroupModule
 from modules.cluster import ClusterModule
 
 logger = get_logger(__name__)
+
+
+class Reporter:
+    @abstractmethod
+    def query(self):
+        raise NotImplementedError('Method must be implemented in derived classes')
+
+    @abstractmethod
+    def state(self) -> Dict[str, Dict[str, Any]]: # Returns {node: {metric: value, metric2: [values]} }
+        raise NotImplementedError('Method must be implemented in derived classes')
+
+
+class Decider:
+    @abstractmethod
+    def should_scale(self, cluster_id: str, state: Dict[str, Dict[str, Any]]) -> Tuple[List[Tuple[str, int]], List[str]]:
+        # Returns ( [(node_to_add, qtde), (node_2, qtde)], [node_to_remove, node_to_remove] )
+        raise NotImplementedError('Method must be implemented in derived classes')
+
+
+class Scaler:
+    def __init__(self, cluster_id: str):
+        self.cluster_id = cluster_id
+        self.cluster_module = ClusterModule.get_module()
+
+    def scale(self, delta):
+        pass
+
+
+class AutoScaler:
+    pass
+
 
 class Bot:
     @abstractmethod

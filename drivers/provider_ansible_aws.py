@@ -10,10 +10,11 @@ from itertools import groupby
 from typing import List, Dict, Tuple, Any
 
 from common.config import Config
-from common.clap import AbstractInstanceProvider, NodeInfo, NodeRepositoryOperator, NodeStatus, NodeLifecycle, \
+from common.node import NodeDescriptor, NodeRepositoryController, NodeStatus, NodeLifecycle, \
     NodeType
-from common.repository import RepositoryOperator, EntryNotFound
-from common.schemas import InstanceDescriptor, ProviderConfigAWS
+from common.clap import AbstractInstanceProvider
+from common.repository import RepositoryController, InvalidEntryError
+from common.schemas import InstanceInfo, ProviderConfigAWS
 from common.utils import path_extend, tmpdir, get_logger
 
 logger = get_logger(__name__)
@@ -25,7 +26,7 @@ class NodeExtraInfo:
     default_security_group: str = ''
 
 
-class NodeExtraRepositoryOperator(RepositoryOperator):
+class NodeExtraRepositoryController(RepositoryController):
     def get_extra(self, extra_id: str):
         with self.repository.connect('extra') as db:
             return NodeExtraInfo(**db.get(extra_id))
@@ -39,7 +40,7 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
     provider = 'aws'
     version = '0.1.0'
 
-    def __init__(self, repository: NodeRepositoryOperator, verbosity: int = 0):
+    def __init__(self, repository: NodeRepositoryController, verbosity: int = 0):
         super(AnsibleAWSProvider, self).__init__(repository, verbosity)
         self.config = Config()
         self.templates_path = path_extend(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -47,7 +48,7 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
                                            lstrip_blocks=True)
         extra_repository = self.config.repository_type(
             path_extend(self.config.storage_path, f'provider_ansible_aws{self.config.repository_type.extension}'))
-        self.extra_repository = NodeExtraRepositoryOperator(extra_repository)
+        self.extra_repository = NodeExtraRepositoryController(extra_repository)
 
     def __run_template_and_collect__(self, filename: str, rendered_template: str, envvars: Dict[str, str],
                                      quiet: bool = False) -> Tuple[int, List[Any]]:
@@ -66,7 +67,7 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
         extra_id: str = f'{provider_id}-{login_id}'
         try:
             return self.extra_repository.get_extra(extra_id)
-        except EntryNotFound:
+        except InvalidEntryError:
             return NodeExtraInfo(extra_id=extra_id)
 
     def __get_envvars__(self, provider_config: ProviderConfigAWS):
@@ -76,7 +77,7 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
         envvars['AWS_REGION'] = provider_config.region
         return envvars
 
-    def __start_instances__(self, instance: InstanceDescriptor, count: int, instance_wait_timeout: int) -> List[str]:
+    def __start_instances__(self, instance: InstanceInfo, count: int, instance_wait_timeout: int) -> List[str]:
         task_check_name = f"Starting {count} {instance.instance.instance_config_id} instances (timeout {instance_wait_timeout} seconds)"
         envvars = self.__get_envvars__(instance.provider)
         extra = self.__get_extra__(instance.provider.provider_config_id, instance.login.login_config_id)
@@ -195,7 +196,7 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
 
         return tagged_instances
 
-    def execute_common_template(self, nodes: List[NodeInfo], provider_config: ProviderConfigAWS,
+    def execute_common_template(self, nodes: List[NodeDescriptor], provider_config: ProviderConfigAWS,
                                 task_check_name: str, state: str, wait: str = 'no'):
         envvars = self.__get_envvars__(provider_config)
         ec2_vals = {
@@ -214,7 +215,7 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
 
         return events
 
-    def execute_check_template(self, nodes: List[NodeInfo], provider_config: ProviderConfigAWS,
+    def execute_check_template(self, nodes: List[NodeDescriptor], provider_config: ProviderConfigAWS,
                                task_check_name: str, quiet: bool = False):
         envvars = self.__get_envvars__(provider_config)
         ec2_vals = {
@@ -230,7 +231,7 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
 
         return events
 
-    def create_extras(self, instance_count_list: List[Tuple[InstanceDescriptor, int]]):
+    def create_extras(self, instance_count_list: List[Tuple[InstanceInfo, int]]):
         successful_instances = []
         for instance, count in instance_count_list:
             extra = self.__get_extra__(instance.provider.provider_config_id, instance.login.login_config_id)
@@ -263,7 +264,7 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
             # successful_instances.append(instance)
         # return successful_instances
 
-    def start_instances(self, instance_count_list: List[Tuple[InstanceDescriptor, int]], timeout: int = 600) -> List[str]:
+    def start_instances(self, instance_count_list: List[Tuple[InstanceInfo, int]], timeout: int = 600) -> List[str]:
         created_nodes = []
         for (instance, count) in instance_count_list:
             created_nodes += self.__start_instances__(instance, count, timeout)

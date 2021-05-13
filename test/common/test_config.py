@@ -5,7 +5,7 @@ import unittest
 from unittest import mock
 from marshmallow.exceptions import ValidationError
 from common.schemas import validate_provider_config, validate_login_config, validate_instance_config, \
-    InstanceDescriptor, InvalidProvider, ProviderConfig
+    InstanceInfo, InvalidProvider, ProviderConfig
 from .fixtures import assertDictEqual, FakeProviderConfig
 
 
@@ -67,7 +67,7 @@ def valid_instance_descriptor(valid_provider_config, valid_login_config, valid_i
         'login': valid_login_config,
         'instance': valid_instance_config
     }
-    return InstanceDescriptor.from_dict(d)
+    return InstanceInfo.from_dict(d)
 
 
 def make_test_configuration_reader(config_class):
@@ -211,11 +211,11 @@ def test_instance_descriptor_to_dict(valid_provider_config, valid_login_config, 
         'login': valid_login_config,
         'instance': valid_instance_config
     }
-    instance = InstanceDescriptor.from_dict(d)
+    instance = InstanceInfo.from_dict(d)
     instance_dict = instance.to_dict()
     assertDictEqual(instance_dict, d, key_not_existing='pass')
 
-    instance = InstanceDescriptor.from_dict(instance_dict)
+    instance = InstanceInfo.from_dict(instance_dict)
     assertDictEqual(instance.provider.__dict__, valid_provider_config, key_not_existing='pass')
     assertDictEqual(instance.login.__dict__, valid_login_config, key_not_existing='pass')
     assertDictEqual(instance.instance.__dict__, valid_instance_config, key_not_existing='pass')

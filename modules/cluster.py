@@ -4,9 +4,10 @@ from collections import defaultdict
 from dataclasses import dataclass, asdict
 from typing import List, Dict, Tuple, Union
 
-from common.clap import AbstractModule, NodeStatus, Runner
+from common.node import NodeStatus
+from common.clap import AbstractModule, Runner
 from common.config import Config as BaseDefaults
-from common.repository import RepositoryOperator, Repository, EntryNotFound, SQLiteRepository
+from common.repository import RepositoryController, Repository, InvalidEntryError, SQLiteRepository
 from common.utils import get_random_name, path_extend, get_logger, Singleton
 
 from ._cluster_conf import ClusterDescriptor
@@ -73,7 +74,7 @@ class ClusterControlData:
     cluster_index: int = 0
 
 
-class ClusterRepositoryOperator(RepositoryOperator):
+class ClusterRepositoryController(RepositoryController):
     def __init__(self, repository: Repository, cluster_prefix: str):
         super().__init__(repository)
         self.cluster_prefix = cluster_prefix
@@ -82,7 +83,7 @@ class ClusterRepositoryOperator(RepositoryOperator):
         with self.repository.connect('control') as db:
             try:
                 control = ClusterControlData(**db.get('control'))
-            except EntryNotFound:
+            except InvalidEntryError:
                 control = ClusterControlData()
 
             index = control.cluster_index
@@ -144,13 +145,13 @@ class ClusterModule(AbstractModule):
         repository_type_cls = defaults_override.get('repository_type_cls', module_defaults.repository_type_cls)
         repository = repository_type_cls(cluster_repository_path)
         cluster_prefix = defaults_override.get('cluster_prefix', module_defaults.cluster_prefix)
-        cluster_repository_operator = ClusterRepositoryOperator(repository, cluster_prefix)
+        cluster_repository_operator = ClusterRepositoryController(repository, cluster_prefix)
         node_module = defaults_override.get('node_module', NodeModule.get_module())
         group_module = defaults_override.get('group_module', GroupModule.get_module())
         cluster_config_path = defaults_override.get('cluster_config_path', module_defaults.cluster_config_path)
         return ClusterModule(cluster_repository_operator, node_module, group_module, cluster_config_path)
 
-    def __init__(self, repository: ClusterRepositoryOperator, node_module: NodeModule, group_module: GroupModule,
+    def __init__(self, repository: ClusterRepositoryController, node_module: NodeModule, group_module: GroupModule,
                  cluster_config_path: str):
         self.node_module = node_module
         self.group_module = group_module

@@ -10,11 +10,12 @@ from paramiko import SSHClient
 from itertools import groupby
 
 from common.config import Config as BaseDefaults
-from common.clap import AbstractModule, NodeRepositoryOperator, AbstractInstanceProvider, NodeInfo, NodeStatus, \
-    Runner, get_local_node
-from common.repository import SQLiteRepository, EntryNotFound
-from common.schemas import ConfigurationReader, InstanceDescriptor, ProviderConfig, LoginConfig, InstanceConfig, \
-    YAMLConfigurationReader, ProviderConfigLocal
+from common.node import NodeRepositoryController, NodeDescriptor, NodeStatus, \
+    get_local_node
+from common.clap import AbstractModule, AbstractInstanceProvider, Runner
+from common.repository import SQLiteRepository, InvalidEntryError
+from common.schemas import ConfigurationDatabase, InstanceInfo, ProviderConfig, LoginConfig, InstanceConfigAWS, \
+    YAMLConfigurationDatabase, ProviderConfigLocal
 from common.utils import path_extend, get_logger, Singleton, get_random_name
 
 from drivers.provider_ansible_aws import AnsibleAWSProvider
@@ -39,7 +40,7 @@ class NodeDefaults(metaclass=Singleton):
         self.base_defaults = BaseDefaults()
         self.node_repository_path = path_extend(self.base_defaults.storage_path, 'nodes.db')
         self.repository_type_cls = SQLiteRepository
-        self.configuration_reader_type_cls = YAMLConfigurationReader
+        self.configuration_reader_type_cls = YAMLConfigurationDatabase
         self.providers_path = path_extend(self.base_defaults.configs_path, 'providers.yaml')
         self.logins_path = path_extend(self.base_defaults.configs_path, 'logins.yaml')
         self.instances_path = path_extend(self.base_defaults.configs_path, 'instances.yaml')
@@ -71,7 +72,7 @@ class NodeModule(AbstractModule):
             'configuration_reader_type_cls', module_defaults.configuration_reader_type_cls)
         instance_providers_cls = defaults_override.get('instance_providers_cls', module_defaults.instance_providers_cls)
 
-        repository_operator = NodeRepositoryOperator(repository_type_cls(node_repository_path))
+        repository_operator = NodeRepositoryController(repository_type_cls(node_repository_path))
         config_reader = configuration_reader_type_cls(providers_path, logins_path, instances_path)
         providers = {
             provider_name: provider_cls(repository_operator, verbosity)
@@ -81,7 +82,7 @@ class NodeModule(AbstractModule):
 
         return NodeModule(repository_operator, config_reader, providers, runner, templates_path)
 
-    def __init__(self, node_repository: NodeRepositoryOperator, config_reader: ConfigurationReader,
+    def __init__(self, node_repository: NodeRepositoryController, config_reader: ConfigurationDatabase,
                  providers: Dict[str, AbstractInstanceProvider], runner: Runner, templates_path: str):
         self.node_repository_operator = node_repository
         self.config_reader = config_reader
@@ -92,18 +93,18 @@ class NodeModule(AbstractModule):
                                            lstrip_blocks=True)
 
     @staticmethod
-    def __group_instances_by_provider__(instances: List[Tuple[InstanceDescriptor, int]]) -> \
-            Dict[str, List[Tuple[InstanceDescriptor, int]]]:
+    def __group_instances_by_provider__(instances: List[Tuple[InstanceInfo, int]]) -> \
+            Dict[str, List[Tuple[InstanceInfo, int]]]:
         # return {provider: [(instance-1, count), (instance-2, count) ... ]}
         return {k: list(v) for k, v in groupby(instances, lambda x: x[0].provider.provider)}
 
     @staticmethod
-    def __group_nodes_by_provider__(nodes: List[NodeInfo]) -> Dict[str, List[NodeInfo]]:
+    def __group_nodes_by_provider__(nodes: List[NodeDescriptor]) -> Dict[str, List[NodeDescriptor]]:
         # return {provider: [(instance-1, count), (instance-2, count) ... ]}
         return {k: list(v) for k, v in groupby(nodes, lambda x: x.configuration.provider.provider)}
 
-    def __get_existing_nodes__(self, node_ids: List[str] = None, another_filter: Callable[[NodeInfo], bool] = None,
-                               unique: bool = True) -> List[NodeInfo]:
+    def __get_existing_nodes__(self, node_ids: List[str] = None, another_filter: Callable[[NodeDescriptor], bool] = None,
+                               unique: bool = True) -> List[NodeDescriptor]:
         if not node_ids and not another_filter:
             raise EmptyNodeList("No nodes provided")
         nodes = []
@@ -116,24 +117,24 @@ class NodeModule(AbstractModule):
         return self.__unique_nodes__(nodes) if unique else nodes
 
     @staticmethod
-    def __unique_nodes__(nodes: List[NodeInfo]) -> List[NodeInfo]:
+    def __unique_nodes__(nodes: List[NodeDescriptor]) -> List[NodeDescriptor]:
         d = {node.node_id: node for node in nodes}
         return list(d.values())
 
-    def get_nodes_by_id(self, node_ids: List[str]) -> List[NodeInfo]:
+    def get_nodes_by_id(self, node_ids: List[str]) -> List[NodeDescriptor]:
         try:
             return self.node_repository_operator.get_nodes_by_id(node_ids)
-        except EntryNotFound as e:
+        except InvalidEntryError as e:
             raise InvalidNode(e)
 
     def get_all_nodes(self):
         return self.node_repository_operator.get_all_nodes()
 
-    def get_nodes_with_filter(self, key: Callable[[NodeInfo], bool], unique: bool = True) -> List[NodeInfo]:
+    def get_nodes_with_filter(self, key: Callable[[NodeDescriptor], bool], unique: bool = True) -> List[NodeDescriptor]:
         all_nodes = [node for node in self.get_all_nodes() if key(node)]
         return self.__unique_nodes__(all_nodes) if unique else all_nodes
 
-    def start_nodes_by_instance_descriptor(self, instance_counts: List[Tuple[InstanceDescriptor, int]],
+    def start_nodes_by_instance_descriptor(self, instance_counts: List[Tuple[InstanceInfo, int]],
                                            start_timeout: int = 600, connection_retries: int = 15,
                                            retry_timeout: float = 30.0, terminate_not_alive: bool = False) -> List[str]:
         grouped_instances = self.__group_instances_by_provider__(instance_counts)
@@ -169,7 +170,7 @@ class NodeModule(AbstractModule):
                                           connection_retries: int = 15, retry_timeout: float = 30.0,
                                           terminate_not_alive: bool = False) -> List[str]:
         instances_count_tuple = [
-            (self.config_reader.get_instance_descriptor(instance_id), count)
+            (self.config_reader.get_instance_info(instance_id), count)
             for instance_id, count in instance_counts.items()
         ]
         return self.start_nodes_by_instance_descriptor(
@@ -177,7 +178,7 @@ class NodeModule(AbstractModule):
             retry_timeout=retry_timeout, terminate_not_alive=terminate_not_alive)
 
     # TODO find usages
-    def is_alive(self, node_ids: List[str] = None, another_filter: Callable[[NodeInfo], bool] = None, retries: int = 5,
+    def is_alive(self, node_ids: List[str] = None, another_filter: Callable[[NodeDescriptor], bool] = None, retries: int = 5,
                  wait_timeout: float = 30.0) -> Dict[str, bool]:
         # if not node_ids and not tags:
         #    return
@@ -238,7 +239,7 @@ class NodeModule(AbstractModule):
         return {node_id: status == NodeStatus.REACHABLE for node_id, status in checked_nodes.items()}
 
     # TODO find usages
-    def stop_nodes(self, node_ids: List[str] = None, another_filter: Callable[[NodeInfo], bool] = None,
+    def stop_nodes(self, node_ids: List[str] = None, another_filter: Callable[[NodeDescriptor], bool] = None,
                    stop_timeout: int = 600, force: bool = True) -> List[str]:
         nodes = self.__get_existing_nodes__(node_ids, another_filter)
         stopped_nodes = []
@@ -249,7 +250,7 @@ class NodeModule(AbstractModule):
 
     # TODO must wait for SSH option
     # TODO find usages
-    def resume_nodes(self, node_ids: List[str] = None, another_filter: Callable[[NodeInfo], bool] = None,
+    def resume_nodes(self, node_ids: List[str] = None, another_filter: Callable[[NodeDescriptor], bool] = None,
                      resume_timeout: int = 600, connection_retries: int = 10,
                      connection_retry_timeout: float = 30.0) -> List[str]:
         nodes = self.__get_existing_nodes__(node_ids, another_filter)
@@ -263,7 +264,7 @@ class NodeModule(AbstractModule):
         return resumed_nodes
 
     # TODO find usages
-    def pause_nodes(self, node_ids: List[str] = None, another_filter: Callable[[NodeInfo], bool] = None,
+    def pause_nodes(self, node_ids: List[str] = None, another_filter: Callable[[NodeDescriptor], bool] = None,
                     pause_timeout: int = 600) -> List[str]:
         nodes = self.__get_existing_nodes__(node_ids, another_filter)
         paused_nodes = []
@@ -278,13 +279,13 @@ class NodeModule(AbstractModule):
         self.runner_provider.invoke_shell(node, **kwargs)
 
     # TODO find usages
-    def get_ssh_connections(self, node_ids: List[str] = None, another_filter: Callable[[NodeInfo], bool] = None,
+    def get_ssh_connections(self, node_ids: List[str] = None, another_filter: Callable[[NodeDescriptor], bool] = None,
                             workers: int = 0, connect_timeout: int = 10) -> Dict[str, SSHClient]:
         nodes = self.__get_existing_nodes__(node_ids, another_filter)
         return self.runner_provider.get_connections(nodes, workers=workers, connect_timeout=connect_timeout)
 
     def execute_command_in_nodes(self, command: str, node_ids: List[str] = None,
-                                 another_filter: Callable[[NodeInfo], bool] = None, workers: int = 0,
+                                 another_filter: Callable[[NodeDescriptor], bool] = None, workers: int = 0,
                                  connection_timeout: int = 10, execution_timeout: int = None,
                                  envvars: dict = None) -> Dict[str, Runner.CommandResult]:
         nodes = self.__get_existing_nodes__(node_ids, another_filter)
@@ -330,7 +331,7 @@ class NodeModule(AbstractModule):
 
     # TODO find usages
     def add_tag_to_nodes(self, tags: Dict[str, str], node_ids: List[str] = None,
-                         another_filter: Callable[[NodeInfo], bool] = None) -> List[str]:
+                         another_filter: Callable[[NodeDescriptor], bool] = None) -> List[str]:
         if not tags:
             raise Exception("No tags provided")
         nodes = []
@@ -347,7 +348,7 @@ class NodeModule(AbstractModule):
 
     # TODO find usages
     def remove_tag_from_nodes(self, tags: Dict[str, str], node_ids: List[str] = None,
-                              another_filter: Callable[[NodeInfo], bool] = None) -> List[str]:
+                              another_filter: Callable[[NodeDescriptor], bool] = None) -> List[str]:
         if not tags:
             raise Exception("No tags provided")
         nodes = []
@@ -373,7 +374,7 @@ class NodeModule(AbstractModule):
 
     # TODO find usages
     def node_has_tag(self, tag: str, value: str = None, node_ids: List[str] = None,
-                     another_filter: Callable[[NodeInfo], bool] = None) -> Dict[str, bool]:
+                     another_filter: Callable[[NodeDescriptor], bool] = None) -> Dict[str, bool]:
         if not tag:
             raise Exception("No tags provided")
 
@@ -387,7 +388,7 @@ class NodeModule(AbstractModule):
                 nodes[node.node_id] = value in node.tags[tag]
         return nodes
 
-    def upsert_node(self, node: NodeInfo):
+    def upsert_node(self, node: NodeDescriptor):
         self.node_repository_operator.upsert_node(node)
 
     def get_provider_config(self, provider_config_id: str) -> ProviderConfig:
@@ -402,14 +403,14 @@ class NodeModule(AbstractModule):
     def get_all_login_configs(self) -> Dict[str, LoginConfig]:
         return self.config_reader.get_all_logins_config()
 
-    def get_instances_config(self, instance_config_id: str) -> InstanceConfig:
+    def get_instances_config(self, instance_config_id: str) -> InstanceConfigAWS:
         return self.config_reader.get_instance_config(instance_config_id)
 
-    def get_all_instance_configs(self) -> Dict[str, InstanceConfig]:
+    def get_all_instance_configs(self) -> Dict[str, InstanceConfigAWS]:
         return self.config_reader.get_all_instances_config()
 
-    def get_instance_descriptor(self, instance_config_id: str) -> InstanceDescriptor:
-        return self.config_reader.get_instance_descriptor(instance_config_id)
+    def get_instance_descriptor(self, instance_config_id: str) -> InstanceInfo:
+        return self.config_reader.get_instance_info(instance_config_id)
 
-    def get_all_instance_descriptors(self) -> Dict[str, InstanceDescriptor]:
-        return self.config_reader.get_all_instances_descriptor()
+    def get_all_instance_descriptors(self) -> Dict[str, InstanceInfo]:
+        return self.config_reader.get_all_instances_info()

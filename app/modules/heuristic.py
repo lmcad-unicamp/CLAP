@@ -9,7 +9,7 @@ from common.utils import get_logger, path_extend
 from modules.heuristic import HeuristicModule, SpitsQuery, CutHeuristic, BatchReplacementHeuristic, ClusterInstanceManager, Query, Value, DummyInstanceManager
 from modules.node import NodeDefaults
 from app.module import clap_command
-from common.repository import RepositoryOperator, SQLiteRepository, Repository
+from common.repository import RepositoryController, SQLiteRepository, Repository
 from modules.cluster import ClusterModule
 
 logger = get_logger(__name__)
@@ -62,7 +62,7 @@ def heuristic_run(cluster_id, job, metric, node_type_file, percentage, instance_
     return 0
 
 
-class QueryRepositoryOperator(RepositoryOperator):
+class QueryRepositoryController(RepositoryController):
     def __init__(self, repository: Repository):
         super().__init__(repository)
 
@@ -113,7 +113,7 @@ class QueryRepositoryOperator(RepositoryOperator):
 
 
 
-def queryier(query_obj: Query, repository: QueryRepositoryOperator, metrics: list = None, query_time: float = 40.0):
+def queryier(query_obj: Query, repository: QueryRepositoryController, metrics: list = None, query_time: float = 40.0):
     next_call = time.time()
     cluster_module = ClusterModule.get_module()
     
@@ -155,7 +155,7 @@ if __name__ == '__main__':
     spits_jobs = sys.argv[4]
 
     repository = SQLiteRepository('/home/lopani/temp/queries.db') 
-    repository_op = QueryRepositoryOperator(repository)
+    repository_op = QueryRepositoryController(repository)
 
     spits_query = SpitsQuery(cluster_id=cluster_id, jobid=job_id, pypits_path=pypits,
                              spits_jobs_path=spits_jobs)

@@ -5,7 +5,7 @@ import random
 from typing import List, Dict
 from dataclasses import dataclass, asdict
 from common.utils import path_extend
-from common.repository import EntryNotFound
+from common.repository import InvalidEntryError
 
 
 @dataclass
@@ -90,7 +90,7 @@ def make_test_case(repository_class):
                         key, entry = random.choice(list(entries.items()))
                         entries.pop(key)
                         db.remove(key)
-                        with pytest.raises(EntryNotFound):
+                        with pytest.raises(InvalidEntryError):
                             db.get(key)
 
         @pytest.mark.parametrize("qtde", [10])
@@ -100,25 +100,25 @@ def make_test_case(repository_class):
                     keys = random.sample(list(entries.keys()), qtde)
                     db.remove_multiple(keys)
                     for key in keys:
-                        with pytest.raises(EntryNotFound):
+                        with pytest.raises(InvalidEntryError):
                             db.get(key)
 
         def test_invalid_get_values(self, repository_with_data, table_names, entries):
             for table in table_names:
                 with repository_with_data.connect(table) as db:
-                    with pytest.raises(EntryNotFound):
+                    with pytest.raises(InvalidEntryError):
                         db.get('invalid_value-1')
-                    with pytest.raises(EntryNotFound):
+                    with pytest.raises(InvalidEntryError):
                         db.get_multiple(['invalid_value-1', 'invalid_value-2'])
-                    with pytest.raises(EntryNotFound):
+                    with pytest.raises(InvalidEntryError):
                         db.get_multiple(['invalid_value-1', 'invalid_value-2'] + list(entries.keys()))
 
         def test_invalid_removal(self, repository_with_data, table_names):
             for table in table_names:
                 with repository_with_data.connect(table) as db:
-                    with pytest.raises(EntryNotFound):
+                    with pytest.raises(InvalidEntryError):
                         db.remove('invalid_value-1')
-                    with pytest.raises(EntryNotFound):
+                    with pytest.raises(InvalidEntryError):
                         db.remove_multiple(['invalid_value-1', 'deadbeef'])
 
     return Repository

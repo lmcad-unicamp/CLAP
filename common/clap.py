@@ -1,150 +1,19 @@
 import concurrent.futures
-import subprocess
-import time
 import multiprocessing
-import yaml
-
-from abc import ABC, abstractmethod
+import subprocess
+from abc import abstractmethod, ABC
 from collections import defaultdict
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass
+from typing import List, Tuple, Dict, Any, Union
 
 import ansible_runner
 import paramiko
+import yaml
 from paramiko import SSHClient
-from typing import List, Any, Dict, Tuple, Union
 
-from common.repository import Repository, RepositoryOperator, EntryNotFound
-from common.schemas import InstanceDescriptor, ProviderConfigLocal, LoginConfig, InstanceConfig
-from common.utils import get_random_name, get_logger, Serializable, path_extend, tmpdir, default_dict_to_dict
-
-logger = get_logger(__name__)
-
-
-class NodeStatus:
-    UNKNOWN = 'unknown'
-    STARTED = 'started'
-    UNREACHABLE = 'unreachable'
-    REACHABLE = 'reachable'
-    PAUSED = 'paused'
-    STOPPED = 'stopped'
-
-
-class NodeType:
-    TYPE_CLOUD = 'cloud'
-    TYPE_LOCAL = 'local'
-
-
-class NodeLifecycle:
-    NORMAL = 'normal'
-    PREEMPTIBLE = 'preemptible'
-
-
-@dataclass
-class NodeControl:
-    node_index: int = 0
-
-
-@dataclass
-class NodeInfo(Serializable):
-    node_id: str
-    configuration: InstanceDescriptor
-    nickname: str = ''
-    ip: str = None
-    type: str = NodeType.TYPE_CLOUD
-    cloud_instance_id: str = None
-    cloud_lifecycle: str = NodeLifecycle.NORMAL
-    status: str = NodeStatus.UNKNOWN
-    creation_time: float = 0.0
-    update_time: float = 0.0
-    roles: List[str] = field(default_factory=list)
-    tags: Dict[str, List[str]] = field(default_factory=dict)
-    facts: Dict[str, str] = field(default_factory=dict)
-    extra: Dict[str, Any] = field(default_factory=dict)
-    groups: Dict[str, List[str]] = field(default_factory=dict)
-
-    def __str__(self):
-        return f"id=`{self.node_id}` nickname=`{self.nickname}`, ip=`{self.ip}` status=`{self.status}` " \
-               f"instance_type=`{self.configuration.instance.instance_config_id}`, " \
-               f"tags=`{','.join(sorted([f'{tag}={sorted(values)}' for tag, values in self.tags.items()]))}`, " \
-               f"roles=`{','.join(sorted(self.groups.keys()))}`"
-
-    def to_dict(self):
-        d = asdict(self)
-        d['configuration'] = self.configuration.to_dict()
-        return d
-
-    @staticmethod
-    def from_dict(d: dict) -> 'NodeInfo':
-        node = NodeInfo(**d)
-        node.configuration = InstanceDescriptor.from_dict(d['configuration'])
-        return node
-
-
-
-def get_local_node(node_id: str = 'node-local') -> NodeInfo:
-    provider = ProviderConfigLocal(provider_config_id='provider-local', provider='local', region='')
-    login = LoginConfig(login_config_id='login-local', user='')
-    instance = InstanceConfig(instance_config_id='instance-local', provider='provider-local', login='login-local',
-                              flavor='', image_id='')
-    descriptor = InstanceDescriptor(provider=provider, login=login, instance=instance)
-    return NodeInfo(node_id=node_id, configuration=descriptor, nickname=get_random_name(), ip='0.0.0.0')
-
-
-class NodeRepositoryOperator(RepositoryOperator):
-    def __init__(self, repository: Repository, node_prefix: str = 'node'):
-        super().__init__(repository)
-        self.node_prefix = node_prefix
-
-    def create_node(self, instance_descriptor: InstanceDescriptor, node_id: str = None, cloud_instance_id: str = None,
-                    ip: str = None, status: str = NodeStatus.UNKNOWN, cloud_lifecycle: str = NodeLifecycle.NORMAL,
-                    node_type: str = NodeType.TYPE_CLOUD, extra: dict = None) -> NodeInfo:
-        name = get_random_name(in_use_names=[n.nickname for n in self.get_all_nodes()])
-        extra = extra or dict()
-        node_id = node_id or self.get_unique_node_id()
-        creation_time = time.time()
-        new_node = NodeInfo(
-            node_id=node_id, configuration=instance_descriptor, nickname=name,
-            ip=ip, type=node_type, cloud_instance_id=cloud_instance_id, cloud_lifecycle=cloud_lifecycle,
-            status=status, creation_time=creation_time, update_time=creation_time, extra=extra)
-        self.upsert_node(new_node)
-        return new_node
-
-    @staticmethod
-    def __update__(nodes: Union[NodeInfo, List[NodeInfo]]) -> List[NodeInfo]:
-        nodes = nodes if type(nodes) is list else [nodes]
-        return nodes
-
-    def get_unique_node_id(self) -> str:
-        with self.repository.connect('control') as db:
-            try:
-                control = NodeControl(**db.get('control'))
-            except EntryNotFound:
-                control = NodeControl()
-            index = control.node_index
-            control.node_index += 1
-            db.upsert('control', asdict(control))
-            return "{}-{}".format(self.node_prefix, index)
-
-    def upsert_node(self, node: NodeInfo):
-        node.update_time = time.time()
-        with self.repository.connect('node') as db:
-            db.upsert(node.node_id, node.to_dict())
-
-    def remove_node(self, node_id: str):
-        with self.repository.connect('node') as db:
-            db.remove(node_id)
-
-    def remove_nodes(self, node_ids: List[str]):
-        with self.repository.connect('node') as db:
-            db.remove_multiple(node_ids)
-
-    def get_nodes_by_id(self, node_ids: List[str]) -> List[NodeInfo]:
-        with self.repository.connect('node') as db:
-            return self.__update__([NodeInfo.from_dict(node) for node in db.get_multiple(node_ids).values()])
-
-    def get_all_nodes(self) -> List[NodeInfo]:
-        with self.repository.connect('node') as db:
-            return self.__update__([NodeInfo.from_dict(node) for node in db.get_all().values()])
+from common.node import NodeRepositoryController, NodeDescriptor, logger
+from common.schemas import InstanceInfo
+from common.utils import path_extend, default_dict_to_dict, tmpdir
 
 
 class AbstractModule:
@@ -163,16 +32,16 @@ class AbstractInstanceProvider(ABC):
     provider = 'abstract provider'
     version = '0.1.0'
 
-    def __init__(self, repository: NodeRepositoryOperator, verbosity: int = 0):
+    def __init__(self, repository: NodeRepositoryController, verbosity: int = 0):
         self.repository = repository
         self.verbosity = verbosity
 
     @abstractmethod
-    def create_extras(self, instance_count_list: List[Tuple[InstanceDescriptor, int]]):
+    def create_extras(self, instance_count_list: List[Tuple[InstanceInfo, int]]):
         pass
 
     @abstractmethod
-    def start_instances(self, instance_count_list: List[Tuple[InstanceDescriptor, int]], timeout: int = 600) -> List[str]:
+    def start_instances(self, instance_count_list: List[Tuple[InstanceInfo, int]], timeout: int = 600) -> List[str]:
         pass
 
     @abstractmethod
@@ -190,14 +59,6 @@ class AbstractInstanceProvider(ABC):
     @abstractmethod
     def update_instance_info(self, nodes_to_check: List[str], timeout: int = 600) -> Dict[str, str]:
         pass
-
-
-# @dataclass
-# class RunnerResult:
-#     ok: bool
-#     ret_code: int
-#     hosts: Dict[str, bool]
-#     events: Dict[str, List[dict]]
 
 
 class Runner:
@@ -219,7 +80,7 @@ class Runner:
         self.verbosity = verbosity
 
     # TODO also allows localhost
-    def __create_inventory__(self, group_hosts_map: Dict[str, List[NodeInfo]], group_vars: Dict[str, Dict[str, str]],
+    def __create_inventory__(self, group_hosts_map: Dict[str, List[NodeDescriptor]], group_vars: Dict[str, Dict[str, str]],
                              host_vars: Dict[str, Dict[str, str]]) -> dict:
         inventory = defaultdict(dict)
 
@@ -256,7 +117,7 @@ class Runner:
 
         return default_dict_to_dict(inventory)
 
-    def __create_extra_vars__(self, output_dir: str, nodes: List[NodeInfo]):
+    def __create_extra_vars__(self, output_dir: str, nodes: List[NodeDescriptor]):
         elasticluster_vars = {
             'elasticluster': {
                 'cloud': {},
@@ -287,11 +148,11 @@ class Runner:
 
         return elasticluster_vars
 
-    def run_command(self, nodes: List[NodeInfo], command: str, workers: int = 0, connect_timeout: int = 10,
+    def run_command(self, nodes: List[NodeDescriptor], command: str, workers: int = 0, connect_timeout: int = 10,
                     exec_timeout: int = None, environment: dict = None) -> Dict[str, CommandResult]:
         workers = multiprocessing.cpu_count() if workers < 1 else workers
 
-        def connect_and_execute(node: NodeInfo) -> Runner.CommandResult:
+        def connect_and_execute(node: NodeDescriptor) -> Runner.CommandResult:
             user = node.configuration.login.user
             ssh_port = node.configuration.login.ssh_port
             connection_ip = node.ip
@@ -325,7 +186,7 @@ class Runner:
 
         return results
 
-    def invoke_shell(self, node: NodeInfo, **kwargs):
+    def invoke_shell(self, node: NodeDescriptor, **kwargs):
         user = node.configuration.login.user
         connection_ip = node.ip
         ssh_port = kwargs.pop('ssh_port', node.configuration.login.ssh_port)
@@ -342,11 +203,11 @@ class Runner:
         except subprocess.CalledProcessError:
             logger.error(f"Invalid connection ip ({node.ip}). Try checking if `{node.node_id}` is alive first...")
 
-    def get_connections(self, nodes: List[NodeInfo], workers: int = 0, connect_timeout: int = 10) -> Dict[str, SSHClient]:
+    def get_connections(self, nodes: List[NodeDescriptor], workers: int = 0, connect_timeout: int = 10) -> Dict[str, SSHClient]:
         shells = {}
         workers = multiprocessing.cpu_count() if workers < 1 else workers
 
-        def connect(node: NodeInfo) -> SSHClient:
+        def connect(node: NodeDescriptor) -> SSHClient:
             user = node.configuration.login.user
             ssh_port = node.configuration.login.ssh_port
             connection_ip = node.ip
@@ -372,7 +233,7 @@ class Runner:
         return shells
 
     # TODO filter tags
-    def execute_playbook(self, playbook_path: str, group_hosts_map: Union[List[NodeInfo], Dict[str, List[NodeInfo]]],
+    def execute_playbook(self, playbook_path: str, group_hosts_map: Union[List[NodeDescriptor], Dict[str, List[NodeDescriptor]]],
                          extra_args: Dict[str, str] = None, group_vars: Dict[str, Dict[str, str]] = None,
                          host_vars: Dict[str, Dict[str, str]] = None, tags: List[str] = None,
                          quiet: bool = False) -> PlaybookResult:
@@ -532,4 +393,11 @@ class Runner:
     #             hosts={node.node_id: node.node_id not in not_ok_nodes for node in all_nodes},
     #             events={node.node_id: list(ret.host_events(node.node_id)) for node in all_nodes})
     #         return final_hosts_map
+
+# @dataclass
+# class RunnerResult:
+#     ok: bool
+#     ret_code: int
+#     hosts: Dict[str, bool]
+#     events: Dict[str, List[dict]]
 

@@ -2,21 +2,21 @@ import pytest
 
 from typing import List
 
-from common.clap import NodeRepositoryOperator, NodeStatus, NodeInfo
+from common.node import NodeRepositoryController, NodeStatus, NodeDescriptor
 from .fixtures import *
 
 
 class TestNodeInfo:
     @mock.patch("common.schemas.providers_map", {'fake': FakeProviderConfig})
-    def test_nodes_dict(self, nodes: List[NodeInfo]):
+    def test_nodes_dict(self, nodes: List[NodeDescriptor]):
         for node in nodes:
             node.extra = {'value': {'a': {'b': 'c'}}}
             node_dict = node.to_dict()
-            new_node = NodeInfo.from_dict(node_dict)
+            new_node = NodeDescriptor.from_dict(node_dict)
             new_node.configuration = new_node.configuration.to_dict()
             assertDictEqual(new_node.__dict__, node_dict)
 
-    def test_roles(self, nodes: List[NodeInfo]):
+    def test_roles(self, nodes: List[NodeDescriptor]):
         node = nodes[0]
         node.add_role('role1')
         node.add_role('role2')
@@ -40,7 +40,7 @@ class TestNodeInfo:
         assert not node.has_role('role')
         assert len(node.roles) == 0
 
-    def test_tags(self, nodes: List[NodeInfo]):
+    def test_tags(self, nodes: List[NodeDescriptor]):
         node = nodes[0]
         node.add_tag('tag1', 'value1')
         node.add_tag('tag1', 'value2')

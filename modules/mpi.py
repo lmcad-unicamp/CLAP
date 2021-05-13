@@ -7,7 +7,7 @@ from typing import List, Any, Dict, Tuple, Union
 from dataclasses import dataclass, asdict, field
 
 from common.clap import AbstractModule, Runner
-from common.repository import RepositoryOperator, Repository, EntryNotFound, SQLiteRepository
+from common.repository import RepositoryController, Repository, InvalidEntryError, SQLiteRepository
 from common.utils import get_logger, get_random_name, path_extend, Serializable, Singleton, tmpdir
 from common.config import Config as BaseDefaults
 
@@ -95,7 +95,7 @@ class JobData(Serializable):
         job = JobData(**d)
         return job
 
-class ParamountClusterRepositoryOperator(RepositoryOperator):
+class ParamountClusterRepositoryOperator(RepositoryController):
     def __init__(self, repository: Repository, cluster_prefix: str = 'mcluster'):
         super().__init__(repository)
         self.cluster_prefix = cluster_prefix
@@ -104,7 +104,7 @@ class ParamountClusterRepositoryOperator(RepositoryOperator):
         with self.repository.connect('control') as db:
             try:
                 control = ParamountIndexingData(**db.get('control'))
-            except EntryNotFound:
+            except InvalidEntryError:
                 control = ParamountIndexingData()
 
             index = control.current_index
@@ -140,12 +140,12 @@ class ParamountClusterRepositoryOperator(RepositoryOperator):
         with self.repository.connect('control') as db:
             try:
                 control = ParamountIndexingData(**db.get('control'))
-            except EntryNotFound:
+            except InvalidEntryError:
                 control = ParamountIndexingData()
 
             return control.current_index
 
-class JobRepositoryOperator(RepositoryOperator):
+class JobRepositoryController(RepositoryController):
     def __init__(self, repository: Repository, job_prefix: str = 'job'):
         super().__init__(repository)
         self.job_prefix = job_prefix
@@ -154,7 +154,7 @@ class JobRepositoryOperator(RepositoryOperator):
         with self.repository.connect('control') as db:
             try:
                 control = JobIndexingData(**db.get('control'))
-            except EntryNotFound:
+            except InvalidEntryError:
                 control = JobIndexingData()
 
             index = control.current_index
@@ -195,7 +195,7 @@ class JobRepositoryOperator(RepositoryOperator):
         with self.repository.connect('control') as db:
             try:
                 control = JobIndexingData(**db.get('control'))
-            except EntryNotFound:
+            except InvalidEntryError:
                 control = JobIndexingData()
 
             return control.current_index
@@ -225,18 +225,18 @@ class MPIModule(AbstractModule):
         cluster_repository = repository_type_cls(cluster_repository_path)
         job_repository = repository_type_cls(job_repository_path)
         cluster_repository_operator = ParamountClusterRepositoryOperator(cluster_repository)
-        job_repository_operator = JobRepositoryOperator(job_repository)
+        job_repository_operator = JobRepositoryController(job_repository)
 
         node_module = node_module or NodeModule.get_module()
         group_module = group_module or GroupModule.get_module()
         cluster_module = cluster_module or ClusterModule.get_module()
         return MPIModule(job_repository_operator, cluster_repository_operator, node_module, group_module, cluster_module)
 
-    def __init__(self,  job_repository_operator: JobRepositoryOperator, \
-                        paramount_repository_operator: ParamountClusterRepositoryOperator, \
-                        node_module: NodeModule, \
-                        group_module: GroupModule, \
-                        cluster_module: ClusterModule):
+    def __init__(self, job_repository_operator: JobRepositoryController, \
+                 paramount_repository_operator: ParamountClusterRepositoryOperator, \
+                 node_module: NodeModule, \
+                 group_module: GroupModule, \
+                 cluster_module: ClusterModule):
         self.job_repository_operator = job_repository_operator
         self.paramount_repository_operator = paramount_repository_operator
         self.node_module = node_module

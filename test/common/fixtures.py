@@ -5,8 +5,8 @@ import pytest
 
 from unittest import mock
 
-from common.clap import NodeInfo, NodeRepositoryOperator
-from common.schemas import ProviderConfig, InstanceDescriptor
+from common.node import NodeDescriptor, NodeRepositoryController
+from common.schemas import ProviderConfig, InstanceInfo
 from common.repository import SQLiteRepository
 from common.utils import path_extend
 

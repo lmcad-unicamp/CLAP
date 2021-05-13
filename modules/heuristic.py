@@ -10,7 +10,7 @@ from dataclasses import dataclass, asdict, field
 from typing import Dict, Any, List, Tuple, Type
 
 from common.clap import AbstractModule
-from common.schemas import InstanceDescriptor
+from common.schemas import InstanceInfo
 from common.utils import default_dict_to_dict, get_logger
 from modules.cluster import ClusterModule
 from modules.node import NodeModule
@@ -54,7 +54,7 @@ class Heuristic:
 
 class InstanceManager(ABC):
     @abstractmethod
-    def start(self, instances_count: List[Tuple[InstanceDescriptor, int]]) -> List[str]:
+    def start(self, instances_count: List[Tuple[InstanceInfo, int]]) -> List[str]:
         pass
 
     @abstractmethod
@@ -120,7 +120,7 @@ class ClusterInstanceManager(InstanceManager):
         self.save_destination = save_destination
         self.jobid = jobid
 
-    def start(self, instances_count: List[Tuple[InstanceDescriptor, int]]) -> List[str]:
+    def start(self, instances_count: List[Tuple[InstanceInfo, int]]) -> List[str]:
         return self.node_module.start_nodes_by_instance_descriptor(instances_count)
 
     def setup(self, node_ids: List[str]) -> List[str]:
@@ -149,7 +149,7 @@ class DummyInstanceManager(InstanceManager):
         self.instance_node_types = instance_node_types
         self.setup_at = setup_at
 
-    def start(self, instances_count: List[Tuple[InstanceDescriptor, int]]) -> List[str]:
+    def start(self, instances_count: List[Tuple[InstanceInfo, int]]) -> List[str]:
         print(f"Started nodes: {instances_count}")
         no_nodes = sum([i[1] for i in instances_count])
         return [f"znode-{i}" for i in range(0, no_nodes)]
