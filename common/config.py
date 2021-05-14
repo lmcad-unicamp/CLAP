@@ -15,6 +15,7 @@ class Config(metaclass=Singleton):
         self.verbosity: int = 0
         self.app_name: str = 'CLAP'
         self.repository_type = SQLiteRepository
+        self.repository_type_name = 'sqlite'
         self.clap_path = path_extend('$CLAP_PATH')
         self.configs_path: str = path_extend('$CLAP_PATH', 'configs')
         self.private_path: str = path_extend('$CLAP_PATH', 'private')

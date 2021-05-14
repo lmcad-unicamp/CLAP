@@ -65,8 +65,8 @@ class AbstractInstanceProvider(ABC):
 
 
 class _AbstractInstanceProvider(ABC):
-    def __init__(self, repository: NodeRepositoryController,
-                 verbosity: int = 0):
+    def __init__(self, repository: NodeRepositoryController, verbosity: int = 0,
+                 **kwargs):
         self.repository = repository
         self.verbosity = verbosity
 

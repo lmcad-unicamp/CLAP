@@ -97,44 +97,61 @@ class AnsiblePlaybookExecutor(Executor):
         events: Dict[str, List[dict]]
         vars: Dict[str, Dict[str, Any]]
 
-    def __init__(self, playbook_file: str,
-                 private_path: str,
-                 hosts_node_map: Union[List[NodeDescriptor],
-                                       Dict[str, List[NodeDescriptor]]] = None,
-                 inventory: dict = None,
-                 extra_args: Dict[str, str] = None,
-                 group_vars: Dict[str, Dict[str, str]] = None,
-                 host_vars: Dict[str, Dict[str, str]] = None,
-                 quiet: bool = False,
-                 verbosity: int = 0
-                 ):
-        self.playbook_file = playbook_file
-        if not hosts_node_map and inventory is None:
-            raise ValueError("No nodes informed to execute playbook")
-        if type(hosts_node_map) is list:
-            self.hosts_node_map = {'all': hosts_node_map}
-        elif type(hosts_node_map) is dict:
-            for host_name, list_hosts in hosts_node_map.items():
-                if not list_hosts:
-                    raise ValueError(f"No hosts provided for host: {host_name}")
-            self.hosts_node_map = hosts_node_map
-        #else:
-        #    raise TypeError(f"Invalid type `{type(hosts_node_map)}` for "
-        #                    f"hosts_node_map")
-        self.private_path = private_path
-        self.inventory = inventory or dict()
-        self.extra_args = extra_args or dict()
-        self.group_vars = group_vars or dict()
-        self.host_vars = host_vars or dict()
-        self.quiet = quiet
-        self.verbosity = verbosity
+    @staticmethod
+    def create_inventory(
+            hosts_node_map: Union[
+                List[NodeDescriptor], Dict[str, List[NodeDescriptor]]],
+            private_path: str,
+            host_vars: Dict[str, Dict[str, str]] = None,
+            node_vars: Dict[str, Dict[str, str]] = None) -> dict:
+        inventory = defaultdict(dict)
+        hosts = defaultdict(dict)
 
-    def create_extra_vars(self, outdir: str, nodes: List[NodeDescriptor]) -> dict:
+        if type(hosts_node_map) is list:
+            hosts_node_map = {'all': hosts_node_map}
+        elif type(hosts_node_map) is not dict:
+            raise TypeError(f"Invalid type {type(hosts_node_map)} for "
+                            f"hosts_node_map parameter")
+
+        for host, node_list in hosts_node_map.items():
+            host_dict = dict()
+            try:
+                host_dict['vars'] = host_vars[host]
+            except KeyError:
+                pass
+
+            _hosts = dict()
+            for node in node_list:
+                _host_vars = dict()
+                _host_vars['ansible_host'] = node.ip
+                _host_vars['ansible_connection'] = 'ssh'
+                _host_vars['ansible_user'] = node.configuration.login.user
+                _host_vars['ansible_ssh_private_key_file'] = path_extend(
+                    private_path, node.configuration.login.keypair_private_file)
+                _host_vars['ansible_port'] = node.configuration.login.ssh_port
+                _host_vars.update(node_vars.get(node.node_id, dict()))
+                _hosts[node.node_id] = _host_vars
+
+            host_dict['hosts'] = _hosts
+
+            if host == 'all':
+                inventory['all'] = host_dict
+            else:
+                hosts[host] = host_dict
+
+        if hosts:
+            inventory['all']['children'] = default_dict_to_dict(hosts)
+
+        return default_dict_to_dict(inventory)
+
+    @staticmethod
+    def create_extra_vars(output_dir: str, nodes: List[NodeDescriptor],
+                          private_path: str) -> dict:
         elasticluster_vars = {
             'elasticluster': {
                 'cloud': {},
                 'nodes': {},
-                'output_dir': outdir
+                'output_dir': output_dir
             }
         }
 
@@ -144,11 +161,11 @@ class AnsiblePlaybookExecutor(Executor):
 
             if node.configuration.provider.provider == 'aws':
                 aws_access_key = open(
-                    path_extend(self.private_path,
+                    path_extend(private_path,
                                 node.configuration.provider.access_keyfile),
                     'r').read().strip()
                 aws_secret_key = open(
-                    path_extend(self.private_path,
+                    path_extend(private_path,
                                 node.configuration.provider.secret_access_keyfile),
                     'r').read().strip()
                 aws_region = node.configuration.provider.region
@@ -164,67 +181,35 @@ class AnsiblePlaybookExecutor(Executor):
 
         return elasticluster_vars
 
-    # TODO also allows localhost
-    def create_inventory(self, group_hosts_map: Dict[str, List[NodeDescriptor]],
-                         group_vars: Dict[str, Dict[str, str]],
-                         host_vars: Dict[str, Dict[str, str]]) -> dict:
-        inventory = defaultdict(dict)
-        groups = defaultdict(dict)
-
-        for group, host_list in group_hosts_map.items():
-            gdict = dict()
-            try:
-                gdict['vars'] = group_vars[group]
-            except KeyError:
-                pass
-
-            hosts = dict()
-            for node in host_list:
-                _host_vars = dict()
-                _host_vars['ansible_host'] = node.ip
-                _host_vars['ansible_connection'] = 'ssh'
-                _host_vars['ansible_user'] = node.configuration.login.user
-                _host_vars['ansible_ssh_private_key_file'] = path_extend(
-                    self.private_path,
-                    node.configuration.login.keypair_private_file)
-                _host_vars['ansible_port'] = node.configuration.login.ssh_port
-                _host_vars.update(host_vars.get(node.node_id, dict()))
-                hosts[node.node_id] = _host_vars
-
-            gdict['hosts'] = hosts
-
-            if group == 'all':
-                inventory['all'] = gdict
-            else:
-                groups[group] = gdict
-
-        if groups:
-            inventory['all']['children'] = default_dict_to_dict(groups)
-
-        return default_dict_to_dict(inventory)
+    def __init__(self, playbook_file: str,
+                 private_path: str,
+                 inventory: Union[list, dict] = None,
+                 extra_args: Dict[str, str] = None,
+                 env_vars: Dict[str, str] = None,
+                 quiet: bool = False,
+                 verbosity: int = 0):
+        self.playbook_file = playbook_file
+        self.private_path = private_path
+        self.inventory = inventory or dict()
+        self.env_vars = env_vars or os.environ.copy()
+        self.extra_args = extra_args or dict()
+        self.quiet = quiet
+        self.verbosity = verbosity
 
     def run(self) -> dict:
-        if not self.inventory:
-            inventory = self.create_inventory(
-                self.hosts_node_map, self.group_vars, self.host_vars)
-        else:
-            inventory = self.inventory
-
         with tmpdir() as tdir:
-            all_nodes = list([node for host, nodes in self.hosts_node_map.items()
-                             for node in nodes])
-            self.extra_args.update(self.create_extra_vars(tdir, all_nodes))
             logger.debug(f"Ansible runner will execute the playbook at: "
                          f"`{self.playbook_file}`.")
-            logger.debug(f"Inventory: \n{yaml.dump(inventory, sort_keys=True)}")
-            logger.debug(f"Extra: \n{yaml.dump(self.extra_args, sort_keys=True)}")
+            logger.debug(f"Inventory: \n{yaml.dump(self.inventory)}")
+            logger.debug(f"Extra: \n{yaml.dump(self.extra_args)}")
             ret = ansible_runner.run(
-                private_data_dir=tdir, inventory=inventory,
+                private_data_dir=tdir, inventory=self.inventory,
                 playbook=self.playbook_file, quiet=self.quiet,
                 verbosity=self.verbosity, extravars=self.extra_args,
+                envvars=self.env_vars,
                 debug=True if self.verbosity > 3 else False)
 
-            host_playbook_vars = {node.node_id: dict() for node in all_nodes}
+            host_playbook_vars = defaultdict(dict)
             for e in ret.events:
                 try:
                     if e['event_data']['task_action'] == 'set_fact' and \
@@ -232,38 +217,30 @@ class AnsiblePlaybookExecutor(Executor):
                         params = e['event_data']['res']['ansible_facts']
                         host = e['event_data']['host']
                         host_playbook_vars[host].update(params)
-                except Exception as e:
+                except KeyError:
                     continue
 
             logger.debug(f"Collected host playbook variables (facts): "
                          f"{host_playbook_vars}")
 
-            try:
-                if ret.status != 'successful':
-                    raise IndexError
-                status_event = [e for e in ret.events
-                                if e['event'] == 'playbook_on_stats'][-1]['event_data']
-            except IndexError:
+            stats = ret.stats
+            if ret.status != 'successful' or stats is None:
                 r = AnsiblePlaybookExecutor.PlaybookResult(
-                    ok=False, ret_code=ret.rc,
-                    hosts={node.node_id: False for node in all_nodes},
-                    events={node.node_id: list() for node in all_nodes},
+                    ok=False, ret_code=ret.rc, hosts={}, events={},
                     vars=host_playbook_vars
                 )
                 return asdict(r)
 
-            # ok_nodes = set(list(status_event['ok'].keys()) +
-            # list(status_event['ignored'].keys()) + list(status_event['skipped'].keys()))
-            not_ok_nodes = set(list(status_event['dark'].keys()) +
-                               list(status_event['failures'].keys()) +
-                               list(status_event['rescued'].keys()))
+            all_nodes = list({host for hosts in stats.values()
+                              for host in hosts.keys()})
+            not_ok_nodes = list({host for s in ['dark', 'failures']
+                                 for host in stats[s].keys()})
+            hosts_stats = {n: n not in not_ok_nodes for n in all_nodes}
+            hosts_events = {n: list(ret.host_events(n)) for n in all_nodes}
+
             r = AnsiblePlaybookExecutor.PlaybookResult(
-                ok=ret.status == 'successful', ret_code=ret.rc,
-                hosts={node.node_id: node.node_id not in not_ok_nodes
-                       for node in all_nodes},
-                events={n.node_id: list(ret.host_events(n.node_id))
-                        for n in all_nodes},
-                vars=host_playbook_vars)
+                ok=True, ret_code=ret.rc, hosts=hosts_stats,
+                events=hosts_events, vars=host_playbook_vars)
             return asdict(r)
 
 

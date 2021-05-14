@@ -54,10 +54,10 @@ class ProviderConfigLocal:
 class LoginConfig:
     login_config_id: str
     user: str
+    keypair_name: str
+    keypair_public_file: str
+    keypair_private_file: str
     ssh_port: int = 22
-    keypair_name: str = None
-    keypair_public_file: str = None
-    keypair_private_file: str = None
     sudo: Optional[bool] = True
     sudo_user: Optional[str] = 'root'
 
@@ -70,7 +70,7 @@ class InstanceConfigAWS:
     login: str
     flavor: str
     image_id: str
-    security_group: str = None
+    security_group: str
     boot_disk_size: int = None
     boot_disk_device: str = None
     boot_disk_type: str = None

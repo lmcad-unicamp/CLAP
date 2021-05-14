@@ -1,4 +1,5 @@
 import os
+import shutil
 import tempfile
 import time
 import logging
@@ -35,13 +36,14 @@ class Singleton(type):
 
 
 @contextmanager
-def tmpdir(suffix=None, prefix='clap.', dir: str = None):
+def tmpdir(suffix=None, prefix='clap.', dir: str = None, remove: bool = True):
     dd = tempfile.mkdtemp(suffix=suffix, prefix=prefix, dir=dir)
     try:
         yield dd
     finally:
-        #shutil.rmtree(dd)
-        pass
+        if remove:
+            shutil.rmtree(dd)
+
 
 def path_extend(*args) -> str:
     return os.path.expandvars(os.path.expanduser(os.path.join(*args)))

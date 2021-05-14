@@ -18,7 +18,7 @@ from common.schemas import ConfigurationDatabase, InstanceInfo, ProviderConfig, 
     YAMLConfigurationDatabase, ProviderConfigLocal
 from common.utils import path_extend, get_logger, Singleton, get_random_name
 
-from drivers.provider_ansible_aws import AnsibleAWSProvider
+from providers.provider_ansible_aws import AnsibleAWSProvider
 
 logger = get_logger(__name__)
 

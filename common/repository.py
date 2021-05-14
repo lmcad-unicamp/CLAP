@@ -19,9 +19,11 @@ class Repository(ABC):
     repository_name: str = 'AbstractRepository'
     extension: str = ''
 
-    def __init__(self, repository_path: str, commit_on_close: bool = True):
+    def __init__(self, repository_path: str, commit_on_close: bool = True,
+                 verbosity: int = 0):
         self.repository_path = repository_path
         self.commit_on_close = commit_on_close
+        self.verbosity = verbosity
 
     @contextmanager
     @abstractmethod
@@ -81,8 +83,10 @@ class SQLiteRepository(Repository):
     repository_name: str = 'sqlite'
     extension: str = '.db'
 
-    def __init__(self, repository_path: str, commit_on_close: bool = True):
-        super().__init__(repository_path, commit_on_close=commit_on_close)
+    def __init__(self, repository_path: str, commit_on_close: bool = True,
+                 verbosity: int = 0):
+        super().__init__(repository_path, commit_on_close=commit_on_close,
+                         verbosity=verbosity)
         self.sqlite_repository = None
         self.table_name = None
 
@@ -149,6 +153,21 @@ class SQLiteRepository(Repository):
     def __repr__(self):
         return f"SQLiteRepository(file='{self.repository_path}', open={self.sqlite_repository is not None}, " \
                f"table='{self.table_name}')"
+
+
+class RepositoryFactory:
+    repositories = {
+        SQLiteRepository.repository_name: SQLiteRepository
+    }
+
+    def get_repository(self, name: str,
+                       repository_path: str,
+                       commit_on_close: bool = True,
+                       verbosity: int = 0) -> Repository:
+        if name not in self.repositories:
+            raise ValueError(f"Invalid repository named {name}")
+        return self.repositories[name](repository_path, commit_on_close,
+                                       verbosity)
 
 
 class RepositoryController:
