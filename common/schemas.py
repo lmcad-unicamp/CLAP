@@ -16,6 +16,11 @@ class ConfigurationError(Exception):
     pass
 
 
+class InvalidConfigurationError(ConfigurationError):
+    def __init__(self, name: str):
+        super().__init__(f"Invalid configuration named '{name}'")
+
+
 class ProviderConfigError(ConfigurationError):
     def __init__(self, name: str):
         super().__init__(f'Invalid provider type: {name}')
@@ -200,58 +205,64 @@ class YAMLConfigurationDatabase(ConfigurationDatabase):
     def load_instances_config(self):
         for instance_config_id, instance_config in yaml_load(self.instances_file).items():
             try:
+                # Check if provider and login keys exist in instance configs
                 if 'provider' not in instance_config:
-                    raise KeyError(f"Missing provider field in instance configuration: `{instance_config_id}`")
+                    raise KeyError(f"Missing provider field in instance configuration: "
+                                   f"`{instance_config_id}`")
                 if 'login' not in instance_config:
-                    raise KeyError(f"Missing login field in instance configuration: `{instance_config_id}`")
+                    raise KeyError(f"Missing login field in instance configuration: "
+                                   f"`{instance_config_id}`")
+                # Check if providers and login referenced are valid
                 if instance_config['provider'] not in self.providers_config:
                     raise KeyError(
-                        f"Invalid provider with id `{instance_config['provider']}` in `{instance_config_id}`")
+                        f"Invalid provider with id `{instance_config['provider']}` "
+                        f"in `{instance_config_id}`")
                 if instance_config['login'] not in self.logins_config:
                     raise KeyError(
-                        f"Invalid provider with id `{instance_config['provider']}` in `{instance_config_id}`")
+                        f"Invalid login with id `{instance_config['login']}` "
+                        f"in `{instance_config_id}`")
+                # Put instance_config_id in instance config
                 instance_config['instance_config_id'] = instance_config_id
+                # Validate instance config
                 self.instances_config[instance_config_id] = validate_instance_config(instance_config)
+                # Create instance descriptor object
                 self.instance_descriptors[instance_config_id] = InstanceInfo(
                     self.providers_config[instance_config['provider']],
                     self.logins_config[instance_config['login']],
                     self.instances_config[instance_config_id]
                 )
             except Exception as e:
-                logger.error(f"Dropping instance configuration `{instance_config_id}`. {type(e).__name__}: {e}")
+                logger.error(f"Dropping instance configuration "
+                             f"`{instance_config_id}`. {type(e).__name__}: {e}")
 
     def get_provider_config(self, provider_id: str) -> _ProviderConfig:
-        try:
-            return self.providers_config[provider_id]
-        except KeyError:
-            raise ConfigurationError(provider_id)
+        if provider_id not in self.providers_config:
+            raise InvalidConfigurationError(provider_id)
+        return self.providers_config[provider_id]
 
     def get_all_providers_config(self) -> Dict[str, _ProviderConfig]:
         return self.providers_config
 
     def get_login_config(self, login_id: str) -> _LoginConfig:
-        try:
-            return self.logins_config[login_id]
-        except KeyError:
-            raise ConfigurationError(login_id)
+        if login_id not in self.logins_config:
+            raise InvalidConfigurationError(login_id)
+        return self.logins_config[login_id]
 
     def get_all_logins_config(self) -> Dict[str, _LoginConfig]:
         return self.logins_config
 
     def get_instance_config(self, instance_id: str) -> _InstanceConfig:
-        try:
-            return self.instances_config[instance_id]
-        except KeyError:
-            raise ConfigurationError(instance_id)
+        if instance_id not in self.instances_config:
+            raise InvalidConfigurationError(instance_id)
+        return self.instances_config[instance_id]
 
     def get_all_instances_config(self) -> Dict[str, _InstanceConfig]:
         return self.instances_config
 
     def get_instance_info(self, instance_id: str) -> InstanceInfo:
-        try:
-            return self.instance_descriptors[instance_id]
-        except KeyError:
-            raise ConfigurationError(instance_id)
+        if instance_id not in self.instance_descriptors:
+            raise InvalidConfigurationError(instance_id)
+        return self.instance_descriptors[instance_id]
 
     def get_all_instances_info(self) -> Dict[str, InstanceInfo]:
         return self.instance_descriptors

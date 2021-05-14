@@ -18,7 +18,7 @@ logger = get_logger(__name__)
 
 class Executor:
     @abstractmethod
-    def run(self) -> dict:
+    def run(self) -> Any:
         raise NotImplementedError("Must be implemented in derived classes")
 
 
@@ -188,15 +188,18 @@ class AnsiblePlaybookExecutor(Executor):
                  env_vars: Dict[str, str] = None,
                  quiet: bool = False,
                  verbosity: int = 0):
+        default_inventory = {
+            'hosts': {'localhost': {'vars': {'ansible_connection': 'local'}}}
+        }
         self.playbook_file = playbook_file
         self.private_path = private_path
-        self.inventory = inventory or dict()
+        self.inventory = inventory or default_inventory
         self.env_vars = env_vars or os.environ.copy()
         self.extra_args = extra_args or dict()
         self.quiet = quiet
         self.verbosity = verbosity
 
-    def run(self) -> dict:
+    def run(self) -> PlaybookResult:
         with tmpdir() as tdir:
             logger.debug(f"Ansible runner will execute the playbook at: "
                          f"`{self.playbook_file}`.")
@@ -225,11 +228,11 @@ class AnsiblePlaybookExecutor(Executor):
 
             stats = ret.stats
             if ret.status != 'successful' or stats is None:
-                r = AnsiblePlaybookExecutor.PlaybookResult(
+                r = self.PlaybookResult(
                     ok=False, ret_code=ret.rc, hosts={}, events={},
                     vars=host_playbook_vars
                 )
-                return asdict(r)
+                return r
 
             all_nodes = list({host for hosts in stats.values()
                               for host in hosts.keys()})
@@ -238,10 +241,10 @@ class AnsiblePlaybookExecutor(Executor):
             hosts_stats = {n: n not in not_ok_nodes for n in all_nodes}
             hosts_events = {n: list(ret.host_events(n)) for n in all_nodes}
 
-            r = AnsiblePlaybookExecutor.PlaybookResult(
+            r = self.PlaybookResult(
                 ok=True, ret_code=ret.rc, hosts=hosts_stats,
                 events=hosts_events, vars=host_playbook_vars)
-            return asdict(r)
+            return r
 
 
 class ShellInvoker(Executor):
@@ -252,7 +255,7 @@ class ShellInvoker(Executor):
         self.verbosity = verbosity
         self.ssh_binary = ssh_binary
 
-    def run(self) -> dict:
+    def run(self):
         user = self.node.configuration.login.user
         ssh_port = self.node.configuration.login.ssh_port
         connection_ip = self.node.ip
@@ -272,8 +275,6 @@ class ShellInvoker(Executor):
             logger.error(f"Invalid connection ip: {self.node.ip}. "
                          f"Check if `{self.node.node_id}` is alive first...")
 
-        return {}
-
 
 if __name__ == '__main__':
     import os
@@ -292,6 +293,6 @@ if __name__ == '__main__':
     # results = c.run()
     # print(json.dumps(results, sort_keys=True, indent=4))
 
-    p = AnsiblePlaybookExecutor('/home/lopani/.clap/groups/debug.yaml', config.private_path, hosts_node_map=[node])
-    results = p.run()
-    print(json.dumps(results, sort_keys=True, indent=4))
+    # p = AnsiblePlaybookExecutor('/home/lopani/.clap/groups/debug.yaml', config.private_path, hosts_node_map=[node])
+    # results = p.run()
+    # print(json.dumps(results, sort_keys=True, indent=4))

@@ -74,12 +74,14 @@ def setup_log(name: str = 'clap', verbosity_level: int = 0, filename: str = None
     coloredlogs.install(level=log_level)
 
     if filename:
-        logging.basicConfig(filename=filename, filemode='a', level=log_level, format=formatter)
+        logging.basicConfig(filename=filename, filemode='a', level=log_level,
+                            format=formatter)
     else:
         logging.basicConfig(level=log_level, format=formatter)
 
     if verbosity_level < 3:
-        for key in list(logging.Logger.manager.loggerDict.keys()) + ['sqlitedict.SqliteMultithread', 'paramiko.transport']:
+        for key in list(logging.Logger.manager.loggerDict.keys()) + \
+                   ['sqlitedict.SqliteMultithread', 'paramiko.transport']:
             if not key.startswith(f'{APP_NAME}'):
                 logging.getLogger(key).disabled = True
 

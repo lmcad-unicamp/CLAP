@@ -36,6 +36,7 @@ def main(args):
         logger.error(f"{e.__class__.__name__}: {e}")
         sys.exit(1)
 
+
 if __name__ == '__main__':
     main(sys.argv)
 

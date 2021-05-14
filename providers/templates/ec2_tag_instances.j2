@@ -1,7 +1,7 @@
 - gather_facts: no
   hosts: localhost
   tasks: 
-  - name: {{ task_check_name }}
+  - name: {{ task_name }}
     vars:
       names: 
       {% for item in names %}

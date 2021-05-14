@@ -14,7 +14,7 @@ from common.node import NodeRepositoryController, NodeDescriptor, NodeStatus, \
     get_local_node
 from common.provider import AbstractModule, AbstractInstanceProvider, Runner
 from common.repository import SQLiteRepository, InvalidEntryError
-from common.schemas import ConfigurationDatabase, InstanceInfo, ProviderConfig, LoginConfig, InstanceConfigAWS, \
+from common.schemas import ConfigurationDatabase, InstanceInfo, _ProviderConfig, LoginConfig, InstanceConfigAWS, \
     YAMLConfigurationDatabase, ProviderConfigLocal
 from common.utils import path_extend, get_logger, Singleton, get_random_name
 
@@ -145,7 +145,6 @@ class NodeModule(AbstractModule):
 
         for provider, list_instance_count in grouped_instances.items():
             provider_obj = self.providers[provider]
-            provider_obj.create_extras(list_instance_count)
             started_instances += provider_obj.start_instances(list_instance_count, timeout=start_timeout)
             logger.info(f"Started nodes `{', '.join(sorted(started_instances))}` at provider: {provider}")
 
@@ -391,10 +390,10 @@ class NodeModule(AbstractModule):
     def upsert_node(self, node: NodeDescriptor):
         self.node_repository_operator.upsert_node(node)
 
-    def get_provider_config(self, provider_config_id: str) -> ProviderConfig:
+    def get_provider_config(self, provider_config_id: str) -> _ProviderConfig:
         return self.config_reader.get_provider_config(provider_config_id)
 
-    def get_all_provider_configs(self) -> Dict[str, ProviderConfig]:
+    def get_all_provider_configs(self) -> Dict[str, _ProviderConfig]:
         return self.config_reader.get_all_providers_config()
 
     def get_login_config(self, login_config_id: str) -> LoginConfig:

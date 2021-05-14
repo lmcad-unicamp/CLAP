@@ -13,7 +13,7 @@ from common.config import Config
 from common.executor import AnsiblePlaybookExecutor
 from common.node import NodeDescriptor, NodeRepositoryController, NodeStatus, \
     NodeLifecycle, NodeType
-from common.provider import AbstractInstanceProvider, _AbstractInstanceProvider
+from common.provider import AbstractInstanceProvider
 from common.repository import RepositoryController, InvalidEntryError, RepositoryFactory
 from common.schemas import InstanceInfo, ProviderConfigAWS
 from common.utils import path_extend, tmpdir, get_logger
@@ -21,7 +21,7 @@ from common.utils import path_extend, tmpdir, get_logger
 logger = get_logger(__name__)
 
 
-class AnsibleAWSProvider(_AbstractInstanceProvider):
+class AnsibleAWSProvider(AbstractInstanceProvider):
     provider = 'aws'
     version = '0.1.0'
 
@@ -36,8 +36,16 @@ class AnsibleAWSProvider(_AbstractInstanceProvider):
             loader=jinja2.FileSystemLoader(self.templates_path),
             trim_blocks=True, lstrip_blocks=True)
 
-    def run_template(self, output_filename: str, rendered_template: str,
-                     envvars: Dict[str, str] = None, quiet: bool = False) -> dict:
+    @staticmethod
+    def _get_named_event(events: Dict[str, List[dict]], task_name) -> dict:
+        instance_event = [e for _e in events.values() for e in _e
+                          if e['event'] == 'runner_on_ok' and
+                          e['event_data']['task'] == task_name][0]
+        return instance_event
+
+    def _run_template(self, output_filename: str, rendered_template: str,
+                      envvars: Dict[str, str] = None, quiet: bool = False) -> \
+            AnsiblePlaybookExecutor.PlaybookResult:
         with tmpdir(suffix='.aws') as tdir:
             output_filename = path_extend(tdir, output_filename)
             with open(output_filename, 'w') as f:
@@ -115,26 +123,27 @@ class AnsibleAWSProvider(_AbstractInstanceProvider):
 
         # Render and run ec2_start_instances.j2 playbook
         rendered_template = self.jinjaenv.get_template('ec2_start_instances.j2').render(ec2_vals)
-        result = self.run_template('start_instances.yml', rendered_template, envvars=envvars)
-        if not result['ok']:
+        result = self._run_template('start_instances.yml', rendered_template, envvars=envvars)
+        if not result.ok:
             logger.error("Error executing start instances playbook. "
-                         f"Non-zero return code ({result['ret_code']})")
+                         f"Non-zero return code ({result.ret_code})")
             return []
 
         # Get the instance creation event
-        task_event = [e for e in result['events'] if e['event'] == 'runner_on_ok'
-                      and e['event_data']['task'] == task_check_name][0]
+        task_event = self._get_named_event(result.events, task_check_name)
         created_instances = task_event['event_data']['res']['instances']
         created_nodes = []
 
         for fresh_instance in created_instances:
+            lifecycle = NodeLifecycle.PREEMPTIBLE if instance.instance.price \
+                else NodeLifecycle.NORMAL
             # Create a new CLAP node
             node_info = self.repository.create_node(
                 instance_descriptor=instance,
                 cloud_instance_id=fresh_instance['id'],
                 ip=fresh_instance['public_ip'],
                 status=NodeStatus.STARTED,
-                cloud_lifecycle=NodeLifecycle.PREEMPTIBLE if instance.instance.price else NodeLifecycle.NORMAL,
+                cloud_lifecycle=lifecycle,
                 node_type=NodeType.TYPE_CLOUD,
                 extra={
                     'instance_id': fresh_instance['id'],
@@ -165,7 +174,7 @@ class AnsibleAWSProvider(_AbstractInstanceProvider):
             envvars = self.create_envvars(nodes[0].configuration.provider)
             names = [{
                 'id': node.cloud_instance_id,
-                'name': f"{node.configuration.provider.provider_config_id}-{node.node_id}-{node.nickname.replace(' ', '')}"
+                'name': f"{node.node_id}-{node.nickname.replace(' ', '')}"
             } for node in nodes]
 
             ec2_vals = {
@@ -174,22 +183,21 @@ class AnsibleAWSProvider(_AbstractInstanceProvider):
             }
 
             rendered_template = self.jinjaenv.get_template('ec2_tag_instances.j2').render(ec2_vals)
-            result = self.run_template('ec2_tag_instances.yml', rendered_template, envvars)
-            if not result['ok']:
+            result = self._run_template('ec2_tag_instances.yml', rendered_template, envvars)
+            if not result.ok:
                 logger.error(
                     f"Error tagging instances "
                     f"`{', '.join(sorted([node.node_id for node in nodes]))}`. "
-                    f"Non-zero return code ({result['ret_code']})")
+                    f"Non-zero return code ({result.ret_code})")
             else:
                 tagged_instances += [node.node_id for node in nodes]
 
         return tagged_instances
 
-    # TODO check calls
     def execute_common_template(self, nodes: List[NodeDescriptor],
                                 provider_config: ProviderConfigAWS,
                                 task_check_name: str, state: str,
-                                wait: str = 'no'):
+                                wait: str = 'no') -> Dict[str, List[dict]]:
         envvars = self.create_envvars(provider_config)
         ec2_vals = {
             'task_name': task_check_name,
@@ -199,18 +207,20 @@ class AnsibleAWSProvider(_AbstractInstanceProvider):
         }
 
         rendered_template = self.jinjaenv.get_template('ec2_common.j2').render(ec2_vals)
-        result = self.run_template(
+        result = self._run_template(
             'ec2_common_{}.yml'.format(state), rendered_template, envvars)
-        if not result['ok']:
+        if not result.ok:
             logger.error(f"Error changing state of nodes "
                          f"{','.join([node.node_id for node in nodes])} to {state}. "
-                         f"Non-zero return code ({result['ret_code']})")
-            return []
+                         f"Non-zero return code ({result.ret_code})")
+            return {}
 
-        return result['events']
+        return result.events
 
-    def execute_check_template(self, nodes: List[NodeDescriptor], provider_config: ProviderConfigAWS,
-                               task_check_name: str, quiet: bool = False):
+    def execute_check_template(self, nodes: List[NodeDescriptor],
+                               provider_config: ProviderConfigAWS,
+                               task_check_name: str,
+                               quiet: bool = False) -> Dict[str, List[dict]]:
         envvars = self.create_envvars(provider_config)
         ec2_vals = {
             'task_name': task_check_name,
@@ -218,13 +228,13 @@ class AnsibleAWSProvider(_AbstractInstanceProvider):
         }
 
         rendered_template = self.jinjaenv.get_template('ec2_check.j2').render(ec2_vals)
-        result = self.run_template('ec2_check.yml', rendered_template, envvars, quiet=quiet)
-        if result['ok'] != 0:
+        result = self._run_template('ec2_check.yml', rendered_template, envvars, quiet=quiet)
+        if not result.ok:
             logger.error(f"Error checking nodes "
                          f"{','.join([node.node_id for node in nodes])}. "
-                         f"Non-zero return code ({result['ret_code']})")
-            return []
-        return result['events']
+                         f"Non-zero return code ({result.ret_code})")
+            return {}
+        return result.events
 
     def start_instances(self, instance_count_list: List[Tuple[InstanceInfo, int]], timeout: int = 600) -> List[str]:
         created_nodes = []
@@ -250,9 +260,8 @@ class AnsibleAWSProvider(_AbstractInstanceProvider):
                 raise Exception('No events')
 
             # remove instances...
-            instance_event = next(e for e in list(events) if e['event'] == 'runner_on_ok' and
-                                  e['event_data']['task'] == task_check_name)
-            removed_instance_ids = instance_event['event_data']['res']['instance_ids']
+            task_event = self._get_named_event(events, task_check_name)
+            removed_instance_ids = task_event['event_data']['res']['instance_ids']
 
             if not force:
                 successfully_stopped = [node.node_id for node in nodes if
@@ -281,11 +290,10 @@ class AnsibleAWSProvider(_AbstractInstanceProvider):
                 raise Exception('No events')
 
             # remove instances...
-            instance_event = next(e for e in list(events) if e['event'] == 'runner_on_ok' and
-                                  e['event_data']['task'] == task_check_name)
-
-            already_paused_instance_ids = instance_event['event_data']['res']['instance_ids']
-            paused_instances = {i['id']: i for i in instance_event['event_data']['res']['instances']}
+            task_event = self._get_named_event(events, task_check_name)
+            already_paused_instance_ids = task_event['event_data']['res']['instance_ids']
+            paused_instances = {i['id']: i for i in
+                                task_event['event_data']['res']['instances']}
 
             for node in nodes:
                 if node.cloud_instance_id in paused_instances:
@@ -321,11 +329,9 @@ class AnsibleAWSProvider(_AbstractInstanceProvider):
                 raise Exception('No events')
 
             # remove instances...
-            instance_event = next(e for e in list(events) if e['event'] == 'runner_on_ok' and
-                                  e['event_data']['task'] == task_check_name)
-
-            already_running_instances = instance_event['event_data']['res']['instance_ids']
-            resumed_instances = {i['id']: i for i in instance_event['event_data']['res']['instances']}
+            task_event = self._get_named_event(events, task_check_name)
+            already_running_instances = task_event['event_data']['res']['instance_ids']
+            resumed_instances = {i['id']: i for i in task_event['event_data']['res']['instances']}
 
             for node in nodes:
                 if node.cloud_instance_id in resumed_instances:
@@ -369,10 +375,9 @@ class AnsibleAWSProvider(_AbstractInstanceProvider):
                 raise Exception('No events')
 
             # remove instances...
-            instance_event = next(e for e in list(events) if e['event'] == 'runner_on_ok' and
-                                  e['event_data']['task'] == task_check_name)
-
-            instances_status = {i['instance_id']: i for i in instance_event['event_data']['res']['instances']}
+            task_event = self._get_named_event(events, task_check_name)
+            instances_status = {i['instance_id']: i for i in
+                                task_event['event_data']['res']['instances']}
 
             for node in nodes:
                 if node.cloud_instance_id not in instances_status:
@@ -391,7 +396,8 @@ class AnsibleAWSProvider(_AbstractInstanceProvider):
                     node.status = NodeStatus.UNKNOWN
 
                 if node.status != NodeStatus.STOPPED:
-                    node.ip = instance['public_ip_address'] if 'public_ip_address' in instance else None
+                    node.ip = instance['public_ip_address'] \
+                        if 'public_ip_address' in instance else None
                     node.cloud_instance_id = instance['instance_id']
                     node.extra = {
                         'instance_id': instance['instance_id'],

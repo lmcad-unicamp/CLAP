@@ -32,39 +32,6 @@ class AbstractModule:
 
 
 class AbstractInstanceProvider(ABC):
-    provider = 'abstract provider'
-    version = '0.1.0'
-
-    def __init__(self, repository: NodeRepositoryController, verbosity: int = 0):
-        self.repository = repository
-        self.verbosity = verbosity
-
-    @abstractmethod
-    def create_extras(self, instance_count_list: List[Tuple[InstanceInfo, int]]):
-        pass
-
-    @abstractmethod
-    def start_instances(self, instance_count_list: List[Tuple[InstanceInfo, int]], timeout: int = 600) -> List[str]:
-        pass
-
-    @abstractmethod
-    def stop_instances(self, nodes_to_stop: List[str], force: bool = True, timeout: int = 600) -> List[str]:
-        pass
-
-    @abstractmethod
-    def pause_instances(self, nodes_to_pause: List[str], timeout: int = 600) -> List[str]:
-        pass
-
-    @abstractmethod
-    def resume_instances(self, nodes_to_resume: List[str], timeout: int = 600) -> List[str]:
-        pass
-
-    @abstractmethod
-    def update_instance_info(self, nodes_to_check: List[str], timeout: int = 600) -> Dict[str, str]:
-        pass
-
-
-class _AbstractInstanceProvider(ABC):
     def __init__(self, repository: NodeRepositoryController, verbosity: int = 0,
                  **kwargs):
         self.repository = repository

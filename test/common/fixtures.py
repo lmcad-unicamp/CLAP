@@ -6,7 +6,7 @@ import pytest
 from unittest import mock
 
 from common.node import NodeDescriptor, NodeRepositoryController
-from common.schemas import ProviderConfig, InstanceInfo
+from common.schemas import _ProviderConfig, InstanceInfo
 from common.repository import SQLiteRepository
 from common.utils import path_extend
 
@@ -30,7 +30,7 @@ def assertDictEqual(d1, d2, path='', key_not_existing='raise'):
                     assert False, f"Key: {path}.{k} has different values (actual: {d1[k]}, expected: {d2[k]})"
 
 
-class FakeProviderConfig(ProviderConfig):
+class FakeProviderConfig:
     pass
 
 
