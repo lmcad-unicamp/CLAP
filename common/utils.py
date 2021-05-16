@@ -1,3 +1,4 @@
+import itertools
 import os
 import shutil
 import tempfile
@@ -6,7 +7,7 @@ import logging
 import random
 from abc import abstractmethod
 from collections import defaultdict
-from typing import List
+from typing import List, Iterable
 from contextlib import contextmanager
 
 import names
@@ -102,10 +103,15 @@ def get_random_name(in_use_names: List[str] = None, retries: int = 10) -> str:
     return ''
 
 
-def default_dict_to_dict(d):
+def defaultdict_to_dict(d):
     if isinstance(d, defaultdict):
-        d = {k: default_dict_to_dict(v) for k, v in d.items()}
+        d = {k: defaultdict_to_dict(v) for k, v in d.items()}
     return d
+
+
+def sorted_groupby(iterable: Iterable, key=None) -> dict:
+    s = sorted(iterable, key=key)
+    return {k: list(v) for k, v in itertools.groupby(s, key=key)}
 
 
 def get_logger(name):

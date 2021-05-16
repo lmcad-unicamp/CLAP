@@ -32,15 +32,15 @@ green_print "OK"
 
 # echo 'eval "$(register-python-argcomplete clapp)"' >> clap-env/bin/activate || abort "Error writting on activate"
 
-green_print "Creating default folders"
-green_print "Using default CLAP path: $CLAP_PATH"
-mkdir -p $CLAP_PATH/configs/
-mkdir -p $CLAP_PATH/configs/clusters/
-mkdir -p $CLAP_PATH/groups/
-mkdir -p $CLAP_PATH/private/
-mkdir -p $CLAP_PATH/storage/
-cp -r -n ./share/configs/ $CLAP_PATH
-cp -r ./share/groups/ $CLAP_PATH
+#green_print "Creating default folders"
+#green_print "Using default CLAP path: $CLAP_PATH"
+#mkdir -p $CLAP_PATH/configs/
+#mkdir -p $CLAP_PATH/configs/clusters/
+#mkdir -p $CLAP_PATH/groups/
+#mkdir -p $CLAP_PATH/private/
+#mkdir -p $CLAP_PATH/storage/
+#cp -r -n ./share/configs/ $CLAP_PATH
+#cp -r ./share/groups/ $CLAP_PATH
 
 green_print "OK"
 green_print "Use: 'source ./clap-env/bin/activate' to use CLAP"

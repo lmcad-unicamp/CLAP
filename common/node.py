@@ -2,7 +2,7 @@ import time
 
 from dataclasses import dataclass, field, asdict
 
-from typing import List, Any, Dict, Union
+from typing import List, Any, Dict, Union, Callable
 
 from common.repository import Repository, RepositoryController
 from common.schemas import InstanceInfo, ProviderConfigLocal, LoginConfig, InstanceConfigAWS
@@ -45,13 +45,7 @@ class NodeDescriptor(Dictable):
     creation_time: float = 0.0
     update_time: float = 0.0
     roles: List[str] = field(default_factory=list)
-    # TODO: Change to tag's field type to Dict[str, str]
-    tags: Dict[str, List[str]] = field(default_factory=dict)
-    # TODO: Remove field facts
-    facts: Dict[str, str] = field(default_factory=dict)
-    extra: Dict[str, Any] = field(default_factory=dict)
-    # TODO: Remove field groups
-    groups: Dict[str, List[str]] = field(default_factory=dict)
+    tags: Dict[str, str] = field(default_factory=dict)
 
     def __str__(self):
         return f"id=`{self.node_id}` nickname=`{self.nickname}`, ip=`{self.ip}` status=`{self.status}` " \
@@ -131,6 +125,10 @@ class NodeRepositoryController(RepositoryController):
         with self.repository.connect('node') as db:
             db.remove_multiple(node_ids)
 
+    def get_nodes(self, filter_func: Callable[[NodeDescriptor], bool]) -> \
+            List[NodeDescriptor]:
+        return [node for node in self.get_all_nodes() if filter_func(node)]
+
     def get_nodes_by_id(self, node_ids: List[str]) -> List[NodeDescriptor]:
         with self.repository.connect('node') as db:
             return self.__update__([NodeDescriptor.from_dict(node) for node in
@@ -140,3 +138,14 @@ class NodeRepositoryController(RepositoryController):
         with self.repository.connect('node') as db:
             return self.__update__([NodeDescriptor.from_dict(node) for node in
                                     db.get_all().values()])
+
+
+if __name__ == '__main__':
+    import common.repository
+    import json
+    r = common.repository.RepositoryFactory().get_repository(
+        'sqlite', '/home/lopani/.clap/storage/nodes.db')
+    controller = NodeRepositoryController(r)
+    nodes = controller.get_nodes(lambda n: n.status in ('reachable', 'node-5'))
+    print(json.dumps([n.to_dict() for n in nodes], sort_keys=True, indent=4))
+    print(f'Number of nodes: {len(nodes)}')

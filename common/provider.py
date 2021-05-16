@@ -13,7 +13,7 @@ from paramiko import SSHClient
 
 from common.node import NodeRepositoryController, NodeDescriptor
 from common.schemas import InstanceInfo
-from common.utils import path_extend, default_dict_to_dict, tmpdir, get_logger
+from common.utils import path_extend, defaultdict_to_dict, tmpdir, get_logger
 
 logger = get_logger(__name__)
 
@@ -31,6 +31,7 @@ class AbstractModule:
         pass
 
 
+# TODO this class should not use node repository directly. Should use NodeDescriptor instead of node_id
 class AbstractInstanceProvider(ABC):
     def __init__(self, repository: NodeRepositoryController, verbosity: int = 0,
                  **kwargs):
@@ -38,7 +39,7 @@ class AbstractInstanceProvider(ABC):
         self.verbosity = verbosity
 
     @abstractmethod
-    def start_instances(self, instance_count_list: List[Tuple[InstanceInfo, int]],
+    def start_instances(self, instance: InstanceInfo, count: int,
                         timeout: int = 600) -> List[str]:
         pass
 
@@ -117,9 +118,9 @@ class Runner:
                 groups[group] = gdict
 
         if groups:
-            inventory['all']['children'] = default_dict_to_dict(groups)
+            inventory['all']['children'] = defaultdict_to_dict(groups)
 
-        return default_dict_to_dict(inventory)
+        return defaultdict_to_dict(inventory)
 
     def __create_extra_vars__(self, output_dir: str, nodes: List[NodeDescriptor]):
         elasticluster_vars = {

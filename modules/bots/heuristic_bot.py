@@ -11,7 +11,7 @@ from typing import Dict, Any, List, Tuple, Type
 
 from common.provider import AbstractModule
 from common.schemas import InstanceInfo
-from common.utils import default_dict_to_dict, get_logger
+from common.utils import defaultdict_to_dict, get_logger
 from modules.cluster import ClusterModule
 from modules.node import NodeModule
 from modules.spits import SpitsModule

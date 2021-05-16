@@ -11,7 +11,7 @@ import paramiko
 import yaml
 
 from common.node import NodeDescriptor
-from common.utils import path_extend, get_logger, tmpdir, default_dict_to_dict
+from common.utils import path_extend, get_logger, tmpdir, defaultdict_to_dict
 
 logger = get_logger(__name__)
 
@@ -140,9 +140,9 @@ class AnsiblePlaybookExecutor(Executor):
                 hosts[host] = host_dict
 
         if hosts:
-            inventory['all']['children'] = default_dict_to_dict(hosts)
+            inventory['all']['children'] = defaultdict_to_dict(hosts)
 
-        return default_dict_to_dict(inventory)
+        return defaultdict_to_dict(inventory)
 
     @staticmethod
     def create_extra_vars(output_dir: str, nodes: List[NodeDescriptor],

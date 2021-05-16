@@ -96,8 +96,10 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
                 instance.instance.boot_disk_iops or \
                 instance.instance.boot_disk_device or \
                 instance.instance.boot_disk_snapshot:
-            ec2_vals['device_name'] = instance.instance.boot_disk_device or '/dev/sda1'
-            ec2_vals['boot_disk_type'] = instance.instance.boot_disk_type or 'standard'
+            ec2_vals['device_name'] = instance.instance.boot_disk_device or \
+                                      '/dev/sda1'
+            ec2_vals['boot_disk_type'] = instance.instance.boot_disk_type or \
+                                         'standard'
             if instance.instance.boot_disk_size:
                 ec2_vals['volume_size'] = instance.instance.boot_disk_size
             if instance.instance.boot_disk_snapshot:
@@ -236,10 +238,9 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
             return {}
         return result.events
 
-    def start_instances(self, instance_count_list: List[Tuple[InstanceInfo, int]], timeout: int = 600) -> List[str]:
-        created_nodes = []
-        for (instance, count) in instance_count_list:
-            created_nodes += self._start_instances(instance, count, timeout)
+    def start_instances(self, instance: InstanceInfo, count: int,
+                        timeout: int = 600) -> List[str]:
+        created_nodes = self._start_instances(instance, count, timeout)
         self._tag_instances(created_nodes)
         return created_nodes
 
