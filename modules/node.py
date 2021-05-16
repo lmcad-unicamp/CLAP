@@ -1,6 +1,3 @@
-import concurrent.futures
-import dataclasses
-import multiprocessing
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import jinja2
@@ -18,8 +15,8 @@ from common.node import NodeRepositoryController, NodeDescriptor, NodeStatus, \
 from common.provider import AbstractModule, AbstractInstanceProvider, Runner
 from common.repository import SQLiteRepository, InvalidEntryError
 from common.schemas import ConfigurationDatabase, InstanceInfo, _ProviderConfig, LoginConfig, InstanceConfigAWS, \
-    YAMLConfigurationDatabase, ProviderConfigLocal
-from common.utils import path_extend, get_logger, Singleton, get_random_name, sorted_groupby
+    YAMLConfigurationDatabase
+from common.utils import path_extend, get_logger, Singleton, sorted_groupby
 
 from providers.provider_ansible_aws import AnsibleAWSProvider
 
@@ -365,41 +362,6 @@ class NodeManager:
 
     def upsert_node(self, node: NodeDescriptor):
         self.node_repository.upsert_node(node)
-
-
-class RoleManager:
-    @dataclasses.dataclass
-    def __init__(self, role_path: str, private_path: str):
-        self.role_path = role_path
-        self.private_path = private_path
-
-    def get_all_roles(self) -> Dict[str, Role]:
-        pass
-
-    def get_role(self, role: str) -> Role:
-        pass
-
-    def add_role(self, role: str,
-                 hosts_node_map: Union[List[str], Dict[str, List[str]]],
-                 host_vars: Dict[str, Dict[str, str]] = None,
-                 role_vars: Dict[str, Dict[str, str]] = None,
-                 extra_args: Dict[str, str] = None,
-                 quiet: bool = False) -> List[str]:
-        pass
-
-    def perform_action(self, role: str, action: str,
-                       hosts_node_map: Union[List[str], Dict[str, List[str]]] = None,
-                       host_vars: Dict[str, Dict[str, str]] = None,
-                       role_vars: Dict[str, Dict[str, str]] = None,
-                       extra_args: Dict[str, str] = None,
-                       quiet: bool = False):
-        pass
-
-    def remove_role(self, role: str,
-                    hosts_node_map: Union[List[str], Dict[str, List[str]]]) -> \
-            List[str]:
-        pass
-
 
 
 class NodeModule(AbstractModule):

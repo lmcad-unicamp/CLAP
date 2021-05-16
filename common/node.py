@@ -46,12 +46,13 @@ class NodeDescriptor(Dictable):
     update_time: float = 0.0
     roles: List[str] = field(default_factory=list)
     tags: Dict[str, str] = field(default_factory=dict)
+    extra: Dict[str, Any] = field(default_factory=dict)
 
     def __str__(self):
         return f"id=`{self.node_id}` nickname=`{self.nickname}`, ip=`{self.ip}` status=`{self.status}` " \
                f"instance_type=`{self.configuration.instance.instance_config_id}`, " \
                f"tags=`{','.join(sorted([f'{tag}={sorted(values)}' for tag, values in self.tags.items()]))}`, " \
-               f"roles=`{','.join(sorted(self.groups.keys()))}`"
+               f"roles=`{','.join(sorted(self.roles.keys()))}`"
 
     def to_dict(self):
         d = asdict(self)

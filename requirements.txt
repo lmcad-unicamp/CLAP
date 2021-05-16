@@ -20,6 +20,7 @@ marshmallow_dataclass
 pytest
 numpy
 typeguard
+dacite
 
 # AWS requirements
 pycrypto
