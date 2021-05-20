@@ -4,7 +4,7 @@ import unittest
 
 from unittest import mock
 from marshmallow.exceptions import ValidationError
-from common.schemas import validate_provider_config, validate_login_config, validate_instance_config, \
+from common.configs import validate_provider_config, validate_login_config, validate_instance_config, \
     InstanceInfo, InvalidProvider, ProviderConfig
 from .fixtures import assertDictEqual, FakeProviderConfig
 

@@ -12,9 +12,9 @@ from common.config import Config as BaseDefaults
 from common.executor import SSHCommandExecutor
 from common.node import NodeRepositoryController, NodeDescriptor, NodeStatus, \
     get_local_node
-from common.provider import AbstractModule, AbstractInstanceProvider, Runner
+from common.abstract_provider import AbstractModule, AbstractInstanceProvider, Runner
 from common.repository import SQLiteRepository, InvalidEntryError
-from common.schemas import ConfigurationDatabase, InstanceInfo, _ProviderConfig, LoginConfig, InstanceConfigAWS, \
+from common.configs import ConfigurationDatabase, InstanceInfo, ProviderConfigs, LoginConfig, InstanceConfigAWS, \
     YAMLConfigurationDatabase
 from common.utils import path_extend, get_logger, Singleton, sorted_groupby
 
@@ -707,10 +707,10 @@ class NodeModule(AbstractModule):
     def upsert_node(self, node: NodeDescriptor):
         self.node_repository_operator.upsert_node(node)
 
-    def get_provider_config(self, provider_config_id: str) -> _ProviderConfig:
+    def get_provider_config(self, provider_config_id: str) -> ProviderConfigs:
         return self.config_reader.get_provider_config(provider_config_id)
 
-    def get_all_provider_configs(self) -> Dict[str, _ProviderConfig]:
+    def get_all_provider_configs(self) -> Dict[str, ProviderConfigs]:
         return self.config_reader.get_all_providers_config()
 
     def get_login_config(self, login_config_id: str) -> LoginConfig:

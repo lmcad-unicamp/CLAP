@@ -5,7 +5,7 @@ from dataclasses import dataclass, asdict
 from typing import List, Dict, Tuple, Union
 
 from common.node import NodeStatus
-from common.provider import AbstractModule, Runner
+from common.abstract_provider import AbstractModule, Runner
 from common.config import Config as BaseDefaults
 from common.repository import RepositoryController, Repository, InvalidEntryError, SQLiteRepository
 from common.utils import get_random_name, path_extend, get_logger, Singleton

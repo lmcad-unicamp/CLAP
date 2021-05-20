@@ -96,13 +96,14 @@ class SQLiteRepository(Repository):
         self.close()
 
     def open(self, table_name: str):
-        self.sqlite_repository = SqliteDict(self.repository_path, tablename=table_name, encode=json.dumps,
-                                            decode=json.loads)
+        self.sqlite_repository = SqliteDict(
+            self.repository_path, tablename=table_name, encode=json.dumps,
+            decode=json.loads, flag='c')
         self.table_name = table_name
         return self
 
     def close(self):
-        if self.sqlite_repository:
+        if self.sqlite_repository is not None:
             if self.commit_on_close:
                 self.commit()
             self.sqlite_repository.close()
@@ -169,26 +170,3 @@ class RepositoryFactory:
         return self.repositories[name](repository_path, commit_on_close,
                                        verbosity)
 
-
-class RepositoryController:
-    def __init__(self, repository: Repository, metadata_table: str = '__meta__'):
-        self.repository = repository
-        self.metadata_table = metadata_table
-
-    # TODO may generate a race condition. Increment must be atomic
-    def increment_key(self, key: str) -> int:
-        with self.repository.connect(self.metadata_table) as db:
-            try:
-                value_dict = db.get(key)
-                index = value_dict.get('value', -1) + 1
-            except InvalidEntryError:
-                index = 0
-            db.upsert(key, {'value': index})
-            return index
-
-    def reset_index(self, key: str, value: int = -1):
-        with self.repository.connect(self.metadata_table) as db:
-            db.upsert(key, {'value': value})
-
-    def __repr__(self):
-        return f"RepositoryOperator(repository={self.repository})"

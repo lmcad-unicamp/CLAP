@@ -6,7 +6,7 @@ import jinja2
 from typing import List, Any, Dict, Tuple, Union
 from dataclasses import dataclass, asdict, field
 
-from common.provider import AbstractModule, Runner
+from common.abstract_provider import AbstractModule, Runner
 from common.repository import RepositoryController, Repository, InvalidEntryError, SQLiteRepository
 from common.utils import get_logger, get_random_name, path_extend, Dictable, Singleton, tmpdir
 from common.config import Config as BaseDefaults

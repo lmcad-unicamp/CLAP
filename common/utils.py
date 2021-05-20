@@ -10,6 +10,7 @@ from collections import defaultdict
 from typing import List, Iterable
 from contextlib import contextmanager
 
+import randomname
 import names
 import yaml
 import coloredlogs
@@ -64,7 +65,7 @@ def setup_log(name: str = 'clap', verbosity_level: int = 0, filename: str = None
     global APP_NAME
     APP_NAME = name
 
-    formatter = '[%(asctime)s] [%(levelname)s] [%(name)s]: %(message)s'
+    formatter = '[%(asctime)s] [%(name)s] [%(levelname)s] [%(threadName)s]: %(message)s'
     if verbosity_level <= 0:
         log_level = logging.WARNING
     elif verbosity_level == 1:
@@ -101,6 +102,10 @@ def get_random_name(in_use_names: List[str] = None, retries: int = 10) -> str:
             return new_new_name
 
     return ''
+
+
+def get_random_object() -> str:
+    return randomname.get_name(sep=' ')
 
 
 def defaultdict_to_dict(d):

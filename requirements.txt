@@ -21,6 +21,7 @@ pytest
 numpy
 typeguard
 dacite
+randomname
 
 # AWS requirements
 pycrypto

@@ -1,8 +1,10 @@
 import multiprocessing
+import os
 import subprocess
 from abc import abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass, field, asdict
+from multiprocessing.pool import ThreadPool
 from typing import List, Callable, Any, Union, Dict, Set
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -39,52 +41,53 @@ class SSHCommandExecutor(Executor):
         self.execution_timeout = execution_timeout
         self.environment = environment or dict()
 
-    def connect_and_execute(self, node: NodeDescriptor):
-        user = node.configuration.login.user
-        ssh_port = node.configuration.login.ssh_port
-        connection_ip = node.ip
-        key_file = path_extend(
-            self.private_path, node.configuration.login.keypair_private_file)
-        if not connection_ip:
-            raise ConnectionError(f"Invalid connection ip '{node.ip}' for node "
-                                  f"{node.node_id}. Check if {node.node_id} "
-                                  f"is alive first...")
+    def connect_and_execute(self, node: NodeDescriptor) -> dict:
+        try:
+            user = node.configuration.login.user
+            ssh_port = node.configuration.login.ssh_port
+            connection_ip = node.ip
+            key_file = path_extend(
+                self.private_path, node.configuration.login.keypair_private_file)
+            if not connection_ip:
+                raise ConnectionError(f"Invalid connection ip '{node.ip}' for node "
+                                      f"{node.nickname}. Check if {node.nickname} "
+                                      f"is alive first...")
 
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy)
-        client.connect(connection_ip, port=ssh_port, username=user,
-                       key_filename=key_file, timeout=self.connection_timeout)
-        _, stdout, stderr = client.exec_command(
-            self.command, timeout=self.execution_timeout,
-            environment=self.environment)
-        stdout_lines = stdout.readlines()
-        stderr_lines = stderr.readlines()
-        client.close()
-        return stdout_lines, stderr_lines
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy)
+            client.connect(connection_ip, port=ssh_port, username=user,
+                           key_filename=key_file, timeout=self.connection_timeout)
+            _, stdout, stderr = client.exec_command(
+                self.command, timeout=self.execution_timeout,
+                environment=self.environment)
+            stdout_lines = stdout.readlines()
+            stderr_lines = stderr.readlines()
+            return_code = stdout.channel.recv_exit_status()
+            client.close()
+            return {
+                'ok': True,
+                'return_code': return_code,
+                'stdout_lines': stdout_lines,
+                'stderr_lines': stderr_lines,
+                'error': None
+            }
+        except Exception as e:
+            logger.error(f"Error executing command in node {node.node_id[:8]}: {e}")
+            return {
+                'ok': False,
+                'return_code': None,
+                'stdout_lines': None,
+                'stderr_lines': None,
+                'error': str(e)
+            }
 
     def run(self) -> dict:
         results = dict()
-        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            futures = [executor.submit(self.connect_and_execute, node)
-                       for node in self.nodes]
-            for node, future in zip(self.nodes, as_completed(futures)):
-                try:
-                    stdout, stderr = future.result()
-                    results[node.node_id] = {
-                        'success': True,
-                        'stdout_lines': stdout,
-                        'stderr_lines': stderr,
-                        'error': None
-                    }
-                except Exception as e:
-                    logger.error(f"Error executing command `{self.command}` in "
-                                 f"node {node.node_id}. {type(e)}: {e}")
-                    results[node.node_id] = {
-                        'success': False,
-                        'stdout_lines': None,
-                        'stderr_lines': None,
-                        'error': e
-                    }
+        with ThreadPool(processes=self.max_workers) as pool:
+            values = [(node,) for node in self.nodes]
+            _results = pool.starmap(self.connect_and_execute, values)
+            for node, result in zip(self.nodes, _results):
+                results[node.node_id] = result
         return results
 
 
@@ -106,6 +109,8 @@ class AnsiblePlaybookExecutor(Executor):
             node_vars: Dict[str, Dict[str, str]] = None) -> dict:
         inventory = defaultdict(dict)
         hosts = defaultdict(dict)
+        host_vars = host_vars or dict()
+        node_vars = node_vars or dict()
 
         if type(hosts_node_map) is list:
             hosts_node_map = {'all': hosts_node_map}
@@ -189,7 +194,11 @@ class AnsiblePlaybookExecutor(Executor):
                  quiet: bool = False,
                  verbosity: int = 0):
         default_inventory = {
-            'hosts': {'localhost': {'vars': {'ansible_connection': 'local'}}}
+            'all': {
+                'children': {
+                    'localhost': {}
+                }
+            }
         }
         self.playbook_file = playbook_file
         self.private_path = private_path
@@ -223,11 +232,12 @@ class AnsiblePlaybookExecutor(Executor):
                 except KeyError:
                     continue
 
+            host_playbook_vars = defaultdict_to_dict(host_playbook_vars)
             logger.debug(f"Collected host playbook variables (facts): "
                          f"{host_playbook_vars}")
 
             stats = ret.stats
-            if ret.status != 'successful' or stats is None:
+            if stats is None:
                 r = self.PlaybookResult(
                     ok=False, ret_code=ret.rc, hosts={}, events={},
                     vars=host_playbook_vars
@@ -242,8 +252,12 @@ class AnsiblePlaybookExecutor(Executor):
             hosts_events = {n: list(ret.host_events(n)) for n in all_nodes}
 
             r = self.PlaybookResult(
-                ok=True, ret_code=ret.rc, hosts=hosts_stats,
-                events=hosts_events, vars=host_playbook_vars)
+                ok=ret.status == 'successful',
+                ret_code=ret.rc,
+                hosts=hosts_stats,
+                events=hosts_events,
+                vars=host_playbook_vars
+            )
             return r
 
 
@@ -276,18 +290,18 @@ class ShellInvoker(Executor):
                          f"Check if `{self.node.node_id}` is alive first...")
 
 
-if __name__ == '__main__':
-    import os
-    import common.config
-    import common.node
-    import common.repository
-    import json
-    config = common.config.Config()
-    rpath = os.path.join(config.storage_path, 'nodes.db')
-    repository = common.repository.SQLiteRepository(rpath)
-    node_controller = common.node.NodeRepositoryController(repository)
-    node = node_controller.get_nodes_by_id(['node-5'])[0]
-    print(node)
+# if __name__ == '__main__':
+    # import os
+    # import common.config
+    # import common.node
+    # import common.repository
+    # import json
+    # config = common.config.Config()
+    # rpath = os.path.join(config.storage_path, 'nodes.db')
+    # repository = common.repository.SQLiteRepository(rpath)
+    # node_controller = common.node.NodeRepositoryController(repository)
+    # node = node_controller.get_nodes_by_id(['node-5'])[0]
+    # print(node)
 
     # c = SSHCommandExecutor('ls -lha ~', [node], config.private_path)
     # results = c.run()

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import List, Dict, Any, Tuple
 from abc import abstractmethod
 
-from common.provider import AbstractModule
+from common.abstract_provider import AbstractModule
 from common.utils import get_logger
 from modules.group import GroupModule
 from modules.cluster import ClusterModule

@@ -6,7 +6,7 @@ import pytest
 from unittest import mock
 
 from common.node import NodeDescriptor, NodeRepositoryController
-from common.schemas import _ProviderConfig, InstanceInfo
+from common.configs import ProviderConfigs, InstanceInfo
 from common.repository import SQLiteRepository
 from common.utils import path_extend
 

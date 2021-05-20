@@ -9,8 +9,8 @@ from collections import defaultdict
 from dataclasses import dataclass, asdict, field
 from typing import Dict, Any, List, Tuple, Type
 
-from common.provider import AbstractModule
-from common.schemas import InstanceInfo
+from common.abstract_provider import AbstractModule
+from common.configs import InstanceInfo
 from common.utils import defaultdict_to_dict, get_logger
 from modules.cluster import ClusterModule
 from modules.node import NodeModule
