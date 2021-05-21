@@ -1,7 +1,0 @@
-{
-    "python.pythonPath": "clap-env/bin/python",
-    "python.linting.pylintArgs": [
-        "--init-hook",
-        "import sys; sys.path.insert(0, '.')"
-    ]
-}
