@@ -1,0 +1,9 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: Transfer the script to remote host and run it with arguments (free form)
+    become: no
+    script: "{{ src }} {{ args }}"
+    args:
+      chdir: "{{ workdir | default('') }}"

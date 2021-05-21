@@ -1,0 +1,16 @@
+---   
+- name: EC2 EFS Playbook
+  hosts: all
+  gather_facts: yes
+  become: yes
+  vars:
+    mount_ip: "{{ efs_mount_ip }}"
+    mount_point: "{{ efs_mount_point|default('/efs') }}"
+    mount_owner: "{{ efs_owner|default(ansible_user) }}"
+    mount_group: "{{ efs_group|default(ansible_user) }}"
+    mount_permissions: "{{ efs_mount_permissions|default('0744') }}"
+  tasks:
+  - include_role:
+      name: ec2-efs
+      tasks_from: mount
+

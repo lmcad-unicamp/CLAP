@@ -1,0 +1,55 @@
+---
+actions:
+  install-packages:
+    playbook: roles/commands-common_install.yml
+    description: Install packages in nodes
+    vars:
+    - name: packages
+      description: Packages to install (comma separated)
+
+  copy:
+    playbook: roles/commands-common_copy.yml
+    description: Copy files from localhost to remote hosts
+    vars:
+    - name: src
+      description: Source files/directory to be copied
+    - name: dest
+      description: Destination directory where files will be placed
+
+  fetch:
+    playbook: roles/commands-common_fetch.yml
+    description: Fetch files from remote hosts to localhosts
+    vars:
+    - name: src
+      description: Source files/directory to be fetched
+    - name: dest
+      description: Destination directory where files will be placed
+
+  reboot:
+    playbook: roles/commands-common_reboot.yml
+    description: Reboot a machine
+
+  run-command:
+    playbook: roles/commands-common_run-command.yml
+    description: Run a shell command in remote hosts
+    vars:
+    - name: cmd
+    - name: workdir
+      description: Working directory. It will be changed before executing the command
+      optional: yes
+
+  run-script:
+    playbook: roles/commands-common_run-script.yml
+    description: Transfer and run a script at remote hosts
+    vars:
+    - name: src
+      description: Source script to run
+    - name: args
+      description: Arguments to be passed to the script
+    - name: workdir
+      description: Working directory. It will be changed before executing the script
+      optional: yes
+
+  update-packages:
+    playbook: roles/commands-common_update-packages.yml
+    description: Update the list of packages of a system

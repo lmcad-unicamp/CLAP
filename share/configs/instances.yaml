@@ -1,0 +1,14 @@
+type-a:
+    provider: aws-config-us-east-1
+    login: login-ubuntu
+    flavor: t2.micro
+    image_id: ami-07d0cf3af28718ef8
+    security_group: otavio-sg
+
+type-b:
+    provider: aws-config-us-east-1
+    login: login-ubuntu
+    flavor: t2.medium
+    image_id: ami-07d0cf3af28718ef8
+    boot_disk_size: 16
+    security_group: otavio-sg

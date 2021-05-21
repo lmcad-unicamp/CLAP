@@ -1,0 +1,11 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: Ansible fetch files from remote host to local
+    become: no
+    synchronize:
+      src: "{{ src }}"
+      dest: "{{ dest }}"
+      mode: pull
+      recursive: yes

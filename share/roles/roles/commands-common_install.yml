@@ -1,0 +1,9 @@
+---
+- hosts: all
+  gather_facts: yes
+  tasks:
+  - name: Perform package installation
+    become: yes
+    apt:
+      pkg: "{{ packages.split(',') }}"
+      state: present

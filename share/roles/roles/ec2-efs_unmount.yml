@@ -1,0 +1,11 @@
+---   
+- name: EC2 EFS Playbook
+  hosts: all
+  gather_facts: yes
+  become: yes
+  vars:
+    mount_point: "{{ efs_mount_point|default('/efs') }}"
+  tasks:
+  - include_role:
+      name: ec2-efs
+      tasks_from: unmount
