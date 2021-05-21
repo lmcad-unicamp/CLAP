@@ -12,7 +12,9 @@ class RepositoryError(Exception):
 
 
 class InvalidEntryError(RepositoryError):
-    pass
+    def __init__(self, entry):
+        self.entry = entry
+        super().__init__(f"Invalid entry {entry}")
 
 
 class Repository(ABC):

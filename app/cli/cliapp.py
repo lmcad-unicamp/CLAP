@@ -1,13 +1,13 @@
 import inspect
 import os
-import pkgutil
 import sys
+import pkgutil
 import traceback
 from typing import List
 
 import click
 
-from common.utils import get_logger, setup_log, Singleton, path_extend
+from clap.utils import get_logger, setup_log, Singleton, path_extend
 
 if 'CLAP_PATH' not in os.environ:
     os.environ['CLAP_PATH'] = path_extend('~', '.clap')
@@ -17,13 +17,17 @@ class Defaults(metaclass=Singleton):
     def __init__(self):
         self.verbosity: int = 0
         self.clap_path: str = path_extend(os.environ.get('CLAP_PATH'))
-        self.configs_path: str = path_extend(os.environ.get('CLAP_PATH'), 'configs')
-        self.private_path: str = path_extend(os.environ.get('CLAP_PATH'), 'private')
-        self.storage_path: str = path_extend(os.environ.get('CLAP_PATH'), 'storage')
+        self.configs_path: str = path_extend(
+            os.environ.get('CLAP_PATH'), 'configs')
+        self.private_path: str = path_extend(
+            os.environ.get('CLAP_PATH'), 'private')
+        self.storage_path: str = path_extend(
+            os.environ.get('CLAP_PATH'), 'storage')
 
 
 class clap_command(click.Group):
     def __init__(self, group):
+        super().__init__()
         self.__dict__ = group.__dict__.copy()
 
 
@@ -32,6 +36,11 @@ defaults = Defaults()
 
 
 def find_commands(paths: List[str] = None) -> List[clap_command]:
+    """
+
+    :param paths:
+    :return:
+    """
     paths = paths or [os.path.join(os.path.dirname(__file__), 'modules')]
     modules = []
     for importer, package_name, _ in pkgutil.iter_modules(paths):
@@ -40,9 +49,8 @@ def find_commands(paths: List[str] = None) -> List[clap_command]:
             continue
         try:
             mod = importer.find_module(package_name).load_module(package_name)
-            # TODO Remove this!!
             modules += [obj for _, obj in inspect.getmembers(
-                mod, predicate=lambda x: 'clap_command' in str(type(x)))]
+                mod, predicate=lambda x: type(x) is clap_command)]
         except Exception as e:
             print(f'Error importing module with name `{package_name}`')
             raise e

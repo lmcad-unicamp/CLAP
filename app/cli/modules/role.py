@@ -2,10 +2,10 @@ import click
 import yaml
 from collections import defaultdict
 from dataclasses import asdict
-from common.node import NodeRepositoryController
-from common.repository import RepositoryFactory
-from common.role_manager import RoleManager
-from common.utils import path_extend, get_logger, Singleton, defaultdict_to_dict
+from clap.node_manager import NodeRepositoryController
+from clap.repository import RepositoryFactory
+from clap.role_manager import RoleManager
+from clap.utils import path_extend, get_logger, Singleton, defaultdict_to_dict
 from app.cli.cliapp import clap_command, Defaults
 
 logger = get_logger(__name__)

@@ -3,7 +3,7 @@ from typing import List, Optional, Dict, Union
 
 import dacite
 
-from common.utils import yaml_load, get_logger
+from clap.utils import yaml_load, get_logger
 
 logger = get_logger(__name__)
 
@@ -190,20 +190,3 @@ class ConfigurationDatabase:
 
         logger.debug(f"Loaded {len(self.instance_descriptors)} instance descriptors: "
                      f"{', '.join(sorted(self.instance_descriptors.keys()))}")
-
-
-# if __name__ == '__main__':
-#     from dataclasses import asdict
-#     from common.utils import setup_log
-#     setup_log(verbosity_level=4)
-#
-#     c = ConfigurationDatabase(
-#         providers_file='/home/lopani/.clap/configs/providers.yaml',
-#         logins_file='/home/lopani/.clap/configs/logins.yaml',
-#         instances_file='/home/lopani/.clap/configs/instances.yaml'
-#     )
-#
-#     for iid, instance in c.instance_descriptors.items():
-#         a = asdict(instance)
-#         x = dacite.from_dict(InstanceInfo, a)
-#         print(x)

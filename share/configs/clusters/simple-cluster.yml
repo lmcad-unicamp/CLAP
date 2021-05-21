@@ -1,10 +1,10 @@
 setups:
   setup-initial:
     roles:
-    - name: commands-common
+    - name: commands-clap
 
     actions:
-    - role: commands-common
+    - role: commands-clap
       action: update-packages
 
     # - command: "ls -lha"
@@ -12,7 +12,7 @@ setups:
 
   setup-install-gcc:
     actions:
-    - role: commands-common
+    - role: commands-clap
       action: install-packages
       extra:
         packages: gcc

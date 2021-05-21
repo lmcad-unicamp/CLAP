@@ -1,9 +1,9 @@
 from abc import abstractmethod, ABC
 from typing import List, Dict
 
-from common.node import NodeDescriptor
-from common.configs import InstanceInfo
-from common.utils import get_logger
+from clap.node import NodeDescriptor
+from clap.configs import InstanceInfo
+from clap.utils import get_logger
 
 logger = get_logger(__name__)
 

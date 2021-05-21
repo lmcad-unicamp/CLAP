@@ -7,13 +7,12 @@ from collections import defaultdict
 from dataclasses import asdict
 from typing import List
 
-from common.cluster_manager import ClusterManager, ClusterConfigDatabase, ClusterRepositoryController
-from common.configs import ConfigurationDatabase
-from common.executor import ShellInvoker, SSHCommandExecutor, AnsiblePlaybookExecutor
-from common.node import NodeRepositoryController
-from common.node_manager import NodeManager
-from common.repository import RepositoryFactory
-from common.utils import path_extend, float_time_to_string, get_logger, \
+from clap.cluster_manager import ClusterManager, ClusterConfigDatabase, ClusterRepositoryController
+from clap.configs import ConfigurationDatabase
+from clap.executor import ShellInvoker, SSHCommandExecutor, AnsiblePlaybookExecutor
+from clap.node_manager import NodeManager, NodeRepositoryController
+from clap.repository import RepositoryFactory
+from clap.utils import path_extend, float_time_to_string, get_logger, \
     Singleton, defaultdict_to_dict
 from providers.provider_ansible_aws import AnsibleAWSProvider
 from app.cli.cliapp import clap_command, Defaults

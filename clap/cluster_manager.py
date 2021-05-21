@@ -7,12 +7,12 @@ from typing import Optional, Dict, Union, List, Tuple
 
 import dacite
 
-from common.configs import ConfigurationDatabase, InstanceInfo
-from common.executor import SSHCommandExecutor, AnsiblePlaybookExecutor
-from common.node_manager import NodeManager
-from common.repository import Repository, InvalidEntryError
-from common.role_manager import RoleManager
-from common.utils import yaml_load, get_logger, get_random_object
+from clap.configs import ConfigurationDatabase, InstanceInfo
+from clap.executor import SSHCommandExecutor, AnsiblePlaybookExecutor
+from clap.node_manager import NodeManager, NodeRepositoryController
+from clap.repository import Repository, InvalidEntryError
+from clap.role_manager import RoleManager
+from clap.utils import yaml_load, get_logger, get_random_object
 
 logger = get_logger(__name__)
 
@@ -557,61 +557,3 @@ class ClusterManager:
             nodes, retries=retries, wait_timeout=wait_timeout,
             update_timeout=update_timeout, max_workers=max_workers,
             test_command=test_command)
-
-
-if __name__ == '__main__':
-    import json
-    from dataclasses import asdict
-    from common.repository import RepositoryFactory
-    from common.utils import setup_log
-    from common.node import NodeRepositoryController
-    from providers.provider_ansible_aws import AnsibleAWSProvider
-
-    setup_log(verbosity_level=1)
-    node_repository_path = '/home/lopani/.clap/storage/nodes.db'
-    private_path = '/home/lopani/.clap/private'
-    cluster_file_path = '/home/lopani/.clap/configs/clusters/spits-cluster.yml'
-    cluster_repository_path = '/home/lopani/.clap/storage/clusters.db'
-
-    config_db = ConfigurationDatabase(
-        providers_file='/home/lopani/.clap/configs/providers.yaml',
-        logins_file='/home/lopani/.clap/configs/logins.yaml',
-        instances_file='/home/lopani/.clap/configs/instances.yaml'
-    )
-
-    repository = RepositoryFactory().get_repository('sqlite', node_repository_path)
-    repository_controller = NodeRepositoryController(repository)
-
-    ansible_aws = AnsibleAWSProvider(private_path)
-    node_manager = NodeManager(
-        repository_controller, {'aws': ansible_aws}, private_path)
-
-    role_manager = RoleManager(
-        repository_controller,
-        '/home/lopani/.clap/groups',
-        '/home/lopani/.clap/groups/actions.d',
-        '/home/lopani/.clap/private'
-    )
-
-    cluster_db = ClusterConfigDatabase([cluster_file_path])
-    print(cluster_db.clusters)
-
-    repository = RepositoryFactory().get_repository('sqlite', cluster_repository_path)
-    cluster_repository_controller = ClusterRepositoryController(repository)
-
-    cluster_manager = ClusterManager(
-        node_manager, role_manager, config_db,
-        cluster_repository_controller, private_path)
-
-    cluster_config = cluster_db.clusters['spits-cluster']
-    cluster = cluster_manager.start_cluster(cluster_config, max_workers=4)
-    # cluster = cluster_manager.get_all_clusters()[0]
-    print(f"CLUSTER: {cluster}")
-    all_cluster_node_types = cluster_manager.get_cluster_nodes_types(cluster.cluster_id)
-    print(f"All cluster node types: {all_cluster_node_types}")
-    all_cluster_nodes = cluster_manager.get_all_cluster_nodes(cluster.cluster_id)
-    print(f"All cluster nodes: {all_cluster_nodes}")
-    cluster_manager.setup_cluster(cluster.cluster_id, max_workers=1)
-    print('setup ok')
-    stopped_nodes = cluster_manager.stop_cluster(cluster.cluster_id)
-    print(f'Stopped nodes: {stopped_nodes}')

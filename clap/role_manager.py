@@ -5,9 +5,10 @@ from typing import Dict, Union, List, Optional, Set
 
 import dacite
 
-from common.executor import AnsiblePlaybookExecutor
-from common.node import NodeRepositoryController, NodeDescriptor
-from common.utils import yaml_load, path_extend, get_logger
+from clap.executor import AnsiblePlaybookExecutor
+from clap.node import NodeDescriptor
+from clap.node_manager import NodeRepositoryController
+from clap.utils import yaml_load, path_extend, get_logger
 
 logger = get_logger(__name__)
 
@@ -294,48 +295,3 @@ class RoleManager:
                     hosts_node_map: Union[List[str], Dict[str, List[str]]]) -> \
             List[str]:
         pass
-
-
-if __name__ == '__main__':
-    from dataclasses import asdict
-    from common.repository import RepositoryFactory
-    from common.utils import setup_log
-
-    setup_log(verbosity_level=3)
-    node_repository_path = '/home/lopani/.clap/storage/nodes.db'
-    private_path = '/home/lopani/.clap/private'
-    repository = RepositoryFactory().get_repository('sqlite', node_repository_path)
-    repository_controller = NodeRepositoryController(repository)
-
-    role_manager = RoleManager(
-        repository_controller,
-        '/home/lopani/.clap/groups',
-        '/home/lopani/.clap/groups/actions.d',
-        '/home/lopani/.clap/private'
-    )
-
-    for rid, r in role_manager.roles.items():
-        print(f"------ {rid} -------")
-        print(r)
-
-    all_nodes = repository_controller.get_all_nodes()
-    print("**** Nodes ****")
-    for node in all_nodes:
-        print(asdict(node))
-
-    # added_nodes = role_manager.add_role(
-    #     'commands-common', [n.node_id for n in all_nodes])
-    # print(f"Added nodes: {added_nodes}")
-    # #
-    # all_nodes = repository_controller.get_all_nodes()
-    # print("**** Nodes ****")
-    # for node in all_nodes:
-    #     print(asdict(node))
-
-    nodes = role_manager.get_role_nodes('commands-common')
-
-    result = role_manager.perform_action(
-        'commands-common', 'install-packages', nodes,
-        extra_args={'packages': 'gcc'}
-    )
-    print(f"RESULT: {result}")

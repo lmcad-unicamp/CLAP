@@ -1,12 +1,16 @@
 import time
+from dataclasses import asdict
 from multiprocessing.pool import ThreadPool
 from typing import Dict, List, Tuple, Callable
 
-from common.abstract_provider import AbstractInstanceProvider
-from common.configs import InstanceInfo
-from common.executor import SSHCommandExecutor
-from common.node import NodeRepositoryController, NodeDescriptor, NodeStatus
-from common.utils import get_logger, sorted_groupby
+import dacite
+
+from clap.abstract_provider import AbstractInstanceProvider
+from clap.configs import InstanceInfo
+from clap.executor import SSHCommandExecutor
+from clap.node import NodeDescriptor, NodeStatus
+from clap.repository import Repository, InvalidEntryError
+from clap.utils import get_logger, sorted_groupby
 
 logger = get_logger(__name__)
 
@@ -17,11 +21,59 @@ class InvalidProvider(Exception):
 
 class UnhandledProviderError(Exception):
     def __init__(self, provider: str):
+        self.provider = provider
         super().__init__(f'Unhandled provider {provider}')
 
 
 class DeploymentError(Exception):
     pass
+
+
+class InvalidNodeError(Exception):
+    def __init__(self, node_id: str):
+        self.node_id = node_id
+        super().__init__(f"Invalid node with id: {node_id}")
+
+
+class NodeRepositoryController:
+    def __init__(self, repository: Repository):
+        self.repository = repository
+
+    def upsert_node(self, node: NodeDescriptor):
+        node.update_time = time.time()
+        with self.repository.connect('node') as db:
+            node_dict = asdict(node)
+            db.upsert(node.node_id, node_dict)
+
+    def remove_node(self, node_id: str):
+        with self.repository.connect('node') as db:
+            db.remove(node_id)
+
+    def remove_nodes(self, node_ids: List[str]):
+        with self.repository.connect('node') as db:
+            db.remove_multiple(node_ids)
+
+    def get_nodes_by_id(self, node_ids: List[str]) -> List[NodeDescriptor]:
+        with self.repository.connect('node') as db:
+            try:
+                nodes = [
+                    dacite.from_dict(data_class=NodeDescriptor, data=node)
+                    for nid, node in db.get_multiple(node_ids).items()
+                ]
+                return nodes
+            except InvalidEntryError as e:
+                raise InvalidNodeError(e.entry) from e
+
+    def get_all_nodes(self) -> List[NodeDescriptor]:
+        with self.repository.connect('node') as db:
+            return [
+                dacite.from_dict(data_class=NodeDescriptor, data=node)
+                for nid, node in db.get_all().items()
+            ]
+
+    def get_nodes_filter(self, filter_func: Callable[[NodeDescriptor], bool]) -> \
+            List[NodeDescriptor]:
+        return [node for node in self.get_all_nodes() if filter_func(node)]
 
 
 class NodeManager:
@@ -393,59 +445,3 @@ class NodeManager:
 
     def remove_node(self, node_id: str):
         self.node_repository.remove_node(node_id)
-
-
-if __name__ == '__main__':
-    import json
-    from common.configs import ConfigurationDatabase
-    from common.node import NodeRepositoryController
-    from common.repository import RepositoryFactory
-    from common.utils import setup_log
-    from providers.provider_ansible_aws import AnsibleAWSProvider
-    setup_log(verbosity_level=1)
-
-    c = ConfigurationDatabase(
-     providers_file='/home/lopani/.clap/configs/providers.yaml',
-     logins_file='/home/lopani/.clap/configs/logins.yaml',
-     instances_file='/home/lopani/.clap/configs/instances.yaml'
-    )
-
-    type_a_instance = c.instance_descriptors['type-a']
-    type_b_instance = c.instance_descriptors['type-b']
-    print(type_a_instance)
-    print(type_b_instance)
-
-    node_repository_path = '/home/lopani/.clap/storage/nodes.db'
-    private_path = '/home/lopani/.clap/private'
-    repository = RepositoryFactory().get_repository('sqlite', node_repository_path)
-    repository_controller = NodeRepositoryController(repository)
-    ansible_aws = AnsibleAWSProvider(private_path)
-    node_manager = NodeManager(
-        repository_controller, {'aws': ansible_aws}, private_path)
-
-    # node_manager.start_nodes(
-    #     [(type_a_instance, 1), (type_b_instance, 1)], max_workers=4)
-
-    node_ids = [node.node_id for node in node_manager.get_all_nodes()]
-    print(f'Get {len(node_ids)} nodes: {node_ids}')
-    res = node_manager.is_alive(node_ids)
-    print(f'Result ({len(res)} nodes): {res}')
-
-    x = SSHCommandExecutor('env', node_manager.get_nodes_by_id(node_ids),
-                           private_path)
-    res = x.run()
-
-    for node_id, result in res.items():
-        print(node_id)
-        print(json.dumps(result, indent=4, sort_keys=True))
-
-    # res = node_manager.stop_nodes(node_ids)
-    # print(f'Stopped {len(res)} nodes: {res}')
-
-    # node_ids = node_manager.start_nodes(
-    #     [(type_a_instance, 1), (type_b_instance, 1)], max_workers=4)
-    # nodes = node_manager.get_all_nodes()
-    # x = SSHCommandExecutor('ls -lha ~', nodes, private_path)
-    # res = x.run()
-    # print(res)
-    # node_manager.pause_nodes(node_ids)

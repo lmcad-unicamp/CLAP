@@ -121,15 +121,3 @@ def sorted_groupby(iterable: Iterable, key=None) -> dict:
 
 def get_logger(name):
     return logging.getLogger(f'{APP_NAME}.{name}')
-
-
-class Dictable:
-    @staticmethod
-    @abstractmethod
-    def from_dict(d: dict):
-        raise NotImplementedError()
-
-    @abstractmethod
-    def to_dict(self):
-        pass
-

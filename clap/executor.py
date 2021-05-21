@@ -12,8 +12,8 @@ import ansible_runner
 import paramiko
 import yaml
 
-from common.node import NodeDescriptor
-from common.utils import path_extend, get_logger, tmpdir, defaultdict_to_dict
+from clap.node import NodeDescriptor
+from clap.utils import path_extend, get_logger, tmpdir, defaultdict_to_dict
 
 logger = get_logger(__name__)
 
@@ -288,25 +288,3 @@ class ShellInvoker(Executor):
         except subprocess.CalledProcessError:
             logger.error(f"Invalid connection ip: {self.node.ip}. "
                          f"Check if `{self.node.node_id}` is alive first...")
-
-
-# if __name__ == '__main__':
-    # import os
-    # import common.config
-    # import common.node
-    # import common.repository
-    # import json
-    # config = common.config.Config()
-    # rpath = os.path.join(config.storage_path, 'nodes.db')
-    # repository = common.repository.SQLiteRepository(rpath)
-    # node_controller = common.node.NodeRepositoryController(repository)
-    # node = node_controller.get_nodes_by_id(['node-5'])[0]
-    # print(node)
-
-    # c = SSHCommandExecutor('ls -lha ~', [node], config.private_path)
-    # results = c.run()
-    # print(json.dumps(results, sort_keys=True, indent=4))
-
-    # p = AnsiblePlaybookExecutor('/home/lopani/.clap/groups/debug.yaml', config.private_path, hosts_node_map=[node])
-    # results = p.run()
-    # print(json.dumps(results, sort_keys=True, indent=4))

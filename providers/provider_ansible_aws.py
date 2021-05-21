@@ -7,11 +7,11 @@ import jinja2
 
 from typing import List, Dict
 
-from common.executor import AnsiblePlaybookExecutor
-from common.node import NodeDescriptor, NodeStatus, NodeLifecycle, NodeType
-from common.abstract_provider import AbstractInstanceProvider, InstanceDeploymentError
-from common.configs import InstanceInfo, ProviderConfigAWS
-from common.utils import path_extend, tmpdir, get_logger, get_random_name, \
+from clap.executor import AnsiblePlaybookExecutor
+from clap.node import NodeDescriptor, NodeStatus, NodeLifecycle, NodeType
+from clap.abstract_provider import AbstractInstanceProvider, InstanceDeploymentError
+from clap.configs import InstanceInfo, ProviderConfigAWS
+from clap.utils import path_extend, tmpdir, get_logger, get_random_name, \
     sorted_groupby
 
 logger = get_logger(__name__)
@@ -420,10 +420,11 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
 
 
 if __name__ == '__main__':
-    from common.configs import ConfigurationDatabase
-    from common.utils import setup_log
-    from common.node import NodeDescriptor, NodeRepositoryController
-    from common.repository import RepositoryFactory
+    from clap.configs import ConfigurationDatabase
+    from clap.utils import setup_log
+    from clap.node import NodeDescriptor
+    from clap.node_manager import NodeRepositoryController
+    from clap.repository import RepositoryFactory
     setup_log(verbosity_level=3)
 
     c = ConfigurationDatabase(
