@@ -604,7 +604,7 @@ if __name__ == '__main__':
 
     cluster_config = cluster_db.clusters['spits-cluster']
     cluster = cluster_manager.start_cluster(cluster_config, max_workers=4)
-    cluster = cluster_manager.get_all_clusters()[0]
+    # cluster = cluster_manager.get_all_clusters()[0]
     print(f"CLUSTER: {cluster}")
     all_cluster_node_types = cluster_manager.get_cluster_nodes_types(cluster.cluster_id)
     print(f"All cluster node types: {all_cluster_node_types}")

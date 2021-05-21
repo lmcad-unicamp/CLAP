@@ -12,7 +12,7 @@ defaults = Config()
 
 
 @click.group()
-@click.option('-v', '--verbosity', default=0, help='Increase the verbosity level. Maximum is 4', show_default=True, count=True)
+@click.option('-v', '--verbosity', default=0, help='Increase the verbosity level', show_default=True, count=True)
 @click.option('-c', '--configs', default=defaults.configs_path, help='Configuration Path', show_default=True)
 @click.option('-s', '--storage', default=defaults.storage_path, help='Storage Path', show_default=True)
 @click.option('-p', '--private', default=defaults.private_path, help='Private Path', show_default=True)

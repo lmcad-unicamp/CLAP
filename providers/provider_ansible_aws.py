@@ -18,8 +18,8 @@ logger = get_logger(__name__)
 
 
 class AnsibleAWSProvider(AbstractInstanceProvider):
-    provider = 'aws'
-    version = '0.1.0'
+    provider: str = 'aws'
+    version: str = '0.1.0'
 
     def __init__(self, private_dir: str, verbosity: int = 0):
         self.private_path = private_dir

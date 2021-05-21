@@ -114,9 +114,6 @@ class NodeManager:
 
     def start_nodes(self, instance_counts: List[Tuple[InstanceInfo, int]],
                     start_timeout: int = 600,
-                    connection_retries: int = 15,
-                    retry_timeout: int = 30,
-                    terminate_not_alive: bool = False,
                     max_workers: int = 1) -> List[str]:
         if not instance_counts:
             return []
@@ -126,8 +123,6 @@ class NodeManager:
         for p in provider_instances.keys():
             if p not in self.providers:
                 raise UnhandledProviderError(f"Unhandled provider: {p}")
-
-        started_instances: List[str] = []
 
         def start(provider_obj: AbstractInstanceProvider,
                   instance: InstanceInfo, count: int) -> List[str]:
@@ -148,27 +143,15 @@ class NodeManager:
             ]
 
             instances = pool.starmap(start, values)
-            started_instances = [i for list_instances in instances for i in list_instances]
+            started_instances: List[str] = [
+                i for list_instances in instances for i in list_instances
+            ]
 
         if not started_instances:
             raise DeploymentError('No nodes were started')
 
         logger.info(f"Started {len(started_instances)} nodes: "
                     f"{', '.join(sorted(started_instances))}")
-
-        # Check created nodes aliveness
-        if connection_retries > 0:
-            alive_nodes = self.is_alive(
-                node_ids=started_instances, retries=connection_retries,
-                wait_timeout=retry_timeout)
-            not_alives = [nid for nid, status in alive_nodes.items() if not status]
-            if terminate_not_alive and not_alives:
-                logger.warning(f'Nodes {", ".join(sorted(not_alives))} are not '
-                               f'alive and being terminated')
-                self.stop_nodes(not_alives)
-                started_instances = [
-                    nid for nid, status in alive_nodes.items() if status
-                ]
 
         return started_instances
 
@@ -380,26 +363,30 @@ class NodeManager:
                     f"successfully paused")
         return paused_nodes
 
-    # TODO find usages
-    def add_tags(self, node_ids: List[str], tags: Dict[str, str]):
+    def add_tags(self, node_ids: List[str], tags: Dict[str, str]) -> List[str]:
+        added_tags = set()
         if not node_ids:
             raise ValueError("No nodes to perform operation")
         if not tags:
-            return
+            return []
         for node in self.get_nodes_by_id(node_ids):
             node.tags.update(tags)
             self.node_repository.upsert_node(node)
+            added_tags.add(node.node_id)
+        return list(added_tags)
 
-    # TODO find usages
-    def remove_tags(self, node_ids: List[str], tags: List[str]):
+    def remove_tags(self, node_ids: List[str], tags: List[str]) -> List[str]:
+        removed_tags = set()
         if not node_ids:
             raise ValueError("No nodes to perform operation")
         if not tags:
-            return
+            return []
         for node in self.get_nodes_by_id(node_ids):
             for tag in tags:
                 node.tags.pop(tag, None)
+                removed_tags.add(node.node_id)
             self.node_repository.upsert_node(node)
+        return list(removed_tags)
 
     def upsert_node(self, node: NodeDescriptor):
         self.node_repository.upsert_node(node)

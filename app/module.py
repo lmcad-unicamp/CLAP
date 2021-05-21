@@ -13,7 +13,7 @@ class clap_command(click.Group):
 
 class ModuleInterface:
     def __init__(self, paths: List[str] = None):
-        self.paths = paths or [os.path.join(os.path.dirname(__file__), 'modules')]
+        self.paths = paths or [os.path.join(os.path.dirname(__file__), 'cli/modules')]
 
     def find_modules(self) -> List[clap_command]:
         modules = []
