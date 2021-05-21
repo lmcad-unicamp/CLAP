@@ -1,5 +1,0 @@
-libraries:
-    - openmpi-devel
-    - gfortran
-
-

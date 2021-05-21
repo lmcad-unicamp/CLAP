@@ -1,22 +1,19 @@
 import json
 import os
+import yaml
+import click
 from collections import defaultdict
 from dataclasses import asdict
-
-import click
-
-from typing import List, Dict
-
-import yaml
-
+from typing import List
 from common.configs import ConfigurationDatabase
 from common.executor import ShellInvoker, SSHCommandExecutor, AnsiblePlaybookExecutor
-from common.node import NodeDescriptor, NodeRepositoryController
+from common.node import NodeRepositoryController
 from common.node_manager import NodeManager
 from common.repository import RepositoryFactory
-from common.utils import path_extend, float_time_to_string, get_logger, Singleton, defaultdict_to_dict
+from common.utils import path_extend, float_time_to_string, get_logger, \
+    Singleton, defaultdict_to_dict
 from providers.provider_ansible_aws import AnsibleAWSProvider
-from app.cli.cliapp import  clap_command, Defaults
+from app.cli.cliapp import clap_command, Defaults
 
 logger = get_logger(__name__)
 
@@ -201,9 +198,10 @@ def node_list(node_id, tags, detailed, indent, quiet):
             print(node.node_id)
             continue
         if not detailed:
-            print(f"* Node: {node.node_id}, type: {node.type}, "
+            print(f"* Node: {node.node_id}, "
+                  f"config: {node.configuration.instance.instance_config_id}, "
                   f"nickname: {node.nickname}, status: {node.status}, "
-                  f"ip: {node.ip}, tags: {node.tags}, "
+                  f"ip: {node.ip}, tags: {node.tags}, roles: {node.roles}, "
                   f"creation at: {float_time_to_string(node.creation_time)}")
         else:
             print(json.dumps(asdict(node), sort_keys=True, indent=indent))

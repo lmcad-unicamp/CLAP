@@ -1,224 +1,369 @@
-# import glob
-# import os
-# from collections import defaultdict
-# from dataclasses import asdict
-#
-# import click
-# import yaml
-#
-# from common.utils import get_logger, path_extend, float_time_to_string
-# from modules.cluster import ClusterModule, ClusterDefaults, ClusterConfigReader
-# from modules.node import NodeDefaults, NodeModule
-# from app.module import clap_command
-#
-# logger = get_logger(__name__)
-#
-# node_defaults = NodeDefaults()
-# cluster_defaults = ClusterDefaults()
-#
-#
-# @clap_command
-# @click.group(help='Control and manage cluster of nodes')
-# @click.option('-p', '--platform-db', default=node_defaults.node_repository_path, help='Platform database to be used, where nodes will be written', show_default=True)
-# @click.option('-d', '--cluster-db', default=cluster_defaults.cluster_repository_path, help='Cluster database to be used, where cluster information will be written', show_default=True)
-# @click.option('-c', '--config', default=cluster_defaults.cluster_config_path, type=str, help='Path where cluster configurations will be search', show_default=True)
-# def cluster(platform_db, cluster_db, config):
-#     node_defaults.node_repository_path = platform_db
-#     cluster_defaults.cluster_repository_path = cluster_db
-#     cluster_defaults.cluster_config_path = config
-#
-#
-# @cluster.command('start')
-# @click.argument('cluster_id', nargs=1, required=True)
-# @click.option('-s', '--setup', help='Also perform setup', is_flag=True, default=True, show_default=True)
-# @click.option('-e', '--extra', help='Extra arguments to start operation. Format <key>=<value>', multiple=True)
-# def cluster_start(cluster_id, setup, extra):
-#     """ Start cluster based on a cluster template.
-#
-#     The CLUSTER is the ID of the cluster configuration at cluster configuration files.
-#     """
-#     cluster_module = ClusterModule.get_module()
-#     node_module = NodeModule.get_module()
-#
-#     extra_args = dict()
-#     for e in extra:
-#         if '=' not in e:
-#             raise ValueError(f"Invalid value for extra argument: `{e}`. "
-#                              f"Did you forgot '=' character?")
-#         extra_name, extra_value = e.split('=')[0], '='.join(e.split('=')[1:])
-#         extra_args[extra_name] = extra_value
-#
-#     print(f"Starting cluster `{cluster_id}` (perform setup: {setup})")
-#     cluster_id = cluster_module.create_cluster(cluster_id, extra_args=extra_args)
-#     print(f"Cluster `{cluster_id}` successfully created")
-#
-#     nodes = cluster_module.get_nodes_from_cluster_by_type(cluster_id)
-#
-#     for node_type, list_nodes in nodes.items():
-#         _nodes = node_module.get_nodes_by_id(node_ids=list_nodes)
-#         print(f'Added {len(list_nodes)} nodes of type `{node_type}` to cluster `{cluster_id}`:')
-#         for n in _nodes:
-#             print(' '*4, n)
-#
-#     if not setup:
-#         return 0
-#
-#     print(f"Performing setup operation in cluster `{cluster_id}`...")
-#     try:
-#         cluster_module.cluster_setup(cluster_id)
-#     except Exception as e:
-#         logger.error(e)
-#         print(f"Cluster not properly setup... You may wish perform the setup operation again")
-#         raise e
-#     print(f"Cluster `{cluster_id}` finished setup!")
-#     return 0
-#
-#
-# @cluster.command('list')
-# @click.argument('cluster_id', nargs=-1, required=False)
-# @click.option('-d', '--detailed', help='Show detailed cluster information', is_flag=True, default=False, show_default=True)
-# @click.option('-i', '--indent', default=4, show_default=True, nargs=1, type=int, help="Indentation level")
-# @click.option('-q', '--quiet', default=False, is_flag=True, show_default=True, help="Show only cluster ids")
-# def cluster_list(cluster_id, detailed, indent, quiet):
-#     """List clusters in the cluster repository.
-#
-#     The CLUSTER_ID argument is an optional list of cluster ids, to fiilter cluster by their ids.
-#     """
-#     if quiet and detailed:
-#         raise ValueError(f"Options `detailed` and `quiet` are mutually exclusive")
-#
-#     cluster_module = ClusterModule.get_module()
-#     clusters = cluster_module.get_all_clusters() if not cluster_id else cluster_module.get_clusters(list(cluster_id))
-#     for c in clusters:
-#         if quiet:
-#             print(c.cluster_id)
-#             continue
-#
-#         nodes = cluster_module.get_nodes_from_cluster_by_type(c.cluster_id)
-#
-#         print(f"{'-'*20} Cluster: `{c.cluster_id}` (`{c.cluster_name}`) {'-'*20}")
-#         c.creation_time = float_time_to_string(c.creation_time)
-#         c.update_time = float_time_to_string(c.update_time)
-#         print(c)
-#         print(f"Has {len(nodes)} node types:")
-#         all_nodes = set()
-#         for node_type, list_nodes in nodes.items():
-#             all_nodes.update(list_nodes)
-#             nodes = []
-#             for node in cluster_module.node_module.get_nodes_by_id(list_nodes):
-#                 for tag in node.tags[f"{c.cluster_id}_setup"]:
-#                     if tag.split(':')[0] == node_type:
-#                         nodes.append((node.node_id, 'setup' if tag.split(':')[1] == 'yes' else 'not setup'))
-#
-#             print(" "*4, f"{node_type} ({len(nodes)} nodes): `{', '.join(sorted([f'{node_id} ({setup})' for node_id, setup in nodes]))}`")
-#
-#         if detailed:
-#             print("In-Use Configuration:")
-#             print(yaml.dump(c.to_dict(), sort_keys=True, indent=indent))
-#
-#         print(f"Cluster `{c.cluster_id}` has {len(all_nodes)} nodes")
-#
-#         print(f"{'-'*70}")
-#         print()
-#
-#     if not quiet:
-#         print(f"Listed {len(clusters)} clusters")
-#     return 0
-#
-#
-# @cluster.command('list-templates')
-# @click.argument('template', nargs=-1, type=str, required=False)
-# @click.option('-d', '--detailed', help='Show detailed cluster information', is_flag=True, default=False, show_default=True)
-# @click.option('-i', '--indent', default=4, show_default=True, nargs=1, type=int, help="Indentation level")
-# @click.option('-q', '--quiet', default=False, is_flag=True, show_default=True, help="Show only cluster names")
-# def list_templates(template, detailed, indent, quiet):
-#     """List all cluster templates in cluster configuration path.
-#
-#     The TEMPLATE argument is an optional list of template ids to filter cluster templates by their ids
-#     """
-#     if quiet and detailed:
-#         raise ValueError(f"Options `detailed` and `less` are mutually exclusive")
-#
-#     cluster_files = glob.glob(path_extend(cluster_defaults.cluster_config_path, '*'))
-#     config_reader = ClusterConfigReader(cluster_files)
-#     templates = config_reader.get_all_clusters()
-#     templates = templates if not template else {t: templates[t] for t in template}
-#
-#     for name, config in templates.items():
-#         if quiet:
-#             print(name)
-#             continue
-#
-#         if not detailed:
-#             print(f"cluster name: {name}")
-#             print(f"    nodes: `{', '.join(sorted(list(config.nodes.keys())))}`")
-#             print()
-#         else:
-#             print(f"{'-'*20} CLUSTER: `{name}` {'-'*20}")
-#             print(yaml.dump(asdict(config), sort_keys=True, indent=indent))
-#             print(f"{'-' * 70}")
-#
-#     if not quiet:
-#         print(f"Listed {len(templates)} templates")
-#     return 0
-#
-#
-# @cluster.command('setup')
-# @click.argument('cluster_id', nargs=1, required=True, type=str)
-# @click.option('-a', '--at', default='before_all', type=str, show_default=True, help='Step to start the setup action at')
-# def cluster_setup(cluster_id, at):
-#     """Perform cluster setup operation at a cluster.
-#
-#     The CLUSTER_ID argument is the id of the cluster to perform the setup
-#     """
-#     cluster_module = ClusterModule.get_module()
-#     try:
-#         cluster_module.cluster_setup(cluster_id, at=at)
-#     except Exception as e:
-#         logger.error(e)
-#         logger.error(f"Cluster {cluster_id} not properly setup... You may wish perform the setup operation again")
-#         raise e
-#     print(f"Cluster `{cluster_id}` finished setup!")
-#     return 0
-#
-#
-# @cluster.command('grow')
-# @click.argument('cluster_id', nargs=1, required=True, type=str)
-# @click.option('-n', '--node', help='Type of node to start. Format: <node_type>:<num>', multiple=True, required=True, type=str)
-# @click.option('-s', '--setup', help='Also perform setup', is_flag=True, default=True, show_default=True)
-# def cluster_grow(cluster_id, node, setup):
-#     """Start more nodes at a cluster by cluster node type.
-#
-#     The CLUSTER_ID argument is the id of the cluster to add more nodes.
-#     """
-#     cluster_module = ClusterModule.get_module()
-#     node_module = NodeModule.get_module()
-#     node_types = dict()
-#
-#     for n in node:
-#         node_name, qtde = n.split(':')[0], int(n.split(':')[1]) if ':' in n else 1
-#         node_types[node_name] = (qtde, qtde)
-#
-#     nodes = cluster_module.add_nodes_to_cluster(cluster_id, node_types)
-#
-#     for node_type, list_nodes in nodes.items():
-#         _nodes = node_module.get_nodes_by_id(node_ids=list_nodes)
-#         print(f'Added {len(list_nodes)} nodes of type `{node_type}` to cluster `{cluster_id}`:')
-#         for n in _nodes:
-#             print(' ' * 4, n)
-#
-#     if not setup:
-#         return 0
-#
-#     print(f"Performing setup operation in cluster `{cluster_id}`...")
-#     try:
-#         cluster_module.cluster_setup(cluster_id, nodes_type=nodes)
-#     except Exception as e:
-#         logger.error(e)
-#         print(f"Cluster not properly setup... You may wish perform the setup operation again")
-#         raise e
-#     print(f"Cluster `{cluster_id}` finished setup!")
-#     return 0
+import json
+import os
+import glob
+import yaml
+import click
+from collections import defaultdict
+from dataclasses import asdict
+from typing import List
+
+from common.cluster_manager import ClusterManager, ClusterConfigDatabase, ClusterRepositoryController
+from common.configs import ConfigurationDatabase
+from common.executor import ShellInvoker, SSHCommandExecutor, AnsiblePlaybookExecutor
+from common.node import NodeRepositoryController
+from common.node_manager import NodeManager
+from common.repository import RepositoryFactory
+from common.utils import path_extend, float_time_to_string, get_logger, \
+    Singleton, defaultdict_to_dict
+from providers.provider_ansible_aws import AnsibleAWSProvider
+from app.cli.cliapp import clap_command, Defaults
+from app.cli.modules.node import NodeDefaults, get_node_manager, get_config_db
+from app.cli.modules.role import RoleDefaults, get_role_manager
+
+logger = get_logger(__name__)
+
+
+class ClusterDefaults(metaclass=Singleton):
+    def __init__(self):
+        self.base_defaults = Defaults()
+        self.node_defaults = NodeDefaults()
+        self.role_defaults = RoleDefaults()
+        self.cluster_config_path = path_extend(
+            self.base_defaults.configs_path, 'clusters')
+        self.repository_type = 'sqlite'
+        self.cluster_repository_path = path_extend(
+            self.base_defaults.storage_path, 'clusters.db')
+
+
+cluster_defaults = ClusterDefaults()
+
+
+def get_cluster_config_db() -> ClusterConfigDatabase:
+    files = glob.glob(os.path.join(cluster_defaults.cluster_config_path, '*.yml'))
+    files += glob.glob(os.path.join(cluster_defaults.cluster_config_path, '*.yaml'))
+    cluster_db = ClusterConfigDatabase(files)
+    return cluster_db
+
+
+def get_cluster_manager() -> ClusterManager:
+    config_db = get_config_db()
+    node_manager = get_node_manager()
+    role_manager = get_role_manager()
+    repository = RepositoryFactory().get_repository(
+        'sqlite', cluster_defaults.cluster_repository_path)
+    cluster_repository_controller = ClusterRepositoryController(repository)
+    cluster_manager = ClusterManager(
+        node_manager, role_manager, config_db, cluster_repository_controller,
+        cluster_defaults.base_defaults.private_path
+    )
+    return cluster_manager
+
+
+@clap_command
+@click.group(help='Control and manage cluster of nodes')
+@click.option('-r', '--roles-root', show_default=True,
+              default=cluster_defaults.role_defaults.role_dir,
+              help='Path where roles will be searched for')
+@click.option('-n', '--node-repository', show_default=True,
+              default=cluster_defaults.node_defaults.node_repository_path,
+              help='Node database where nodes will be written')
+@click.option('-c', '--cluster-repository', show_default=True,
+              default=cluster_defaults.cluster_config_path,
+              help='Cluster database where cluster will be written')
+def cluster(roles_root, node_repository, cluster_repository):
+    cluster_defaults.role_defaults.role_dir = roles_root
+    cluster_defaults.node_defaults.node_repository_path = node_repository
+    cluster_defaults.cluster_config_path = cluster_repository
+
+
+@cluster.command('start')
+@click.argument('cluster_template', nargs=1, required=True)
+@click.option('-s', '--setup', help='Also perform setup', is_flag=True,
+              default=True, show_default=True)
+@click.option('-e', '--extra', multiple=True,
+              help='Extra arguments to start operation. Format <key>=<value>')
+def cluster_start(cluster_template, setup, extra):
+    """ Start cluster based on a cluster template.
+
+    The CLUSTER TEMPLATE is the ID of the cluster configuration at cluster
+    configuration files.
+    """
+    cluster_manager = get_cluster_manager()
+    cluster_db = get_cluster_config_db()
+
+    extra_args = dict()
+    for e in extra:
+        if '=' not in e:
+            raise ValueError(f"Invalid value for extra argument: {e}. "
+                             f"Did you forgot '=' character?")
+        extra_name, extra_value = e.split('=')[0], '='.join(e.split('=')[1:])
+        extra_args[extra_name] = extra_value
+
+    cluster_config = cluster_db.clusters.get(cluster_template, None)
+    if cluster_config is None:
+        raise ValueError(f"Invalid cluster templated: {cluster_template}")
+
+    print(f"Starting cluster: {cluster_template} (perform setup: {setup})")
+    cluster_id = cluster_manager.start_cluster(cluster_config)
+    print(f"Cluster {cluster_id} successfully created")
+
+    nodes = cluster_manager.get_cluster_nodes_types(cluster_id)
+
+    for node_type, list_nodes in nodes.items():
+        print(f"* {len(list_nodes)} nodes of type {node_type}: "
+              f"{','.join(sorted(list_nodes))}")
+
+    if not setup:
+        return 0
+
+    print(f"Performing setup operation in cluster {cluster_id}")
+    try:
+        cluster_manager.setup_cluster(cluster_id)
+    except Exception as e:
+        logger.error(e)
+        print(f"Cluster not properly setup... You may wish perform the setup "
+              f"operation again")
+        return 1
+    print(f"Cluster `{cluster_id}` finished setup!")
+    return 0
+
+
+@cluster.command('list')
+@click.argument('cluster_id', nargs=-1, required=False)
+@click.option('-d', '--detailed', is_flag=True, default=False, show_default=True,
+              help='Show detailed cluster information')
+@click.option('-i', '--indent', default=4, show_default=True, nargs=1, type=int,
+              help="Indentation level")
+@click.option('-q', '--quiet', default=False, is_flag=True, show_default=True,
+              help="Show only cluster ids")
+def cluster_list(cluster_id, detailed, indent, quiet):
+    """List clusters in the cluster repository.
+
+    The CLUSTER_ID argument is an optional list of cluster ids, to fiilter cluster by their ids.
+    """
+    if quiet and detailed:
+        raise ValueError(f"Options `detailed` and `quiet` are mutually exclusive")
+
+    cluster_manager = get_cluster_manager()
+
+    clusters = cluster_manager.get_all_clusters() if not cluster_id else \
+        [cluster_manager.get_cluster_by_id(cid) for cid in cluster_id ]
+    for c in clusters:
+        if quiet:
+            print(c.cluster_id)
+            continue
+
+        nodes = cluster_manager.get_cluster_nodes_types(c.cluster_id)
+        c.creation_time = float_time_to_string(c.creation_time)
+        c.update_time = float_time_to_string(c.update_time)
+        num_nodes = sum([len(node_list) for node_list in nodes.values()])
+
+        if not detailed:
+            print(f"* Cluster: {c.cluster_id}, nickname: {c.cluster_name}, "
+                  f"configuration: {c.cluster_config.cluster_config_id}, "
+                  f"creation time: {c.creation_time}")
+        else:
+            print(f"{'-'*20} Cluster: `{c.cluster_id}` (`{c.cluster_name}`) {'-'*20}")
+            print(yaml.dump(asdict(c), sort_keys=True, indent=indent))
+
+        print(f"   Has {num_nodes} node types:")
+        for node_type, node_list in nodes.items():
+            print(f"    - {len(node_list)} {node_type} nodes: "
+                  f"{', '.join(sorted(node_list))}")
+
+        if detailed:
+            print(f"{'-'*70}")
+
+        print()
+
+    if not quiet:
+        print(f"Listed {len(clusters)} clusters")
+    return 0
+
+
+@cluster.command('list-templates')
+@click.argument('template', nargs=-1, type=str, required=False)
+@click.option('-d', '--detailed', is_flag=True, default=False, show_default=True,
+              help='Show detailed cluster information')
+@click.option('-i', '--indent', default=4, show_default=True, nargs=1, type=int,
+              help="Indentation level")
+@click.option('-q', '--quiet', default=False, is_flag=True, show_default=True,
+              help="Show only cluster names")
+def list_templates(template, detailed, indent, quiet):
+    """List all cluster templates in cluster configuration path.
+
+    The TEMPLATE argument is an optional list of template ids to filter cluster
+    templates by their ids
+    """
+    if quiet and detailed:
+        raise ValueError(f"Options `detailed` and `quiet` are mutually exclusive")
+
+    cluster_db = get_cluster_config_db()
+    templates = cluster_db.clusters if template \
+        else {tname: c for tname, c in cluster_db.clusters.items()}
+
+    for name, config in templates.items():
+        if quiet:
+            print(name)
+            continue
+
+        if not detailed:
+            print(f"cluster name: {name}")
+            print(f"    node types: {', '.join(sorted(list(config.nodes.keys())))}")
+            print()
+        else:
+            print(f"{'-'*20} CLUSTER: `{name}` {'-'*20}")
+            print(yaml.dump(asdict(config), sort_keys=True, indent=indent))
+            print(f"{'-' * 70}")
+
+    if not quiet:
+        print(f"Listed {len(templates)} templates")
+    return 0
+
+
+@cluster.command('setup')
+@click.argument('cluster_id', nargs=1, required=True, type=str)
+@click.option('-a', '--at', default='before_all', type=str, show_default=True,
+              help='Stage to start the setup action')
+def cluster_setup(cluster_id, at):
+    """Perform cluster setup operation at a cluster.
+
+    The CLUSTER_ID argument is the id of the cluster to perform the setup
+    """
+    cluster_manager = get_cluster_manager()
+
+    print(f"Performing setup operation in cluster {cluster_id}")
+    try:
+        cluster_manager.setup_cluster(cluster_id, start_at_stage=at)
+    except Exception as e:
+        logger.error(e)
+        print(f"Cluster not properly setup... You may wish perform the setup "
+              f"operation again")
+        return 1
+    print(f"Cluster `{cluster_id}` finished setup!")
+
+
+@cluster.command('stop')
+@click.argument('cluster_id', nargs=-1, required=True, type=str)
+@click.option('-r', '--remove', help='Also remove cluster from database',
+              default=True, show_default=True, is_flag=True)
+def cluster_stop(cluster_id, remove):
+    """Stop a cluster and terminate its nodes.
+
+    The CLUSTER_ID argument is the id of the cluster to stop (can have multiple).
+    """
+    cluster_manager = get_cluster_manager()
+    for c in cluster_id:
+        print(f"Stopping cluster `{c}`...")
+        cluster_manager.stop_cluster(c, remove_cluster=remove)
+        print(f"Cluster `{c}` stopped!")
+    return 0
+
+
+@cluster.command('pause')
+@click.argument('cluster_id', nargs=-1, required=True, type=str)
+def cluster_pause(cluster_id):
+    """Pause a cluster and pause nodes.
+
+    The CLUSTER_ID argument is the id of the cluster to pause.
+    """
+    cluster_manager = get_cluster_manager()
+    for c in cluster_id:
+        print(f"Pausing cluster `{c}`...")
+        cluster_manager.pause_cluster(c)
+        print(f"Cluster `{c}` paused!")
+    return 0
+
+
+@cluster.command('resume')
+@click.argument('cluster_id', nargs=-1, required=True, type=str)
+def cluster_resume(cluster_id):
+    """Resume a cluster.
+
+    The CLUSTER_ID argument is the id of the cluster to resume.
+    """
+    cluster_manager = get_cluster_manager()
+    for c in cluster_id:
+        print(f"Resuming cluster `{c}`...")
+        cluster_manager.resume_cluster(c)
+        print(f"Cluster `{c}` resumed!")
+    return 0
+
+
+@cluster.command('alive')
+@click.argument('cluster_id', nargs=-1, required=True, type=str)
+def cluster_alive(cluster_id):
+    """Check if cluster is alive (if all nodes are up).
+
+    The CLUSTER_ID argument is the id of the cluster to check for aliveness.
+    """
+    cluster_manager = get_cluster_manager()
+    for c in cluster_id:
+        print(f"Checking if cluster {c} is alive...")
+        alive_nodes = cluster_manager.is_alive(c, retries=5)
+        not_alives = []
+        for node_id, status in alive_nodes.items():
+            print(f"{node_id}: {'alive' if status else 'not alive'}")
+            if not status:
+                not_alives.append(node_id)
+
+        if not_alives:
+            print(f"Cluster `{c}` is not completely alive. "
+                  f"Nodes `{', '.join(sorted(not_alives))}` are unreachable...")
+        else:
+            print(f"Cluster `{c}` is up!")
+    return 0
+
+
+@cluster.command('grow')
+@click.argument('cluster_id', nargs=1, required=True, type=str)
+@click.option('-n', '--node', multiple=True, required=True, type=str,
+              help='Type of node to start. Format: <node_type>:<num>')
+@click.option('-s', '--setup', is_flag=True, default=True, show_default=True,
+              help='Also perform setup',)
+def cluster_grow(cluster_id, node, setup):
+    """Start more nodes at a cluster by cluster node type.
+
+    The CLUSTER_ID argument is the id of the cluster to add more nodes.
+    """
+    cluster_manager = get_cluster_manager()
+    nodes_to_start = list()
+    cluster = cluster_manager.get_cluster_by_id(cluster_id)
+
+    for n in node:
+        node_name, qtde = n.split(':')[0], int(n.split(':')[1]) if ':' in n else 1
+        nodes_to_start.append((node_name, qtde))
+
+    all_nodes = dict()
+    for node_type, qtde in nodes_to_start:
+        t = cluster.cluster_config.nodes[node_type].type
+        instance_info = cluster_manager.config_db.instance_descriptors[t]
+        nodes = cluster_manager.start_cluster_node(
+            cluster_id, node_type, instance_info, qtde)
+        all_nodes[node_type] = all_nodes
+        if len(nodes) != qtde:
+            logger.error(f"Could not start {qtde} {node_type} nodes. "
+                         f"Only {len(nodes)} were started")
+            continue
+
+    for node_type, list_nodes in all_nodes.items():
+        print(f"* {len(list_nodes)} nodes of type {node_type}: "
+              f"{','.join(sorted(list_nodes))}")
+
+    if not setup:
+        return 0
+
+    # TODO check a bug here...
+    print(f"Performing setup operation in cluster {cluster_id}")
+    try:
+        cluster_manager.setup_cluster(cluster_id, nodes_types=all_nodes)
+    except Exception as e:
+        logger.error(e)
+        print(f"Cluster not properly setup... You may wish perform the setup "
+              f"operation again")
+        return 1
+    print(f"Cluster `{cluster_id}` finished setup!")
+    return 0
 #
 #
 # @cluster.command('shrink')
@@ -302,76 +447,8 @@
 #     return 0
 #
 #
-# @cluster.command('stop')
-# @click.argument('cluster_id', nargs=-1, required=True, type=str)
-# @click.option('-t', '--terminate', help='Also terminate nodes', default=True, show_default=True, is_flag=True)
-# def cluster_stop(cluster_id, terminate):
-#     """Stop a cluster and terminate its nodes.
-#
-#     The CLUSTER_ID argument is the id of the cluster to stop (can have multiple).
-#     """
-#     cluster_module = ClusterModule.get_module()
-#     for c in cluster_id:
-#         print(f"Stopping cluster `{c}`...")
-#         cluster_module.stop_cluster(c, stop_nodes=terminate)
-#         print(f"Cluster `{c}` stopped!")
-#     return 0
 #
 #
-# @cluster.command('pause')
-# @click.argument('cluster_id', nargs=-1, required=True, type=str)
-# @click.option('-f', '--force', help='Pause nodes even if it belong to another running cluster', default=False, show_default=True, is_flag=True)
-# def cluster_pause(cluster_id, force):
-#     """Pause a cluster and terminate its nodes.
-#
-#     The CLUSTER_ID argument is the id of the cluster to stop.
-#     """
-#     cluster_module = ClusterModule.get_module()
-#     for c in cluster_id:
-#         print(f"Pausing cluster `{c}`...")
-#         cluster_module.pause_cluster(c, force_pause=force)
-#         print(f"Cluster `{c}` paused!")
-#     return 0
-#
-#
-# @cluster.command('resume')
-# @click.argument('cluster_id', nargs=-1, required=True, type=str)
-# def cluster_resume(cluster_id):
-#     """Resume a cluster.
-#
-#     The CLUSTER_ID argument is the id of the cluster to resume.
-#     """
-#     cluster_module = ClusterModule.get_module()
-#     for c in cluster_id:
-#         print(f"Resuming cluster `{c}`...")
-#         cluster_module.resume_cluster(c)
-#         print(f"Cluster `{c}` resumed!")
-#     return 0
-#
-#
-# @cluster.command('alive')
-# @click.argument('cluster_id', nargs=-1, required=True, type=str)
-# def cluster_alive(cluster_id):
-#     """Check if cluster is alive (if all nodes are up).
-#
-#     The CLUSTER_ID argument is the id of the cluster to check for aliveness.
-#     """
-#     cluster_module = ClusterModule.get_module()
-#     for c in cluster_id:
-#         print(f"Checking if cluster `{c}` is alive...")
-#         alive_nodes = cluster_module.alive_cluster(c)
-#         not_alives = []
-#         for node_id, status in alive_nodes.items():
-#             print(f"{node_id}: {'alive' if status else 'not alive'}")
-#             if not status:
-#                 not_alives.append(node_id)
-#
-#         if not_alives:
-#             print(f"Cluster `{c}` is not completely alive. Nodes `{', '.join(sorted(not_alives))}` are unreachable...")
-#         else:
-#             print(f"Cluster `{c}` is up!")
-#
-#     return 0
 #
 #
 # @cluster.command('update')

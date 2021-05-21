@@ -138,7 +138,7 @@ class AnsibleAWSProvider(AbstractInstanceProvider):
             node_info = NodeDescriptor(
                 node_id=str(uuid.uuid4()).replace('-', ''),
                 configuration=instance,
-                nickname=get_random_name(),
+                nickname=get_random_name().replace(' ', ''),
                 cloud_instance_id=fresh_instance['id'],
                 ip=fresh_instance['public_ip'],
                 status=NodeStatus.STARTED,

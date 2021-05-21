@@ -1,22 +1,11 @@
-import json
-import os
+import click
+import yaml
 from collections import defaultdict
 from dataclasses import asdict
-
-import click
-
-from typing import List, Dict
-
-import yaml
-
-from common.configs import ConfigurationDatabase
-from common.executor import ShellInvoker, SSHCommandExecutor, AnsiblePlaybookExecutor
-from common.node import NodeDescriptor, NodeRepositoryController
-from common.node_manager import NodeManager
+from common.node import NodeRepositoryController
 from common.repository import RepositoryFactory
 from common.role_manager import RoleManager
-from common.utils import path_extend, float_time_to_string, get_logger, Singleton, defaultdict_to_dict
-from providers.provider_ansible_aws import AnsibleAWSProvider
+from common.utils import path_extend, get_logger, Singleton, defaultdict_to_dict
 from app.cli.cliapp import clap_command, Defaults
 
 logger = get_logger(__name__)
@@ -177,7 +166,7 @@ def role_action(role, action, node, node_vars, host_vars, extra):
         raise ValueError(f"No nodes to perform the action '{action} of role {role}")
     result = role_manager.perform_action(
         role, action, hosts_node_map=nodes, host_vars=host_vars,
-        node_vars=node_vars, extra_args=extra)
+        node_vars=node_vars, extra_args=extra_args)
 
     if not result.ok:
         logger.error(f"Playbook for action {action} of role {role} did not "

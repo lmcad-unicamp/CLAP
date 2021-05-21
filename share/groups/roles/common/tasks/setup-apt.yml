@@ -1,6 +1,0 @@
----
-- name: Ensure apt-daily is *not* running
-  script: |
-    no-update-on-reboot.sh
-  become: yes
-  when: 'is_debian_compatible'

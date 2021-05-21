@@ -1,6 +1,0 @@
-- include_tasks: 'init-{{ansible_os_family}}.yml'
-- include_tasks: hosts.yml
-  vars:
-    hosts: '{{groups.all}}'
-- include_tasks: 'software-{{ansible_os_family}}.yml'
-- include_tasks: ssh_auth.yml

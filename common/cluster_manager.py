@@ -8,11 +8,11 @@ from typing import Optional, Dict, Union, List, Tuple
 import dacite
 
 from common.configs import ConfigurationDatabase, InstanceInfo
-from common.executor import SSHCommandExecutor, Executor, AnsiblePlaybookExecutor
+from common.executor import SSHCommandExecutor, AnsiblePlaybookExecutor
 from common.node_manager import NodeManager
 from common.repository import Repository, InvalidEntryError
 from common.role_manager import RoleManager
-from common.utils import yaml_load, path_extend, get_logger, get_random_name, get_random_object
+from common.utils import yaml_load, get_logger, get_random_object
 
 logger = get_logger(__name__)
 
@@ -166,7 +166,7 @@ class ClusterConfigDatabase:
                     setups[sname] = sconfig
             except Exception as e:
                 if self._discard_invalids:
-                    logger.error(e)
+                    logger.error(f"When parsing file {cfile}: {e}")
                     continue
                 else:
                     raise
@@ -333,16 +333,17 @@ class ClusterManager:
     def start_cluster(self, cluster_config: ClusterConfig,
                       start_timeout: int = 600,
                       max_workers: int = 1,
-                      destroy_on_min_count: bool = True) -> ClusterDescriptor:
+                      destroy_on_min_count: bool = True) -> str:
         node_types: Dict[str, Tuple[NodeConfig, InstanceInfo]] = {
             node_name: (node_values, self.config_db.instance_descriptors[node_values.type])
             for node_name, node_values in cluster_config.nodes.items()
         }
 
         creation_time = time.time()
+        random_obj = ''.join([n.capitalize() for n in get_random_object().split(' ')])
         cluster = ClusterDescriptor(
-            str(uuid.uuid4()), get_random_object(), cluster_config,
-            creation_time, creation_time
+            f"cluster-{str(uuid.uuid4()).replace('-', '')}", random_obj,
+            cluster_config, creation_time, creation_time
         )
 
         def _start_cluster_node(node_type: str) -> Tuple[str, List[str]]:
@@ -392,7 +393,7 @@ class ClusterManager:
             self.node_manager.stop_nodes(nodes_to_stop)
 
         self.cluster_repository.upsert_cluster(cluster)
-        return cluster
+        return cluster.cluster_id
 
     def add_existing_nodes_to_cluster(self, cluster_id: str,
                                       node_types: Dict[str, List[str]],
