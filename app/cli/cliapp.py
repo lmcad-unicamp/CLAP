@@ -13,6 +13,10 @@ if 'CLAP_PATH' not in os.environ:
     os.environ['CLAP_PATH'] = path_extend('~', '.clap')
 
 
+class ArgumentError(Exception):
+    pass
+
+
 class Defaults(metaclass=Singleton):
     def __init__(self):
         self.verbosity: int = 0

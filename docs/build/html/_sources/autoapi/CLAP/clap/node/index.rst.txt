@@ -1,0 +1,162 @@
+:mod:`CLAP.clap.node`
+=====================
+
+.. py:module:: CLAP.clap.node
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   CLAP.clap.node.NodeStatus
+   CLAP.clap.node.NodeType
+   CLAP.clap.node.NodeLifecycle
+   CLAP.clap.node.NodeDescriptor
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   CLAP.clap.node.logger
+
+
+.. data:: logger
+   
+
+   
+
+.. class:: NodeStatus
+
+   .. attribute:: UNKNOWN
+      :annotation: = unknown
+
+      
+
+   .. attribute:: STARTED
+      :annotation: = started
+
+      
+
+   .. attribute:: UNREACHABLE
+      :annotation: = unreachable
+
+      
+
+   .. attribute:: REACHABLE
+      :annotation: = reachable
+
+      
+
+   .. attribute:: PAUSED
+      :annotation: = paused
+
+      
+
+   .. attribute:: STOPPED
+      :annotation: = stopped
+
+      
+
+
+.. class:: NodeType
+
+   .. attribute:: TYPE_CLOUD
+      :annotation: = cloud
+
+      
+
+   .. attribute:: TYPE_LOCAL
+      :annotation: = local
+
+      
+
+
+.. class:: NodeLifecycle
+
+   .. attribute:: NORMAL
+      :annotation: = normal
+
+      
+
+   .. attribute:: PREEMPTIBLE
+      :annotation: = preemptible
+
+      
+
+
+.. class:: NodeDescriptor
+
+   .. attribute:: node_id
+      :annotation: :str
+
+      
+
+   .. attribute:: configuration
+      :annotation: :clap.configs.InstanceInfo
+
+      
+
+   .. attribute:: nickname
+      :annotation: :Optional[str] = 
+
+      
+
+   .. attribute:: ip
+      :annotation: :Optional[str] = 
+
+      
+
+   .. attribute:: type
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: cloud_instance_id
+      :annotation: :Optional[str] = 
+
+      
+
+   .. attribute:: cloud_lifecycle
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: status
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: creation_time
+      :annotation: :Optional[float] = 0.0
+
+      
+
+   .. attribute:: update_time
+      :annotation: :Optional[float] = 0.0
+
+      
+
+   .. attribute:: roles
+      :annotation: :List[str]
+
+      
+
+   .. attribute:: tags
+      :annotation: :Dict[str, str]
+
+      
+
+   .. attribute:: extra
+      :annotation: :Dict[str, Any]
+
+      
+
+

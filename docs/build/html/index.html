@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Welcome to CLoud Application Provider Documentation! &mdash; CLoud Application Platform 0.2.1
+ documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.1
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shared_roles.html">Roles shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Welcome to CLoud Application Provider Documentation!</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="welcome-to-cloud-application-provider-documentation">
+<h1>Welcome to CLoud Application Provider Documentation!<a class="headerlink" href="#welcome-to-cloud-application-provider-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>CLoud Application Provider (CLAP) provides a user-friendly command line tool to
+create, manage and interact with individual instances or a set of instances
+hosted in public cloud providers (such as AWS, Google Cloud and Microsoft Azure),
+as well as easily creates, manages, resizes and interacts with compute clusters
+hosted in public cloud providers.
+It was firstly inspired on <a class="reference external" href="https://github.com/elasticluster/elasticluster">elasticluster</a>
+project, a tool that allows automated setup of compute clusters (MPI, Spark/Hadoop, etc.)
+and <a class="reference external" href="https://www.ansible.com/integrations/cloud">Ansible</a>, a framework used for
+automation.</p>
+<p>Its main features includes:</p>
+<ul>
+<li><div class="line-block">
+<div class="line"><a class="reference external" href="https://yaml.org/">YAML-Style</a> configuration files to define nodes, logins and cloud configurations.</div>
+</div>
+</li>
+<li><p>User-friendly interface to create, setup, manage, interact and stop multiple instances hosted different cloud providers at the same time, transparently.</p></li>
+<li><p>Easy and fast creation and configuration of multiple compute clusters hosted in public cloud providers at same time.</p></li>
+<li><p>Growing and shrinking running clusters.</p></li>
+<li><p>Role system to easily perform actions in different heterogeneous nodes via <a class="reference external" href="https://ansible.com/">Ansible</a>. playbooks.</p></li>
+<li><p>Easy-to-use python API to bring nodes up and configure them (via ansible or SSH commands).</p></li>
+</ul>
+</div>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#installation-guide">Installation Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#quickly-clap-usage-description">Quickly CLAP usage description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#quickly-clap-directory-architecture-description">Quickly CLAP directory architecture description</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Basic Configuration Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#cloud-provider-configuration">Cloud Provider Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#login-configuration">Login Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#instance-templates-configuration">Instance Templates Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Basic Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#node-module">Node Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#role-module">Role Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#cluster-module">Cluster Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shared_roles.html">Roles shared with CLAP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shared_roles.html#role-commands-common">Role <code class="docutils literal notranslate"><span class="pre">commands-common</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="shared_roles.html#group-ec2-efs">Group <code class="docutils literal notranslate"><span class="pre">ec2-efs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="shared_roles.html#role-spits">Role <code class="docutils literal notranslate"><span class="pre">spits</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="introduction.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Otávio Napoli.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

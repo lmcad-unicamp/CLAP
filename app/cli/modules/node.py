@@ -10,7 +10,7 @@ from clap.executor import ShellInvoker, SSHCommandExecutor, AnsiblePlaybookExecu
 from clap.node_manager import NodeManager, NodeRepositoryController
 from clap.repository import RepositoryFactory
 from clap.utils import path_extend, float_time_to_string, get_logger, \
-    Singleton, defaultdict_to_dict
+    Singleton, defaultdict_to_dict, str_at_middle
 from providers.provider_ansible_aws import AnsibleAWSProvider
 from app.cli.cliapp import clap_command, Defaults
 
@@ -85,19 +85,18 @@ def node(repository):
 
 @node.command('start')
 @click.argument('instance', nargs=-1, type=str)
-@click.option('-st', '--start-timeout', default=600, help='Timeout to start nodes',
-              show_default=True)
-@click.option('-cr', '--connection-tries', default=15,
-              help='Number of the maximum number of SSH connection tries for '
-                   'check if node is alive. If zero, nodes is not checked',
-              show_default=True)
-@click.option('-rt', '--retry-delay', default=30,
-              help='Delay time to try another SSH connection',
-              show_default=True)
-@click.option('-t', '--terminate_not_alive', default=False,
+@click.option('-st', '--start-timeout', default=600, show_default=True,
+              help='Timeout to start nodes')
+@click.option('-cr', '--connection-tries', default=15, show_default=True,
+              help="Number of SSH connection tries to check if node is alive. "
+                   "If the value is set to zero, only the node's information is "
+                   "updated and no login attempts(via SSH) is performed.")
+@click.option('-rt', '--retry-delay', default=30, show_default=True,
+              help='Time between an unsuccessful connection and another')
+@click.option('-t', '--terminate_not_alive', default=False, show_default=True,
+              is_flag=True,
               help='Terminate nodes if no SSH connection were possible. '
-                   'Connection-tries parameter must be higher than 0',
-              show_default=True, is_flag=True)
+                   'Connection-tries parameter must be higher than 0')
 def node_start(instance, start_timeout, connection_tries, retry_delay,
                terminate_not_alive):
     """ Control and manage nodes.
@@ -168,9 +167,8 @@ def node_start(instance, start_timeout, connection_tries, retry_delay,
 @click.argument('node_id', nargs=-1)
 @click.option('-t', '--tags', default=None, type=str, multiple=True,
               help='Filter nodes by tags. There are two formats: <key> or <key>=<val>')
-@click.option('-d', '--detailed',
-              help='Show detailed node information',
-              default=0, show_default=True, count=True)
+@click.option('-d', '--detailed', default=0, show_default=True, count=True,
+              help='Show detailed node information')
 @click.option('-i', '--indent', default=4, show_default=True, nargs=1, type=int,
               help="Indentation level")
 @click.option('-q', '--quiet', default=False, is_flag=True, show_default=True,
@@ -215,13 +213,13 @@ def node_list(node_id, tags, detailed, indent, quiet):
 @click.argument('node_id', nargs=-1)
 @click.option('-t', '--tags', default=None, type=str, multiple=True,
               help='Filter nodes by tags. There are two formats: <key> or <key>=<val>')
-@click.option('-f', '--force', default=True,
-              help='Remove nodes from repository even if fails', show_default=True,
-              is_flag=True)
+@click.option('-f', '--force', default=True, is_flag=True, show_default=True,
+              help='Remove nodes from repository even if stop operation fails')
 def node_stop(node_id, tags, force):
     """ Stop a node (terminating it) and remove it from node repository.
 
-    The NODE_ID argument is a list of strings (optional) and can filter nodes to stop by their node ids
+    The NODE_ID argument is a list of strings (optional) and can filter nodes to
+    stop by their node ids
     """
     if not node_id and not tags:
         print('Stopped 0 nodes')
@@ -244,16 +242,14 @@ def node_stop(node_id, tags, force):
 
 @node.command('alive')
 @click.argument('node_id', nargs=-1)
-              # help='Nodes to be checked. If not provided, check all nodes in repository')
 @click.option('-t', '--tags', default=None, type=str, multiple=True,
               help='Filter nodes by tags. There are two formats: <key> or <key>=<val>')
-@click.option('-cr', '--connection-tries', default=15,
-              help='Number of the maximum number of SSH connection tries for '
-                   'check if node is alive. If zero, nodes is not checked',
-              show_default=True)
-@click.option('-rt', '--retry-delay', default=30,
-              help='Delay time to try another SSH connection',
-              show_default=True)
+@click.option('-cr', '--connection-tries', default=15, show_default=True,
+              help="Number of SSH connection tries to check if node is alive. "
+                   "If the value is set to zero, only the node's information is "
+                   "updated and no login attempts(via SSH) is performed.")
+@click.option('-rt', '--retry-delay', default=30, show_default=True,
+              help='Time between an unsuccessful connection and another')
 def node_alive(node_id, tags, connection_tries, retry_delay):
     """ Check if nodes are alive (a successful SSH connection can be established).
 
@@ -286,19 +282,19 @@ def node_alive(node_id, tags, connection_tries, retry_delay):
 @click.argument('node_id', nargs=-1)
 @click.option('-t', '--tags', default=None, type=str, multiple=True,
               help='Filter nodes by tags. There are two formats: <key> or <key>=<val>')
-@click.option('-st', '--start-timeout', default=600,
-              help='Timeout to resume nodes', show_default=True)
-@click.option('-cr', '--connection-tries', default=15,
-              help='Number of the maximum number of SSH connection tries for '
-                   'check if node is alive. If zero, nodes is not checked',
-              show_default=True)
-@click.option('-rt', '--retry-delay', default=30,
-              help='Delay time to try another SSH connection',
-              show_default=True)
+@click.option('-st', '--start-timeout', default=600, show_default=True,
+              help='Timeout to resume nodes')
+@click.option('-cr', '--connection-tries', default=15, show_default=True,
+              help="Number of SSH connection tries to check if node is alive. "
+                   "If the value is set to zero, only the node's information is "
+                   "updated and no login attempts(via SSH) is performed.")
+@click.option('-rt', '--retry-delay', default=30, show_default=True,
+              help='Time between an unsuccessful connection and another')
 def node_resume(node_id, tags, start_timeout, connection_tries, retry_delay):
     """ Resume nodes (if possible).
 
-    The NODE_ID argument is a list of strings (optional) and can filter nodes to resume by their node ids
+    The NODE_ID argument is a list of strings (optional) and can filter nodes to
+    resume by their node ids
     """
     node_manager = get_node_manager()
 
@@ -329,7 +325,8 @@ def node_resume(node_id, tags, start_timeout, connection_tries, retry_delay):
 def node_pause(node_id, tags):
     """ Pause nodes (if possible).
 
-    The NODE_ID argument is a list of strings (optional) and can filter nodes to pause by their node ids
+    The NODE_ID argument is a list of strings (optional) and can filter nodes to
+    pause by their node ids
     """
     node_manager = get_node_manager()
 
@@ -370,7 +367,7 @@ def node_connect(node_id):
 def node_add_tag(node_id, tags):
     """ Add tags to a set of nodes.
 
-    The NODE_ID argument is a list of strings (optional) and can filter nodes to add tags by their node ids
+    The NODE_ID argument is a list of node_ids to add tags.
     """
     node_manager = get_node_manager()
     final_tags = dict()
@@ -393,7 +390,7 @@ def node_add_tag(node_id, tags):
 def node_remove_tags(node_id, tags):
     """ Remove tags from a set of nodes.
 
-    The NODE_ID argument is a list of strings (optional) and can filter nodes to remove tags by their node ids
+    The NODE_ID argument is a list of node_ids to remove tags.
     """
     node_manager = get_node_manager()
     removeds = node_manager.remove_tags(node_id, tags)
@@ -450,7 +447,8 @@ def node_execute(node_id, tags, command, additional, timeout):
         if not result['ok']:
             print(f"{node_id[:8]}: Error executing command in node. {result['error']}")
             continue
-        print('-' * 80)
+        print(str_at_middle(node_id, 80, '-'))
+        print(f'return code {node_id[:8]}: {result["return_code"]}')
         print(f'stdout {node_id[:8]}: '.join(result['stdout_lines']))
         print(f'stderr {node_id[:8]}: '.join(result['stderr_lines']))
 
@@ -508,10 +506,10 @@ def list_instance_templates(template, detailed, indent, quiet):
               help='Filter nodes by tags. There are two formats: <key> or <key>=<val>')
 @click.option('-e', '--extra', default=None, type=str, multiple=True,
               help='Extra variables to be passed. Format: <key>=<val>',
-              show_default=True)
+              show_default=False)
 @click.option('-nv', '--node-vars', default=None, type=str, multiple=True,
               help='Host variables to be passed. Format: <node_id>:<key>=<val>',
-              show_default=True)
+              show_default=False)
 def node_playbook(node_id, playbook, tags, extra, node_vars):
     """ Execute an Ansible playbook in a set of nodes.
 
@@ -529,6 +527,10 @@ def node_playbook(node_id, playbook, tags, extra, node_vars):
     if not nodes:
         print("No nodes informed")
         return 0
+
+    playbook = path_extend(playbook)
+    if not os.path.isfile(playbook):
+        raise ValueError(f"Invalid playbook file `{playbook}`")
 
     extra_args = dict()
     for e in extra:
@@ -562,7 +564,7 @@ def node_playbook(node_id, playbook, tags, extra, node_vars):
         logger.error(f"Playbook {playbook} did not executed successfully...")
         return 1
 
-    print(f"{'-' * 20} Execution summary {'-' * 20}")
+    print(str_at_middle("Execution Summary", 80))
     for node_id in sorted(list(result.hosts.keys())):
         r = result.hosts[node_id]
         print(f"{node_id}: {'ok' if r else 'not ok'}")

@@ -4,9 +4,9 @@ from collections import defaultdict
 from dataclasses import asdict
 from clap.node_manager import NodeRepositoryController
 from clap.repository import RepositoryFactory
-from clap.role_manager import RoleManager
+from clap.role_manager import RoleManager, NodeRoleError
 from clap.utils import path_extend, get_logger, Singleton, defaultdict_to_dict
-from app.cli.cliapp import clap_command, Defaults
+from app.cli.cliapp import clap_command, Defaults, ArgumentError
 
 logger = get_logger(__name__)
 
@@ -133,7 +133,7 @@ def role_add(role, node, node_vars, host_vars, extra):
         role, hosts_node_map=nodes, host_vars=host_vars,
         node_vars=node_vars, extra_args=extra_args)
 
-    print(f"{len(added_nodes)} nodes were added to role {role}: {added_nodes}")
+    print(f"{len(added_nodes)} nodes were added to role {role}: {', '.join(sorted(added_nodes))}")
     return 0
 
 
@@ -161,9 +161,26 @@ def role_action(role, action, node, node_vars, host_vars, extra):
     role_manager = get_role_manager()
     nodes, node_vars, host_vars, extra_args = _split_vars(
         node, node_vars, host_vars, extra)
-    nodes = role_manager.get_role_nodes(role, from_node_ids=nodes)
+
     if not nodes:
+        nodes = role_manager.get_all_role_nodes_hosts(role)
+    else:
+        if type(nodes) is list:
+            d = defaultdict(list)
+            for n in nodes:
+                hosts = role_manager.get_role_node_hosts(role, n)
+                if not hosts:
+                    raise NodeRoleError(n, role)
+                for hname in hosts:
+                    d[hname].append(n)
+            nodes = defaultdict_to_dict(d)
+        else:
+            nodes = nodes
+
+    all_values = [n for v in nodes.values() for n in v]
+    if not all_values:
         raise ValueError(f"No nodes to perform the action '{action} of role {role}")
+
     result = role_manager.perform_action(
         role, action, hosts_node_map=nodes, host_vars=host_vars,
         node_vars=node_vars, extra_args=extra_args)
@@ -173,6 +190,46 @@ def role_action(role, action, node, node_vars, host_vars, extra):
                      f"executed successfully...")
         return 1
 
+    print(f"Action {action} from role {role} was successfully performed!")
+    return 0
+
+
+@role.command('remove')
+@click.argument('role', nargs=1, type=str, required=True)
+@click.option('-n', '--node', nargs=1, type=str, multiple=True, required=True,
+              help='Nodes to perform the action. Can use multiple "-n" commands and it '
+                   'can be a list of colon-separated node as "<node>,<node>,..." '
+                   'or "<role_host_name>:<node>,<node>". The formats are '
+                   'mutually exclusive. If not is passed, the action will be '
+                   'performed in all nodes that belongs to the role.')
+def role_remove(role, node):
+    """ Perform an group action at a set of nodes.
+
+    The ROLE argument specify the role which the action will be performed.
+    """
+    role_manager = get_role_manager()
+    nodes, node_vars, host_vars, extra_args = _split_vars(node, [], [], [])
+
+    if not nodes:
+        raise ArgumentError('No nodes informed')
+
+    if type(nodes) is list:
+        d = defaultdict(list)
+        for n in nodes:
+            hosts = role_manager.get_role_node_hosts(role, n)
+            if not hosts:
+                raise NodeRoleError(n, role)
+            for hname in hosts:
+                d[hname].append(n)
+        nodes = defaultdict_to_dict(d)
+    else:
+        nodes = nodes
+
+    if not nodes:
+        raise ValueError(f"No nodes to remove from role {role}")
+
+    result = role_manager.remove_role(role, nodes)
+    print(f"{len(result)} nodes were removed from {role}: {', '.join(sorted(result))}")
     return 0
 
 

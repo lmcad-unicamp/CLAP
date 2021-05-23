@@ -121,3 +121,11 @@ def sorted_groupby(iterable: Iterable, key=None) -> dict:
 
 def get_logger(name):
     return logging.getLogger(f'{APP_NAME}.{name}')
+
+
+def str_at_middle(text: str, maximum: int, delimiter: str = '-'):
+    if len(text) > maximum-2:
+        return text
+    size = (maximum - len(text)) // 2
+    return delimiter*size + ' ' + text + ' ' + delimiter*size
+

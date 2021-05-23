@@ -1,0 +1,153 @@
+:mod:`CLAP.clap.node_manager`
+=============================
+
+.. py:module:: CLAP.clap.node_manager
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   CLAP.clap.node_manager.NodeRepositoryController
+   CLAP.clap.node_manager.NodeManager
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   CLAP.clap.node_manager.logger
+
+
+.. data:: logger
+   
+
+   
+
+.. exception:: InvalidProvider
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+
+.. exception:: UnhandledProviderError(provider: str)
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+
+.. exception:: DeploymentError
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+
+.. exception:: InvalidNodeError(node_id: str)
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+
+.. class:: NodeRepositoryController(repository: clap.repository.Repository)
+
+
+   .. method:: upsert_node(self, node: clap.node.NodeDescriptor)
+
+
+   .. method:: remove_node(self, node_id: str)
+
+
+   .. method:: remove_nodes(self, node_ids: List[str])
+
+
+   .. method:: get_nodes_by_id(self, node_ids: List[str]) -> List[clap.node.NodeDescriptor]
+
+
+   .. method:: get_all_nodes(self) -> List[clap.node.NodeDescriptor]
+
+
+   .. method:: get_nodes_filter(self, filter_func: Callable[[clap.node.NodeDescriptor], bool]) -> List[clap.node.NodeDescriptor]
+
+
+
+.. class:: NodeManager(node_repository_controller: NodeRepositoryController, providers: Dict[str, clap.abstract_provider.AbstractInstanceProvider], private_dir: str)
+
+
+   .. method:: _group_instances_by_provider(instances: List[Tuple[clap.configs.InstanceInfo, int]]) -> Dict[str, List[Tuple[clap.configs.InstanceInfo, int]]]
+      :staticmethod:
+
+
+   .. method:: group_nodes_by_provider(nodes: List[clap.node.NodeDescriptor]) -> Dict[str, List[clap.node.NodeDescriptor]]
+      :staticmethod:
+
+
+   .. method:: get_nodes_by_id(self, node_ids: List[str]) -> List[clap.node.NodeDescriptor]
+
+
+   .. method:: get_nodes(self, filter_func: Callable[[clap.node.NodeDescriptor], bool], from_node_ids: List[str] = None) -> List[clap.node.NodeDescriptor]
+
+
+   .. method:: get_all_nodes(self) -> List[clap.node.NodeDescriptor]
+
+
+   .. method:: get_not_running_nodes(self, from_node_ids: List[str] = None) -> List[clap.node.NodeDescriptor]
+
+
+   .. method:: get_up_nodes(self, from_node_ids: List[str] = None) -> List[clap.node.NodeDescriptor]
+
+
+   .. method:: get_reachable_nodes(self, from_node_ids: List[str] = None) -> List[clap.node.NodeDescriptor]
+
+
+   .. method:: get_nodes_with_tag(self, key: str, from_node_ids: List[str] = None) -> List[clap.node.NodeDescriptor]
+
+
+   .. method:: get_nodes_with_tag_value(self, key: str, value: str, from_node_ids: List[str] = None) -> List[clap.node.NodeDescriptor]
+
+
+   .. method:: start_node(self, instance: clap.configs.InstanceInfo, count: int = 1, start_timeout: int = 600) -> List[str]
+
+
+   .. method:: start_nodes(self, instance_counts: List[Tuple[clap.configs.InstanceInfo, int]], start_timeout: int = 600, max_workers: int = 1) -> List[str]
+
+
+   .. method:: is_alive(self, node_ids: List[str], retries: int = 5, wait_timeout: int = 30, update_timeout: int = 30, max_workers: int = 1, test_command: str = 'echo "OK"') -> Dict[str, bool]
+
+
+   .. method:: stop_nodes(self, node_ids: List[str], timeout: int = 180, max_workers: int = 1, remove_nodes: bool = True) -> List[str]
+
+
+   .. method:: resume_nodes(self, node_ids: List[str], timeout: int = 600, connection_retries: int = 10, retry_timeout: int = 30, max_workers: int = 1) -> List[str]
+
+
+   .. method:: pause_nodes(self, node_ids: List[str], timeout: int = 180, max_workers: int = 1) -> List[str]
+
+
+   .. method:: add_tags(self, node_ids: List[str], tags: Dict[str, str]) -> List[str]
+
+
+   .. method:: remove_tags(self, node_ids: List[str], tags: List[str]) -> List[str]
+
+
+   .. method:: upsert_node(self, node: clap.node.NodeDescriptor)
+
+
+   .. method:: remove_node(self, node_id: str)
+
+
+

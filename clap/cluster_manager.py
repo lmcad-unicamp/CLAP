@@ -11,8 +11,8 @@ from clap.configs import ConfigurationDatabase, InstanceInfo
 from clap.executor import SSHCommandExecutor, AnsiblePlaybookExecutor
 from clap.node_manager import NodeManager, NodeRepositoryController
 from clap.repository import Repository, InvalidEntryError
-from clap.role_manager import RoleManager
-from clap.utils import yaml_load, get_logger, get_random_object
+from clap.role_manager import RoleManager, NodeRoleError
+from clap.utils import yaml_load, get_logger, get_random_object, defaultdict_to_dict
 
 logger = get_logger(__name__)
 
@@ -323,6 +323,41 @@ class ClusterManager:
     def get_all_clusters(self) -> List[ClusterDescriptor]:
         return self.cluster_repository.get_all_clusters()
 
+    def grow(self, cluster_id: str, node_type: str, count: int = 1,
+             min_count: int = 0, start_timeout: int = 600):
+        if min_count < 0:
+            raise ValueError("min_count value must be >= 0")
+        if count <= 0:
+            raise ValueError("count value must be higher than 0")
+        if min_count > count:
+            raise ValueError("min_count must be smaller then count")
+        cluster = self.get_cluster_by_id(cluster_id)
+        if node_type not in cluster.cluster_config.nodes:
+            raise ValueError(f"Invalid node of type '{node_type}' from cluster "
+                             f"with config: {cluster.cluster_config.cluster_config_id}")
+        node_config_name = cluster.cluster_config.nodes[node_type].type
+        instance_info = self.config_db.instance_descriptors[node_config_name]
+        nodes = self.start_cluster_node(
+            cluster_id, node_type, instance_info, count, start_timeout)
+
+        if len(nodes) < min_count:
+            logger.error(f"Minimum count of nodes to start ({min_count}) was not "
+                         f"reached. Terminating started nodes.")
+            self.node_manager.stop_nodes(nodes)
+            raise ClusterError("Minimum number of nodes not reached")
+
+        # Check aliveness
+        alive_nodes = self.node_manager.is_alive(nodes, retries=15)
+        reachable_nodes = [nid for nid, status in alive_nodes.items() if status]
+        if len(reachable_nodes) < min_count:
+            logger.error(f"Minimum count of nodes to start ({min_count}) was not "
+                         f"reached (some of them are unreachable). "
+                         f"Terminating started nodes.")
+            self.node_manager.stop_nodes(nodes)
+            raise ClusterError("Minimum number of nodes not reached")
+
+        return nodes
+
     def start_cluster_node(self, cluster_id: str, node_type: str,
                            instance_info: InstanceInfo, count: int,
                            start_timeout: int = 600) -> List[str]:
@@ -334,10 +369,12 @@ class ClusterManager:
                       start_timeout: int = 600,
                       max_workers: int = 1,
                       destroy_on_min_count: bool = True) -> str:
-        node_types: Dict[str, Tuple[NodeConfig, InstanceInfo]] = {
-            node_name: (node_values, self.config_db.instance_descriptors[node_values.type])
-            for node_name, node_values in cluster_config.nodes.items()
-        }
+        node_types: Dict[str, Tuple[NodeConfig, InstanceInfo]] = {}
+        for node_name, node_values in cluster_config.nodes.items():
+            instance = self.config_db.instance_descriptors.get(node_values.type, None)
+            if instance is None:
+                raise ValueError(f"Invalid instance config: {node_values.type}")
+            node_types[node_name] = (node_values, instance)
 
         creation_time = time.time()
         random_obj = ''.join([n.capitalize() for n in get_random_object().split(' ')])
@@ -391,6 +428,7 @@ class ClusterManager:
             logger.error("Destroying cluster... Stopping all nodes: "
                          f"{', '.join(nodes_to_stop)}")
             self.node_manager.stop_nodes(nodes_to_stop)
+            raise ClusterError("Minimum number of nodes not reached")
 
         self.cluster_repository.upsert_cluster(cluster)
         return cluster.cluster_id
@@ -405,18 +443,25 @@ class ClusterManager:
         self.setup_cluster(cluster_id, node_types, max_workers)
 
     def run_action(self, action: ActionType, node_ids: List[str]) -> bool:
+        logger.info(f"Executing action: {action} at nodes: {node_ids}")
         try:
             nodes = self.node_manager.get_nodes_by_id(node_ids)
             if type(action) is CommandActionType:
                 e = SSHCommandExecutor(action.command, nodes, self.private_dir)
                 result = e.run()
-                return result['ok']
+                return all(r['ok'] for r in result.values())
 
             elif type(action) is RoleActionType:
-                role_node_dict = self.role_manager.get_role_nodes(
-                    action.role, from_node_ids=node_ids)
+                d = defaultdict(list)
+                for n in node_ids:
+                    hosts = self.role_manager.get_role_node_hosts(action.role, n)
+                    if not hosts:
+                        raise NodeRoleError(n, action.role)
+                    for hname in hosts:
+                        d[hname].append(n)
+                _nodes_ids = defaultdict_to_dict(d)
                 result = self.role_manager.perform_action(
-                    action.role, action.action, role_node_dict, extra_args=action.extra)
+                    action.role, action.action, _nodes_ids, extra_args=action.extra)
                 return result.ok
 
             elif type(action) is PlaybookActionType:
@@ -430,25 +475,28 @@ class ClusterManager:
             else:
                 logger.error(f"Invalid action type: {type(action)}")
                 return False
+
         except Exception as e:
-            logger.error(e)
+            logger.error(f"{e.__class__.__name__}: {e}")
             return False
 
     def run_role_add(self, role: RoleAdd, node_ids: List[str]) -> bool:
         try:
             if '/' in role.name:
                 host_map = {role.name.split('/')[1]: node_ids}
+                role_name = role.name.split('/')[0]
             else:
                 host_map = node_ids
+                role_name = role.name
             added_nodes = self.role_manager.add_role(
-                role.name, host_map, extra_args=role.extra)
+                role_name, host_map, extra_args=role.extra)
             return all(n in added_nodes for n in node_ids)
         except Exception as e:
             logger.error(e)
             return False
 
     def run_setup(self, setup: SetupConfig, node_ids: List[str]) -> bool:
-        logger.info(f"* Running setup {setup} at nodes: {node_ids}")
+        logger.info(f"Running setup {setup} at nodes: {node_ids}")
         for role in setup.roles:
             if not self.run_role_add(role, node_ids):
                 return False
@@ -458,24 +506,23 @@ class ClusterManager:
         return True
 
     def _run_setup_list(self, setups: List[SetupConfig], node_ids: List[str]) -> bool:
-        logger.info(f"*** Running {len(setups)} setups at nodes: {node_ids}")
         for setup in setups:
             if not self.run_setup(setup, node_ids):
                 return False
         return True
 
-    def setup_cluster(self, cluster_id: str, nodes_types: Dict[str, List[str]] = None,
+    def setup_cluster(self, cluster_id: str, nodes_being_added: Dict[str, List[str]] = None,
                       max_workers: int = 1, start_at_stage: str = 'before_all'):
         cluster = self.cluster_repository.get_cluster_by_id(cluster_id)
         cluster.is_setup = False
         self.cluster_repository.upsert_cluster(cluster)
 
-        if not nodes_types:
-            nodes_types = self.get_cluster_nodes_types(cluster_id)
+        if not nodes_being_added:
+            nodes_being_added = self.get_cluster_nodes_types(cluster_id)
 
         all_nodes = self.get_all_cluster_nodes(cluster_id)
         all_being_added = list(
-            {n for _, list_nodes in nodes_types.items() for n in list_nodes}
+            {n for _, list_nodes in nodes_being_added.items() for n in list_nodes}
         )
         stages = {
             'before_all': 1,
@@ -504,7 +551,7 @@ class ClusterManager:
             with ThreadPool(processes=max_workers) as pool:
                 values: List[Tuple[List[SetupConfig], List[str]]] = [
                     (cluster.cluster_config.nodes[node_type].setups, node_list)
-                    for node_type, node_list in nodes_types.items()
+                    for node_type, node_list in nodes_being_added.items()
                 ]
                 results = pool.starmap(self._run_setup_list, values)
 
@@ -557,3 +604,6 @@ class ClusterManager:
             nodes, retries=retries, wait_timeout=wait_timeout,
             update_timeout=update_timeout, max_workers=max_workers,
             test_command=test_command)
+
+    def upsert_cluster(self, cluster: ClusterDescriptor):
+        self.cluster_repository.upsert_cluster(cluster)

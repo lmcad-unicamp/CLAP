@@ -42,10 +42,12 @@ class RoleAssignmentError(RoleError):
 
 
 class NodeRoleError(RoleError):
-    def __init__(self, node_id: str, role_name: str):
+    def __init__(self, node_id: str, role_name: str, host_name: str = None):
         self.node_id = node_id
         self.role_name = role_name
-        super().__init__(f"Node {node_id} does not belong to {role_name}")
+        self.host_name = host_name
+        rname = role_name if not host_name else f"{role_name}/{host_name}"
+        super().__init__(f"Node {node_id} does not belong to {rname}")
 
 
 class MissingActionVariableError(RoleError):
@@ -89,6 +91,51 @@ class RoleManager:
         self._discard_invalids = discard_invalids
         if load:
             self.load_roles()
+
+    def get_all_role_nodes(self, role_name: str) -> List[str]:
+        nodes = self.node_repository.get_nodes_filter(
+            lambda n: role_name in n.roles or f"{role_name}/" in n.roles
+        )
+        return [n.node_id for n in nodes]
+
+    def get_role_node_hosts(self, role_name: str, node_id: str) -> List[str]:
+        role = self.roles[role_name]
+        node = self.node_repository.get_nodes_by_id([node_id])[0]
+
+        hosts = []
+        if role.hosts:
+            for hname in role.hosts:
+                search_for = f"{role_name}/{hname}"
+                if search_for in node.roles:
+                    hosts.append(hname)
+        else:
+            if role_name in node.roles:
+                hosts = ['']
+
+        return hosts
+
+    def get_all_role_nodes_hosts(self, role_name: str) -> \
+            Dict[str, List[str]]:
+        role = self.roles[role_name]
+        if role.hosts:
+            search_for = [f"{role_name}/{host}" for host in role.hosts]
+        else:
+            search_for = [role_name]
+
+        host_nodes_map = {
+            rname.split('/')[-1]: [
+                node.node_id
+                for node in self.node_repository.get_nodes_filter(
+                    lambda n: rname in n.roles
+                )
+            ]
+            for rname in search_for
+        }
+
+        if not role.hosts:
+            host_nodes_map = {'': host_nodes_map[role_name]}
+
+        return host_nodes_map
 
     def get_role_nodes(self, role_name: str, from_node_ids: List[str] = None) -> \
             Dict[str, List[str]]:
@@ -189,6 +236,25 @@ class RoleManager:
 
         return list(added_nodes)
 
+    def _check_nodes_role(self, role_name: str, host_map: Dict[str, List[NodeDescriptor]]):
+        if role_name not in self.roles:
+            raise InvalidRoleError(role_name)
+        role: Role = self.roles[role_name]
+
+        if role.hosts:
+            for hname, nodes in host_map.items():
+                search_for = f"{role_name}/{hname}"
+                for node in nodes:
+                    if search_for not in node.roles:
+                        raise NodeRoleError(node.node_id, role_name, hname)
+        else:
+            if '' not in host_map:
+                raise ValueError(
+                    "host_map variable must define key empty string key")
+            for node in host_map['']:
+                if role_name not in node.roles:
+                    raise NodeRoleError(node.node_id, role_name)
+
     def perform_action(self, role_name: str, action_name: str,
                        hosts_node_map: Union[List[str], Dict[str, List[str]]],
                        host_vars: Dict[str, Dict[str, str]] = None,
@@ -197,6 +263,25 @@ class RoleManager:
                        quiet: bool = False,
                        validate_nodes_in_role: bool = True) -> \
             AnsiblePlaybookExecutor.PlaybookResult:
+        """
+
+        :param role_name:
+        :param action_name:
+        :param hosts_node_map:  If the role does not defines hosts, this value can be:
+                                - A list of node_ids, e.g.: [id1, id2]
+                                - A dictionary with a empty string key and the value is
+                                  a list of node_ids, e.g.: {'': [id1, id2]}
+                                If the role defines hosts, this value can be:
+                                - A dictionary, where key is the host name and the
+                                  values are lists of node_ids, e.g.
+                                  { hostA: [id1, id2], hostB: [id2, id3] }
+        :param host_vars:
+        :param node_vars:
+        :param extra_args:
+        :param quiet:
+        :param validate_nodes_in_role:
+        :return:
+        """
         host_vars = host_vars or dict()
         node_vars = node_vars or dict()
         extra_args = extra_args or dict()
@@ -209,65 +294,39 @@ class RoleManager:
             raise InvalidActionError(role_name, action_name)
         action = role.actions[action_name]
 
-        # The role has hosts? If True, hosts_node_map must provide a dict like:
-        # hosts_node_map = {
-        #   'host-a': ['node-1', 'node-2', ...],
-        #   'host-b': ['node-x', 'node-y']
-        # }
-        if role.hosts:
-            if type(hosts_node_map) is not dict:
-                raise TypeError(f"The role '{role_name}' defines "
-                                f"{len(role.hosts)} hosts. It must be informed "
-                                f"which nodes belong to each role's host, as a dict")
-            # Check if provided host_names are valid
-            for host_name in hosts_node_map.keys():
-                if host_name not in role.hosts:
-                    raise InvalidHostError(role_name, host_name)
-            inventory: Dict[str, List[str]] = hosts_node_map
-        # The role has hosts? If false, hosts_node_map must provide a list like:
-        # ['node-1', 'node-2']
-        # or a dict like (dict must have only one entry):
-        # { role_name: ['node-1', 'node-2'] }
-        # It will be expanded (result) to:
-        # { role_name: ['node-1', 'node-2'] }
-        else:
-            if type(hosts_node_map) is dict:
-                # Check format: {role_name: ['node-1', 'node-2']}
-                if len(hosts_node_map) != 1 or role_name not in hosts_node_map:
-                    raise ValueError(f"Invalid hosts {list(hosts_node_map.keys())} "
-                                     f"for role {role_name}")
-                inventory: Dict[str, List[str]] = hosts_node_map
-            elif type(hosts_node_map) is list:
-                # If it's a list, simple expand to { role_name: ['node-1, ...] }
-                inventory: Dict[str, List[str]] = {role_name: hosts_node_map}
+        # Check hosts_node_map variable
+        if not role.hosts:
+            if type(hosts_node_map) is list:
+                _inventory = {'': hosts_node_map}
+            elif type(hosts_node_map) is dict:
+                if '' not in hosts_node_map:
+                    raise ValueError("hosts_node_map variable must contain "
+                                     "'None' key.")
+                _inventory = {'': hosts_node_map['']}
             else:
-                raise TypeError(f"The role '{role_name}' does not define any "
-                                f"host. It must be informed the nodes as a list "
-                                f"or a valid dict.")
+                raise TypeError(f"hosts_node_map variable expects a list or a dict, "
+                                f"not a {type(hosts_node_map)}")
+        else:
+            if type(hosts_node_map) is not dict:
+                raise TypeError(f"As role {role_name} defines hosts, hosts_node_map "
+                                f"variable expects a dict, not a {type(hosts_node_map)}")
+            _inventory = dict()
+            for hname, node_list in hosts_node_map.items():
+                if hname not in role.hosts:
+                    raise InvalidHostError(role_name, hname)
+                _inventory[hname] = node_list
 
         # Expand node_ids to NodeDescriptors
         inventory: Dict[str, List[NodeDescriptor]] = {
             host_name: self.node_repository.get_nodes_by_id(list_nodes)
-            for host_name, list_nodes in inventory.items()
+            for host_name, list_nodes in _inventory.items()
         }
 
-        # Validate if a node belongs to a role.
         if validate_nodes_in_role:
-            # { role_name: ['node-1', 'node-2'] }
-            if role_name in inventory:
-                for n in inventory[role_name]:
-                    if role_name not in n.roles:
-                        raise NodeRoleError(n.node_id, role_name)
-            # {
-            #   'host-a': ['node-1', 'node-2', ...],
-            #   'host-b': ['node-x', 'node-y']
-            # }
-            else:
-                for host_name, list_nodes in inventory.items():
-                    for node in list_nodes:
-                        if f"{role_name}/{host_name}" not in node.roles:
-                            raise NodeRoleError(
-                                node.node_id, f"{role_name}/{host_name}")
+            self._check_nodes_role(role_name, inventory)
+
+        if not role.hosts:
+            inventory = {role_name: inventory['']}
 
         # Check if every required role's action variable is informed via extra_args
         for var in action.vars:
@@ -294,4 +353,40 @@ class RoleManager:
     def remove_role(self, role_name: str,
                     hosts_node_map: Union[List[str], Dict[str, List[str]]]) -> \
             List[str]:
-        pass
+        role = self.roles[role_name]
+
+        if not role.hosts:
+            if type(hosts_node_map) is list:
+                _inventory = {'': hosts_node_map}
+            elif type(hosts_node_map) is dict:
+                if '' not in hosts_node_map:
+                    raise ValueError("hosts_node_map variable must contain "
+                                     "'None' key.")
+                _inventory = {'': hosts_node_map['']}
+            else:
+                raise TypeError(f"hosts_node_map variable expects a list or a dict, "
+                                f"not a {type(hosts_node_map)}")
+        else:
+            _inventory = hosts_node_map
+
+        # Expand node_ids to NodeDescriptors
+        inventory: Dict[str, List[NodeDescriptor]] = {
+            host_name: self.node_repository.get_nodes_by_id(list_nodes)
+            for host_name, list_nodes in _inventory.items()
+        }
+
+        self._check_nodes_role(role_name, inventory)
+        node_set = set()
+
+        for h, node_list in hosts_node_map.items():
+            if h == '':
+                h = role_name
+            else:
+                h = f"{role_name}/{h}"
+
+            for node in self.node_repository.get_nodes_by_id(node_list):
+                node.roles.remove(h)
+                self.node_repository.upsert_node(node)
+                node_set.add(node.node_id)
+
+        return list(node_set)

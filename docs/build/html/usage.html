@@ -1,0 +1,1316 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Basic Usage &mdash; CLoud Application Platform 0.2.1
+ documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Roles shared with CLAP" href="shared_roles.html" />
+    <link rel="prev" title="Basic Configuration Setup" href="configuration.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.1
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Basic Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#node-module">Node Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#command-node-start">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">start</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-node-list">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">list</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-node-alive">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">alive</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-node-stop">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">stop</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-node-pause">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">pause</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-node-resume">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">resume</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-node-connect">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">connect</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-node-execute">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">execute</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-node-playbook">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">playbook</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-node-add-tag">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">add-tag</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-node-remove-tag">Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">remove-tag</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#role-module">Role Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clap-s-roles-and-actions">CLAP’s roles and actions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#role-description-file">Role description file</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#command-role-list">Command <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">list</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-role-add">Command <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">add</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-role-action">Command <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">action</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-role-remove">Command <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">remove</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cluster-module">Cluster Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cluster-configuration">Cluster Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-configuration-sections">Setup Configuration Sections</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#roles-key-at-setups-configuration">Roles key at setups configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#actions-key-at-an-setups-configuration">Actions key at an setups configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cluster-configuration-sections">Cluster Configuration Sections</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#controlling-cluster-s-setups-execution-phases">Controlling cluster’s setups execution phases</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#other-cluster-s-setups-optional-keys">Other cluster’s setups optional keys</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-start">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">start</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-setup">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">setup</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-grow">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">grow</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-list">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">list</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-alive">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">alive</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-resume">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">resume</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-pause">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">pause</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-stop">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">stop</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-list-templates">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">list-templates</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-update">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">update</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-connect">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">connect</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-execute">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">execute</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-cluster-playbook">Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">playbook</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shared_roles.html">Roles shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Basic Usage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="basic-usage">
+<span id="usage"></span><h1>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
+<p>CLAP is a platform to start, stop and manage cloud’s instances (called CLAP nodes
+or simply, nodes) at different cloud providers transparently, based on configuration
+files. Also, it offers mechanisms to perform actions via SSH commands or Ansible
+playbooks in single nodes or in a set of nodes in a row. To provide this, in a modular
+way, CLAP provides modules to allow performing several operations.
+You can use <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">--help</span></code> command to list the available modules.</p>
+<p>The most common modules are: <code class="docutils literal notranslate"><span class="pre">node</span></code>, <code class="docutils literal notranslate"><span class="pre">role</span></code> and <code class="docutils literal notranslate"><span class="pre">cluster</span></code>.</p>
+<div class="section" id="node-module">
+<span id="node-section"></span><h2>Node Module<a class="headerlink" href="#node-module" title="Permalink to this headline">¶</a></h2>
+<p>The node module provides mechanisms to create, manage and interact with cloud’s
+instances. It provides the following features:</p>
+<ul class="simple">
+<li><p>Start nodes based on the instance templates with the <code class="docutils literal notranslate"><span class="pre">start</span></code> command.</p></li>
+<li><p>Stop (terminate) already started nodes using the <code class="docutils literal notranslate"><span class="pre">stop</span></code> command.</p></li>
+<li><p>Pause or resume already instantiated nodes using the <code class="docutils literal notranslate"><span class="pre">pause</span></code> and <code class="docutils literal notranslate"><span class="pre">resume</span></code> commands, respectively.</p></li>
+<li><p>Check the status of a node (if its accessible by SSH) using the <code class="docutils literal notranslate"><span class="pre">alive</span></code> command.</p></li>
+<li><p>List started nodes using the <code class="docutils literal notranslate"><span class="pre">list</span></code> command.</p></li>
+<li><p>Execute a shell command via SSH, using the <code class="docutils literal notranslate"><span class="pre">execute</span></code> command.</p></li>
+<li><p>Execute an Ansible Playbook using the <code class="docutils literal notranslate"><span class="pre">playbook</span></code> command.</p></li>
+<li><p>Obtain a shell session (via SSH) using the <code class="docutils literal notranslate"><span class="pre">connect</span></code> command.</p></li>
+<li><p>Add and remove tags from nodes using <code class="docutils literal notranslate"><span class="pre">add-tag</span></code> and <code class="docutils literal notranslate"><span class="pre">remove-tag</span></code> commands.</p></li>
+<li><p>List all available instance templates configurations using the <code class="docutils literal notranslate"><span class="pre">list-templates</span></code> command.</p></li>
+</ul>
+<p>All these commands are detailed below.</p>
+<div class="section" id="command-node-start">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">start</span></code><a class="headerlink" href="#command-node-start" title="Permalink to this headline">¶</a></h3>
+<p>To launch a cloud’s instance based on an instance template, defined in the
+<code class="docutils literal notranslate"><span class="pre">~/.clap/configs/instances.yaml</span></code> file, you can use the command below, where the
+<code class="docutils literal notranslate"><span class="pre">ubuntu-instance-aws</span></code> refers to the instance template ID defined in the
+<code class="docutils literal notranslate"><span class="pre">~/.clap/configs/instances.yaml</span></code> file. In this way, you need to configure the
+files only once and launch instances at any time.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">start</span> <span class="n">ubuntu</span><span class="o">-</span><span class="n">instance</span><span class="o">-</span><span class="n">aws</span>
+</pre></div>
+</div>
+<p>Once instances are successfully started, CLAP will assign an unique node ID to each
+instance, used to perform other CLAP operation. Also, CLAP will try to login at
+the instance with the login information provided, via SSH.</p>
+<p>To launch more than one instance with the same instance template ID, you can
+put the desired number after the instance template ID preceded by an <code class="docutils literal notranslate"><span class="pre">:</span></code> character.
+For instance, the command below, launches 4 <code class="docutils literal notranslate"><span class="pre">ubuntu-instance-aws</span></code> instances in a row.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">start</span> <span class="n">ubuntu</span><span class="o">-</span><span class="n">instance</span><span class="o">-</span><span class="n">aws</span><span class="p">:</span><span class="mi">4</span>
+</pre></div>
+</div>
+<p>You can also launch different instances in a row using the same command, but just
+appending more instance template IDs to it, as below. The above command launches
+2 <code class="docutils literal notranslate"><span class="pre">ubuntu-instance-aws</span></code> VMs and 2 <code class="docutils literal notranslate"><span class="pre">example-instance-aws</span></code> VMs in a row.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">start</span> <span class="n">ubuntu</span><span class="o">-</span><span class="n">instance</span><span class="o">-</span><span class="n">aws</span><span class="p">:</span><span class="mi">2</span> <span class="n">example</span><span class="o">-</span><span class="n">instance</span><span class="o">-</span><span class="n">aws</span><span class="p">:</span><span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-node-list">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">list</span></code><a class="headerlink" href="#command-node-list" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">node</span> <span class="pre">list</span></code> command can be used to show managed CLAP’s nodes.
+An example output of this command is shown below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="n">Node</span><span class="p">:</span> <span class="n">ebcd658bacdf485487543cbcc721d1b3</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">type</span><span class="o">-</span><span class="n">a</span><span class="p">,</span> <span class="n">nickname</span><span class="p">:</span> <span class="n">MarjoryLang</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">reachable</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="mf">3.87.87.154</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="p">{},</span> <span class="n">roles</span><span class="p">:</span> <span class="p">[],</span> <span class="n">creation</span> <span class="n">at</span><span class="p">:</span> <span class="mi">21</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">21</span> <span class="mi">14</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="mi">55</span>
+<span class="n">Listed</span> <span class="mi">1</span> <span class="n">nodes</span>
+</pre></div>
+</div>
+<p>The node id (<code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code> in the above example) is used
+across all other modules and commands to perform commands in this node.</p>
+</div>
+<div class="section" id="command-node-alive">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">alive</span></code><a class="headerlink" href="#command-node-alive" title="Permalink to this headline">¶</a></h3>
+<p>This command updates several node’s information (such as IP) and check if the
+node is reachable (if a SSH connection can be established).</p>
+<p>The node’s status can be:</p>
+<ul class="simple">
+<li><p><strong>started</strong>: when the VM is up.</p></li>
+<li><p><strong>reachable</strong>: when the VM is up and a SSH connection was successfully established.</p></li>
+<li><p><strong>unreachable</strong>: when the SHH connection was not successfully established.</p></li>
+<li><p><strong>paused</strong>: when VM is paused.</p></li>
+<li><p><strong>stopped</strong>: when VM is terminated.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CLAP does not check the status of VM periodically. Use this command to update node status and information.</p>
+</div>
+</div>
+<div class="section" id="command-node-stop">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">stop</span></code><a class="headerlink" href="#command-node-stop" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">node</span> <span class="pre">stop</span></code> command can be used to <strong>terminate</strong> an running VM (destroying it). The syntax is shown below:</p>
+</div>
+<div class="section" id="command-node-pause">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">pause</span></code><a class="headerlink" href="#command-node-pause" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">node</span> <span class="pre">pause</span></code> command can be used to <strong>pause</strong> an running instance.
+When a node is paused, its status is changed to <strong>paused</strong> and its public IP is
+changed to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The command has no effect for nodes that already been paused.</p>
+</div>
+</div>
+<div class="section" id="command-node-resume">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">resume</span></code><a class="headerlink" href="#command-node-resume" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">node</span> <span class="pre">resume</span></code> command can be used to <strong>resume</strong> a paused instance.
+When a node is resumed, it status is changed to <strong>started</strong>. Then, it checked if
+it is alive, testing its connection and updating its public IP (and changing its
+status to <strong>reachable</strong>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The command has no effect at nodes that were not paused. It will only check for its aliveness.</p>
+</div>
+</div>
+<div class="section" id="command-node-connect">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">connect</span></code><a class="headerlink" href="#command-node-connect" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">node</span> <span class="pre">connect</span></code> command can be used to obtain a shell to a specific
+node.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The connection may fail if node has an invalid public IP or a invalid login information. You may want to check if node is alive first to update node’s information.</p>
+</div>
+</div>
+<div class="section" id="command-node-execute">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">execute</span></code><a class="headerlink" href="#command-node-execute" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">node</span> <span class="pre">execute</span></code> command can be used to execute a shell command on an
+reachable node. The syntax is shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">clapp</span> <span class="n">node</span> <span class="n">execute</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="p">[</span><span class="n">NODE_ID</span><span class="p">]</span><span class="o">...</span>
+
+  <span class="n">Execute</span> <span class="n">a</span> <span class="n">shell</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="p">(</span><span class="n">via</span> <span class="n">SSH</span><span class="p">)</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="o">--</span><span class="n">tags</span> <span class="n">TEXT</span>        <span class="n">Filter</span> <span class="n">nodes</span> <span class="n">by</span> <span class="n">tags</span><span class="o">.</span> <span class="n">There</span> <span class="n">are</span> <span class="n">two</span> <span class="n">formats</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span> <span class="ow">or</span>
+                         <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;=&lt;</span><span class="n">val</span><span class="o">&gt;</span>
+  <span class="o">-</span><span class="n">cmd</span><span class="p">,</span> <span class="o">--</span><span class="n">command</span> <span class="n">TEXT</span>   <span class="n">Shell</span> <span class="n">Command</span> <span class="n">to</span> <span class="n">be</span> <span class="n">executed</span> <span class="ow">in</span> <span class="n">nodes</span>  <span class="p">[</span><span class="n">required</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">timeout</span> <span class="n">INTEGER</span>      <span class="n">Timeout</span> <span class="n">to</span> <span class="n">execute</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">host</span> <span class="p">(</span><span class="mi">0</span> <span class="n">to</span> <span class="n">no</span> <span class="n">timeout</span><span class="p">)</span>
+                         <span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="mi">0</span><span class="p">]</span>
+  <span class="o">-</span><span class="n">a</span><span class="p">,</span> <span class="o">--</span><span class="n">additional</span> <span class="n">TEXT</span>  <span class="n">Additional</span> <span class="n">arguments</span> <span class="n">to</span> <span class="n">connection</span><span class="o">.</span> <span class="n">Format</span><span class="p">:</span>
+                         <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;=&lt;</span><span class="n">val</span><span class="o">&gt;</span>
+  <span class="o">--</span><span class="n">help</span>                 <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>One or more nodes can be passed as argument, or can be selected based on their tags.
+The <code class="docutils literal notranslate"><span class="pre">--command</span></code> parameter specify the command that will be executed in nodes.</p>
+<p>An example is shown below, executing a simple <code class="docutils literal notranslate"><span class="pre">ls</span> <span class="pre">-lha</span></code> command in the node
+<code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">execute</span> <span class="n">ebcd658bacdf485487543cbcc721d1b3</span> <span class="o">-</span><span class="n">cmd</span> <span class="s2">&quot;ls -lha&quot;</span>
+</pre></div>
+</div>
+<p>And the result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">------------------------</span> <span class="n">ebcd658bacdf485487543cbcc721d1b3</span> <span class="o">------------------------</span>
+<span class="k">return</span> <span class="n">code</span> <span class="n">ebcd658b</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">stdout</span> <span class="n">ebcd658b</span><span class="p">:</span> <span class="n">drwxr</span><span class="o">-</span><span class="n">xr</span><span class="o">-</span><span class="n">x</span> <span class="mi">5</span> <span class="n">ubuntu</span> <span class="n">ubuntu</span> <span class="mf">4.0</span><span class="n">K</span> <span class="n">May</span> <span class="mi">21</span> <span class="mi">17</span><span class="p">:</span><span class="mi">12</span> <span class="o">.</span>
+<span class="n">stdout</span> <span class="n">ebcd658b</span><span class="p">:</span> <span class="n">drwxr</span><span class="o">-</span><span class="n">xr</span><span class="o">-</span><span class="n">x</span> <span class="mi">3</span> <span class="n">root</span>   <span class="n">root</span>   <span class="mf">4.0</span><span class="n">K</span> <span class="n">May</span> <span class="mi">21</span> <span class="mi">17</span><span class="p">:</span><span class="mi">12</span> <span class="o">..</span>
+<span class="n">stdout</span> <span class="n">ebcd658b</span><span class="p">:</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">ubuntu</span> <span class="n">ubuntu</span>  <span class="mi">220</span> <span class="n">Apr</span>  <span class="mi">4</span>  <span class="mi">2018</span> <span class="o">.</span><span class="n">bash_logout</span>
+<span class="n">stdout</span> <span class="n">ebcd658b</span><span class="p">:</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">ubuntu</span> <span class="n">ubuntu</span> <span class="mf">3.7</span><span class="n">K</span> <span class="n">Apr</span>  <span class="mi">4</span>  <span class="mi">2018</span> <span class="o">.</span><span class="n">bashrc</span>
+<span class="n">stdout</span> <span class="n">ebcd658b</span><span class="p">:</span> <span class="n">drwx</span><span class="o">------</span> <span class="mi">2</span> <span class="n">ubuntu</span> <span class="n">ubuntu</span> <span class="mf">4.0</span><span class="n">K</span> <span class="n">May</span> <span class="mi">21</span> <span class="mi">17</span><span class="p">:</span><span class="mi">12</span> <span class="o">.</span><span class="n">cache</span>
+<span class="n">stdout</span> <span class="n">ebcd658b</span><span class="p">:</span> <span class="n">drwx</span><span class="o">------</span> <span class="mi">3</span> <span class="n">ubuntu</span> <span class="n">ubuntu</span> <span class="mf">4.0</span><span class="n">K</span> <span class="n">May</span> <span class="mi">21</span> <span class="mi">17</span><span class="p">:</span><span class="mi">12</span> <span class="o">.</span><span class="n">gnupg</span>
+<span class="n">stdout</span> <span class="n">ebcd658b</span><span class="p">:</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">ubuntu</span> <span class="n">ubuntu</span>  <span class="mi">807</span> <span class="n">Apr</span>  <span class="mi">4</span>  <span class="mi">2018</span> <span class="o">.</span><span class="n">profile</span>
+<span class="n">stdout</span> <span class="n">ebcd658b</span><span class="p">:</span> <span class="n">drwx</span><span class="o">------</span> <span class="mi">2</span> <span class="n">ubuntu</span> <span class="n">ubuntu</span> <span class="mf">4.0</span><span class="n">K</span> <span class="n">May</span> <span class="mi">21</span> <span class="mi">17</span><span class="p">:</span><span class="mi">12</span> <span class="o">.</span><span class="n">ssh</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You may want to check for nodes aliveness first.</p>
+</div>
+</div>
+<div class="section" id="command-node-playbook">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">playbook</span></code><a class="headerlink" href="#command-node-playbook" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">node</span> <span class="pre">playbook</span></code> command can be used to execute an Ansible playbook
+in a set of reachable nodes. The syntax is shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">playbook</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="p">[</span><span class="n">NODE_ID</span><span class="p">]</span><span class="o">...</span>
+
+    <span class="n">Execute</span> <span class="n">an</span> <span class="n">Ansible</span> <span class="n">playbook</span> <span class="ow">in</span> <span class="n">a</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">nodes</span><span class="o">.</span>
+
+    <span class="n">The</span> <span class="n">NODE_ID</span> <span class="n">argument</span> <span class="ow">is</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">strings</span> <span class="p">(</span><span class="n">optional</span><span class="p">)</span> <span class="ow">and</span> <span class="n">can</span> <span class="nb">filter</span> <span class="n">nodes</span> <span class="n">to</span>
+    <span class="n">execute</span> <span class="n">the</span> <span class="n">playbook</span> <span class="n">by</span> <span class="n">their</span> <span class="n">node</span> <span class="n">ids</span>
+
+<span class="n">Options</span><span class="p">:</span>
+    <span class="o">-</span><span class="n">p</span><span class="p">,</span> <span class="o">--</span><span class="n">playbook</span> <span class="n">TEXT</span>    <span class="n">Path</span> <span class="n">of</span> <span class="n">the</span> <span class="n">playbook</span> <span class="n">to</span> <span class="n">be</span> <span class="n">executed</span>  <span class="p">[</span><span class="n">required</span><span class="p">]</span>
+    <span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="o">--</span><span class="n">tags</span> <span class="n">TEXT</span>        <span class="n">Filter</span> <span class="n">nodes</span> <span class="n">by</span> <span class="n">tags</span><span class="o">.</span> <span class="n">There</span> <span class="n">are</span> <span class="n">two</span> <span class="n">formats</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span> <span class="ow">or</span>
+                         <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;=&lt;</span><span class="n">val</span><span class="o">&gt;</span>
+    <span class="o">-</span><span class="n">e</span><span class="p">,</span> <span class="o">--</span><span class="n">extra</span> <span class="n">TEXT</span>       <span class="n">Extra</span> <span class="n">variables</span> <span class="n">to</span> <span class="n">be</span> <span class="n">passed</span><span class="o">.</span> <span class="n">Format</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;=&lt;</span><span class="n">val</span><span class="o">&gt;</span>
+    <span class="o">-</span><span class="n">nv</span><span class="p">,</span> <span class="o">--</span><span class="n">node</span><span class="o">-</span><span class="nb">vars</span> <span class="n">TEXT</span>  <span class="n">Host</span> <span class="n">variables</span> <span class="n">to</span> <span class="n">be</span> <span class="n">passed</span><span class="o">.</span> <span class="n">Format</span><span class="p">:</span>
+                         <span class="o">&lt;</span><span class="n">node_id</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;=&lt;</span><span class="n">val</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;=&lt;</span><span class="n">val</span><span class="o">&gt;</span><span class="p">,</span><span class="o">...</span>
+    <span class="o">--</span><span class="n">help</span>                 <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>One or more nodes can be passed as argument, or can be selected based on their tags.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--playbook</span></code> parameter specify the playbook to execute in nodes.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--extra</span></code> parameter can be used to pass keyword arguments to the playbook.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--node-vars</span></code> parameter can be used to pass keyword arguments to a specific node
+when building the inventory.</p>
+<p>An example is shown below. The playbook <code class="docutils literal notranslate"><span class="pre">install_packages.yml</span></code> is executed in node
+<code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code>.
+Extra playbook variables (in jinja format, e.g. “{{ var1 }}”) will be replaced by
+the extra variables informed. In the example below the playbook’s variable
+<code class="docutils literal notranslate"><span class="pre">packages</span></code> will be replaced by <code class="docutils literal notranslate"><span class="pre">gcc</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">playbook</span> <span class="n">ebcd658bacdf485487543cbcc721d1b3</span> <span class="o">-</span><span class="n">p</span> <span class="n">install_packages</span><span class="o">.</span><span class="n">yml</span> <span class="o">-</span><span class="n">e</span> <span class="s2">&quot;packages=gcc&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-node-add-tag">
+<span id="tags-section"></span><h3>Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">add-tag</span></code><a class="headerlink" href="#command-node-add-tag" title="Permalink to this headline">¶</a></h3>
+<p>This <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">node</span> <span class="pre">add-tag</span></code> command adds a tag to a set of nodes and has the
+following syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">clapp</span> <span class="n">node</span> <span class="n">add</span><span class="o">-</span><span class="n">tag</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">NODE_ID</span><span class="o">...</span>
+
+  <span class="n">Add</span> <span class="n">tags</span> <span class="n">to</span> <span class="n">a</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">nodes</span><span class="o">.</span>
+
+  <span class="n">The</span> <span class="n">NODE_ID</span> <span class="n">argument</span> <span class="ow">is</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">node_ids</span> <span class="n">to</span> <span class="n">add</span> <span class="n">tags</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="o">--</span><span class="n">tags</span> <span class="n">TEXT</span>  <span class="n">Tags</span> <span class="n">to</span> <span class="n">add</span><span class="o">.</span> <span class="n">Format</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;=&lt;</span><span class="n">val</span><span class="o">&gt;</span>  <span class="p">[</span><span class="n">required</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">help</span>           <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>One or more nodes can be passed as argument. The <code class="docutils literal notranslate"><span class="pre">tags</span></code> parameter must be a
+keyword value in the format <code class="docutils literal notranslate"><span class="pre">key=value</span></code>. You can add as many tags to a node as
+you want. An example of adding tags is shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">add</span><span class="o">-</span><span class="n">tag</span> <span class="n">ebcd658bacdf485487543cbcc721d1b3</span> <span class="o">-</span><span class="n">t</span> <span class="n">x</span><span class="o">=</span><span class="mi">10</span>
+</pre></div>
+</div>
+<p>Where tag <code class="docutils literal notranslate"><span class="pre">x=10</span></code> is added to nodes <code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code>.</p>
+</div>
+<div class="section" id="command-node-remove-tag">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">remove-tag</span></code><a class="headerlink" href="#command-node-remove-tag" title="Permalink to this headline">¶</a></h3>
+<p>This <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">tag</span> <span class="pre">remove</span></code> command removes a tag from a set of nodes and has the
+following syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">node</span> <span class="n">remove</span><span class="o">-</span><span class="n">tag</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">NODE_ID</span><span class="o">...</span>
+
+  <span class="n">Remove</span> <span class="n">tags</span> <span class="kn">from</span> <span class="nn">a</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">nodes</span><span class="o">.</span>
+
+  <span class="n">The</span> <span class="n">NODE_ID</span> <span class="n">argument</span> <span class="ow">is</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">node_ids</span> <span class="n">to</span> <span class="n">remove</span> <span class="n">tags</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="o">--</span><span class="n">tags</span> <span class="n">TEXT</span>  <span class="n">Tags</span> <span class="n">to</span> <span class="n">remove</span><span class="o">.</span> <span class="n">Format</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span>  <span class="p">[</span><span class="n">required</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">help</span>           <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>One or more nodes can be passed as argument. The <code class="docutils literal notranslate"><span class="pre">tag</span></code> parameter must be a string.
+The tags from nodes that matches to the informed tag is removed (tag and value).</p>
+</div>
+</div>
+<div class="section" id="role-module">
+<span id="role-section"></span><h2>Role Module<a class="headerlink" href="#role-module" title="Permalink to this headline">¶</a></h2>
+<p>The role module allows to perform pre-defined actions to a set of nodes that
+belongs to a role. When a node is added to a role, it is said that this node
+is ready to perform tasks of this role.
+Thus, each role defines their set of specific actions that can be performed to
+nodes that belongs to that particular role.</p>
+<p>In this way, the role module consists of three steps:</p>
+<ol class="arabic simple">
+<li><p>Add nodes to a role.</p></li>
+<li><p>Perform role’s action to nodes that belongs to a role.</p></li>
+<li><p>Optionally, remove nodes from the group.</p></li>
+</ol>
+<p>The nodes of a role can also be logically divided in hosts. Thus, role actions
+can be performed to all nodes of the role or to a subset of nodes of role (hosts).</p>
+<div class="section" id="clap-s-roles-and-actions">
+<h3>CLAP’s roles and actions<a class="headerlink" href="#clap-s-roles-and-actions" title="Permalink to this headline">¶</a></h3>
+<p>Role’s actions are <a class="reference external" href="https://www.ansible.com/">Ansible playbooks</a> that are
+executed when an action is invoked (e.g. using <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">action</span></code> command). By
+default CLAP’s roles are stored in the <code class="docutils literal notranslate"><span class="pre">~/.clap/roles/</span></code> directory and each
+role consists in at minimum of two files:</p>
+<ul class="simple">
+<li><p>A YAML description file describing the actions that can be performed (and informing the playbook that must be called) and, optionally, the hosts (subset of role’s nodes to execute the playbook)</p></li>
+<li><p>The Ansible Playbook called when each action is invoked.</p></li>
+</ul>
+<p>You can see some roles shared with CLAP and their requirements at <a class="reference internal" href="shared_roles.html#shared-roles"><span class="std std-ref">Roles shared with CLAP</span></a> section.</p>
+<div class="section" id="role-description-file">
+<h4>Role description file<a class="headerlink" href="#role-description-file" title="Permalink to this headline">¶</a></h4>
+<p>The role’s description files are python files placed at <code class="docutils literal notranslate"><span class="pre">~/.clap/groups/actions.d</span></code>
+directory. The name of the YAML file defines the role’s name.
+Each role description file defines the key <code class="docutils literal notranslate"><span class="pre">actions</span></code> and, optionally, the <code class="docutils literal notranslate"><span class="pre">hosts</span></code>
+key. Inside <code class="docutils literal notranslate"><span class="pre">actions</span></code> key, each dictionary defines a role action where the
+key name is the action name and the values informs characteristic of that action.</p>
+<p>An example role description file is shown below, for a role named <code class="docutils literal notranslate"><span class="pre">commands-common</span></code>
+(placed at <code class="docutils literal notranslate"><span class="pre">~/.clap/roles/actions.d/commands-common.yaml</span></code>).</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="nt">actions</span><span class="p">:</span>                                                        <span class="c1"># Defines the actions of this group</span>
+    <span class="nt">setup</span><span class="p">:</span>                                                      <span class="c1"># Action called setup</span>
+        <span class="nt">playbook</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">roles/commands-common_setup.yml</span>               <span class="c1"># Playbook to be executed when this group action is invoked</span>
+
+    <span class="nt">copy</span><span class="p">:</span>                                                       <span class="c1"># Action called copy</span>
+        <span class="nt">playbook</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">roles/commands-common_copy.yml</span>                <span class="c1"># Playbook to be executed when this group action is invoked</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Copy files from localhost to remote hosts</span>  <span class="c1"># Optional action&#39;s description</span>
+        <span class="nt">vars</span><span class="p">:</span>                                                   <span class="c1"># Optional variables required</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">src</span>                                             <span class="c1"># src variable</span>
+          <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Source files/directory to be copied</span>      <span class="c1"># Optional variable&#39;s description</span>
+          <span class="nt">optional</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">no</span>                                          <span class="c1"># Informs if this variable is optional</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dest</span>                                            <span class="c1"># dest variable</span>
+          <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Destination directory where files will be placed</span> <span class="c1"># Optional variable&#39;s description</span>
+
+    <span class="nt">fetch</span><span class="p">:</span>
+        <span class="nt">playbook</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">roles/commands-common_fetch.yml</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Fetch files from remote hosts to localhost</span>
+        <span class="nt">vars</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">src</span>
+          <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Source files/directory to be fetched</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dest</span>
+          <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Destination directory where files will be placed</span>
+
+<span class="nt">hosts</span><span class="p">:</span>                                                          <span class="c1"># (optional) List of hosts that are used in this role. The host name can be used in the playbooks.</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">master</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">slave</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Action’s playbook is relative to the <code class="docutils literal notranslate"><span class="pre">~/.clap/roles/</span></code> directory.</p>
+</div>
+<p>For role’s description files, <code class="docutils literal notranslate"><span class="pre">actions</span></code> dictionary is required, and <code class="docutils literal notranslate"><span class="pre">hosts</span></code> optional.
+The keys inside <code class="docutils literal notranslate"><span class="pre">actions</span></code> dictionary are the action names and the possible
+values for each action are described in table below.</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Valid values for actions</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Name</strong></p></th>
+<th class="head"><p><strong>Type</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">playbook</span></code></p></td>
+<td><p>path</p></td>
+<td><p>Playbook to be executed when this action is invoked. The path is relative to <code class="docutils literal notranslate"><span class="pre">~/.clap/roles/</span></code> directory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code> (optional)</p></td>
+<td><p>string</p></td>
+<td><p>Action’s descriptive information</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vars</span></code> (optional)</p></td>
+<td><p>List of variable dictionaries</p></td>
+<td><p>List informing variables needed for this action</p></td>
+</tr>
+</tbody>
+</table>
+<p>And optionally, the actions can define their variables to use. The possible
+values are listed table below</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Valid action’s values</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Name</strong></p></th>
+<th class="head"><p><strong>Type</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Name of the variable</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code> (optional)</p></td>
+<td><p>string</p></td>
+<td><p>Variable’s descriptive information</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">optional</span></code> (optional)</p></td>
+<td><p>boolean</p></td>
+<td><p>Inform if variable is optional (default is <code class="docutils literal notranslate"><span class="pre">no</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Finally the hosts specify the <code class="docutils literal notranslate"><span class="pre">hosts</span></code> used by role actions. It’s optional and
+when specified Ansible playbooks can segment their execution using the <code class="docutils literal notranslate"><span class="pre">hosts</span></code>
+variable at each play. If no hosts are specified you must use <code class="docutils literal notranslate"><span class="pre">hosts:</span> <span class="pre">all</span></code>
+to perform the action over all nodes that belong to the role.</p>
+</div>
+</div>
+<div class="section" id="command-role-list">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">list</span></code><a class="headerlink" href="#command-role-list" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">role</span> <span class="pre">list</span></code> command can be used to list all available role and their
+respective actions and hosts. An example of output is shown below</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="n">name</span><span class="p">:</span> <span class="n">commands</span><span class="o">-</span><span class="n">common</span>
+  <span class="n">Has</span> <span class="mi">7</span> <span class="n">actions</span> <span class="ow">and</span> <span class="mi">2</span> <span class="n">hosts</span> <span class="n">defined</span>
+    <span class="n">actions</span><span class="p">:</span> <span class="n">copy</span><span class="p">,</span> <span class="n">fetch</span><span class="p">,</span> <span class="n">install</span><span class="o">-</span><span class="n">packages</span><span class="p">,</span> <span class="n">reboot</span><span class="p">,</span> <span class="n">run</span><span class="o">-</span><span class="n">command</span><span class="p">,</span> <span class="n">run</span><span class="o">-</span><span class="n">script</span><span class="p">,</span> <span class="n">update</span><span class="o">-</span><span class="n">packages</span>
+    <span class="n">hosts</span><span class="p">:</span> <span class="n">h1</span><span class="p">,</span> <span class="n">h2</span>
+
+<span class="o">*</span> <span class="n">name</span><span class="p">:</span> <span class="n">ec2</span><span class="o">-</span><span class="n">efs</span>
+  <span class="n">Has</span> <span class="mi">3</span> <span class="n">actions</span> <span class="ow">and</span> <span class="mi">0</span> <span class="n">hosts</span> <span class="n">defined</span>
+    <span class="n">actions</span><span class="p">:</span> <span class="n">mount</span><span class="p">,</span> <span class="n">setup</span><span class="p">,</span> <span class="n">unmount</span>
+    <span class="n">hosts</span><span class="p">:</span>
+
+<span class="o">*</span> <span class="n">name</span><span class="p">:</span> <span class="n">spits</span>
+  <span class="n">Has</span> <span class="mi">6</span> <span class="n">actions</span> <span class="ow">and</span> <span class="mi">2</span> <span class="n">hosts</span> <span class="n">defined</span>
+    <span class="n">actions</span><span class="p">:</span> <span class="n">add</span><span class="o">-</span><span class="n">nodes</span><span class="p">,</span> <span class="n">job</span><span class="o">-</span><span class="n">copy</span><span class="p">,</span> <span class="n">job</span><span class="o">-</span><span class="n">create</span><span class="p">,</span> <span class="n">job</span><span class="o">-</span><span class="n">status</span><span class="p">,</span> <span class="n">setup</span><span class="p">,</span> <span class="n">start</span>
+    <span class="n">hosts</span><span class="p">:</span> <span class="n">jobmanager</span><span class="p">,</span> <span class="n">taskmanager</span>
+
+<span class="n">Listed</span> <span class="mi">3</span> <span class="n">roles</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-role-add">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">add</span></code><a class="headerlink" href="#command-role-add" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">role</span> <span class="pre">add</span></code> command can be used to add a node to a role. The syntax
+is shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">role</span> <span class="n">add</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">ROLE</span>
+
+  <span class="n">Add</span> <span class="n">a</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">nodes</span> <span class="n">to</span> <span class="n">a</span> <span class="n">role</span><span class="o">.</span>
+
+  <span class="n">The</span> <span class="n">ROLE</span> <span class="n">argument</span> <span class="n">specify</span> <span class="n">the</span> <span class="n">role</span> <span class="n">which</span> <span class="n">the</span> <span class="n">nodes</span> <span class="n">will</span> <span class="n">be</span> <span class="n">added</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="o">--</span><span class="n">node</span> <span class="n">TEXT</span>        <span class="n">Nodes</span> <span class="n">to</span> <span class="n">be</span> <span class="n">added</span><span class="o">.</span> <span class="n">Can</span> <span class="n">use</span> <span class="n">multiple</span> <span class="s2">&quot;-n&quot;</span> <span class="n">commands</span> <span class="ow">and</span>
+                         <span class="n">it</span> <span class="n">can</span> <span class="n">be</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">colon</span><span class="o">-</span><span class="n">separated</span> <span class="n">nodes</span> <span class="k">as</span>
+                         <span class="s2">&quot;&lt;node&gt;,&lt;node&gt;,...&quot;</span> <span class="ow">or</span>
+                         <span class="s2">&quot;&lt;role_host_name&gt;:&lt;node&gt;,&lt;node&gt;&quot;</span><span class="o">.</span> <span class="n">The</span> <span class="n">formats</span> <span class="n">are</span>
+                         <span class="n">mutually</span> <span class="n">exclusive</span>  <span class="p">[</span><span class="n">required</span><span class="p">]</span>
+  <span class="o">-</span><span class="n">nv</span><span class="p">,</span> <span class="o">--</span><span class="n">node</span><span class="o">-</span><span class="nb">vars</span> <span class="n">TEXT</span>  <span class="n">Node</span><span class="s1">&#39;s arguments. Format</span>
+                         <span class="o">&lt;</span><span class="n">node_id</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;=&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;=&lt;</span><span class="n">val</span><span class="o">&gt;</span>
+  <span class="o">-</span><span class="n">hv</span><span class="p">,</span> <span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="nb">vars</span> <span class="n">TEXT</span>  <span class="n">Role</span><span class="s1">&#39;s host arguments. Format</span>
+                         <span class="o">&lt;</span><span class="n">host_name</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;=&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="p">,</span><span class="o">...</span>
+  <span class="o">-</span><span class="n">e</span><span class="p">,</span> <span class="o">--</span><span class="n">extra</span> <span class="n">TEXT</span>       <span class="n">Extra</span> <span class="n">arguments</span><span class="o">.</span> <span class="n">Format</span> <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;=&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">--</span><span class="n">help</span>                 <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>The nodes can be supplied with <code class="docutils literal notranslate"><span class="pre">--node</span></code> parameter using two formats (mutually
+exclusive): with host or without host.</p>
+<p>If the role does not define any host, nodes must be informed supplying only their
+node ids in the <code class="docutils literal notranslate"><span class="pre">--node</span></code> parameter. Multiple <code class="docutils literal notranslate"><span class="pre">--node</span></code> parameters can be used
+to indicate multiple nodes ids. Besides that, multiple nodes ids can be passed to
+<code class="docutils literal notranslate"><span class="pre">--node</span></code> parameter by separating them with comma.
+The both examples below add nodes <code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code> and
+<code class="docutils literal notranslate"><span class="pre">455e9c5da5c4417abc757f587a31c105</span></code> to role <code class="docutils literal notranslate"><span class="pre">commands-common</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">role</span> <span class="n">add</span> <span class="n">commands</span><span class="o">-</span><span class="n">common</span> <span class="o">-</span><span class="n">n</span> <span class="n">ebcd658bacdf485487543cbcc721d1b3</span> <span class="o">-</span><span class="n">n</span> <span class="mf">455e9</span><span class="n">c5da5c4417abc757f587a31c105</span>
+<span class="n">clapp</span> <span class="n">role</span> <span class="n">add</span> <span class="n">commands</span><span class="o">-</span><span class="n">common</span> <span class="o">-</span><span class="n">n</span> <span class="n">ebcd658bacdf485487543cbcc721d1b3</span><span class="p">,</span><span class="mf">455e9</span><span class="n">c5da5c4417abc757f587a31c105</span>
+</pre></div>
+</div>
+<p>If the role defines one or more hosts, the <code class="docutils literal notranslate"><span class="pre">--node</span></code> parameter can be supplied
+with the  “&lt;node&gt;,&lt;node&gt;,…” format (1) or with the “&lt;role_host_name&gt;:&lt;node&gt;,&lt;node&gt;”
+format (2) (both are mutually exclusive). If the format (1) is used, the nodes
+are added to all role’s hosts defined .
+Two examples are shown below, one for format (1) and other for format (2).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">role</span> <span class="n">add</span> <span class="n">commands</span><span class="o">-</span><span class="n">common</span> <span class="o">-</span><span class="n">n</span> <span class="n">ebcd658bacdf485487543cbcc721d1b3</span> <span class="o">-</span><span class="n">n</span> <span class="mf">455e9</span><span class="n">c5da5c4417abc757f587a31c105</span>
+<span class="n">clapp</span> <span class="n">role</span> <span class="n">add</span> <span class="n">commands</span><span class="o">-</span><span class="n">common</span> <span class="o">-</span><span class="n">n</span> <span class="n">masters</span><span class="p">:</span><span class="n">ebcd658bacdf485487543cbcc721d1b3</span> <span class="o">-</span><span class="n">n</span> <span class="n">slaves</span><span class="p">:</span><span class="mf">455e9</span><span class="n">c5da5c4417abc757f587a31c105</span>
+</pre></div>
+</div>
+<p>Supposing the role <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> defines 2 hosts: <code class="docutils literal notranslate"><span class="pre">masters</span></code> and <code class="docutils literal notranslate"><span class="pre">slaves</span></code>,
+the first one adds nodes <code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code> and <code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code>
+to both role’s host.
+The second one adds node <code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code> as commands-common
+masters and node <code class="docutils literal notranslate"><span class="pre">455e9c5da5c4417abc757f587a31c105</span></code> as commands-common slaves host.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--extra</span></code> parameter can be used to pass keyword arguments to the playbook.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--node-vars</span></code> parameter can be used to pass keyword arguments to a specific node
+when building the inventory.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--host-vars</span></code> parameter can be used to pass keyword arguments to a hosts.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the role’s setup action is defined this action is immediately executed
+when adding a role to a node. If this action fails, the node is not added to
+the role.</p>
+</div>
+</div>
+<div class="section" id="command-role-action">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">action</span></code><a class="headerlink" href="#command-role-action" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">role</span> <span class="pre">action</span></code> command can be used to perform an action in all nodes
+belonging to a particular role. The syntax is shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>clapp role action [OPTIONS] ROLE
+
+  Perform an group action at a set of nodes.
+
+  The ROLE argument specify the role which the action will be performed.
+
+Options:
+  -a, --action TEXT      Name of the group&#39;s action to perform  [required]
+  -n, --node TEXT        Nodes to perform the action. Can use multiple &quot;-n&quot;
+                         commands and it can be a list of colon-separated node
+                         as &quot;&lt;node&gt;,&lt;node&gt;,...&quot; or
+                         &quot;&lt;role_host_name&gt;:&lt;node&gt;,&lt;node&gt;&quot;. The formats are
+                         mutually exclusive. If not is passed, the action will
+                         be performed in all nodes that belongs to the role.
+  -nv, --node-vars TEXT  Node&#39;s arguments. Format
+                         &lt;node_id&gt;:&lt;key&gt;=&lt;value&gt;,&lt;key&gt;=&lt;val&gt;
+  -hv, --host-vars TEXT  Role&#39;s host arguments. Format
+                         &lt;host_name&gt;:&lt;key&gt;=&lt;value&gt;,...
+  -e, --extra TEXT       Extra arguments. Format &lt;key&gt;=&lt;value&gt;
+  --help                 Show this message and exit.
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--node</span></code> parameter is optional and if is not supplied, the role action will
+be executed in all nodes that belongs to the role. If <code class="docutils literal notranslate"><span class="pre">--node</span></code> parameter is
+supplied it may be in two formats (mutually exclusive): with host or without host.</p>
+<p>If nodes are informed in format without host, the selected nodes will be automatically
+placed in their correct hosts (if any). Otherwise, the nodes will be placed in
+informed hosts.</p>
+<p>Examples are shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">role</span> <span class="n">action</span> <span class="n">commands</span><span class="o">-</span><span class="n">common</span> <span class="o">-</span><span class="n">a</span> <span class="n">install</span><span class="o">-</span><span class="n">packages</span> <span class="o">-</span><span class="n">n</span> <span class="n">ebcd658bacdf485487543cbcc721d1b3</span> <span class="o">-</span><span class="n">e</span> <span class="n">packages</span><span class="o">=</span><span class="n">gcc</span>
+<span class="n">clapp</span> <span class="n">role</span> <span class="n">action</span> <span class="n">commands</span><span class="o">-</span><span class="n">common</span> <span class="o">-</span><span class="n">a</span> <span class="n">install</span><span class="o">-</span><span class="n">packages</span> <span class="o">-</span><span class="n">n</span> <span class="n">masters</span><span class="p">:</span><span class="n">ebcd658bacdf485487543cbcc721d1b3</span> <span class="o">-</span><span class="n">e</span> <span class="n">packages</span><span class="o">=</span><span class="n">gcc</span>
+<span class="n">clapp</span> <span class="n">role</span> <span class="n">action</span> <span class="n">commands</span><span class="o">-</span><span class="n">common</span> <span class="o">-</span><span class="n">a</span> <span class="n">install</span><span class="o">-</span><span class="n">packages</span> <span class="o">-</span><span class="n">e</span> <span class="n">packages</span><span class="o">=</span><span class="n">gcc</span>
+</pre></div>
+</div>
+<p>The first command perform <code class="docutils literal notranslate"><span class="pre">install-packages</span></code> action, from <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> role
+in nodes <code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code>.  The node’s hosts are the same when
+the nodes added. The second command perform <code class="docutils literal notranslate"><span class="pre">install-packages</span></code> action, from
+<code class="docutils literal notranslate"><span class="pre">commands-common</span></code> role in node <code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code>. The node’s hosts
+acts only as <code class="docutils literal notranslate"><span class="pre">masters</span></code>, additional hosts from this node are discarded.
+The last command perform <code class="docutils literal notranslate"><span class="pre">install-packages</span></code> action, from <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> role
+at all nodes that belongs to <code class="docutils literal notranslate"><span class="pre">commands-common</span></code>.
+For all commands, the extra variable <code class="docutils literal notranslate"><span class="pre">package</span></code> with value <code class="docutils literal notranslate"><span class="pre">gcc</span></code> is passed.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--extra</span></code> parameter can be used to pass keyword arguments to the playbook.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--node-vars</span></code> parameter can be used to pass keyword arguments to a specific node
+when building the inventory.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--host-vars</span></code> parameter can be used to pass keyword arguments to a hosts.</p>
+</div>
+<div class="section" id="command-role-remove">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">remove</span></code><a class="headerlink" href="#command-role-remove" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">role</span> <span class="pre">action</span></code> command can be used to perform an action in all nodes
+belonging to a particular role. The syntax is shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">role</span> <span class="n">remove</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">ROLE</span>
+
+  <span class="n">Perform</span> <span class="n">an</span> <span class="n">group</span> <span class="n">action</span> <span class="n">at</span> <span class="n">a</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">nodes</span><span class="o">.</span>
+
+  <span class="n">The</span> <span class="n">ROLE</span> <span class="n">argument</span> <span class="n">specify</span> <span class="n">the</span> <span class="n">role</span> <span class="n">which</span> <span class="n">the</span> <span class="n">action</span> <span class="n">will</span> <span class="n">be</span> <span class="n">performed</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="o">--</span><span class="n">node</span> <span class="n">TEXT</span>  <span class="n">Nodes</span> <span class="n">to</span> <span class="n">perform</span> <span class="n">the</span> <span class="n">action</span><span class="o">.</span> <span class="n">Can</span> <span class="n">use</span> <span class="n">multiple</span> <span class="s2">&quot;-n&quot;</span> <span class="n">commands</span>
+                   <span class="ow">and</span> <span class="n">it</span> <span class="n">can</span> <span class="n">be</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">colon</span><span class="o">-</span><span class="n">separated</span> <span class="n">node</span> <span class="k">as</span>
+                   <span class="s2">&quot;&lt;node&gt;,&lt;node&gt;,...&quot;</span> <span class="ow">or</span> <span class="s2">&quot;&lt;role_host_name&gt;:&lt;node&gt;,&lt;node&gt;&quot;</span><span class="o">.</span>
+                   <span class="n">The</span> <span class="n">formats</span> <span class="n">are</span> <span class="n">mutually</span> <span class="n">exclusive</span><span class="o">.</span> <span class="n">If</span> <span class="ow">not</span> <span class="ow">is</span> <span class="n">passed</span><span class="p">,</span> <span class="n">the</span>
+                   <span class="n">action</span> <span class="n">will</span> <span class="n">be</span> <span class="n">performed</span> <span class="ow">in</span> <span class="nb">all</span> <span class="n">nodes</span> <span class="n">that</span> <span class="n">belongs</span> <span class="n">to</span> <span class="n">the</span>
+                   <span class="n">role</span><span class="o">.</span>  <span class="p">[</span><span class="n">required</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">help</span>           <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--node</span></code> parameter is used to inform the nodes to remove from a role.
+The parameter can be supplied using two formats (mutually exclusive): with host
+or without host.
+If host is passed, the node is removed from the host’s role else the node is removed
+from all hosts in the role (if any). An example is shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">role</span> <span class="n">remove</span> <span class="n">commands</span><span class="o">-</span><span class="n">common</span> <span class="o">-</span><span class="n">n</span> <span class="n">ebcd658bacdf485487543cbcc721d1b3</span> <span class="o">-</span><span class="n">n</span> <span class="mf">455e9</span><span class="n">c5da5c4417abc757f587a31c105</span>
+<span class="n">clapp</span> <span class="n">role</span> <span class="n">remove</span> <span class="n">commands</span><span class="o">-</span><span class="n">common</span> <span class="o">-</span><span class="n">n</span> <span class="n">masters</span><span class="p">:</span><span class="n">ebcd658bacdf485487543cbcc721d1b3</span> <span class="o">-</span><span class="n">n</span> <span class="n">slaves</span><span class="p">:</span><span class="mf">455e9</span><span class="n">c5da5c4417abc757f587a31c105</span>
+</pre></div>
+</div>
+<p>The first example remove nodes <code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code> and <code class="docutils literal notranslate"><span class="pre">455e9c5da5c4417abc757f587a31c105</span></code>
+from role <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> and from all <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> role hosts (if any).
+The second example removes node <code class="docutils literal notranslate"><span class="pre">ebcd658bacdf485487543cbcc721d1b3</span></code> from host
+called <code class="docutils literal notranslate"><span class="pre">masters</span></code> from <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> role and node <code class="docutils literal notranslate"><span class="pre">455e9c5da5c4417abc757f587a31c105</span></code>
+from hosts called <code class="docutils literal notranslate"><span class="pre">slaves</span></code> from <code class="docutils literal notranslate"><span class="pre">commands-common</span></code> role.</p>
+</div>
+</div>
+<div class="section" id="cluster-module">
+<span id="id1"></span><h2>Cluster Module<a class="headerlink" href="#cluster-module" title="Permalink to this headline">¶</a></h2>
+<p>The cluster module allows CLAP to work with cluster, which is a set of CLAP’s nodes
+tagged with a specific tag. A CLAP’s cluster is created taking as input configuration
+files, in YAML format, which will create nodes and setup each of them properly.
+After created, the cluster can be resized (adding or removing nodes), paused,
+resumed, stopped, among other things.</p>
+<p>By default, the CLAP’s cluster module will find configurations inside
+<code class="docutils literal notranslate"><span class="pre">~/clap/configs/clusters</span></code> directory. At next sections, we will assume that
+files will be created inside this directory (in <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> format).</p>
+<p>The next section will guide you to write a cluster configuration and then,
+module’s commands will be presented.</p>
+<div class="section" id="cluster-configuration">
+<h3>Cluster Configuration<a class="headerlink" href="#cluster-configuration" title="Permalink to this headline">¶</a></h3>
+<p>To create a CLAP’s cluster you will need to write:</p>
+<ul class="simple">
+<li><p><strong>Setup configuration sections</strong>: which define a series of groups and actions that must be performed.</p></li>
+<li><p><strong>Cluster configuration sections</strong>: which define a set of nodes that must be created and the setups that must be performed in each node.</p></li>
+</ul>
+<p>Setups and cluster section may be written in multiple different files (or at the
+same file), as CLAP’s cluster modules will read all files (and setups and clusters
+configurations, respectively) inside the cluster’s directory.</p>
+</div>
+<div class="section" id="setup-configuration-sections">
+<h3>Setup Configuration Sections<a class="headerlink" href="#setup-configuration-sections" title="Permalink to this headline">¶</a></h3>
+<p>Setup configuration sections define a series of roles and/or actions that must be
+performed at cluster’s nodes. An example of a setup configuration section is
+shown below.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setup configurations must be declared inside setups key</span>
+<span class="nt">setups</span><span class="p">:</span>
+
+    <span class="c1"># This is a setup configuration called setup-common</span>
+    <span class="nt">setup-common</span><span class="p">:</span>
+        <span class="nt">roles</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">commands-common</span>         <span class="c1"># Add nodes to commands-common role</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">another-role</span>            <span class="c1"># Add nodes to another-role role</span>
+        <span class="nt">actions</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">role</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">commands-common</span>
+          <span class="nt">action</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">update-packages</span>       <span class="c1"># Perform action update-packages from role commands-common</span>
+        <span class="p p-Indicator">-</span> <span class="nt">command</span><span class="p">:</span> <span class="s">&quot;git</span><span class="nv"> </span><span class="s">init&quot;</span>           <span class="c1"># Perform shell command &#39;git init&#39;</span>
+
+    <span class="c1"># This is a setup configuration called setup-spits-jobmanager</span>
+    <span class="nt">setup-spits-jobmanager</span><span class="p">:</span>
+        <span class="nt">roles</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">spits/jobmanager</span>        <span class="c1"># Add nodes to spits&#39; role as jobmanager host</span>
+
+    <span class="c1"># This is a setup configuration called setup-spits-taskmanager</span>
+    <span class="nt">setup-spits-taskmanager</span><span class="p">:</span>
+        <span class="nt">roles</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">spits/taskmanager</span>       <span class="c1"># Add nodes to spits&#39; role as taskmanager host</span>
+</pre></div>
+</div>
+<p>Setup configurations must be written inside <code class="docutils literal notranslate"><span class="pre">setups</span></code> YAML-dictionary. You can
+define as many setup configurations as you want, even at different files but each
+one must have a unique name. Inside the <code class="docutils literal notranslate"><span class="pre">setups</span></code> section, each dictionary
+represents a setup configuration. The dictionary key (<code class="docutils literal notranslate"><span class="pre">setup-common</span></code>,
+<code class="docutils literal notranslate"><span class="pre">setup-spits-jobmanager</span></code> and <code class="docutils literal notranslate"><span class="pre">setup-spits-taskmanager</span></code> in above example)
+represent the setup configuration ID.</p>
+<p>Each setup configuration may contain two dictionaries: <code class="docutils literal notranslate"><span class="pre">roles</span></code> and <code class="docutils literal notranslate"><span class="pre">actions</span></code>
+(both are optional). Both sections, for a setup configuration is described in the
+next two subsections.</p>
+<div class="section" id="roles-key-at-setups-configuration">
+<h4>Roles key at setups configuration<a class="headerlink" href="#roles-key-at-setups-configuration" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">role</span></code> section inside a setup configuration tells to add nodes, whose perform
+this setup, to the defined roles. The <code class="docutils literal notranslate"><span class="pre">roles</span></code> section contains a <strong>list</strong> describing
+each role that the nodes must be added. Also, the role is always added in the order
+defined in the list.</p>
+<p>Each element of the list must have a <code class="docutils literal notranslate"><span class="pre">name</span></code> key, which describe the name of the role
+that the node must be added. For instance, the <code class="docutils literal notranslate"><span class="pre">setup-common</span></code> at above example,
+defines two roles which nodes that perform this setup must be added: <code class="docutils literal notranslate"><span class="pre">commands-common</span></code>
+and <code class="docutils literal notranslate"><span class="pre">another-role</span></code> (in this order).</p>
+<p>Optionally an <code class="docutils literal notranslate"><span class="pre">extra</span></code> key can be defined by each role, as a dictionary. The key
+and values is passed as <code class="docutils literal notranslate"><span class="pre">extra</span></code> parameter similar to the <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">add</span></code> module
+command. For instance, the setup below, will add nodes that perform this setup
+(<code class="docutils literal notranslate"><span class="pre">setup-common-2</span></code>) to role <code class="docutils literal notranslate"><span class="pre">example-role</span></code> passing variables, <code class="docutils literal notranslate"><span class="pre">foo</span></code> and
+<code class="docutils literal notranslate"><span class="pre">another_var</span></code> with values <code class="docutils literal notranslate"><span class="pre">bar</span></code> and <code class="docutils literal notranslate"><span class="pre">10</span></code>, respectively.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setup configurations must be declared inside setups key</span>
+<span class="nt">setups</span><span class="p">:</span>
+
+    <span class="c1"># This is a setup configuration called setup-common</span>
+    <span class="nt">setup-common-2</span><span class="p">:</span>
+        <span class="nt">roles</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">example-group</span>     <span class="c1"># Add nodes to example-role role</span>
+          <span class="nt">extra</span><span class="p">:</span>
+            <span class="nt">foo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bar</span>
+            <span class="nt">another_var</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="actions-key-at-an-setups-configuration">
+<h4>Actions key at an setups configuration<a class="headerlink" href="#actions-key-at-an-setups-configuration" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">actions</span></code> section inside a setup configuration tells to perform actions at
+nodes which perform this setup. The <code class="docutils literal notranslate"><span class="pre">actions</span></code> section contains a <strong>list</strong>
+describing each action that must be performed (in order).
+There are three types of actions:</p>
+<ul class="simple">
+<li><p><strong>role action</strong>: will perform an role action. Thus, the <code class="docutils literal notranslate"><span class="pre">role</span></code> and <code class="docutils literal notranslate"><span class="pre">action</span></code> keys must be informed. The <code class="docutils literal notranslate"><span class="pre">role</span></code> key will tell the name of the role and the <code class="docutils literal notranslate"><span class="pre">action</span></code> key will tell which action from that role which will be performed. Optionally, an <code class="docutils literal notranslate"><span class="pre">extra</span></code> dictionary can be informed to pass keyword variables to the role’s action.</p></li>
+<li><p><strong>playbook</strong>: will execute an Ansible Playbook. Thus, the <code class="docutils literal notranslate"><span class="pre">playbook</span></code> key must be informed, telling the absolute path of the playbook that will be executed. Optionally an <code class="docutils literal notranslate"><span class="pre">extra</span></code> dictionary can be informed to pass keyword variables to the playbook.</p></li>
+<li><p><strong>command</strong>: will execute a shell command. Thus, the <code class="docutils literal notranslate"><span class="pre">command</span></code> key must be informed, telling which shell command must be executed.</p></li>
+</ul>
+<p>Some action examples are briefly shown below:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setup configurations must be declared inside setups key</span>
+<span class="nt">setups</span><span class="p">:</span>
+
+    <span class="c1"># This is a setup configuration called setup-common. The actions are executed sequentially</span>
+    <span class="nt">another-setup-example</span><span class="p">:</span>
+        <span class="nt">actions</span><span class="p">:</span>
+        <span class="c1"># Perform mount action from role nfs-client, passing the variable mount_path with value /mnt</span>
+        <span class="p p-Indicator">-</span> <span class="nt">action</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mount</span>
+          <span class="nt">role</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs-client</span>
+          <span class="nt">extra</span><span class="p">:</span>
+            <span class="nt">mount_path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/mnt</span>
+        <span class="c1"># Execute the playbook /home/my-cool-ansible-playbook with an variable foo with value bar</span>
+        <span class="p p-Indicator">-</span> <span class="nt">playbook</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/home/my-cool-ansible-playbook</span>
+          <span class="nt">extra</span><span class="p">:</span>
+            <span class="nt">foo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bar</span>
+        <span class="c1"># Execute a shell command: hostname</span>
+        <span class="p p-Indicator">-</span> <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hostname</span>
+        <span class="c1"># Perform reboot action from commands-common role</span>
+        <span class="p p-Indicator">-</span> <span class="nt">role</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">commands-common</span>
+          <span class="nt">action</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">reboot</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a setup configuration contains both <code class="docutils literal notranslate"><span class="pre">roles</span></code> and <code class="docutils literal notranslate"><span class="pre">actions</span></code> sections,
+the <code class="docutils literal notranslate"><span class="pre">roles</span></code> section will <strong>always</strong> be executed before <code class="docutils literal notranslate"><span class="pre">actions</span></code> section.</p>
+</div>
+</div>
+</div>
+<div class="section" id="cluster-configuration-sections">
+<h3>Cluster Configuration Sections<a class="headerlink" href="#cluster-configuration-sections" title="Permalink to this headline">¶</a></h3>
+<p>The cluster configuration defines a set of nodes that must be created and setups
+that must be executed. Clusters are written inside <code class="docutils literal notranslate"><span class="pre">clusters</span></code> YAML-dictionary
+key and each dictionary inside <code class="docutils literal notranslate"><span class="pre">clusters</span></code> key denotes a cluster (where the
+dictionary key is the cluster’s name).
+Above is an example of a cluster configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clusters must be defined inside clusters key</span>
+<span class="nt">clusters</span><span class="p">:</span>
+  <span class="c1"># This is the cluster name</span>
+  <span class="nt">my-cool-cluster-1</span><span class="p">:</span>
+    <span class="c1"># Nodes that must be created when a cluster is instantiated</span>
+    <span class="nt">nodes</span><span class="p">:</span>
+      <span class="c1"># Node named master-node</span>
+      <span class="nt">master-node</span><span class="p">:</span>
+        <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">aws-instance-t2.large</span>   <span class="c1"># Instance type that must be created (must match instances.yaml name)</span>
+        <span class="nt">count</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>                      <span class="c1"># Number of instances that must be created</span>
+        <span class="nt">setups</span><span class="p">:</span>                       <span class="c1"># Optionally, list of setups to be executed when the master-nodes is created (reference setup configuration names, at setups section)</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">another-example-setup</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">master-setup</span>
+
+      <span class="c1"># Node named taskmanager</span>
+      <span class="nt">slave-nodes</span><span class="p">:</span>
+        <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">aws-instance-t2.small</span>  <span class="c1"># Instance type that must be created (must match instances.yaml name)</span>
+        <span class="nt">count</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>                     <span class="c1"># Number of instances that must be created</span>
+        <span class="nt">min_count</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>                 <span class="c1"># Minimum desired number of instances that must effectively be created</span>
+        <span class="nt">setups</span><span class="p">:</span>                      <span class="c1"># Optionally, list of setups to be executed when the slave-nodes is created</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">setup-slave-node</span>
+</pre></div>
+</div>
+<p>Clusters must have the <code class="docutils literal notranslate"><span class="pre">nodes</span></code> section, which defines the nodes that must be
+created when the cluster is instantiated. As example above, each cluster’s node
+have a type (<code class="docutils literal notranslate"><span class="pre">master-node</span></code> and <code class="docutils literal notranslate"><span class="pre">slave-node</span></code>) and values, that specify the
+cluster’s node characteristics. Each node may have the values listed in is table
+below.</p>
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">Cluster’s nodes valid parameters</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Name</strong></p></th>
+<th class="head"><p><strong>Type</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Instance type that must to be created. The type must match the node name at <code class="docutils literal notranslate"><span class="pre">instances.yaml</span></code> file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">count</span></code></p></td>
+<td><p>Integer</p></td>
+<td><p>Number of instances of this type to be launched</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">min_count</span></code> (OPTIONAL)</p></td>
+<td><p>Positive integer (less then or equal <code class="docutils literal notranslate"><span class="pre">count</span></code> parameter)</p></td>
+<td><p>Minimum number of instances of this type that must effectively be launched. If this parameter is not supplied the value of <code class="docutils literal notranslate"><span class="pre">count</span></code> parameter is assumed</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">setups</span></code></p></td>
+<td><p>List of strings</p></td>
+<td><p>List with the name of the setup configurations that must be executed after nodes are created</p></td>
+</tr>
+</tbody>
+</table>
+<p>When a cluster is created, the instance types specified in the each node section
+is created with the desired <code class="docutils literal notranslate"><span class="pre">count</span></code> number. The cluster is considered created
+when all nodes are effectively created. The <code class="docutils literal notranslate"><span class="pre">min_count</span></code> parameter at each node
+specify the minimum number of instances of that type that must effectively be
+launched. If some instances could not be instantiated (or created wwith less than
+<code class="docutils literal notranslate"><span class="pre">min_count</span></code> parameter) the cluster creation process fails and all nodes are terminated.</p>
+<p>After the cluster is created, i.e. the minimum number of nodes of each type is
+successfully created, the <code class="docutils literal notranslate"><span class="pre">setups</span></code> for each node is executed, in order. If some
+setup does not execute correctly, the cluster remains created and the <code class="docutils literal notranslate"><span class="pre">setup</span></code>
+phase can be executed again.</p>
+<div class="section" id="controlling-cluster-s-setups-execution-phases">
+<h4>Controlling cluster’s setups execution phases<a class="headerlink" href="#controlling-cluster-s-setups-execution-phases" title="Permalink to this headline">¶</a></h4>
+<p>CLAP’s cluster module also offers some other facilities to configure the cluster.
+By default the cluster module create nodes and run the setup from each node type.
+You can control the flow of the setup execution using some optional keys at your
+cluster configuration. The keys: <code class="docutils literal notranslate"><span class="pre">before_all</span></code>, <code class="docutils literal notranslate"><span class="pre">before</span></code>, <code class="docutils literal notranslate"><span class="pre">after</span></code> and
+<code class="docutils literal notranslate"><span class="pre">after_all</span></code> can be plugged into a cluster’s configuration, in order to execute
+setups in different set of nodes, before and after the nodes setups. These keys
+takes a list of setups to execute. CLAP’s setup phases are executed in the order,
+as shown in table bellow.</p>
+<table class="docutils align-default" id="id5">
+<caption><span class="caption-text">Cluster’s setups execution phases (in order)</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Phase name</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">before_all</span></code> (#1)</p></td>
+<td><p>Setups inside this key are executed in all cluster’s nodes before specific setup of the nodes (#3).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">before</span></code> (#2)</p></td>
+<td><p>Setups inside this key are executed only in nodes that are currently being added to the cluster, before the setup specific setup of the nodes (#3). Its useful when resizing cluster, i.e., adding more nodes. This phase is always executed at cluster creation, as all created nodes are being added to the cluster.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">node</span></code> (#3)</p></td>
+<td><p>The setup for each node is executed. The setup (inventory generated) is executed only at nodes of this type</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">after</span></code> (#4)</p></td>
+<td><p>Setups inside this key are executed only in nodes that are currently being added to the cluster, after the setup specific setup of the nodes (#3). Its useful when resizing cluster, i.e., adding more nodes. This phase is always executed at cluster creation, as all created nodes are being added to the cluster.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">after_all</span></code> (#5)</p></td>
+<td><p>Setups inside this key are executed in all cluster’s nodes after specific setup of the nodes (#3).</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All setups are optional</p>
+</div>
+<p>An example is shown below:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clusters must be defined inside clusters key</span>
+<span class="nt">clusters</span><span class="p">:</span>
+  <span class="c1"># This is the cluster name</span>
+  <span class="nt">my-cool-cluster-1</span><span class="p">:</span>
+    <span class="c1"># These setups are executed at all cluster&#39;s nodes, before setups at nodes section</span>
+    <span class="nt">before_all</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my-custom-setup-1</span>
+
+    <span class="c1"># These setups are executed at nodes that are currently being added to cluster, before setups at nodes section</span>
+    <span class="nt">before</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my-custom-setup-2</span>
+
+    <span class="c1"># These setups are executed at nodes that are currently being added to cluster, after setups at nodes section</span>
+    <span class="nt">after</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my-custom-setup-3</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my-custom-setup-4</span>
+
+    <span class="c1"># These setups are executed at all cluster&#39;s nodes, after setups at nodes section</span>
+    <span class="nt">after_all</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">final_setup</span>
+
+    <span class="c1"># Nodes that must be created when a cluster is instantiated</span>
+    <span class="nt">nodes</span><span class="p">:</span>
+      <span class="c1"># Node named master-node</span>
+      <span class="nt">master-node</span><span class="p">:</span>
+        <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">aws-instance-t2.large</span>   <span class="c1"># Instance type that must be created (must match instances.yaml name)</span>
+        <span class="nt">count</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>                      <span class="c1"># Number of instances that must be created</span>
+        <span class="nt">setups</span><span class="p">:</span>                       <span class="c1"># Optionally, list of setups to be executed when the master-nodes is created (reference setup configuration names, at setups section)</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">another-example-setup</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">master-setup</span>
+
+      <span class="c1"># Node named taskmanager</span>
+      <span class="nt">slave-nodes</span><span class="p">:</span>
+        <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">aws-instance-t2.small</span>  <span class="c1"># Instance type that must be created (must match instances.yaml name)</span>
+        <span class="nt">count</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>                     <span class="c1"># Number of instances that must be created</span>
+        <span class="nt">min_count</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>                 <span class="c1"># Minimum desired number of instances that must effectively be created</span>
+        <span class="nt">setups</span><span class="p">:</span>                      <span class="c1"># Optionally, list of setups to be executed when the slave-nodes is created</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">setup-slave-node</span>
+</pre></div>
+</div>
+<p>In the above example, supposing you are creating a new cluster, after the creation
+of nodes the following setups are executed (in order):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">before_all</span></code> setups: <code class="docutils literal notranslate"><span class="pre">my-custom-setup-1</span></code> at all nodes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">before</span></code> setups: <code class="docutils literal notranslate"><span class="pre">my-custom-setup-2</span></code> at all nodes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nodes</span></code> setups (not necessary in order): <code class="docutils literal notranslate"><span class="pre">another-example-setup</span></code> and <code class="docutils literal notranslate"><span class="pre">master-setup</span></code> at <code class="docutils literal notranslate"><span class="pre">master-nodes</span></code> nodes and <code class="docutils literal notranslate"><span class="pre">setup-slave-node</span></code> at <code class="docutils literal notranslate"><span class="pre">slave-nodes</span></code> nodes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">after</span></code> setups: <code class="docutils literal notranslate"><span class="pre">my-custom-setup-3</span></code> and <code class="docutils literal notranslate"><span class="pre">my-custom-setup-4</span></code> at all nodes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">after_all</span></code> setups: <code class="docutils literal notranslate"><span class="pre">final_setup</span></code> at all nodes</p></li>
+</ul>
+<p>Now supposing you are resizing the already created cluster (adding more
+<code class="docutils literal notranslate"><span class="pre">slave-nodes</span></code> to it), the <code class="docutils literal notranslate"><span class="pre">before_all</span></code> and <code class="docutils literal notranslate"><span class="pre">after_all</span></code> setups will be executed
+in all cluster’s nodes (including the new ones, that are being added) and
+<code class="docutils literal notranslate"><span class="pre">before</span></code>, <code class="docutils literal notranslate"><span class="pre">nodes</span></code> and <code class="docutils literal notranslate"><span class="pre">after</span></code> phase setups will only be executed at nodes
+that are being added to the the cluster.</p>
+</div>
+<div class="section" id="other-cluster-s-setups-optional-keys">
+<h4>Other cluster’s setups optional keys<a class="headerlink" href="#other-cluster-s-setups-optional-keys" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> key can be plugged at a cluster configuration allowing some special
+options to cluster. The <code class="docutils literal notranslate"><span class="pre">options</span></code> key may have the following parameters:</p>
+<table class="docutils align-default" id="id6">
+<caption><span class="caption-text">code-block:: none Cluster’s options keys</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Option name</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ssh_to</span></code></p></td>
+<td><p>Connect to a specific node when performing the <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">connect</span></code> command</p></td>
+</tr>
+</tbody>
+</table>
+<p>A example is shown below:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clusters must be defined inside clusters key</span>
+<span class="nt">clusters</span><span class="p">:</span>
+  <span class="c1"># This is the cluster name</span>
+  <span class="nt">my-cool-cluster-1</span><span class="p">:</span>
+    <span class="c1"># Additional cluster&#39;s options (optional)</span>
+    <span class="nt">options</span><span class="p">:</span>
+      <span class="c1"># When connecting to a cluster, connect to a master-node</span>
+      <span class="nt">ssh_to</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">master-node</span>
+
+    <span class="c1"># Nodes that must be created when a cluster is instantiated</span>
+    <span class="nt">nodes</span><span class="p">:</span>
+      <span class="c1"># Node named master-node</span>
+      <span class="nt">master-node</span><span class="p">:</span>
+        <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">aws-instance-t2.large</span>   <span class="c1"># Instance type that must be created (must match instances.yaml name)</span>
+        <span class="nt">count</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>                      <span class="c1"># Number of instances that must be created</span>
+        <span class="nt">setups</span><span class="p">:</span>                       <span class="c1"># Optionally, list of setups to be executed when the master-nodes is created (reference setup configuration names, at setups section)</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">another-example-setup</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">master-setup</span>
+
+      <span class="c1"># Node named taskmanager</span>
+      <span class="nt">slave-nodes</span><span class="p">:</span>
+        <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">aws-instance-t2.small</span>  <span class="c1"># Instance type that must be created (must match instances.yaml name)</span>
+        <span class="nt">count</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>                     <span class="c1"># Number of instances that must be created</span>
+        <span class="nt">min_count</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>                 <span class="c1"># Minimum desired number of instances that must effectively be created</span>
+        <span class="nt">setups</span><span class="p">:</span>                      <span class="c1"># Optionally, list of setups to be executed when the slave-nodes is created</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">setup-slave-node</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="command-cluster-start">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">start</span></code><a class="headerlink" href="#command-cluster-start" title="Permalink to this headline">¶</a></h3>
+<p>Start a cluster given a cluster configuration name. The syntax of the command is
+shown below</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">cluster</span> <span class="n">start</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CLUSTER_TEMPLATE</span>
+
+  <span class="n">Start</span> <span class="n">cluster</span> <span class="n">based</span> <span class="n">on</span> <span class="n">a</span> <span class="n">cluster</span> <span class="n">template</span><span class="o">.</span>
+
+  <span class="n">The</span> <span class="n">CLUSTER</span> <span class="n">TEMPLATE</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">ID</span> <span class="n">of</span> <span class="n">the</span> <span class="n">cluster</span> <span class="n">configuration</span> <span class="n">at</span> <span class="n">cluster</span>
+  <span class="n">configuration</span> <span class="n">files</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">setup</span>  <span class="n">Do</span> <span class="ow">not</span> <span class="n">perform</span> <span class="n">setup</span>  <span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="kc">False</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">help</span>          <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>By default, the CLAP’s cluster module search for configurations at all <code class="docutils literal notranslate"><span class="pre">.yaml</span></code>
+files inside <code class="docutils literal notranslate"><span class="pre">~/.clap/configs/clusters</span></code> directory. After cluster is created,
+the setups are automatically executed. You can omit this phase by using the
+<code class="docutils literal notranslate"><span class="pre">--no-setup</span></code> option.</p>
+<p>An example of the command is shown below, which starts a cluster called
+<code class="docutils literal notranslate"><span class="pre">example-cluster</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">cluster</span> <span class="n">start</span> <span class="n">example</span><span class="o">-</span><span class="n">cluster</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>After the cluster’s creation a new <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code> will be assigned to it. Thus, multiple clusters with same cluster configuration can be launched Also, all commands will reference to <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code> to perform their actions.</p></li>
+<li><p>When a cluster is started its initial configuration is copied to cluster metadata. If you update the cluster configuration while having already started clusters use the <code class="docutils literal notranslate"><span class="pre">clapp</span> <span class="pre">cluster</span> <span class="pre">update</span></code> command to update the cluster configuration.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="command-cluster-setup">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">setup</span></code><a class="headerlink" href="#command-cluster-setup" title="Permalink to this headline">¶</a></h3>
+<p>Setup an existing cluster. The command has the following syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">cluster</span> <span class="n">setup</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CLUSTER_ID</span>
+
+  <span class="n">Perform</span> <span class="n">cluster</span> <span class="n">setup</span> <span class="n">operation</span> <span class="n">at</span> <span class="n">a</span> <span class="n">cluster</span><span class="o">.</span>
+
+  <span class="n">The</span> <span class="n">CLUSTER_ID</span> <span class="n">argument</span> <span class="ow">is</span> <span class="n">the</span> <span class="nb">id</span> <span class="n">of</span> <span class="n">the</span> <span class="n">cluster</span> <span class="n">to</span> <span class="n">perform</span> <span class="n">the</span> <span class="n">setup</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">a</span><span class="p">,</span> <span class="o">--</span><span class="n">at</span> <span class="n">TEXT</span>  <span class="n">Stage</span> <span class="n">to</span> <span class="n">start</span> <span class="n">the</span> <span class="n">setup</span> <span class="n">action</span>  <span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="n">before_all</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">help</span>         <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Given the <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code>, the command will execute all setup phases in all cluster
+nodes. Some phases of the setup pipeline can be skipped informing at which phase
+the setup must begin with the <code class="docutils literal notranslate"><span class="pre">at</span></code> parameter.
+Examples are shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">cluster</span> <span class="n">setup</span> <span class="n">cluster</span><span class="o">-</span><span class="n">faa4017e10094e698aed56bb1f3369f9</span>
+<span class="n">clapp</span> <span class="n">cluster</span> <span class="n">setup</span> <span class="n">cluster</span><span class="o">-</span><span class="n">faa4017e10094e698aed56bb1f3369f9</span> <span class="o">--</span><span class="n">at</span> <span class="s2">&quot;before&quot;</span>
+</pre></div>
+</div>
+<p>In the above examples, the first one setups all cluster nodes from
+<code class="docutils literal notranslate"><span class="pre">cluster-faa4017e10094e698aed56bb1f3369f9</span></code>, the second one setups all nodes,
+but starting at <code class="docutils literal notranslate"><span class="pre">before</span></code> phase.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">before_all</span></code> and <code class="docutils literal notranslate"><span class="pre">after_all</span></code> phases will be executed at all cluster’s nodes, even if setting the <code class="docutils literal notranslate"><span class="pre">nodes</span></code> parameter.</p>
+</div>
+</div>
+<div class="section" id="command-cluster-grow">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">grow</span></code><a class="headerlink" href="#command-cluster-grow" title="Permalink to this headline">¶</a></h3>
+<p>Start and add a new node to cluster, based on its cluster’s node name. The command
+has the following syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">cluster</span> <span class="n">grow</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CLUSTER_ID</span>
+
+  <span class="n">Start</span> <span class="n">more</span> <span class="n">nodes</span> <span class="n">at</span> <span class="n">a</span> <span class="n">cluster</span> <span class="n">by</span> <span class="n">cluster</span> <span class="n">node</span> <span class="nb">type</span><span class="o">.</span>
+
+  <span class="n">The</span> <span class="n">CLUSTER_ID</span> <span class="n">argument</span> <span class="ow">is</span> <span class="n">the</span> <span class="nb">id</span> <span class="n">of</span> <span class="n">the</span> <span class="n">cluster</span> <span class="n">to</span> <span class="n">add</span> <span class="n">more</span> <span class="n">nodes</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="o">--</span><span class="n">node</span> <span class="n">TEXT</span>  <span class="n">Type</span> <span class="n">of</span> <span class="n">node</span> <span class="n">to</span> <span class="n">start</span><span class="o">.</span> <span class="n">Format</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">node_type</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">num</span><span class="o">&gt;</span>
+                   <span class="p">[</span><span class="n">required</span><span class="p">]</span>
+  <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">setup</span>   <span class="n">Do</span> <span class="ow">not</span> <span class="n">perform</span> <span class="n">setup</span>  <span class="p">[</span><span class="n">default</span><span class="p">:</span> <span class="kc">False</span><span class="p">]</span>
+  <span class="o">--</span><span class="n">help</span>           <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--node</span></code> parameter determines how much nodes will be added to cluster.
+If <code class="docutils literal notranslate"><span class="pre">--no-setup</span></code> is provided no setup phase will be executed.</p>
+</div>
+<div class="section" id="command-cluster-list">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">list</span></code><a class="headerlink" href="#command-cluster-list" title="Permalink to this headline">¶</a></h3>
+<p>List all available CLAP’s clusters.</p>
+</div>
+<div class="section" id="command-cluster-alive">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">alive</span></code><a class="headerlink" href="#command-cluster-alive" title="Permalink to this headline">¶</a></h3>
+<p>Check if all nodes of the cluster are alive.</p>
+</div>
+<div class="section" id="command-cluster-resume">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">resume</span></code><a class="headerlink" href="#command-cluster-resume" title="Permalink to this headline">¶</a></h3>
+<p>Resume all nodes of the cluster.</p>
+</div>
+<div class="section" id="command-cluster-pause">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">pause</span></code><a class="headerlink" href="#command-cluster-pause" title="Permalink to this headline">¶</a></h3>
+<p>Pause all nodes of the cluster.</p>
+</div>
+<div class="section" id="command-cluster-stop">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">stop</span></code><a class="headerlink" href="#command-cluster-stop" title="Permalink to this headline">¶</a></h3>
+<p>Stop all nodes of the cluster, terminating them (destroying).</p>
+</div>
+<div class="section" id="command-cluster-list-templates">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">list-templates</span></code><a class="headerlink" href="#command-cluster-list-templates" title="Permalink to this headline">¶</a></h3>
+<p>List all available cluster templates at <code class="docutils literal notranslate"><span class="pre">~/clap/configs/clusters</span></code> directory.</p>
+</div>
+<div class="section" id="command-cluster-update">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">update</span></code><a class="headerlink" href="#command-cluster-update" title="Permalink to this headline">¶</a></h3>
+<p>Update a cluster configuration of an already created cluster. The command’s
+syntax is shown below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clapp</span> <span class="n">cluster</span> <span class="n">update</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CLUSTER_ID</span>
+
+  <span class="n">Perform</span> <span class="n">cluster</span> <span class="n">setup</span> <span class="n">operation</span> <span class="n">at</span> <span class="n">a</span> <span class="n">cluster</span><span class="o">.</span>
+
+  <span class="n">The</span> <span class="n">CLUSTER_ID</span> <span class="n">argument</span> <span class="ow">is</span> <span class="n">the</span> <span class="nb">id</span> <span class="n">of</span> <span class="n">the</span> <span class="n">cluster</span> <span class="n">to</span> <span class="n">perform</span> <span class="n">the</span> <span class="n">setup</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="o">--</span><span class="n">config</span> <span class="n">TEXT</span>  <span class="n">New</span> <span class="n">cluster</span> <span class="n">config</span> <span class="n">name</span>
+  <span class="o">--</span><span class="n">help</span>             <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">--config</span></code> option is provided, the cluster configuration will be replaced
+with the informed configuration. Otherwise, the cluster will be updated with the
+same configuration.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The configurations will be searched in <code class="docutils literal notranslate"><span class="pre">~/clap/configs/clusters</span></code> directory.</p>
+</div>
+</div>
+<div class="section" id="command-cluster-connect">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">connect</span></code><a class="headerlink" href="#command-cluster-connect" title="Permalink to this headline">¶</a></h3>
+<p>Get a SSH shell to a node of the cluster. Given a <code class="docutils literal notranslate"><span class="pre">cluster_id</span></code> it will try to
+get an SSH shell to a node type specified in <code class="docutils literal notranslate"><span class="pre">ssh_to</span></code> cluster configuration
+option. If no <code class="docutils literal notranslate"><span class="pre">ssh_to</span></code> option is informed at cluster’s configuration the command
+will try to connect to any other node that belongs to the cluster.</p>
+</div>
+<div class="section" id="command-cluster-execute">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">execute</span></code><a class="headerlink" href="#command-cluster-execute" title="Permalink to this headline">¶</a></h3>
+<p>Execute a shell command in nodes of the cluster.</p>
+</div>
+<div class="section" id="command-cluster-playbook">
+<h3>Command <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">playbook</span></code><a class="headerlink" href="#command-cluster-playbook" title="Permalink to this headline">¶</a></h3>
+<p>Execute an Ansible Playbook in nodes of the cluster.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="shared_roles.html" class="btn btn-neutral float-right" title="Roles shared with CLAP" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="configuration.html" class="btn btn-neutral float-left" title="Basic Configuration Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Otávio Napoli.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

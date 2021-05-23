@@ -1,0 +1,283 @@
+:mod:`CLAP.clap.configs`
+========================
+
+.. py:module:: CLAP.clap.configs
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   CLAP.clap.configs.ProviderConfigAWS
+   CLAP.clap.configs.ProviderConfigLocal
+   CLAP.clap.configs.LoginConfig
+   CLAP.clap.configs.InstanceConfigAWS
+   CLAP.clap.configs.InstanceInfo
+   CLAP.clap.configs.ConfigurationDatabase
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   CLAP.clap.configs.logger
+   CLAP.clap.configs.provider_handlers
+   CLAP.clap.configs.ProviderConfigs
+   CLAP.clap.configs.LoginConfigs
+   CLAP.clap.configs.InstanceConfigs
+
+
+.. data:: logger
+   
+
+   
+
+.. exception:: ConfigurationError
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+
+.. exception:: InvalidConfigurationError(name: str)
+
+
+   Bases: :py:obj:`ConfigurationError`
+
+   Common base class for all non-exit exceptions.
+
+
+.. class:: ProviderConfigAWS
+
+   .. attribute:: provider_config_id
+      :annotation: :str
+
+      
+
+   .. attribute:: region
+      :annotation: :str
+
+      
+
+   .. attribute:: access_keyfile
+      :annotation: :str
+
+      
+
+   .. attribute:: secret_access_keyfile
+      :annotation: :str
+
+      
+
+   .. attribute:: vpc
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: url
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: provider
+      :annotation: :str = aws
+
+      
+
+
+.. class:: ProviderConfigLocal
+
+   .. attribute:: provider_config_id
+      :annotation: :str
+
+      
+
+   .. attribute:: provider
+      :annotation: :str = local
+
+      
+
+
+.. class:: LoginConfig
+
+   .. attribute:: login_config_id
+      :annotation: :str
+
+      
+
+   .. attribute:: user
+      :annotation: :str
+
+      
+
+   .. attribute:: keypair_name
+      :annotation: :str
+
+      
+
+   .. attribute:: keypair_public_file
+      :annotation: :str
+
+      
+
+   .. attribute:: keypair_private_file
+      :annotation: :str
+
+      
+
+   .. attribute:: ssh_port
+      :annotation: :Optional[int] = 22
+
+      
+
+   .. attribute:: sudo
+      :annotation: :Optional[bool] = True
+
+      
+
+   .. attribute:: sudo_user
+      :annotation: :Optional[str] = root
+
+      
+
+
+.. class:: InstanceConfigAWS
+
+   .. attribute:: instance_config_id
+      :annotation: :str
+
+      
+
+   .. attribute:: provider
+      :annotation: :str
+
+      
+
+   .. attribute:: login
+      :annotation: :str
+
+      
+
+   .. attribute:: flavor
+      :annotation: :str
+
+      
+
+   .. attribute:: image_id
+      :annotation: :str
+
+      
+
+   .. attribute:: security_group
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: boot_disk_size
+      :annotation: :Optional[int]
+
+      
+
+   .. attribute:: boot_disk_device
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: boot_disk_type
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: boot_disk_iops
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: boot_disk_snapshot
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: placement_group
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: price
+      :annotation: :Optional[float]
+
+      
+
+   .. attribute:: timeout
+      :annotation: :Optional[int]
+
+      
+
+   .. attribute:: network_ids
+      :annotation: :Optional[List[str]]
+
+      
+
+
+.. data:: provider_handlers
+   
+
+   
+
+.. data:: ProviderConfigs
+   
+
+   
+
+.. data:: LoginConfigs
+   
+
+   
+
+.. data:: InstanceConfigs
+   
+
+   
+
+.. class:: InstanceInfo
+
+   .. attribute:: provider
+      :annotation: :ProviderConfigs
+
+      
+
+   .. attribute:: login
+      :annotation: :LoginConfigs
+
+      
+
+   .. attribute:: instance
+      :annotation: :InstanceConfigs
+
+      
+
+
+.. class:: ConfigurationDatabase(providers_file: str, logins_file: str, instances_file: str, discard_invalids: bool = True, load: bool = True)
+
+
+   .. method:: _load_provider_configs(self)
+
+
+   .. method:: _load_login_configs(self)
+
+
+   .. method:: _load_instance_configs(self)
+
+
+   .. method:: load_all(self)
+
+
+
