@@ -14,7 +14,7 @@ To install CLAP in a linux-based system follow the instructions below.
 
 .. code-block:: bash
 
-    gcc g++ git libc6-dev libffi-dev libssl-dev virtualenv python3 python3-pip
+    gcc g++ git libc6-dev libffi-dev libssl-dev virtualenv python3 python3-pip python3-venv
 
 .. note::
 
