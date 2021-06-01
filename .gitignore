@@ -49,3 +49,4 @@ clap-env/
 
 # OTHERS
 .pytest_cache/
+.ipynb_checkpoints
