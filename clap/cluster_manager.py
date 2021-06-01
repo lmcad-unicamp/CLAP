@@ -443,13 +443,14 @@ class ClusterManager:
         self.setup_cluster(cluster_id, node_types, max_workers)
 
     def run_action(self, action: ActionType, node_ids: List[str]) -> bool:
+        # TODO Check this function
         logger.info(f"Executing action: {action} at nodes: {node_ids}")
         try:
             nodes = self.node_manager.get_nodes_by_id(node_ids)
             if type(action) is CommandActionType:
                 e = SSHCommandExecutor(action.command, nodes, self.private_dir)
                 result = e.run()
-                return all(r['ok'] for r in result.values())
+                return all(r.ok for r in result.values())
 
             elif type(action) is RoleActionType:
                 d = defaultdict(list)

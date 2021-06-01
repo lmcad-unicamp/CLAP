@@ -5,7 +5,7 @@ from abc import abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass, field, asdict
 from multiprocessing.pool import ThreadPool
-from typing import List, Callable, Any, Union, Dict, Set, Optional
+from typing import List, Callable, Any, Union, Dict, Set
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import ansible_runner
@@ -25,14 +25,6 @@ class Executor:
 
 
 class SSHCommandExecutor(Executor):
-    @dataclass
-    class CommandResult:
-        ok: bool
-        ret_code: Optional[int] = None
-        stdout_lines: Optional[List[str]] = None
-        stderr_lines: Optional[List[str]] = None
-        error: Optional[str] = None
-
     def __init__(self, command: str,
                  nodes: List[NodeDescriptor],
                  private_path: str,
@@ -49,7 +41,7 @@ class SSHCommandExecutor(Executor):
         self.execution_timeout = execution_timeout
         self.environment = environment or dict()
 
-    def connect_and_execute(self, node: NodeDescriptor) -> CommandResult:
+    def connect_and_execute(self, node: NodeDescriptor) -> dict:
         try:
             user = node.configuration.login.user
             ssh_port = node.configuration.login.ssh_port
@@ -72,19 +64,24 @@ class SSHCommandExecutor(Executor):
             stderr_lines = stderr.readlines()
             return_code = stdout.channel.recv_exit_status()
             client.close()
-            return SSHCommandExecutor.CommandResult(
-                ok=True, ret_code=return_code, stdout_lines=stdout_lines,
-                stderr_lines=stderr_lines, error=None
-            )
-
+            return {
+                'ok': True,
+                'return_code': return_code,
+                'stdout_lines': stdout_lines,
+                'stderr_lines': stderr_lines,
+                'error': None
+            }
         except Exception as e:
             logger.error(f"Error executing command in node {node.node_id[:8]}: {e}")
-            return SSHCommandExecutor.CommandResult(
-                ok=False, ret_code=None, stdout_lines=None,
-                stderr_lines=None, error=str(e)
-            )
+            return {
+                'ok': False,
+                'return_code': None,
+                'stdout_lines': None,
+                'stderr_lines': None,
+                'error': str(e)
+            }
 
-    def run(self) -> Dict[str, CommandResult]:
+    def run(self) -> dict:
         results = dict()
         with ThreadPool(processes=self.max_workers) as pool:
             values = [(node,) for node in self.nodes]

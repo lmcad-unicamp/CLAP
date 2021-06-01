@@ -444,13 +444,13 @@ def node_execute(node_id, tags, command, additional, timeout):
 
     for node_id in sorted(list(results.keys())):
         result = results[node_id]
-        if not result['ok']:
-            print(f"{node_id[:8]}: Error executing command in node. {result['error']}")
+        if not result.ok:
+            print(f"{node_id[:8]}: Error executing command in node. {result.error}")
             continue
         print(str_at_middle(node_id, 80, '-'))
-        print(f'return code {node_id[:8]}: {result["return_code"]}')
-        print(f'stdout {node_id[:8]}: '.join(result['stdout_lines']))
-        print(f'stderr {node_id[:8]}: '.join(result['stderr_lines']))
+        print(f'return code {node_id[:8]}: {result.ret_code}')
+        print(f'stdout {node_id[:8]}: '.join(result.stdout_lines))
+        print(f'stderr {node_id[:8]}: '.join(result.stderr_lines))
 
     return 0
 

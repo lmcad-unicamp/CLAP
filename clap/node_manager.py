@@ -282,8 +282,8 @@ class NodeManager:
             for node in nodes:
                 cmd_status = cmd_res[node.node_id]
                 # Command successfully executed -> Node is reachable
-                if cmd_status['ok']:
-                    if cmd_status['return_code'] == 0:
+                if cmd_status.ok:
+                    if cmd_status.ret_code == 0:
                         node.status = NodeStatus.REACHABLE
                         successfully_reachables.append(node.node_id)
                         unreachables_yet.remove(node.node_id)
@@ -293,7 +293,7 @@ class NodeManager:
                 else:
                     logger.error(
                         f'Error executing command in {node.node_id[:8]}: '
-                        f'{cmd_status["error"]}.'
+                        f'{cmd_status.error}.'
                     )
 
             # All nodes were reachable or no more retries left?
