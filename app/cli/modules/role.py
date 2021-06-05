@@ -110,7 +110,8 @@ def role(roles_root, node_repository):
 
 @role.command('add')
 @click.argument('role', nargs=1, type=str, required=True)
-@click.option('-n', '--node', nargs=1, type=str, required=True, multiple=True,
+@click.argument('nodes', nargs=-1, type=str, required=False)
+@click.option('-n', '--node', nargs=1, type=str, required=False, multiple=True,
               help='Nodes to be added. Can use multiple "-n" commands and it '
                    'can be a list of colon-separated nodes as "<node>,<node>,..." '
                    'or "<role_host_name>:<node>,<node>". The formats are '
@@ -121,14 +122,18 @@ def role(roles_root, node_repository):
               help="Role's host arguments. Format <host_name>:<key>=<value>,...")
 @click.option('-e', '--extra', multiple=True,
               help='Extra arguments. Format <key>=<value>')
-def role_add(role, node, node_vars, host_vars, extra):
+def role_add(role, nodes, node, node_vars, host_vars, extra):
     """ Add a set of nodes to a role.
 
     The ROLE argument specify the role which the nodes will be added.
     """
     role_manager = get_role_manager()
+    node += nodes
     nodes, node_vars, host_vars, extra_args = _split_vars(
         node, node_vars, host_vars, extra)
+    if not nodes:
+        raise ArgumentError('No nodes informed')
+
     added_nodes = role_manager.add_role(
         role, hosts_node_map=nodes, host_vars=host_vars,
         node_vars=node_vars, extra_args=extra_args)
@@ -141,7 +146,8 @@ def role_add(role, node, node_vars, host_vars, extra):
 @click.argument('role', nargs=1, type=str, required=True)
 @click.option('-a', '--action', nargs=1, type=str, required=True,
               help="Name of the group's action to perform")
-@click.option('-n', '--node', nargs=1, type=str, multiple=True,
+@click.argument('nodes', nargs=-1, type=str, required=False)
+@click.option('-n', '--node', nargs=1, type=str, multiple=True, required=False,
               help='Nodes to perform the action. Can use multiple "-n" commands and it '
                    'can be a list of colon-separated node as "<node>,<node>,..." '
                    'or "<role_host_name>:<node>,<node>". The formats are '
@@ -153,12 +159,13 @@ def role_add(role, node, node_vars, host_vars, extra):
               help="Role's host arguments. Format <host_name>:<key>=<value>,...")
 @click.option('-e', '--extra', multiple=True,
               help='Extra arguments. Format <key>=<value>')
-def role_action(role, action, node, node_vars, host_vars, extra):
+def role_action(role, action, nodes, node, node_vars, host_vars, extra):
     """ Perform an group action at a set of nodes.
 
     The ROLE argument specify the role which the action will be performed.
     """
     role_manager = get_role_manager()
+    node += nodes
     nodes, node_vars, host_vars, extra_args = _split_vars(
         node, node_vars, host_vars, extra)
 
@@ -196,18 +203,20 @@ def role_action(role, action, node, node_vars, host_vars, extra):
 
 @role.command('remove')
 @click.argument('role', nargs=1, type=str, required=True)
-@click.option('-n', '--node', nargs=1, type=str, multiple=True, required=True,
+@click.argument('nodes', nargs=-1, type=str, required=False)
+@click.option('-n', '--node', nargs=1, type=str, multiple=True, required=False,
               help='Nodes to perform the action. Can use multiple "-n" commands and it '
                    'can be a list of colon-separated node as "<node>,<node>,..." '
                    'or "<role_host_name>:<node>,<node>". The formats are '
                    'mutually exclusive. If not is passed, the action will be '
                    'performed in all nodes that belongs to the role.')
-def role_remove(role, node):
+def role_remove(role, nodes, node):
     """ Perform an group action at a set of nodes.
 
     The ROLE argument specify the role which the action will be performed.
     """
     role_manager = get_role_manager()
+    node += nodes
     nodes, node_vars, host_vars, extra_args = _split_vars(node, [], [], [])
 
     if not nodes:

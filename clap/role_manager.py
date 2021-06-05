@@ -63,7 +63,7 @@ class MissingActionVariableError(RoleError):
 class RoleVariableInfo:
     name: str
     description: Optional[str]
-    optional: Optional[bool]
+    optional: Optional[bool] = False
 
 
 @dataclass
@@ -201,12 +201,12 @@ class RoleManager:
                 inventory: Dict[str, List[str]] = hosts_node_map
         else:
             if type(hosts_node_map) is list:
-                inventory: Dict[str, List[str]] = {role_name: hosts_node_map}
+                inventory: Dict[str, List[str]] = {'': hosts_node_map}
             else:
                 if len(hosts_node_map) != 1 or role_name not in hosts_node_map:
                     raise ValueError(f"Invalid hosts {list(hosts_node_map.keys())} "
                                      f"for role {role_name}")
-                inventory: Dict[str, List[str]] = hosts_node_map
+                inventory: Dict[str, List[str]] = {'': hosts_node_map[role_name]}
 
         if 'setup' in role.actions:
             result = self.perform_action(
@@ -227,7 +227,7 @@ class RoleManager:
 
         added_nodes: Set[str] = set()
         for host, list_node_ids in inventory.items():
-            name = host if host == role_name else f'{role_name}/{host}'
+            name = role_name if host == '' else f'{role_name}/{host}'
             for node in self.node_repository.get_nodes_by_id(list_node_ids):
                 added_nodes.add(node.node_id)
                 if name not in node.roles:
