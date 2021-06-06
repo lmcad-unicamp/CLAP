@@ -1,0 +1,23 @@
+:mod:`clap`
+===========
+
+.. py:module:: clap
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   abstract_provider/index.rst
+   cluster_manager/index.rst
+   configs/index.rst
+   executor/index.rst
+   node/index.rst
+   node_manager/index.rst
+   repository/index.rst
+   role_manager/index.rst
+   utils/index.rst
+
+

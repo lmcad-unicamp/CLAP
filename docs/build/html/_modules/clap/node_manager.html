@@ -1,0 +1,656 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>clap.node_manager &mdash; CLoud Application Platform 0.2.2
+ documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../shared_roles.html">Roles shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Programming Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>clap.node_manager</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for clap.node_manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">asdict</span>
+<span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Callable</span>
+
+<span class="kn">import</span> <span class="nn">dacite</span>
+
+<span class="kn">from</span> <span class="nn">clap.abstract_provider</span> <span class="kn">import</span> <span class="n">AbstractInstanceProvider</span>
+<span class="kn">from</span> <span class="nn">clap.configs</span> <span class="kn">import</span> <span class="n">InstanceInfo</span>
+<span class="kn">from</span> <span class="nn">clap.executor</span> <span class="kn">import</span> <span class="n">SSHCommandExecutor</span>
+<span class="kn">from</span> <span class="nn">clap.node</span> <span class="kn">import</span> <span class="n">NodeDescriptor</span><span class="p">,</span> <span class="n">NodeStatus</span>
+<span class="kn">from</span> <span class="nn">clap.repository</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">InvalidEntryError</span>
+<span class="kn">from</span> <span class="nn">clap.utils</span> <span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">sorted_groupby</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="InvalidProvider"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.InvalidProvider">[docs]</a><span class="k">class</span> <span class="nc">InvalidProvider</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="UnhandledProviderError"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.UnhandledProviderError">[docs]</a><span class="k">class</span> <span class="nc">UnhandledProviderError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="n">provider</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unhandled provider </span><span class="si">{</span><span class="n">provider</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeploymentError"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.DeploymentError">[docs]</a><span class="k">class</span> <span class="nc">DeploymentError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="InvalidNodeError"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.InvalidNodeError">[docs]</a><span class="k">class</span> <span class="nc">InvalidNodeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_id</span> <span class="o">=</span> <span class="n">node_id</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid node with id: </span><span class="si">{</span><span class="n">node_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NodeRepositoryController"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeRepositoryController">[docs]</a><span class="k">class</span> <span class="nc">NodeRepositoryController</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">:</span> <span class="n">Repository</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repository</span> <span class="o">=</span> <span class="n">repository</span>
+
+<div class="viewcode-block" id="NodeRepositoryController.upsert_node"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeRepositoryController.upsert_node">[docs]</a>    <span class="k">def</span> <span class="nf">upsert_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">NodeDescriptor</span><span class="p">):</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">update_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>
+            <span class="n">node_dict</span> <span class="o">=</span> <span class="n">asdict</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">upsert</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">node_dict</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeRepositoryController.remove_node"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeRepositoryController.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeRepositoryController.remove_nodes"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeRepositoryController.remove_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">remove_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">remove_multiple</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeRepositoryController.get_nodes_by_id"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeRepositoryController.get_nodes_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">dacite</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">NodeDescriptor</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">nid</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">get_multiple</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">]</span>
+                <span class="k">return</span> <span class="n">nodes</span>
+            <span class="k">except</span> <span class="n">InvalidEntryError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidNodeError</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">entry</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span></div>
+
+<div class="viewcode-block" id="NodeRepositoryController.get_all_nodes"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeRepositoryController.get_all_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">dacite</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">NodeDescriptor</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">nid</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">]</span></div>
+
+<div class="viewcode-block" id="NodeRepositoryController.get_nodes_filter"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeRepositoryController.get_nodes_filter">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">NodeDescriptor</span><span class="p">],</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> \
+            <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_nodes</span><span class="p">()</span> <span class="k">if</span> <span class="n">filter_func</span><span class="p">(</span><span class="n">node</span><span class="p">)]</span></div></div>
+
+
+<div class="viewcode-block" id="NodeManager"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager">[docs]</a><span class="k">class</span> <span class="nc">NodeManager</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repository_controller</span><span class="p">:</span> <span class="n">NodeRepositoryController</span><span class="p">,</span>
+                 <span class="n">providers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AbstractInstanceProvider</span><span class="p">],</span>
+                 <span class="n">private_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span> <span class="o">=</span> <span class="n">node_repository_controller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">providers</span> <span class="o">=</span> <span class="n">providers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_path</span> <span class="o">=</span> <span class="n">private_dir</span>
+
+    <span class="c1"># Group by functions</span>
+<div class="viewcode-block" id="NodeManager._group_instances_by_provider"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager._group_instances_by_provider">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_group_instances_by_provider</span><span class="p">(</span><span class="n">instances</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">InstanceInfo</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> \
+            <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">InstanceInfo</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]:</span>
+        <span class="k">return</span> <span class="n">sorted_groupby</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">provider</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeManager.group_nodes_by_provider"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.group_nodes_by_provider">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">group_nodes_by_provider</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">])</span> <span class="o">-&gt;</span> \
+            <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="n">sorted_groupby</span><span class="p">(</span>
+            <span class="n">nodes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">provider</span><span class="p">)</span></div>
+
+    <span class="c1"># Get nodes</span>
+<div class="viewcode-block" id="NodeManager.get_nodes_by_id"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.get_nodes_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeManager.get_nodes"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.get_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">NodeDescriptor</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
+                  <span class="n">from_node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]:</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_nodes_filter</span><span class="p">(</span><span class="n">filter_func</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">from_node_ids</span><span class="p">:</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">nid</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="k">if</span> <span class="n">nid</span> <span class="ow">in</span> <span class="n">from_node_ids</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">nodes</span></div>
+
+<div class="viewcode-block" id="NodeManager.get_all_nodes"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.get_all_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_all_nodes</span><span class="p">()</span></div>
+
+    <span class="c1"># Other useful filter functions</span>
+<div class="viewcode-block" id="NodeManager.get_not_running_nodes"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.get_not_running_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_not_running_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]:</span>
+        <span class="n">not_running_nodes_filter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">NodeDescriptor</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">UNKNOWN</span> <span class="ow">or</span> \
+                      <span class="n">n</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">PAUSED</span> <span class="ow">or</span> \
+                      <span class="n">n</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">STOPPED</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="n">not_running_nodes_filter</span><span class="p">,</span> <span class="n">from_node_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeManager.get_up_nodes"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.get_up_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_up_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]:</span>
+        <span class="n">up_nodes_filter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">NodeDescriptor</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">STARTED</span> <span class="ow">or</span> \
+                      <span class="n">n</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">REACHABLE</span> <span class="ow">or</span> \
+                      <span class="n">n</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">UNREACHABLE</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="n">up_nodes_filter</span><span class="p">,</span> <span class="n">from_node_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeManager.get_reachable_nodes"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.get_reachable_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_reachable_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]:</span>
+        <span class="n">reachable_nodes_filter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">NodeDescriptor</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">REACHABLE</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="n">reachable_nodes_filter</span><span class="p">,</span> <span class="n">from_node_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeManager.get_nodes_with_tag"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.get_nodes_with_tag">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes_with_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">from_node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]:</span>
+        <span class="n">tagged_nodes_filter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">NodeDescriptor</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">tags</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="n">tagged_nodes_filter</span><span class="p">,</span> <span class="n">from_node_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeManager.get_nodes_with_tag_value"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.get_nodes_with_tag_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes_with_tag_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                 <span class="n">from_node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]:</span>
+        <span class="n">tagged_nodes_filter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">NodeDescriptor</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="n">tagged_nodes_filter</span><span class="p">,</span> <span class="n">from_node_ids</span><span class="p">)</span></div>
+
+    <span class="c1"># Provisioning functions</span>
+    <span class="c1"># TODO provide an async function</span>
+<div class="viewcode-block" id="NodeManager.start_node"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.start_node">[docs]</a>    <span class="k">def</span> <span class="nf">start_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">InstanceInfo</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                   <span class="n">start_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">600</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid number of nodes to start: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">provider_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">providers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">provider</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">provider_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnhandledProviderError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unhandled provider: </span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">provider</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">provider_obj</span><span class="o">.</span><span class="n">start_instances</span><span class="p">(</span>
+            <span class="n">instance</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">start_timeout</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NodeManager.start_nodes"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.start_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">start_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_counts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">InstanceInfo</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span>
+                    <span class="n">start_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">600</span><span class="p">,</span>
+                    <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">instance_counts</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">provider_instances</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_instances_by_provider</span><span class="p">(</span><span class="n">instance_counts</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">provider_instances</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">providers</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">UnhandledProviderError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unhandled provider: </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="n">provider_obj</span><span class="p">:</span> <span class="n">AbstractInstanceProvider</span><span class="p">,</span>
+                  <span class="n">instance</span><span class="p">:</span> <span class="n">InstanceInfo</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+            <span class="c1"># Start instances</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="n">provider_obj</span><span class="o">.</span><span class="n">start_instances</span><span class="p">(</span>
+                <span class="n">instance</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">start_timeout</span><span class="p">)</span>
+            <span class="c1"># Insert new created nodes in repository</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span>
+
+        <span class="c1"># Parallel node start, by provider</span>
+        <span class="k">with</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">providers</span><span class="p">[</span><span class="n">provider</span><span class="p">],</span> <span class="n">instance</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">provider</span><span class="p">,</span> <span class="n">list_instance_count</span> <span class="ow">in</span> <span class="n">provider_instances</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="ow">in</span> <span class="n">list_instance_count</span>
+            <span class="p">]</span>
+
+            <span class="n">instances</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+            <span class="n">started_instances</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">i</span> <span class="k">for</span> <span class="n">list_instances</span> <span class="ow">in</span> <span class="n">instances</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">list_instances</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">started_instances</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DeploymentError</span><span class="p">(</span><span class="s1">&#39;No nodes were started&#39;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Started </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">started_instances</span><span class="p">)</span><span class="si">}</span><span class="s2"> nodes: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">started_instances</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">started_instances</span></div>
+
+<div class="viewcode-block" id="NodeManager.is_alive"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.is_alive">[docs]</a>    <span class="k">def</span> <span class="nf">is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                 <span class="n">wait_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span> <span class="n">update_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+                 <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">test_command</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;echo &quot;OK&quot;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">node_ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span>
+        <span class="n">provider_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_nodes_by_provider</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="n">checked_nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">update_node_info</span><span class="p">(</span><span class="n">provider_obj</span><span class="p">:</span> <span class="n">AbstractInstanceProvider</span><span class="p">,</span>
+                             <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+            <span class="c1"># Update node information</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="n">provider_obj</span><span class="o">.</span><span class="n">update_instance_info</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">update_timeout</span><span class="p">)</span>
+            <span class="c1"># Update repository with new info</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">status</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">}</span>
+
+        <span class="c1"># Parallel update_info, grouped by provider</span>
+        <span class="k">with</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">providers</span><span class="p">[</span><span class="n">provider</span><span class="p">],</span> <span class="n">list_nodes</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">provider</span><span class="p">,</span> <span class="n">list_nodes</span> <span class="ow">in</span> <span class="n">provider_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">]</span>
+
+            <span class="n">instances</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">update_node_info</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">:</span>
+                <span class="n">checked_nodes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="c1"># Filter for not running nodes</span>
+        <span class="n">not_running</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">UNKNOWN</span> <span class="ow">or</span> \
+                                <span class="n">n</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">PAUSED</span> <span class="ow">or</span> \
+                                <span class="n">n</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">UNREACHABLE</span> <span class="ow">or</span> \
+                                <span class="n">n</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">STOPPED</span>
+
+        <span class="n">not_running_nodes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">node</span><span class="p">:</span> <span class="n">not_running</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">checked_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">not_running_nodes</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="n">node_id</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">node_ids</span> <span class="k">if</span> <span class="n">node_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">checked_nodes</span>
+        <span class="p">})</span>
+
+        <span class="c1"># No nodes running?</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">not_running_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">nid</span><span class="p">:</span> <span class="kc">False</span> <span class="k">for</span> <span class="n">nid</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">checked_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="n">node_status</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">node</span><span class="p">:</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">not_running_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">status</span>
+        <span class="p">}</span>
+        <span class="c1"># Filter for not running nodes</span>
+        <span class="n">unreachable</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">UNKNOWN</span> <span class="ow">or</span> \
+                                <span class="n">n</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">STARTED</span> <span class="ow">or</span> \
+                                <span class="n">n</span> <span class="o">==</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">REACHABLE</span>
+
+        <span class="n">successfully_reachables</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">unreachables_yet</span> <span class="o">=</span> <span class="p">[</span><span class="n">nid</span> <span class="k">for</span> <span class="n">nid</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">checked_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                            <span class="k">if</span> <span class="n">unreachable</span><span class="p">(</span><span class="n">status</span><span class="p">)]</span>
+
+        <span class="c1"># Test SSH for nodes</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">retries</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checking if nodes </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unreachables_yet</span><span class="p">))</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;are alive (retries: </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">retries</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">unreachables_yet</span><span class="p">)</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">SSHCommandExecutor</span><span class="p">(</span>
+                <span class="n">test_command</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_path</span><span class="p">)</span>
+            <span class="n">cmd_res</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="n">cmd_status</span> <span class="o">=</span> <span class="n">cmd_res</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span>
+                <span class="c1"># Command successfully executed -&gt; Node is reachable</span>
+                <span class="k">if</span> <span class="n">cmd_status</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">cmd_status</span><span class="o">.</span><span class="n">ret_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">node</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">REACHABLE</span>
+                        <span class="n">successfully_reachables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+                        <span class="n">unreachables_yet</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">node</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">NodeStatus</span><span class="o">.</span><span class="n">UNREACHABLE</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;Error executing command in </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s1">: &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cmd_status</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s1">.&#39;</span>
+                    <span class="p">)</span>
+
+            <span class="c1"># All nodes were reachable or no more retries left?</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">unreachables_yet</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="n">retries</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="c1"># Retry</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unreachables_yet</span><span class="p">))</span><span class="si">}</span><span class="s2"> are &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;unreachable. Testing connection again in &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wait_timeout</span><span class="si">}</span><span class="s2"> seconds...&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait_timeout</span><span class="p">)</span>
+
+        <span class="c1"># Return node status</span>
+        <span class="n">node_status</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="n">nid</span><span class="p">:</span> <span class="n">nid</span> <span class="ow">in</span> <span class="n">successfully_reachables</span>
+            <span class="k">for</span> <span class="n">nid</span> <span class="ow">in</span> <span class="n">checked_nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">node_status</span></div>
+
+<div class="viewcode-block" id="NodeManager.stop_nodes"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.stop_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">stop_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">180</span><span class="p">,</span>
+                   <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">remove_nodes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">node_ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span>
+        <span class="n">provider_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_nodes_by_provider</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">stop_nodes</span><span class="p">(</span><span class="n">provider_obj</span><span class="p">:</span> <span class="n">AbstractInstanceProvider</span><span class="p">,</span>
+                       <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">stoppeds</span> <span class="o">=</span> <span class="n">provider_obj</span><span class="o">.</span><span class="n">stop_instances</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">stoppeds</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">stoppeds</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="k">with</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">providers</span><span class="p">[</span><span class="n">provider</span><span class="p">],</span> <span class="n">list_nodes</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">provider</span><span class="p">,</span> <span class="n">list_nodes</span> <span class="ow">in</span> <span class="n">provider_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">]</span>
+
+            <span class="n">instances</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">stop_nodes</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+            <span class="n">stopped_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">ilist</span> <span class="ow">in</span> <span class="n">instances</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ilist</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stopped_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_ids</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">stopped_nodes</span><span class="p">))</span><span class="si">}</span><span class="s2"> were &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;successfully stopped&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some nodes were not sucessfully stopped: &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">stopped_nodes</span><span class="p">))))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">remove_nodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">remove_nodes</span><span class="p">(</span><span class="n">stopped_nodes</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">stopped_nodes</span></div>
+
+<div class="viewcode-block" id="NodeManager.resume_nodes"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.resume_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">resume_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                     <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">600</span><span class="p">,</span>
+                     <span class="n">connection_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                     <span class="n">retry_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+                     <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">node_ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span>
+        <span class="n">provider_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_nodes_by_provider</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">resume_nodes</span><span class="p">(</span><span class="n">provider_obj</span><span class="p">:</span> <span class="n">AbstractInstanceProvider</span><span class="p">,</span>
+                         <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+            <span class="n">resumeds</span> <span class="o">=</span> <span class="n">provider_obj</span><span class="o">.</span><span class="n">resume_instances</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">resumeds</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">resumeds</span><span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">providers</span><span class="p">[</span><span class="n">provider</span><span class="p">],</span> <span class="n">list_nodes</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">provider</span><span class="p">,</span> <span class="n">list_nodes</span> <span class="ow">in</span> <span class="n">provider_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">]</span>
+
+            <span class="n">instances</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">resume_nodes</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+            <span class="n">resumed_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">ilist</span> <span class="ow">in</span> <span class="n">instances</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ilist</span><span class="p">]</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">resumed_nodes</span><span class="p">))</span><span class="si">}</span><span class="s2"> were &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;successfully resumed&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">connection_retries</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_alive</span><span class="p">(</span><span class="n">resumed_nodes</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="n">connection_retries</span><span class="p">,</span>
+                          <span class="n">wait_timeout</span><span class="o">=</span><span class="n">retry_timeout</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">resumed_nodes</span></div>
+
+<div class="viewcode-block" id="NodeManager.pause_nodes"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.pause_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">pause_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">180</span><span class="p">,</span>
+                    <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">node_ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span>
+        <span class="n">provider_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_nodes_by_provider</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">pause_nodes</span><span class="p">(</span><span class="n">provider_obj</span><span class="p">:</span> <span class="n">AbstractInstanceProvider</span><span class="p">,</span>
+                        <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+            <span class="n">pauseds</span> <span class="o">=</span> <span class="n">provider_obj</span><span class="o">.</span><span class="n">pause_instances</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">pauseds</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">pauseds</span><span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">providers</span><span class="p">[</span><span class="n">provider</span><span class="p">],</span> <span class="n">list_nodes</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">provider</span><span class="p">,</span> <span class="n">list_nodes</span> <span class="ow">in</span> <span class="n">provider_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">]</span>
+
+            <span class="n">instances</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">pause_nodes</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+            <span class="n">paused_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">ilist</span> <span class="ow">in</span> <span class="n">instances</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ilist</span><span class="p">]</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">paused_nodes</span><span class="p">))</span><span class="si">}</span><span class="s2"> were &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;successfully paused&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">paused_nodes</span></div>
+
+<div class="viewcode-block" id="NodeManager.add_tags"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.add_tags">[docs]</a>    <span class="k">def</span> <span class="nf">add_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">added_tags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">node_ids</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No nodes to perform operation&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">node_ids</span><span class="p">):</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">added_tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">added_tags</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeManager.remove_tags"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.remove_tags">[docs]</a>    <span class="k">def</span> <span class="nf">remove_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">removed_tags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">node_ids</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No nodes to perform operation&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">node_ids</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">removed_tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">removed_tags</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeManager.upsert_node"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.upsert_node">[docs]</a>    <span class="k">def</span> <span class="nf">upsert_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">NodeDescriptor</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeManager.remove_node"><a class="viewcode-back" href="../../autoapi/clap/node_manager/index.html#clap.node_manager.NodeManager.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Otávio Napoli.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

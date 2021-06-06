@@ -35,17 +35,12 @@ Contents
     configuration
     usage
     shared_roles
-.. architecture
-.. tutorials
-.. troubleshooting
-    
-    autoapi/index
-
-
+    api
 
 Indices and tables
--------------------
++++++++++++++++++++
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+

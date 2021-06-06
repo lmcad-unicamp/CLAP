@@ -1,0 +1,136 @@
+:mod:`clap.executor`
+====================
+
+.. py:module:: clap.executor
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   clap.executor.AnsiblePlaybookExecutor
+   clap.executor.Executor
+   clap.executor.SSHCommandExecutor
+   clap.executor.ShellInvoker
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   clap.executor.logger
+
+
+.. class:: AnsiblePlaybookExecutor(playbook_file, private_path, inventory = None, extra_args = None, env_vars = None, quiet = False, verbosity = 0)
+
+
+   Bases: :py:obj:`Executor`
+
+   .. class:: PlaybookResult
+
+      .. attribute:: events
+         :annotation: :Dict[str, List[dict]]
+
+         
+
+      .. attribute:: hosts
+         :annotation: :Dict[str, bool]
+
+         
+
+      .. attribute:: ok
+         :annotation: :bool
+
+         
+
+      .. attribute:: ret_code
+         :annotation: :int
+
+         
+
+      .. attribute:: vars
+         :annotation: :Dict[str, Dict[str, Any]]
+
+         
+
+
+   .. method:: create_extra_vars(output_dir, nodes, private_path)
+      :staticmethod:
+
+
+   .. method:: create_inventory(hosts_node_map, private_path, host_vars = None, node_vars = None)
+      :staticmethod:
+
+
+   .. method:: run(self)
+
+
+
+.. class:: Executor
+
+   .. method:: run(self)
+      :abstractmethod:
+
+
+
+.. class:: SSHCommandExecutor(command, nodes, private_path, max_workers = 0, connection_timeout = 10.0, execution_timeout = None, environment = None)
+
+
+   Bases: :py:obj:`Executor`
+
+   .. class:: CommandResult
+
+      .. attribute:: error
+         :annotation: :Optional[str]
+
+         
+
+      .. attribute:: ok
+         :annotation: :bool
+
+         
+
+      .. attribute:: ret_code
+         :annotation: :Optional[int]
+
+         
+
+      .. attribute:: stderr_lines
+         :annotation: :Optional[List[str]]
+
+         
+
+      .. attribute:: stdout_lines
+         :annotation: :Optional[List[str]]
+
+         
+
+
+   .. method:: connect_and_execute(self, node)
+
+
+   .. method:: run(self)
+
+
+
+.. class:: ShellInvoker(node, private_path, verbosity = 0, ssh_binary = 'ssh')
+
+
+   Bases: :py:obj:`Executor`
+
+   .. method:: run(self)
+
+
+
+.. data:: logger
+   
+
+   
+

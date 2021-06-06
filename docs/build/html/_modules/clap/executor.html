@@ -1,0 +1,502 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>clap.executor &mdash; CLoud Application Platform 0.2.2
+ documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../shared_roles.html">Roles shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Programming Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>clap.executor</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for clap.executor</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">asdict</span>
+<span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">as_completed</span>
+
+<span class="kn">import</span> <span class="nn">ansible_runner</span>
+<span class="kn">import</span> <span class="nn">paramiko</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="kn">from</span> <span class="nn">clap.node</span> <span class="kn">import</span> <span class="n">NodeDescriptor</span>
+<span class="kn">from</span> <span class="nn">clap.utils</span> <span class="kn">import</span> <span class="n">path_extend</span><span class="p">,</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">tmpdir</span><span class="p">,</span> <span class="n">defaultdict_to_dict</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Executor"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.Executor">[docs]</a><span class="k">class</span> <span class="nc">Executor</span><span class="p">:</span>
+<div class="viewcode-block" id="Executor.run"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.Executor.run">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in derived classes&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SSHCommandExecutor"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.SSHCommandExecutor">[docs]</a><span class="k">class</span> <span class="nc">SSHCommandExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+<div class="viewcode-block" id="SSHCommandExecutor.CommandResult"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.SSHCommandExecutor.CommandResult">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">CommandResult</span><span class="p">:</span>
+        <span class="n">ok</span><span class="p">:</span> <span class="nb">bool</span>
+        <span class="n">ret_code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">stdout_lines</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">stderr_lines</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">],</span>
+                 <span class="n">private_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                 <span class="n">connection_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+                 <span class="n">execution_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">environment</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="n">command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_path</span> <span class="o">=</span> <span class="n">private_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_workers</span> <span class="o">=</span> <span class="n">max_workers</span> <span class="k">if</span> <span class="n">max_workers</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> \
+            <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_timeout</span> <span class="o">=</span> <span class="n">connection_timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execution_timeout</span> <span class="o">=</span> <span class="n">execution_timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">environment</span> <span class="o">=</span> <span class="n">environment</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SSHCommandExecutor.connect_and_execute"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.SSHCommandExecutor.connect_and_execute">[docs]</a>    <span class="k">def</span> <span class="nf">connect_and_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">NodeDescriptor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CommandResult</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">user</span>
+            <span class="n">ssh_port</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">ssh_port</span>
+            <span class="n">connection_ip</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">ip</span>
+            <span class="n">key_file</span> <span class="o">=</span> <span class="n">path_extend</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">private_path</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">keypair_private_file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">connection_ip</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid connection ip &#39;</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">ip</span><span class="si">}</span><span class="s2">&#39; for node &quot;</span>
+                                      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">nickname</span><span class="si">}</span><span class="s2">. Check if </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">nickname</span><span class="si">}</span><span class="s2"> &quot;</span>
+                                      <span class="sa">f</span><span class="s2">&quot;is alive first...&quot;</span><span class="p">)</span>
+
+            <span class="n">client</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">)</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">connection_ip</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">ssh_port</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+                           <span class="n">key_filename</span><span class="o">=</span><span class="n">key_file</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_timeout</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">exec_command</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">execution_timeout</span><span class="p">,</span>
+                <span class="n">environment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">)</span>
+            <span class="n">stdout_lines</span> <span class="o">=</span> <span class="n">stdout</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">stderr_lines</span> <span class="o">=</span> <span class="n">stderr</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">return_code</span> <span class="o">=</span> <span class="n">stdout</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">recv_exit_status</span><span class="p">()</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">SSHCommandExecutor</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">(</span>
+                <span class="n">ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ret_code</span><span class="o">=</span><span class="n">return_code</span><span class="p">,</span> <span class="n">stdout_lines</span><span class="o">=</span><span class="n">stdout_lines</span><span class="p">,</span>
+                <span class="n">stderr_lines</span><span class="o">=</span><span class="n">stderr_lines</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error executing command in node </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">SSHCommandExecutor</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">(</span>
+                <span class="n">ok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ret_code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stdout_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">stderr_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SSHCommandExecutor.run"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.SSHCommandExecutor.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CommandResult</span><span class="p">]:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[(</span><span class="n">node</span><span class="p">,)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">]</span>
+            <span class="n">_results</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connect_and_execute</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">_results</span><span class="p">):</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="n">results</span></div></div>
+
+
+<div class="viewcode-block" id="AnsiblePlaybookExecutor"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.AnsiblePlaybookExecutor">[docs]</a><span class="k">class</span> <span class="nc">AnsiblePlaybookExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+<div class="viewcode-block" id="AnsiblePlaybookExecutor.PlaybookResult"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.AnsiblePlaybookExecutor.PlaybookResult">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">PlaybookResult</span><span class="p">:</span>
+        <span class="n">ok</span><span class="p">:</span> <span class="nb">bool</span>
+        <span class="n">ret_code</span><span class="p">:</span> <span class="nb">int</span>
+        <span class="n">hosts</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
+        <span class="n">events</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]</span>
+        <span class="nb">vars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="AnsiblePlaybookExecutor.create_inventory"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.AnsiblePlaybookExecutor.create_inventory">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">create_inventory</span><span class="p">(</span>
+            <span class="n">hosts_node_map</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+                <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]]],</span>
+            <span class="n">private_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">host_vars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">node_vars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+        <span class="n">hosts</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+        <span class="n">host_vars</span> <span class="o">=</span> <span class="n">host_vars</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">node_vars</span> <span class="o">=</span> <span class="n">node_vars</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">hosts_node_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;all&#39;</span><span class="p">:</span> <span class="n">hosts_node_map</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span><span class="si">}</span><span class="s2"> for &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;hosts_node_map parameter&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">host</span><span class="p">,</span> <span class="n">node_list</span> <span class="ow">in</span> <span class="n">hosts_node_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">host_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">host_dict</span><span class="p">[</span><span class="s1">&#39;vars&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">host_vars</span><span class="p">[</span><span class="n">host</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="n">_hosts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_list</span><span class="p">:</span>
+                <span class="n">_host_vars</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="n">_host_vars</span><span class="p">[</span><span class="s1">&#39;ansible_host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">ip</span>
+                <span class="n">_host_vars</span><span class="p">[</span><span class="s1">&#39;ansible_connection&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ssh&#39;</span>
+                <span class="n">_host_vars</span><span class="p">[</span><span class="s1">&#39;ansible_user&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">user</span>
+                <span class="n">_host_vars</span><span class="p">[</span><span class="s1">&#39;ansible_ssh_private_key_file&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_extend</span><span class="p">(</span>
+                    <span class="n">private_path</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">keypair_private_file</span><span class="p">)</span>
+                <span class="n">_host_vars</span><span class="p">[</span><span class="s1">&#39;ansible_port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">ssh_port</span>
+                <span class="n">_host_vars</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">node_vars</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="nb">dict</span><span class="p">()))</span>
+                <span class="n">_hosts</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">_host_vars</span>
+
+            <span class="n">host_dict</span><span class="p">[</span><span class="s1">&#39;hosts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hosts</span>
+
+            <span class="k">if</span> <span class="n">host</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+                <span class="n">inventory</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">host_dict</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hosts</span><span class="p">[</span><span class="n">host</span><span class="p">]</span> <span class="o">=</span> <span class="n">host_dict</span>
+
+        <span class="k">if</span> <span class="n">hosts</span><span class="p">:</span>
+            <span class="n">inventory</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict_to_dict</span><span class="p">(</span><span class="n">hosts</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">defaultdict_to_dict</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnsiblePlaybookExecutor.create_extra_vars"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.AnsiblePlaybookExecutor.create_extra_vars">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">create_extra_vars</span><span class="p">(</span><span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">],</span>
+                          <span class="n">private_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">elasticluster_vars</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;elasticluster&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;cloud&#39;</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="s1">&#39;output_dir&#39;</span><span class="p">:</span> <span class="n">output_dir</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;aws&#39;</span><span class="p">:</span>
+                <span class="n">aws_access_key</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span>
+                    <span class="n">path_extend</span><span class="p">(</span><span class="n">private_path</span><span class="p">,</span>
+                                <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">access_keyfile</span><span class="p">),</span>
+                    <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">aws_secret_key</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span>
+                    <span class="n">path_extend</span><span class="p">(</span><span class="n">private_path</span><span class="p">,</span>
+                                <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">secret_access_keyfile</span><span class="p">),</span>
+                    <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">aws_region</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">region</span>
+                <span class="n">keypair_name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">keypair_name</span>
+
+                <span class="n">elasticluster_vars</span><span class="p">[</span><span class="s1">&#39;elasticluster&#39;</span><span class="p">][</span><span class="s1">&#39;cloud&#39;</span><span class="p">][</span><span class="s1">&#39;aws_access_key_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aws_access_key</span>
+                <span class="n">elasticluster_vars</span><span class="p">[</span><span class="s1">&#39;elasticluster&#39;</span><span class="p">][</span><span class="s1">&#39;cloud&#39;</span><span class="p">][</span><span class="s1">&#39;aws_secret_access_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aws_secret_key</span>
+                <span class="n">elasticluster_vars</span><span class="p">[</span><span class="s1">&#39;elasticluster&#39;</span><span class="p">][</span><span class="s1">&#39;cloud&#39;</span><span class="p">][</span><span class="s1">&#39;aws_region&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aws_region</span>
+                <span class="n">elasticluster_vars</span><span class="p">[</span><span class="s1">&#39;elasticluster&#39;</span><span class="p">][</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;user_key_name&#39;</span><span class="p">:</span> <span class="n">keypair_name</span><span class="p">,</span>
+                    <span class="s1">&#39;instance_id&#39;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">cloud_instance_id</span>
+                <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">elasticluster_vars</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">playbook_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">private_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">inventory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">env_vars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">quiet</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">verbosity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">default_inventory</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;all&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;localhost&#39;</span><span class="p">:</span> <span class="p">{}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">playbook_file</span> <span class="o">=</span> <span class="n">playbook_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_path</span> <span class="o">=</span> <span class="n">private_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inventory</span> <span class="o">=</span> <span class="n">inventory</span> <span class="ow">or</span> <span class="n">default_inventory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env_vars</span> <span class="o">=</span> <span class="n">env_vars</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_args</span> <span class="o">=</span> <span class="n">extra_args</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quiet</span> <span class="o">=</span> <span class="n">quiet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">=</span> <span class="n">verbosity</span>
+
+<div class="viewcode-block" id="AnsiblePlaybookExecutor.run"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.AnsiblePlaybookExecutor.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PlaybookResult</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">tmpdir</span><span class="p">()</span> <span class="k">as</span> <span class="n">tdir</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ansible runner will execute the playbook at: &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">playbook_file</span><span class="si">}</span><span class="s2">`.&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inventory: </span><span class="se">\n</span><span class="si">{</span><span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inventory</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extra: </span><span class="se">\n</span><span class="si">{</span><span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extra_args</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">ansible_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="n">private_data_dir</span><span class="o">=</span><span class="n">tdir</span><span class="p">,</span> <span class="n">inventory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inventory</span><span class="p">,</span>
+                <span class="n">playbook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">playbook_file</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quiet</span><span class="p">,</span>
+                <span class="n">verbosity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span><span class="p">,</span> <span class="n">extravars</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extra_args</span><span class="p">,</span>
+                <span class="n">envvars</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env_vars</span><span class="p">,</span>
+                <span class="n">debug</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">host_playbook_vars</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ret</span><span class="o">.</span><span class="n">events</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;event_data&#39;</span><span class="p">][</span><span class="s1">&#39;task_action&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;set_fact&#39;</span> <span class="ow">and</span> \
+                            <span class="n">e</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;runner_on_ok&#39;</span><span class="p">:</span>
+                        <span class="n">params</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;event_data&#39;</span><span class="p">][</span><span class="s1">&#39;res&#39;</span><span class="p">][</span><span class="s1">&#39;ansible_facts&#39;</span><span class="p">]</span>
+                        <span class="n">host</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;event_data&#39;</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span>
+                        <span class="n">host_playbook_vars</span><span class="p">[</span><span class="n">host</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+            <span class="n">host_playbook_vars</span> <span class="o">=</span> <span class="n">defaultdict_to_dict</span><span class="p">(</span><span class="n">host_playbook_vars</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Collected host playbook variables (facts): &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">host_playbook_vars</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">stats</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">stats</span>
+            <span class="k">if</span> <span class="n">stats</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PlaybookResult</span><span class="p">(</span>
+                    <span class="n">ok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ret_code</span><span class="o">=</span><span class="n">ret</span><span class="o">.</span><span class="n">rc</span><span class="p">,</span> <span class="n">hosts</span><span class="o">=</span><span class="p">{},</span> <span class="n">events</span><span class="o">=</span><span class="p">{},</span>
+                    <span class="nb">vars</span><span class="o">=</span><span class="n">host_playbook_vars</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">r</span>
+
+            <span class="n">all_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">host</span> <span class="k">for</span> <span class="n">hosts</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                              <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">hosts</span><span class="o">.</span><span class="n">keys</span><span class="p">()})</span>
+            <span class="n">not_ok_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">host</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dark&#39;</span><span class="p">,</span> <span class="s1">&#39;failures&#39;</span><span class="p">]</span>
+                                 <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()})</span>
+            <span class="n">hosts_stats</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">not_ok_nodes</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">all_nodes</span><span class="p">}</span>
+            <span class="n">hosts_events</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">ret</span><span class="o">.</span><span class="n">host_events</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">all_nodes</span><span class="p">}</span>
+
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PlaybookResult</span><span class="p">(</span>
+                <span class="n">ok</span><span class="o">=</span><span class="n">ret</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;successful&#39;</span><span class="p">,</span>
+                <span class="n">ret_code</span><span class="o">=</span><span class="n">ret</span><span class="o">.</span><span class="n">rc</span><span class="p">,</span>
+                <span class="n">hosts</span><span class="o">=</span><span class="n">hosts_stats</span><span class="p">,</span>
+                <span class="n">events</span><span class="o">=</span><span class="n">hosts_events</span><span class="p">,</span>
+                <span class="nb">vars</span><span class="o">=</span><span class="n">host_playbook_vars</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">r</span></div></div>
+
+
+<div class="viewcode-block" id="ShellInvoker"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.ShellInvoker">[docs]</a><span class="k">class</span> <span class="nc">ShellInvoker</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">NodeDescriptor</span><span class="p">,</span> <span class="n">private_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">verbosity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ssh_binary</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;ssh&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_path</span> <span class="o">=</span> <span class="n">private_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">=</span> <span class="n">verbosity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssh_binary</span> <span class="o">=</span> <span class="n">ssh_binary</span>
+
+<div class="viewcode-block" id="ShellInvoker.run"><a class="viewcode-back" href="../../autoapi/clap/executor/index.html#clap.executor.ShellInvoker.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">user</span>
+        <span class="n">ssh_port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">ssh_port</span>
+        <span class="n">connection_ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">ip</span>
+        <span class="n">key_file</span> <span class="o">=</span> <span class="n">path_extend</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">private_path</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">keypair_private_file</span><span class="p">)</span>
+        <span class="n">ssh_verbose</span> <span class="o">=</span> <span class="s2">&quot;-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;v&#39;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span> \
+            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ssh_command</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ssh_binary</span><span class="si">}</span><span class="s1"> -t </span><span class="si">{</span><span class="n">ssh_verbose</span><span class="si">}</span><span class="s1"> -o &quot;Port=</span><span class="si">{</span><span class="n">ssh_port</span><span class="si">}</span><span class="s1">&quot; &#39;</span> \
+                      <span class="sa">f</span><span class="s1">&#39;-o StrictHostKeyChecking=no -o &quot;User=</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s1">&quot; &#39;</span> \
+                      <span class="sa">f</span><span class="s1">&#39;-i &quot;</span><span class="si">{</span><span class="n">key_file</span><span class="si">}</span><span class="s1">&quot; </span><span class="si">{</span><span class="n">connection_ip</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Executing ssh command: &#39;</span><span class="si">{</span><span class="n">ssh_command</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">ssh_command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SSH session to </span><span class="si">{</span><span class="n">connection_ip</span><span class="si">}</span><span class="s2"> finalized!&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid connection ip: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">ip</span><span class="si">}</span><span class="s2">. &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;Check if `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s2">` is alive first...&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Otávio Napoli.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

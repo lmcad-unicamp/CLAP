@@ -1,0 +1,1207 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>clap.cluster_manager &mdash; CLoud Application Platform 0.2.2
+ documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="clap.configs" href="../configs/index.html" />
+    <link rel="prev" title="clap.abstract_provider" href="../abstract_provider/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../shared_roles.html">Roles shared with CLAP</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">Programming Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../abstract_provider/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.abstract_provider</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.cluster_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../configs/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.configs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../executor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.executor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../node/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../node_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.repository</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../role_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.role_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../api.html">Programming Reference</a> &raquo;</li>
+        
+          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.cluster_manager</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../../_sources/autoapi/clap/cluster_manager/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-clap.cluster_manager">
+<span id="clap-cluster-manager"></span><h1><a class="reference internal" href="#module-clap.cluster_manager" title="clap.cluster_manager"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.cluster_manager</span></code></a><a class="headerlink" href="#module-clap.cluster_manager" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.cluster_manager.ClusterConfig" title="clap.cluster_manager.ClusterConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterConfig</span></code></a></p></td>
+<td><p>A full cluster configuration</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.cluster_manager.ClusterConfigDatabase" title="clap.cluster_manager.ClusterConfigDatabase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterConfigDatabase</span></code></a></p></td>
+<td><p>This class stores information about clusters configurations in CLAP system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.cluster_manager.ClusterConfigFile" title="clap.cluster_manager.ClusterConfigFile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterConfigFile</span></code></a></p></td>
+<td><p>A dataclass that represents a cluster configuration file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.cluster_manager.ClusterDescriptor" title="clap.cluster_manager.ClusterDescriptor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterDescriptor</span></code></a></p></td>
+<td><p>Dataclass that describes an created CLAP cluster</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.cluster_manager.ClusterManager" title="clap.cluster_manager.ClusterManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterManager</span></code></a></p></td>
+<td><p>This class is used to start, stop, pause, resume and perform actions</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.cluster_manager.ClusterOptions" title="clap.cluster_manager.ClusterOptions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterOptions</span></code></a></p></td>
+<td><p>Dataclass that stores information about optional cluster options in a</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.cluster_manager.ClusterRepositoryController" title="clap.cluster_manager.ClusterRepositoryController"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterRepositoryController</span></code></a></p></td>
+<td><p>This class is used manipulate clusters in a repository. It performs</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.cluster_manager.CommandActionType" title="clap.cluster_manager.CommandActionType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CommandActionType</span></code></a></p></td>
+<td><p>Dataclass that stores information about a command to perform from a</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.cluster_manager.NodeConfig" title="clap.cluster_manager.NodeConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NodeConfig</span></code></a></p></td>
+<td><p>Dataclass that stores information about a cluster’s node at cluster</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.cluster_manager.PlaybookActionType" title="clap.cluster_manager.PlaybookActionType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PlaybookActionType</span></code></a></p></td>
+<td><p>Dataclass that stores information about a playboook to execute from a</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.cluster_manager.RoleActionType" title="clap.cluster_manager.RoleActionType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoleActionType</span></code></a></p></td>
+<td><p>Dataclass that stores information about a role’s action from a cluster</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.cluster_manager.RoleAdd" title="clap.cluster_manager.RoleAdd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoleAdd</span></code></a></p></td>
+<td><p>Dataclass that stores information about a role that mst be added to</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.cluster_manager.SetupConfig" title="clap.cluster_manager.SetupConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SetupConfig</span></code></a></p></td>
+<td><p>Dataclass that stores information about a Setup configuration in a</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.cluster_manager._ClusterConfig" title="clap.cluster_manager._ClusterConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_ClusterConfig</span></code></a></p></td>
+<td><p>Temporary class about cluster config (used to parse cluster configuration</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.cluster_manager._NodeConfig" title="clap.cluster_manager._NodeConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_NodeConfig</span></code></a></p></td>
+<td><p>Temporary class about node config (used to parse cluster configuration</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.cluster_manager.ActionType" title="clap.cluster_manager.ActionType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ActionType</span></code></a></p></td>
+<td><p>An setup action can be a role action, a command or a playbook</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.cluster_manager.logger" title="clap.cluster_manager.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt id="clap.cluster_manager.ActionType">
+<code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">ActionType</span></code><a class="headerlink" href="#clap.cluster_manager.ActionType" title="Permalink to this definition">¶</a></dt>
+<dd><p>An setup action can be a role action, a command or a playbook</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.ClusterConfig">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">ClusterConfig</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>A full cluster configuration</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterConfig.after">
+<code class="sig-name descname"><span class="pre">after</span></code><em class="property"> <span class="pre">:Optional[List[SetupConfig]]</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterConfig.after" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of <a class="reference internal" href="#clap.cluster_manager.SetupConfig" title="clap.cluster_manager.SetupConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetupConfig</span></code></a> to perform in after phase</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterConfig.after_all">
+<code class="sig-name descname"><span class="pre">after_all</span></code><em class="property"> <span class="pre">:Optional[List[SetupConfig]]</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterConfig.after_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of <a class="reference internal" href="#clap.cluster_manager.SetupConfig" title="clap.cluster_manager.SetupConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetupConfig</span></code></a> to perform in after_all phase</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterConfig.before">
+<code class="sig-name descname"><span class="pre">before</span></code><em class="property"> <span class="pre">:Optional[List[SetupConfig]]</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterConfig.before" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of <a class="reference internal" href="#clap.cluster_manager.SetupConfig" title="clap.cluster_manager.SetupConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetupConfig</span></code></a> to perform in before phase</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterConfig.before_all">
+<code class="sig-name descname"><span class="pre">before_all</span></code><em class="property"> <span class="pre">:Optional[List[SetupConfig]]</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterConfig.before_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of <a class="reference internal" href="#clap.cluster_manager.SetupConfig" title="clap.cluster_manager.SetupConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetupConfig</span></code></a> to perform in before_all phase</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterConfig.cluster_config_id">
+<code class="sig-name descname"><span class="pre">cluster_config_id</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterConfig.cluster_config_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the cluster configuration</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterConfig.nodes">
+<code class="sig-name descname"><span class="pre">nodes</span></code><em class="property"> <span class="pre">:Optional[Dict[str,</span> <span class="pre">NodeConfig]]</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterConfig.nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary with cluster’s node type as name and <a class="reference internal" href="#clap.cluster_manager.NodeConfig" title="clap.cluster_manager.NodeConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">NodeConfig</span></code></a> as
+value</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterConfig.options">
+<code class="sig-name descname"><span class="pre">options</span></code><em class="property"> <span class="pre">:Optional[ClusterOptions]</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterConfig.options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional cluster options (<a class="reference internal" href="#clap.cluster_manager.ClusterOptions" title="clap.cluster_manager.ClusterOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClusterOptions</span></code></a>)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.ClusterConfigDatabase">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">ClusterConfigDatabase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard_invalids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterConfigDatabase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterConfigDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class stores information about clusters configurations in CLAP system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_files</strong> – List of cluster files to parse.</p></li>
+<li><p><strong>discard_invalids</strong> – If true, discard invalid configurations without
+raising any exception. Otherwise, raises a <a class="reference internal" href="#clap.cluster_manager.ClusterError" title="clap.cluster_manager.ClusterError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClusterError</span></code></a>
+exception.</p></li>
+<li><p><strong>load</strong> – If true, load all files when this class is created.
+Otherwise, use <code class="xref py py-func docutils literal notranslate"><span class="pre">load()</span></code> method.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterConfigDatabase.clusters">
+<code class="sig-name descname"><span class="pre">clusters</span></code><em class="property"> <span class="pre">:Dict[str,</span> <span class="pre">ClusterConfig]</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterConfigDatabase.clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary with cluster configurations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterConfigDatabase._load_cluster_and_setups">
+<code class="sig-name descname"><span class="pre">_load_cluster_and_setups</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterConfigDatabase._load_cluster_and_setups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterConfigDatabase._load_cluster_and_setups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterConfigDatabase.load">
+<code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterConfigDatabase.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterConfigDatabase.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load all cluster configurations from cluster files. Configurations
+will be stored in <cite>cluster</cite> attribute.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.ClusterConfigFile">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">ClusterConfigFile</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterConfigFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterConfigFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dataclass that represents a cluster configuration file</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterConfigFile.clusters">
+<code class="sig-name descname"><span class="pre">clusters</span></code><em class="property"> <span class="pre">:Optional[Dict[str,</span> <span class="pre">_ClusterConfig]]</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterConfigFile.clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary with cluster name as key and <a class="reference internal" href="#clap.cluster_manager._ClusterConfig" title="clap.cluster_manager._ClusterConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">_ClusterConfig</span></code></a> as value</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterConfigFile.setups">
+<code class="sig-name descname"><span class="pre">setups</span></code><em class="property"> <span class="pre">:Optional[Dict[str,</span> <span class="pre">SetupConfig]]</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterConfigFile.setups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary with setup name as key and <a class="reference internal" href="#clap.cluster_manager.SetupConfig" title="clap.cluster_manager.SetupConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetupConfig</span></code></a> as value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.cluster_manager.ClusterConfigurationError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">ClusterConfigurationError</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterConfigurationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterConfigurationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.ClusterDescriptor">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">ClusterDescriptor</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterDescriptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataclass that describes an created CLAP cluster</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterDescriptor.cluster_config">
+<code class="sig-name descname"><span class="pre">cluster_config</span></code><em class="property"> <span class="pre">:ClusterConfig</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterDescriptor.cluster_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cluster configuration used</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterDescriptor.cluster_id">
+<code class="sig-name descname"><span class="pre">cluster_id</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterDescriptor.cluster_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>ID of the cluster</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterDescriptor.cluster_name">
+<code class="sig-name descname"><span class="pre">cluster_name</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterDescriptor.cluster_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the cluster configuration used</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterDescriptor.creation_time">
+<code class="sig-name descname"><span class="pre">creation_time</span></code><em class="property"> <span class="pre">:float</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterDescriptor.creation_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Date that this cluster was created</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterDescriptor.is_setup">
+<code class="sig-name descname"><span class="pre">is_setup</span></code><em class="property"> <span class="pre">:bool</span> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterDescriptor.is_setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean indicating if cluster was already setup</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterDescriptor.update_time">
+<code class="sig-name descname"><span class="pre">update_time</span></code><em class="property"> <span class="pre">:float</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterDescriptor.update_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Last time of information of this cluster was updated</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.cluster_manager.ClusterError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">ClusterError</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.ClusterManager">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">ClusterManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_repository_controller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">private_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_tag_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.cluster:'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This class is used to start, stop, pause, resume and perform actions</dt><dd><p>in clusters. It is responsible to manage clusters (creating and
+removing them from the repository).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_manager</strong> – Class used to manage nodes.</p></li>
+<li><p><strong>role_manager</strong> – Class used to manage roles.</p></li>
+<li><p><strong>config_db</strong> – Class used to obtain cluster configurations.</p></li>
+<li><p><strong>cluster_repository_controller</strong> – Class used to manage clusters at
+a repository.</p></li>
+<li><p><strong>private_dir</strong> – Path to the private directory (where private keys
+are stored).</p></li>
+<li><p><strong>cluster_tag_prefix</strong> – Optional prefix to tag nodes that belongs to
+a cluster.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager._run_setup_list">
+<code class="sig-name descname"><span class="pre">_run_setup_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setups</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager._run_setup_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager._run_setup_list" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>setups</strong> (<em>List</em><em>[</em><a class="reference internal" href="#clap.cluster_manager.SetupConfig" title="clap.cluster_manager.SetupConfig"><em>SetupConfig</em></a><em>]</em>) – </p></li>
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.add_cluster_tag">
+<code class="sig-name descname"><span class="pre">add_cluster_tag</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.add_cluster_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.add_cluster_tag" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Given a list of node ids, a cluster id and a cluster’s node type,</dt><dd><p>add the cluster tag to the nodes. Once the tag is added to a node,
+the node belongs to a cluster. So, a cluster is a set of nodes with
+tagged with an specified tag.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List node ids to add the cluster tag.</p></li>
+<li><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster that this node will belong.</p></li>
+<li><p><strong>node_type</strong> (<em>str</em>) – Cluster’s node type.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The node ids of nodes that the tag was added.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.add_existing_nodes_to_cluster">
+<code class="sig-name descname"><span class="pre">add_existing_nodes_to_cluster</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_types</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.add_existing_nodes_to_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.add_existing_nodes_to_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Add already created nodes to a cluster as a desired cluster’s node</dt><dd><p>type. The cluster will be setup up after adding these nodes to the
+cluster.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to add the nodes.</p></li>
+<li><p><strong>node_types</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – Dictionary with cluster’s node type as key and list
+of node ids as values.</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – Number of threads to perform setup actions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.get_all_cluster_nodes">
+<code class="sig-name descname"><span class="pre">get_all_cluster_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.get_all_cluster_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.get_all_cluster_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all nodes that belong to a cluster.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to retrieve the nodes.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of node ids of nodes that belongs to the cluster.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.get_all_clusters">
+<code class="sig-name descname"><span class="pre">get_all_clusters</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.get_all_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.get_all_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all clusters information from the cluster repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of clusters information.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#clap.cluster_manager.ClusterDescriptor" title="clap.cluster_manager.ClusterDescriptor">ClusterDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.get_cluster_by_id">
+<code class="sig-name descname"><span class="pre">get_cluster_by_id</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.get_cluster_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.get_cluster_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Get a cluster information <a class="reference internal" href="#clap.cluster_manager.ClusterDescriptor" title="clap.cluster_manager.ClusterDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClusterDescriptor</span></code></a> from the</dt><dd><p>cluster repository.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to retrieve.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A cluster information.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#clap.cluster_manager.ClusterDescriptor" title="clap.cluster_manager.ClusterDescriptor">ClusterDescriptor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.get_cluster_nodes_types">
+<code class="sig-name descname"><span class="pre">get_cluster_nodes_types</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.get_cluster_nodes_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.get_cluster_nodes_types" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Get all nodes and the nodes’ types from nodes that belong to a</dt><dd><p>cluster.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to retrieve the nodes.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary where keys are the cluster’s node types and values
+are lists of nodes ids from nodes of this cluster’s node type.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, List[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.grow">
+<code class="sig-name descname"><span class="pre">grow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.grow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.grow" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Starts new nodes from a cluster, based on its cluster’s node type.</dt><dd><p>The nodes will be started and tagged to belong to the cluster.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to add more nodes.</p></li>
+<li><p><strong>node_type</strong> (<em>str</em>) – Cluster’s node type to start.</p></li>
+<li><p><strong>count</strong> (<em>int</em>) – Number of nodes to start.</p></li>
+<li><p><strong>min_count</strong> (<em>int</em>) – Minimum number of nodes that must be started. If this
+number is not reached, all nodes are terminated.</p></li>
+<li><p><strong>start_timeout</strong> (<em>int</em>) – Timeout to start nodes. If nodes are not started
+within this timeout, it will be terminated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of node ids of the nodes that were started.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.is_alive">
+<code class="sig-name descname"><span class="pre">is_alive</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'echo</span> <span class="pre">&quot;OK&quot;'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.is_alive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.is_alive" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Check if a cluster is alive, checking the aliveness of all nodes</dt><dd><p>that belongs the cluster.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to check for aliveness.</p></li>
+<li><p><strong>retries</strong> (<em>int</em>) – Number of check retries.</p></li>
+<li><p><strong>wait_timeout</strong> (<em>int</em>) – Timeout to perform another check if previous fails.</p></li>
+<li><p><strong>update_timeout</strong> (<em>int</em>) – Timeout to update node information.</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – Number of threads to check for aliveness.</p></li>
+<li><p><strong>test_command</strong> (<em>str</em>) – Command to be executed in nodes to test for aliveness.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary where keys are the IDs of nodes and values are
+booleans indicating if node is alive or not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.pause_cluster">
+<code class="sig-name descname"><span class="pre">pause_cluster</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.pause_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.pause_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pause the cluster, pausing all nodes that belongs to it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to pause nodes</p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – Pause timeout</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – Number of threads to perform pause process.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ID of the nodes that were sucessfuly paused</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.resume_cluster">
+<code class="sig-name descname"><span class="pre">resume_cluster</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.resume_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.resume_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resumes a cluster, resuming all nodes that belongs to it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to resume.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – Timeout to resume nodes.</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – Number of threads in the resume process.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ID of the nodes that were successfully resumed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.run_action">
+<code class="sig-name descname"><span class="pre">run_action</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.run_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.run_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a cluster’s action in a set of nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>action</strong> (<em>ActionType</em>) – Cluster’s action to be performed</p></li>
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – ID of the nodes to perform this action</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if action as sucessfully performed and false otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.run_role_add">
+<code class="sig-name descname"><span class="pre">run_role_add</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.run_role_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.run_role_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add nodes to a role</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role</strong> (<a class="reference internal" href="#clap.cluster_manager.RoleAdd" title="clap.cluster_manager.RoleAdd"><em>RoleAdd</em></a>) – Role to add to nodes</p></li>
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – ID of the nodes to add the role</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if nodes were added to the role and false otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.run_setup">
+<code class="sig-name descname"><span class="pre">run_setup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.run_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.run_setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a cluster’s setup configuration at a list of nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>setup</strong> (<a class="reference internal" href="#clap.cluster_manager.SetupConfig" title="clap.cluster_manager.SetupConfig"><em>SetupConfig</em></a>) – Setup to perform in nodes</p></li>
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – ID of the nodes to perform this setup</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the setup was successfully executed and false otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.setup_cluster">
+<code class="sig-name descname"><span class="pre">setup_cluster</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes_being_added</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_at_stage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'before_all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.setup_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.setup_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setups a cluster. It will run all setups in order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to perform setup</p></li>
+<li><p><strong>nodes_being_added</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – List of nodes that is being added now to the
+cluster. It affects before, node and after stages. If None, it
+supposes that all nodes are being added to the cluster now.</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – NUmber of threads to run setup configs.</p></li>
+<li><p><strong>start_at_stage</strong> (<em>str</em>) – Stage to start the configuration. It can be:
+‘before_all’, ‘before’, ‘node’, ‘after’ or ‘after_all’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.start_cluster">
+<code class="sig-name descname"><span class="pre">start_cluster</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destroy_on_min_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.start_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.start_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Create a cluster, based on a <a class="reference internal" href="#clap.cluster_manager.ClusterConfig" title="clap.cluster_manager.ClusterConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClusterConfig</span></code></a>. It will start</dt><dd><p>the desired nodes and tag them to belong to the cluster. After, a
+new cluster will be created at cluster’s repository.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_config</strong> (<a class="reference internal" href="#clap.cluster_manager.ClusterConfig" title="clap.cluster_manager.ClusterConfig"><em>ClusterConfig</em></a>) – Cluster configuration used to start a cluster</p></li>
+<li><p><strong>start_timeout</strong> (<em>int</em>) – Timeout to start nodes. If nodes are not started
+within this timeout, it will be terminated.</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – Number of threads to start nodes in parallel</p></li>
+<li><p><strong>destroy_on_min_count</strong> (<em>bool</em>) – If True, the cluster will be destroyed (all
+nodes will be terminated and cluster is not created) if any cluster’s
+node type min_count is not reached.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The cluster ID of the newly created cluster.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.start_cluster_node">
+<code class="sig-name descname"><span class="pre">start_cluster_node</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.start_cluster_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.start_cluster_node" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>node_type</strong> (<em>str</em>) – </p></li>
+<li><p><strong>instance_info</strong> (<a class="reference internal" href="../configs/index.html#clap.configs.InstanceInfo" title="clap.configs.InstanceInfo"><em>clap.configs.InstanceInfo</em></a>) – </p></li>
+<li><p><strong>count</strong> (<em>int</em>) – </p></li>
+<li><p><strong>start_timeout</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.stop_cluster">
+<code class="sig-name descname"><span class="pre">stop_cluster</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.stop_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.stop_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop a cluster, stopping all nodes that belongs to it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to stop;</p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – Timeout to stop nodes.</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – Number of threads in the stop process.</p></li>
+<li><p><strong>remove_cluster</strong> (<em>bool</em>) – If True, also removes the cluster from the
+repository.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ID of the nodes that were successfully stopped.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterManager.upsert_cluster">
+<code class="sig-name descname"><span class="pre">upsert_cluster</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterManager.upsert_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterManager.upsert_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create or update a cluster in cluster’s repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cluster</strong> (<a class="reference internal" href="#clap.cluster_manager.ClusterDescriptor" title="clap.cluster_manager.ClusterDescriptor"><em>ClusterDescriptor</em></a>) – Cluster to upsert.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.ClusterOptions">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">ClusterOptions</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataclass that stores information about optional cluster options in a
+cluster configuration file</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager.ClusterOptions.ssh_to">
+<code class="sig-name descname"><span class="pre">ssh_to</span></code><em class="property"> <span class="pre">:Optional[str]</span></em><a class="headerlink" href="#clap.cluster_manager.ClusterOptions.ssh_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name od the node type to perform ssh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.ClusterRepositoryController">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">ClusterRepositoryController</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterRepositoryController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterRepositoryController" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is used manipulate clusters in a repository. It performs
+all loads and stores of <a class="reference internal" href="#clap.cluster_manager.ClusterDescriptor" title="clap.cluster_manager.ClusterDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClusterDescriptor</span></code></a> in a repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>repository</strong> – Cluster repository used to store <a class="reference internal" href="#clap.cluster_manager.ClusterDescriptor" title="clap.cluster_manager.ClusterDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClusterDescriptor</span></code></a>.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterRepositoryController.get_all_clusters">
+<code class="sig-name descname"><span class="pre">get_all_clusters</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterRepositoryController.get_all_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterRepositoryController.get_all_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve all clusters from the repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of clusters in the repository.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#clap.cluster_manager.ClusterDescriptor" title="clap.cluster_manager.ClusterDescriptor">ClusterDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterRepositoryController.get_cluster_by_id">
+<code class="sig-name descname"><span class="pre">get_cluster_by_id</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterRepositoryController.get_cluster_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterRepositoryController.get_cluster_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a cluster from the repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to retrieve.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The cluster.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#clap.cluster_manager.ClusterDescriptor" title="clap.cluster_manager.ClusterDescriptor">ClusterDescriptor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterRepositoryController.remove_cluster">
+<code class="sig-name descname"><span class="pre">remove_cluster</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterRepositoryController.remove_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterRepositoryController.remove_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a cluster from the repository based on its cluster ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cluster_id</strong> (<em>str</em>) – ID of the cluster to remove.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.cluster_manager.ClusterRepositoryController.upsert_cluster">
+<code class="sig-name descname"><span class="pre">upsert_cluster</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterRepositoryController.upsert_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterRepositoryController.upsert_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upsert (create or update) a cluster in repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cluster</strong> (<a class="reference internal" href="#clap.cluster_manager.ClusterDescriptor" title="clap.cluster_manager.ClusterDescriptor"><em>ClusterDescriptor</em></a>) – A cluster to be stored. The cluster ID will be used
+to identify the cluster in the repository.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.cluster_manager.ClusterSetupError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">ClusterSetupError</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#ClusterSetupError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.ClusterSetupError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#clap.cluster_manager.ClusterError" title="clap.cluster_manager.ClusterError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterError</span></code></a></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.CommandActionType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">CommandActionType</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#CommandActionType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.CommandActionType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataclass that stores information about a command to perform from a
+cluster setup</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager.CommandActionType.command">
+<code class="sig-name descname"><span class="pre">command</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.cluster_manager.CommandActionType.command" title="Permalink to this definition">¶</a></dt>
+<dd><p>The command to execute</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.cluster_manager.InvalidClusterError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">InvalidClusterError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#InvalidClusterError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.InvalidClusterError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.cluster_manager.InvalidSetupError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">InvalidSetupError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setup_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#InvalidSetupError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.InvalidSetupError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#clap.cluster_manager.ClusterConfigurationError" title="clap.cluster_manager.ClusterConfigurationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterConfigurationError</span></code></a></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.NodeConfig">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">NodeConfig</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#NodeConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.NodeConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataclass that stores information about a cluster’s node at cluster
+configuration</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager.NodeConfig.count">
+<code class="sig-name descname"><span class="pre">count</span></code><em class="property"> <span class="pre">:int</span></em><a class="headerlink" href="#clap.cluster_manager.NodeConfig.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of nodes to start</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.NodeConfig.min_count">
+<code class="sig-name descname"><span class="pre">min_count</span></code><em class="property"> <span class="pre">:Optional[int]</span></em><a class="headerlink" href="#clap.cluster_manager.NodeConfig.min_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum number of nodes that must sucessfully start</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.NodeConfig.setups">
+<code class="sig-name descname"><span class="pre">setups</span></code><em class="property"> <span class="pre">:List[SetupConfig]</span></em><a class="headerlink" href="#clap.cluster_manager.NodeConfig.setups" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of <a class="reference internal" href="#clap.cluster_manager.SetupConfig" title="clap.cluster_manager.SetupConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetupConfig</span></code></a> that must be performed in this node</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.NodeConfig.type">
+<code class="sig-name descname"><span class="pre">type</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.cluster_manager.NodeConfig.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of the instance used (refers to instances.yaml file names)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.cluster_manager.NodeSizeError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">NodeSizeError</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#NodeSizeError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.NodeSizeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#clap.cluster_manager.ClusterConfigurationError" title="clap.cluster_manager.ClusterConfigurationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterConfigurationError</span></code></a></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.PlaybookActionType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">PlaybookActionType</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#PlaybookActionType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.PlaybookActionType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataclass that stores information about a playboook to execute from a
+cluster setup</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager.PlaybookActionType.extra">
+<code class="sig-name descname"><span class="pre">extra</span></code><em class="property"> <span class="pre">:Optional[Dict[str,</span> <span class="pre">str]]</span></em><a class="headerlink" href="#clap.cluster_manager.PlaybookActionType.extra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional extra arguments</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.PlaybookActionType.playbook">
+<code class="sig-name descname"><span class="pre">playbook</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.cluster_manager.PlaybookActionType.playbook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Playbook to execute</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.RoleActionType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">RoleActionType</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#RoleActionType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.RoleActionType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataclass that stores information about a role’s action from a cluster
+setup</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager.RoleActionType.action">
+<code class="sig-name descname"><span class="pre">action</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.cluster_manager.RoleActionType.action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Role’s action name</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.RoleActionType.extra">
+<code class="sig-name descname"><span class="pre">extra</span></code><em class="property"> <span class="pre">:Optional[Dict[str,</span> <span class="pre">str]]</span></em><a class="headerlink" href="#clap.cluster_manager.RoleActionType.extra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional extra arguments</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.RoleActionType.role">
+<code class="sig-name descname"><span class="pre">role</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.cluster_manager.RoleActionType.role" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the role</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.RoleAdd">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">RoleAdd</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#RoleAdd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.RoleAdd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataclass that stores information about a role that mst be added to
+nodes from a cluster setup</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager.RoleAdd.extra">
+<code class="sig-name descname"><span class="pre">extra</span></code><em class="property"> <span class="pre">:Optional[Dict[str,</span> <span class="pre">str]]</span></em><a class="headerlink" href="#clap.cluster_manager.RoleAdd.extra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional extra arguments from role’s setup action (if any)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.RoleAdd.name">
+<code class="sig-name descname"><span class="pre">name</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.cluster_manager.RoleAdd.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the role to be added</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager.SetupConfig">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">SetupConfig</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#SetupConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager.SetupConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataclass that stores information about a Setup configuration in a
+cluster configuration file</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager.SetupConfig.actions">
+<code class="sig-name descname"><span class="pre">actions</span></code><em class="property"> <span class="pre">:Optional[List[ActionType]]</span></em><a class="headerlink" href="#clap.cluster_manager.SetupConfig.actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional list of actions to perform</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager.SetupConfig.roles">
+<code class="sig-name descname"><span class="pre">roles</span></code><em class="property"> <span class="pre">:Optional[List[RoleAdd]]</span></em><a class="headerlink" href="#clap.cluster_manager.SetupConfig.roles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional list of roles to add</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager._ClusterConfig">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">_ClusterConfig</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#_ClusterConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager._ClusterConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temporary class about cluster config (used to parse cluster configuration
+file only)</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager._ClusterConfig.after">
+<code class="sig-name descname"><span class="pre">after</span></code><em class="property"> <span class="pre">:Optional[List[str]]</span></em><a class="headerlink" href="#clap.cluster_manager._ClusterConfig.after" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager._ClusterConfig.after_all">
+<code class="sig-name descname"><span class="pre">after_all</span></code><em class="property"> <span class="pre">:Optional[List[str]]</span></em><a class="headerlink" href="#clap.cluster_manager._ClusterConfig.after_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager._ClusterConfig.before">
+<code class="sig-name descname"><span class="pre">before</span></code><em class="property"> <span class="pre">:Optional[List[str]]</span></em><a class="headerlink" href="#clap.cluster_manager._ClusterConfig.before" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager._ClusterConfig.before_all">
+<code class="sig-name descname"><span class="pre">before_all</span></code><em class="property"> <span class="pre">:Optional[List[str]]</span></em><a class="headerlink" href="#clap.cluster_manager._ClusterConfig.before_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager._ClusterConfig.nodes">
+<code class="sig-name descname"><span class="pre">nodes</span></code><em class="property"> <span class="pre">:Optional[Dict[str,</span> <span class="pre">_NodeConfig]]</span></em><a class="headerlink" href="#clap.cluster_manager._ClusterConfig.nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager._ClusterConfig.options">
+<code class="sig-name descname"><span class="pre">options</span></code><em class="property"> <span class="pre">:Optional[ClusterOptions]</span></em><a class="headerlink" href="#clap.cluster_manager._ClusterConfig.options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.cluster_manager._NodeConfig">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">_NodeConfig</span></code><a class="reference internal" href="../../../_modules/clap/cluster_manager.html#_NodeConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.cluster_manager._NodeConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temporary class about node config (used to parse cluster configuration
+file only)</p>
+<dl class="py attribute">
+<dt id="clap.cluster_manager._NodeConfig.count">
+<code class="sig-name descname"><span class="pre">count</span></code><em class="property"> <span class="pre">:int</span></em><a class="headerlink" href="#clap.cluster_manager._NodeConfig.count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager._NodeConfig.min_count">
+<code class="sig-name descname"><span class="pre">min_count</span></code><em class="property"> <span class="pre">:Optional[int]</span></em><a class="headerlink" href="#clap.cluster_manager._NodeConfig.min_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager._NodeConfig.setups">
+<code class="sig-name descname"><span class="pre">setups</span></code><em class="property"> <span class="pre">:List[str]</span></em><a class="headerlink" href="#clap.cluster_manager._NodeConfig.setups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.cluster_manager._NodeConfig.type">
+<code class="sig-name descname"><span class="pre">type</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.cluster_manager._NodeConfig.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt id="clap.cluster_manager.logger">
+<code class="sig-prename descclassname"><span class="pre">clap.cluster_manager.</span></code><code class="sig-name descname"><span class="pre">logger</span></code><a class="headerlink" href="#clap.cluster_manager.logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../configs/index.html" class="btn btn-neutral float-right" title="clap.configs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../abstract_provider/index.html" class="btn btn-neutral float-left" title="clap.abstract_provider" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Otávio Napoli.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

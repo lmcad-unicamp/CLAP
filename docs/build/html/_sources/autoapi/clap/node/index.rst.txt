@@ -1,0 +1,162 @@
+:mod:`clap.node`
+================
+
+.. py:module:: clap.node
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   clap.node.NodeDescriptor
+   clap.node.NodeLifecycle
+   clap.node.NodeStatus
+   clap.node.NodeType
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   clap.node.logger
+
+
+.. class:: NodeDescriptor
+
+   .. attribute:: cloud_instance_id
+      :annotation: :Optional[str] = 
+
+      
+
+   .. attribute:: cloud_lifecycle
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: configuration
+      :annotation: :clap.configs.InstanceInfo
+
+      
+
+   .. attribute:: creation_time
+      :annotation: :Optional[float] = 0.0
+
+      
+
+   .. attribute:: extra
+      :annotation: :Dict[str, Any]
+
+      
+
+   .. attribute:: ip
+      :annotation: :Optional[str] = 
+
+      
+
+   .. attribute:: nickname
+      :annotation: :Optional[str] = 
+
+      
+
+   .. attribute:: node_id
+      :annotation: :str
+
+      
+
+   .. attribute:: roles
+      :annotation: :List[str]
+
+      
+
+   .. attribute:: status
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: tags
+      :annotation: :Dict[str, str]
+
+      
+
+   .. attribute:: type
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: update_time
+      :annotation: :Optional[float] = 0.0
+
+      
+
+
+.. class:: NodeLifecycle
+
+   .. attribute:: NORMAL
+      :annotation: = normal
+
+      
+
+   .. attribute:: PREEMPTIBLE
+      :annotation: = preemptible
+
+      
+
+
+.. class:: NodeStatus
+
+   .. attribute:: PAUSED
+      :annotation: = paused
+
+      
+
+   .. attribute:: REACHABLE
+      :annotation: = reachable
+
+      
+
+   .. attribute:: STARTED
+      :annotation: = started
+
+      
+
+   .. attribute:: STOPPED
+      :annotation: = stopped
+
+      
+
+   .. attribute:: UNKNOWN
+      :annotation: = unknown
+
+      
+
+   .. attribute:: UNREACHABLE
+      :annotation: = unreachable
+
+      
+
+
+.. class:: NodeType
+
+   .. attribute:: TYPE_CLOUD
+      :annotation: = cloud
+
+      
+
+   .. attribute:: TYPE_LOCAL
+      :annotation: = local
+
+      
+
+
+.. data:: logger
+   
+
+   
+

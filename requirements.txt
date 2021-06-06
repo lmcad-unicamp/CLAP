@@ -1,6 +1,6 @@
 # Requirements
 pip>=9.0.0
-tinydb==3.15.2
+# tinydb==3.15.2
 PyYAML
 PyCLI
 ansible>=2.7
@@ -9,18 +9,18 @@ click>=4.0
 coloredlogs
 netaddr
 paramiko>=2.7
-schema
-subprocess32
+# schema
+# subprocess32
 ipykernel
 jinja2>=2.7
-names
-sqlitedict
-marshmallow
-marshmallow_dataclass
+# sqlitedict
+# marshmallow
+# marshmallow_dataclass
 pytest
-numpy
+# numpy
 typeguard
 dacite
+names
 randomname
 
 # AWS requirements
@@ -36,6 +36,6 @@ secretstorage<=2.3.1
 argcomplete
 
 # Documentation
-sphinx
-sphinx-autoapi
-sphinx_rtd_theme
+# sphinx
+# sphinx-autoapi
+# sphinx_rtd_theme

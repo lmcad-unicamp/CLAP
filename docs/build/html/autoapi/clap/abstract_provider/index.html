@@ -1,0 +1,373 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>clap.abstract_provider &mdash; CLoud Application Platform 0.2.2
+ documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="clap.cluster_manager" href="../cluster_manager/index.html" />
+    <link rel="prev" title="clap" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../shared_roles.html">Roles shared with CLAP</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">Programming Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.abstract_provider</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cluster_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.cluster_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../configs/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.configs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../executor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.executor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../node/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../node_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.repository</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../role_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.role_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../api.html">Programming Reference</a> &raquo;</li>
+        
+          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.abstract_provider</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../../_sources/autoapi/clap/abstract_provider/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-clap.abstract_provider">
+<span id="clap-abstract-provider"></span><h1><a class="reference internal" href="#module-clap.abstract_provider" title="clap.abstract_provider"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.abstract_provider</span></code></a><a class="headerlink" href="#module-clap.abstract_provider" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.abstract_provider.AbstractInstanceProvider" title="clap.abstract_provider.AbstractInstanceProvider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractInstanceProvider</span></code></a></p></td>
+<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.abstract_provider.logger" title="clap.abstract_provider.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="clap.abstract_provider.AbstractInstanceProvider">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.abstract_provider.</span></code><code class="sig-name descname"><span class="pre">AbstractInstanceProvider</span></code><a class="reference internal" href="../../../_modules/clap/abstract_provider.html#AbstractInstanceProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.abstract_provider.AbstractInstanceProvider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Helper class that provides a standard way to create an ABC using
+inheritance.</p>
+<dl class="py method">
+<dt id="clap.abstract_provider.AbstractInstanceProvider.pause_instances">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">pause_instances</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes_to_pause</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/abstract_provider.html#AbstractInstanceProvider.pause_instances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.abstract_provider.AbstractInstanceProvider.pause_instances" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes_to_pause</strong> (<em>List</em><em>[</em><a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor"><em>clap.node.NodeDescriptor</em></a><em>]</em>) – </p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.abstract_provider.AbstractInstanceProvider.resume_instances">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">resume_instances</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes_to_resume</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/abstract_provider.html#AbstractInstanceProvider.resume_instances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.abstract_provider.AbstractInstanceProvider.resume_instances" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes_to_resume</strong> (<em>List</em><em>[</em><a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor"><em>clap.node.NodeDescriptor</em></a><em>]</em>) – </p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.abstract_provider.AbstractInstanceProvider.start_instances">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">start_instances</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/abstract_provider.html#AbstractInstanceProvider.start_instances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.abstract_provider.AbstractInstanceProvider.start_instances" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference internal" href="../configs/index.html#clap.configs.InstanceInfo" title="clap.configs.InstanceInfo"><em>clap.configs.InstanceInfo</em></a>) – </p></li>
+<li><p><strong>count</strong> (<em>int</em>) – </p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.abstract_provider.AbstractInstanceProvider.stop_instances">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">stop_instances</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes_to_stop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/abstract_provider.html#AbstractInstanceProvider.stop_instances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.abstract_provider.AbstractInstanceProvider.stop_instances" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes_to_stop</strong> (<em>List</em><em>[</em><a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor"><em>clap.node.NodeDescriptor</em></a><em>]</em>) – </p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.abstract_provider.AbstractInstanceProvider.update_instance_info">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">update_instance_info</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes_to_check</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/abstract_provider.html#AbstractInstanceProvider.update_instance_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.abstract_provider.AbstractInstanceProvider.update_instance_info" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes_to_check</strong> (<em>List</em><em>[</em><a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor"><em>clap.node.NodeDescriptor</em></a><em>]</em>) – </p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.abstract_provider.InstanceDeploymentError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.abstract_provider.</span></code><code class="sig-name descname"><span class="pre">InstanceDeploymentError</span></code><a class="reference internal" href="../../../_modules/clap/abstract_provider.html#InstanceDeploymentError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.abstract_provider.InstanceDeploymentError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="clap.abstract_provider.logger">
+<code class="sig-prename descclassname"><span class="pre">clap.abstract_provider.</span></code><code class="sig-name descname"><span class="pre">logger</span></code><a class="headerlink" href="#clap.abstract_provider.logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../cluster_manager/index.html" class="btn btn-neutral float-right" title="clap.cluster_manager" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="clap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Otávio Napoli.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

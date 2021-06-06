@@ -1,0 +1,287 @@
+:mod:`clap.configs`
+===================
+
+.. py:module:: clap.configs
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   clap.configs.ConfigurationDatabase
+   clap.configs.InstanceConfigAWS
+   clap.configs.InstanceInfo
+   clap.configs.LoginConfig
+   clap.configs.ProviderConfigAWS
+   clap.configs.ProviderConfigLocal
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   clap.configs.InstanceConfigs
+   clap.configs.LoginConfigs
+   clap.configs.ProviderConfigs
+   clap.configs.logger
+   clap.configs.provider_handlers
+
+
+.. class:: ConfigurationDatabase(providers_file, logins_file, instances_file, discard_invalids = True, load = True)
+
+
+   .. method:: _load_instance_configs(self)
+
+
+   .. method:: _load_login_configs(self)
+
+
+   .. method:: _load_provider_configs(self)
+
+
+   .. method:: load_all(self)
+
+
+
+.. exception:: ConfigurationError
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: InstanceConfigAWS
+
+   .. attribute:: boot_disk_device
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: boot_disk_iops
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: boot_disk_size
+      :annotation: :Optional[int]
+
+      
+
+   .. attribute:: boot_disk_snapshot
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: boot_disk_type
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: flavor
+      :annotation: :str
+
+      
+
+   .. attribute:: image_id
+      :annotation: :str
+
+      
+
+   .. attribute:: instance_config_id
+      :annotation: :str
+
+      
+
+   .. attribute:: login
+      :annotation: :str
+
+      
+
+   .. attribute:: network_ids
+      :annotation: :Optional[List[str]]
+
+      
+
+   .. attribute:: placement_group
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: price
+      :annotation: :Optional[float]
+
+      
+
+   .. attribute:: provider
+      :annotation: :str
+
+      
+
+   .. attribute:: security_group
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: timeout
+      :annotation: :Optional[int]
+
+      
+
+
+.. data:: InstanceConfigs
+   
+
+   
+
+.. class:: InstanceInfo
+
+   .. attribute:: instance
+      :annotation: :InstanceConfigs
+
+      
+
+   .. attribute:: login
+      :annotation: :LoginConfigs
+
+      
+
+   .. attribute:: provider
+      :annotation: :ProviderConfigs
+
+      
+
+
+.. exception:: InvalidConfigurationError(name)
+
+
+   Bases: :py:obj:`ConfigurationError`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: LoginConfig
+
+   .. attribute:: keypair_name
+      :annotation: :str
+
+      
+
+   .. attribute:: keypair_private_file
+      :annotation: :str
+
+      
+
+   .. attribute:: keypair_public_file
+      :annotation: :str
+
+      
+
+   .. attribute:: login_config_id
+      :annotation: :str
+
+      
+
+   .. attribute:: ssh_port
+      :annotation: :Optional[int] = 22
+
+      
+
+   .. attribute:: sudo
+      :annotation: :Optional[bool] = True
+
+      
+
+   .. attribute:: sudo_user
+      :annotation: :Optional[str] = root
+
+      
+
+   .. attribute:: user
+      :annotation: :str
+
+      
+
+
+.. data:: LoginConfigs
+   
+
+   
+
+.. class:: ProviderConfigAWS
+
+   .. attribute:: access_keyfile
+      :annotation: :str
+
+      
+
+   .. attribute:: provider
+      :annotation: :str = aws
+
+      
+
+   .. attribute:: provider_config_id
+      :annotation: :str
+
+      
+
+   .. attribute:: region
+      :annotation: :str
+
+      
+
+   .. attribute:: secret_access_keyfile
+      :annotation: :str
+
+      
+
+   .. attribute:: url
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: vpc
+      :annotation: :Optional[str]
+
+      
+
+
+.. class:: ProviderConfigLocal
+
+   .. attribute:: provider
+      :annotation: :str = local
+
+      
+
+   .. attribute:: provider_config_id
+      :annotation: :str
+
+      
+
+
+.. data:: ProviderConfigs
+   
+
+   
+
+.. data:: logger
+   
+
+   
+
+.. data:: provider_handlers
+   
+
+   
+

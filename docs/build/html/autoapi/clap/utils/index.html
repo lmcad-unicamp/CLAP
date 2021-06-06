@@ -1,0 +1,487 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>clap.utils &mdash; CLoud Application Platform 0.2.2
+ documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="prev" title="clap.role_manager" href="../role_manager/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../shared_roles.html">Roles shared with CLAP</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">Programming Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../abstract_provider/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.abstract_provider</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cluster_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.cluster_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../configs/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.configs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../executor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.executor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../node/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../node_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.repository</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../role_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.role_manager</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../api.html">Programming Reference</a> &raquo;</li>
+        
+          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.utils</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../../_sources/autoapi/clap/utils/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-clap.utils">
+<span id="clap-utils"></span><h1><a class="reference internal" href="#module-clap.utils" title="clap.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.utils</span></code></a><a class="headerlink" href="#module-clap.utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.utils.CLAPFilter" title="clap.utils.CLAPFilter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CLAPFilter</span></code></a></p></td>
+<td><p>Filter instances are used to perform arbitrary filtering of LogRecords.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.utils.Singleton" title="clap.utils.Singleton"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Singleton</span></code></a></p></td>
+<td><p>Creates a single instance class</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.utils.defaultdict_to_dict" title="clap.utils.defaultdict_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">defaultdict_to_dict</span></code></a>(d)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.utils.float_time_to_string" title="clap.utils.float_time_to_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float_time_to_string</span></code></a>(timespec)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.utils.get_logger" title="clap.utils.get_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logger</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.utils.get_random_name" title="clap.utils.get_random_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_random_name</span></code></a>(in_use_names = None, retries = 10)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.utils.get_random_object" title="clap.utils.get_random_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_random_object</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.utils.path_extend" title="clap.utils.path_extend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_extend</span></code></a>(*args)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.utils.setup_log" title="clap.utils.setup_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_log</span></code></a>(name = 'clap', verbosity_level = 0, filename = None)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.utils.sorted_groupby" title="clap.utils.sorted_groupby"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sorted_groupby</span></code></a>(iterable, key=None)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.utils.str_at_middle" title="clap.utils.str_at_middle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_at_middle</span></code></a>(text, maximum, delimiter = '-')</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.utils.tmpdir" title="clap.utils.tmpdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tmpdir</span></code></a>(suffix=None, prefix='clap.', dir = None, remove = True)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.utils.yaml_load" title="clap.utils.yaml_load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">yaml_load</span></code></a>(filename)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.utils.APP_NAME" title="clap.utils.APP_NAME"><code class="xref py py-obj docutils literal notranslate"><span class="pre">APP_NAME</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt id="clap.utils.APP_NAME">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">APP_NAME</span></code><em class="property"> <span class="pre">=</span> <span class="pre">clap</span></em><a class="headerlink" href="#clap.utils.APP_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="clap.utils.CLAPFilter">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">CLAPFilter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#CLAPFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.CLAPFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">logging.Filter</span></code></p>
+<p>Filter instances are used to perform arbitrary filtering of LogRecords.</p>
+<p>Loggers and Handlers can optionally use Filter instances to filter
+records as desired. The base filter class only allows events which are
+below a certain point in the logger hierarchy. For example, a filter
+initialized with “A.B” will allow events logged by loggers “A.B”,
+“A.B.C”, “A.B.C.D”, “A.B.D” etc. but not “A.BB”, “B.A.B” etc. If
+initialized with the empty string, all events are passed.</p>
+<p>Initialize a filter.</p>
+<p>Initialize with the name of the logger which, together with its
+children, will have its events allowed through the filter. If no
+name is specified, allow every event.</p>
+<dl class="py method">
+<dt id="clap.utils.CLAPFilter.filter">
+<code class="sig-name descname"><span class="pre">filter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#CLAPFilter.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.CLAPFilter.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if the specified record is to be logged.</p>
+<p>Is the specified record to be logged? Returns 0 for no, nonzero for
+yes. If deemed appropriate, the record may be modified in-place.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.utils.Singleton">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">Singleton</span></code><a class="reference internal" href="../../../_modules/clap/utils.html#Singleton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.Singleton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></p>
+<p>Creates a single instance class</p>
+<dl class="py attribute">
+<dt id="clap.utils.Singleton._instances">
+<code class="sig-name descname"><span class="pre">_instances</span></code><a class="headerlink" href="#clap.utils.Singleton._instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.utils.Singleton.__call__">
+<code class="sig-name descname"><span class="pre">__call__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#Singleton.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.Singleton.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="clap.utils.defaultdict_to_dict">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">defaultdict_to_dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#defaultdict_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.defaultdict_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.utils.float_time_to_string">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">float_time_to_string</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timespec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#float_time_to_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.float_time_to_string" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>timespec</strong> (<em>float</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="clap.utils.get_logger">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">get_logger</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#get_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.get_logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="clap.utils.get_random_name">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">get_random_name</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_use_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#get_random_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.get_random_name" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_use_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>retries</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="clap.utils.get_random_object">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">get_random_object</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#get_random_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.get_random_object" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="clap.utils.path_extend">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">path_extend</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#path_extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.path_extend" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="clap.utils.setup_log">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">setup_log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'clap'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#setup_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.setup_log" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>verbosity_level</strong> (<em>int</em>) – </p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="clap.utils.sorted_groupby">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">sorted_groupby</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#sorted_groupby"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.sorted_groupby" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>iterable</strong> (<em>Iterable</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="clap.utils.str_at_middle">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">str_at_middle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#str_at_middle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.str_at_middle" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – </p></li>
+<li><p><strong>maximum</strong> (<em>int</em>) – </p></li>
+<li><p><strong>delimiter</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="clap.utils.tmpdir">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">tmpdir</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'clap.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#tmpdir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.tmpdir" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir</strong> (<em>str</em>) – </p></li>
+<li><p><strong>remove</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="clap.utils.yaml_load">
+<code class="sig-prename descclassname"><span class="pre">clap.utils.</span></code><code class="sig-name descname"><span class="pre">yaml_load</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/utils.html#yaml_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.utils.yaml_load" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../role_manager/index.html" class="btn btn-neutral float-left" title="clap.role_manager" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Otávio Napoli.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,188 @@
+:mod:`clap.role_manager`
+========================
+
+.. py:module:: clap.role_manager
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   clap.role_manager.Role
+   clap.role_manager.RoleActionInfo
+   clap.role_manager.RoleManager
+   clap.role_manager.RoleVariableInfo
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   clap.role_manager.logger
+
+
+.. exception:: InvalidActionError(role_name, action_name)
+
+
+   Bases: :py:obj:`RoleError`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. exception:: InvalidHostError(role_name, host_name)
+
+
+   Bases: :py:obj:`RoleError`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. exception:: InvalidRoleError(role_name)
+
+
+   Bases: :py:obj:`RoleError`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. exception:: MissingActionVariableError(role_name, action_name, var)
+
+
+   Bases: :py:obj:`RoleError`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. exception:: NodeRoleError(node_id, role_name, host_name = None)
+
+
+   Bases: :py:obj:`RoleError`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: Role
+
+   .. attribute:: actions
+      :annotation: :Optional[Dict[str, RoleActionInfo]]
+
+      
+
+   .. attribute:: hosts
+      :annotation: :Optional[List[str]]
+
+      
+
+
+.. class:: RoleActionInfo
+
+   .. attribute:: description
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: playbook
+      :annotation: :str
+
+      
+
+   .. attribute:: vars
+      :annotation: :Optional[List[RoleVariableInfo]]
+
+      
+
+
+.. exception:: RoleAssignmentError
+
+
+   Bases: :py:obj:`RoleError`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. exception:: RoleError
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: RoleManager(node_repository_controller, role_dir, actions_dir, private_dir, discard_invalids = True, load = True)
+
+
+   .. method:: _check_nodes_role(self, role_name, host_map)
+
+
+   .. method:: add_role(self, role_name, hosts_node_map, host_vars = None, node_vars = None, extra_args = None, quiet = False)
+
+
+   .. method:: get_all_role_nodes(self, role_name)
+
+
+   .. method:: get_all_role_nodes_hosts(self, role_name)
+
+
+   .. method:: get_role_node_hosts(self, role_name, node_id)
+
+
+   .. method:: get_role_nodes(self, role_name, from_node_ids = None)
+
+
+   .. method:: load_roles(self)
+
+
+   .. method:: perform_action(self, role_name, action_name, hosts_node_map, host_vars = None, node_vars = None, extra_args = None, quiet = False, validate_nodes_in_role = True)
+
+      :param role_name:
+      :param action_name:
+
+
+   .. method:: remove_role(self, role_name, hosts_node_map)
+
+
+
+.. class:: RoleVariableInfo
+
+   .. attribute:: description
+      :annotation: :Optional[str]
+
+      
+
+   .. attribute:: name
+      :annotation: :str
+
+      
+
+   .. attribute:: optional
+      :annotation: :Optional[bool] = False
+
+      
+
+
+.. data:: logger
+   
+
+   
+

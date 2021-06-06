@@ -1,0 +1,535 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>clap.role_manager &mdash; CLoud Application Platform 0.2.2
+ documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="clap.utils" href="../utils/index.html" />
+    <link rel="prev" title="clap.repository" href="../repository/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../shared_roles.html">Roles shared with CLAP</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">Programming Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../abstract_provider/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.abstract_provider</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cluster_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.cluster_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../configs/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.configs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../executor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.executor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../node/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../node_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.repository</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.role_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../api.html">Programming Reference</a> &raquo;</li>
+        
+          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.role_manager</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../../_sources/autoapi/clap/role_manager/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-clap.role_manager">
+<span id="clap-role-manager"></span><h1><a class="reference internal" href="#module-clap.role_manager" title="clap.role_manager"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.role_manager</span></code></a><a class="headerlink" href="#module-clap.role_manager" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.role_manager.Role" title="clap.role_manager.Role"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Role</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.role_manager.RoleActionInfo" title="clap.role_manager.RoleActionInfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoleActionInfo</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.role_manager.RoleManager" title="clap.role_manager.RoleManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoleManager</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.role_manager.RoleVariableInfo" title="clap.role_manager.RoleVariableInfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoleVariableInfo</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.role_manager.logger" title="clap.role_manager.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py exception">
+<dt id="clap.role_manager.InvalidActionError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">InvalidActionError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#InvalidActionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.InvalidActionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#clap.role_manager.RoleError" title="clap.role_manager.RoleError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoleError</span></code></a></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.role_manager.InvalidHostError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">InvalidHostError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#InvalidHostError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.InvalidHostError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#clap.role_manager.RoleError" title="clap.role_manager.RoleError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoleError</span></code></a></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.role_manager.InvalidRoleError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">InvalidRoleError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#InvalidRoleError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.InvalidRoleError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#clap.role_manager.RoleError" title="clap.role_manager.RoleError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoleError</span></code></a></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.role_manager.MissingActionVariableError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">MissingActionVariableError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#MissingActionVariableError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.MissingActionVariableError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#clap.role_manager.RoleError" title="clap.role_manager.RoleError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoleError</span></code></a></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.role_manager.NodeRoleError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">NodeRoleError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#NodeRoleError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.NodeRoleError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#clap.role_manager.RoleError" title="clap.role_manager.RoleError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoleError</span></code></a></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.role_manager.Role">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">Role</span></code><a class="reference internal" href="../../../_modules/clap/role_manager.html#Role"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.Role" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="clap.role_manager.Role.actions">
+<code class="sig-name descname"><span class="pre">actions</span></code><em class="property"> <span class="pre">:Optional[Dict[str,</span> <span class="pre">RoleActionInfo]]</span></em><a class="headerlink" href="#clap.role_manager.Role.actions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.role_manager.Role.hosts">
+<code class="sig-name descname"><span class="pre">hosts</span></code><em class="property"> <span class="pre">:Optional[List[str]]</span></em><a class="headerlink" href="#clap.role_manager.Role.hosts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.role_manager.RoleActionInfo">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">RoleActionInfo</span></code><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleActionInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleActionInfo" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="clap.role_manager.RoleActionInfo.description">
+<code class="sig-name descname"><span class="pre">description</span></code><em class="property"> <span class="pre">:Optional[str]</span></em><a class="headerlink" href="#clap.role_manager.RoleActionInfo.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.role_manager.RoleActionInfo.playbook">
+<code class="sig-name descname"><span class="pre">playbook</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.role_manager.RoleActionInfo.playbook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.role_manager.RoleActionInfo.vars">
+<code class="sig-name descname"><span class="pre">vars</span></code><em class="property"> <span class="pre">:Optional[List[RoleVariableInfo]]</span></em><a class="headerlink" href="#clap.role_manager.RoleActionInfo.vars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.role_manager.RoleAssignmentError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">RoleAssignmentError</span></code><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleAssignmentError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleAssignmentError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#clap.role_manager.RoleError" title="clap.role_manager.RoleError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RoleError</span></code></a></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.role_manager.RoleError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">RoleError</span></code><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.role_manager.RoleManager">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">RoleManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_repository_controller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">private_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard_invalids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleManager" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="clap.role_manager.RoleManager._check_nodes_role">
+<code class="sig-name descname"><span class="pre">_check_nodes_role</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleManager._check_nodes_role"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleManager._check_nodes_role" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>host_map</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor"><em>clap.node.NodeDescriptor</em></a><em>]</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.role_manager.RoleManager.add_role">
+<code class="sig-name descname"><span class="pre">add_role</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hosts_node_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleManager.add_role"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleManager.add_role" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>hosts_node_map</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>host_vars</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>node_vars</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>extra_args</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>quiet</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.role_manager.RoleManager.get_all_role_nodes">
+<code class="sig-name descname"><span class="pre">get_all_role_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleManager.get_all_role_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleManager.get_all_role_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>role_name</strong> (<em>str</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.role_manager.RoleManager.get_all_role_nodes_hosts">
+<code class="sig-name descname"><span class="pre">get_all_role_nodes_hosts</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleManager.get_all_role_nodes_hosts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleManager.get_all_role_nodes_hosts" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>role_name</strong> (<em>str</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, List[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.role_manager.RoleManager.get_role_node_hosts">
+<code class="sig-name descname"><span class="pre">get_role_node_hosts</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleManager.get_role_node_hosts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleManager.get_role_node_hosts" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>node_id</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.role_manager.RoleManager.get_role_nodes">
+<code class="sig-name descname"><span class="pre">get_role_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleManager.get_role_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleManager.get_role_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>from_node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, List[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.role_manager.RoleManager.load_roles">
+<code class="sig-name descname"><span class="pre">load_roles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleManager.load_roles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleManager.load_roles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="clap.role_manager.RoleManager.perform_action">
+<code class="sig-name descname"><span class="pre">perform_action</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hosts_node_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_nodes_in_role</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleManager.perform_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleManager.perform_action" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>action_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>hosts_node_map</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>host_vars</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>node_vars</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>extra_args</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>quiet</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>validate_nodes_in_role</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../executor/index.html#clap.executor.AnsiblePlaybookExecutor.PlaybookResult" title="clap.executor.AnsiblePlaybookExecutor.PlaybookResult">clap.executor.AnsiblePlaybookExecutor.PlaybookResult</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.role_manager.RoleManager.remove_role">
+<code class="sig-name descname"><span class="pre">remove_role</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hosts_node_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleManager.remove_role"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleManager.remove_role" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>hosts_node_map</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.role_manager.RoleVariableInfo">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">RoleVariableInfo</span></code><a class="reference internal" href="../../../_modules/clap/role_manager.html#RoleVariableInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.role_manager.RoleVariableInfo" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="clap.role_manager.RoleVariableInfo.description">
+<code class="sig-name descname"><span class="pre">description</span></code><em class="property"> <span class="pre">:Optional[str]</span></em><a class="headerlink" href="#clap.role_manager.RoleVariableInfo.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.role_manager.RoleVariableInfo.name">
+<code class="sig-name descname"><span class="pre">name</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#clap.role_manager.RoleVariableInfo.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="clap.role_manager.RoleVariableInfo.optional">
+<code class="sig-name descname"><span class="pre">optional</span></code><em class="property"> <span class="pre">:Optional[bool]</span> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#clap.role_manager.RoleVariableInfo.optional" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt id="clap.role_manager.logger">
+<code class="sig-prename descclassname"><span class="pre">clap.role_manager.</span></code><code class="sig-name descname"><span class="pre">logger</span></code><a class="headerlink" href="#clap.role_manager.logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../utils/index.html" class="btn btn-neutral float-right" title="clap.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../repository/index.html" class="btn btn-neutral float-left" title="clap.repository" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Otávio Napoli.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -9,14 +9,16 @@ import dacite
 
 from clap.configs import ConfigurationDatabase, InstanceInfo
 from clap.executor import SSHCommandExecutor, AnsiblePlaybookExecutor
-from clap.node_manager import NodeManager, NodeRepositoryController
+from clap.node_manager import NodeManager
 from clap.repository import Repository, InvalidEntryError
 from clap.role_manager import RoleManager, NodeRoleError
-from clap.utils import yaml_load, get_logger, get_random_object, defaultdict_to_dict
+from clap.utils import yaml_load, get_logger, get_random_object, \
+    defaultdict_to_dict
 
 logger = get_logger(__name__)
 
 
+# --------------------------------- Exceptions ---------------------------------
 class ClusterConfigurationError(Exception):
     pass
 
@@ -47,46 +49,80 @@ class NodeSizeError(ClusterConfigurationError):
     pass
 
 
+# -------------------------------- Dataclasses ---------------------------------
 @dataclass
 class RoleActionType:
+    """ Dataclass that stores information about a role's action from a cluster
+    setup
+    """
     role: str
+    """Name of the role"""
     action: str
+    """Role's action name"""
     extra: Optional[Dict[str, str]] = field(default_factory=dict)
+    """Optional extra arguments"""
 
 
 @dataclass
 class CommandActionType:
+    """ Dataclass that stores information about a command to perform from a
+    cluster setup
+    """
     command: str
+    """The command to execute"""
 
 
 @dataclass
 class PlaybookActionType:
+    """ Dataclass that stores information about a playboook to execute from a
+    cluster setup
+    """
     playbook: str
+    """Playbook to execute"""
     extra: Optional[Dict[str, str]] = field(default_factory=dict)
+    """Optional extra arguments"""
 
 
 ActionType = Union[RoleActionType, CommandActionType, PlaybookActionType]
+""" An setup action can be a role action, a command or a playbook
+"""
 
 
 @dataclass
 class RoleAdd:
+    """ Dataclass that stores information about a role that mst be added to
+    nodes from a cluster setup
+    """
     name: str
+    """Name of the role to be added"""
     extra: Optional[Dict[str, str]] = field(default_factory=dict)
+    """Optional extra arguments from role's setup action (if any)"""
 
 
 @dataclass
 class SetupConfig:
+    """ Dataclass that stores information about a Setup configuration in a
+    cluster configuration file
+    """
     roles: Optional[List[RoleAdd]] = field(default_factory=list)
+    """Optional list of roles to add"""
     actions: Optional[List[ActionType]] = field(default_factory=list)
+    """Optional list of actions to perform"""
 
 
 @dataclass
 class ClusterOptions:
+    """ Dataclass that stores information about optional cluster options in a
+    cluster configuration file
+    """
     ssh_to: Optional[str] = None
+    """Name od the node type to perform ssh"""
 
 
 @dataclass
 class _NodeConfig:
+    """Temporary class about node config (used to parse cluster configuration
+    file only)"""
     type: str
     count: int
     min_count: Optional[int] = None
@@ -95,6 +131,8 @@ class _NodeConfig:
 
 @dataclass
 class _ClusterConfig:
+    """Temporary class about cluster config (used to parse cluster configuration
+    file only)"""
     options: Optional[ClusterOptions]
     before_all: Optional[List[str]] = field(default_factory=list)
     before: Optional[List[str]] = field(default_factory=list)
@@ -105,42 +143,62 @@ class _ClusterConfig:
 
 @dataclass
 class ClusterConfigFile:
+    """ A dataclass that represents a cluster configuration file """
     setups: Optional[Dict[str, SetupConfig]] = field(default_factory=dict)
+    """ Dictionary with setup name as key and :class:`.SetupConfig` as value"""
     clusters: Optional[Dict[str, _ClusterConfig]] = field(default_factory=dict)
+    """Dictionary with cluster name as key and :class:`._ClusterConfig` as value"""
 
 
 @dataclass
 class NodeConfig:
+    """Dataclass that stores information about a cluster's node at cluster
+    configuration"""
     type: str
+    """Type of the instance used (refers to instances.yaml file names)"""
     count: int
+    """Number of nodes to start"""
     min_count: Optional[int] = None
+    """Minimum number of nodes that must sucessfully start"""
     setups: List[SetupConfig] = field(default_factory=list)
+    """List of :class:`.SetupConfig` that must be performed in this node"""
 
 
 @dataclass
 class ClusterConfig:
+    """A full cluster configuration"""
     cluster_config_id: str
+    """Name of the cluster configuration"""
     options: Optional[ClusterOptions]
+    """Optional cluster options (:class:`.ClusterOptions`)"""
     before_all: Optional[List[SetupConfig]] = field(default_factory=list)
+    """List of :class:`.SetupConfig` to perform in before_all phase"""
     before: Optional[List[SetupConfig]] = field(default_factory=list)
+    """List of :class:`.SetupConfig` to perform in before phase"""
     after_all: Optional[List[SetupConfig]] = field(default_factory=list)
+    """List of :class:`.SetupConfig` to perform in after_all phase"""
     after: Optional[List[SetupConfig]] = field(default_factory=list)
+    """List of :class:`.SetupConfig` to perform in after phase"""
     nodes: Optional[Dict[str, NodeConfig]] = field(default_factory=dict)
-
-
-def validate_valid_role():
-    pass
-
-
-def validate_valid_cluster():
-    pass
+    """Dictionary with cluster's node type as name and :class:`.NodeConfig` as 
+    value"""
 
 
 class ClusterConfigDatabase:
     def __init__(self, cluster_files: List[str], discard_invalids: bool = True,
                  load: bool = True):
+        """This class stores information about clusters configurations in CLAP system.
+
+        :param cluster_files: List of cluster files to parse.
+        :param discard_invalids: If true, discard invalid configurations without
+            raising any exception. Otherwise, raises a :class:`.ClusterError`
+            exception.
+        :param load: If true, load all files when this class is created.
+            Otherwise, use :func:`~.ClusterConfigDatabase.load` method.
+        """
         self.cluster_files = cluster_files
         self.clusters: Dict[str, ClusterConfig] = {}
+        """Dictionary with cluster configurations"""
         self.setups: Dict[str, SetupConfig] = {}
         self._discard_invalids = discard_invalids
         if load:
@@ -174,6 +232,9 @@ class ClusterConfigDatabase:
         return setups, clusters
 
     def load(self):
+        """ Load all cluster configurations from cluster files. Configurations
+        will be stored in `cluster` attribute.
+        """
         setups, clusters = self._load_cluster_and_setups()
         self.setups = setups
 
@@ -229,34 +290,65 @@ class ClusterConfigDatabase:
 
 @dataclass
 class ClusterDescriptor:
+    """ Dataclass that describes an created CLAP cluster
+    """
     cluster_id: str
+    """ID of the cluster"""
     cluster_name: str
+    """Name of the cluster configuration used"""
     cluster_config: ClusterConfig
+    """Cluster configuration used"""
     creation_time: float
+    """Date that this cluster was created"""
     update_time: float
+    """Last time of information of this cluster was updated"""
     is_setup: bool = False
+    """Boolean indicating if cluster was already setup"""
 
 
 class ClusterRepositoryController:
     def __init__(self, repository: Repository):
+        """ This class is used manipulate clusters in a repository. It performs
+        all loads and stores of :class:`.ClusterDescriptor` in a repository.
+
+        :param repository: Cluster repository used to store :class:`.ClusterDescriptor`.
+        """
         self.repository = repository
 
     def upsert_cluster(self, cluster: ClusterDescriptor):
+        """ Upsert (create or update) a cluster in repository.
+
+        :param cluster: A cluster to be stored. The cluster ID will be used
+            to identify the cluster in the repository.
+        """
         cluster.update_time = time.time()
         with self.repository.connect('clusters') as db:
             cluster_dict = asdict(cluster)
             db.upsert(cluster.cluster_id, cluster_dict)
 
     def remove_cluster(self, cluster_id: str):
+        """ Remove a cluster from the repository based on its cluster ID.
+
+        :param cluster_id: ID of the cluster to remove.
+        """
         with self.repository.connect('clusters') as db:
             db.remove(cluster_id)
 
     def get_cluster_by_id(self, cluster_id: str) -> ClusterDescriptor:
+        """ Retrieve a cluster from the repository.
+
+        :param cluster_id: ID of the cluster to retrieve.
+        :return: The cluster.
+        """
         with self.repository.connect('clusters') as db:
             cdata = db.get(cluster_id)
             return dacite.from_dict(data_class=ClusterDescriptor, data=cdata)
 
     def get_all_clusters(self) -> List[ClusterDescriptor]:
+        """ Retrieve all clusters from the repository.
+
+        :return: A list of clusters in the repository.
+        """
         with self.repository.connect('clusters') as db:
             return [
                 dacite.from_dict(data_class=ClusterDescriptor, data=cdata)
@@ -269,6 +361,20 @@ class ClusterManager:
                  config_db: ConfigurationDatabase,
                  cluster_repository_controller: ClusterRepositoryController,
                  private_dir: str, cluster_tag_prefix: str = '.cluster:'):
+        """ This class is used to start, stop, pause, resume and perform actions
+            in clusters. It is responsible to manage clusters (creating and
+            removing them from the repository).
+
+        :param node_manager: Class used to manage nodes.
+        :param role_manager: Class used to manage roles.
+        :param config_db: Class used to obtain cluster configurations.
+        :param cluster_repository_controller: Class used to manage clusters at
+            a repository.
+        :param private_dir: Path to the private directory (where private keys
+            are stored).
+        :param cluster_tag_prefix: Optional prefix to tag nodes that belongs to
+            a cluster.
+        """
         self.node_manager = node_manager
         self.role_manager = role_manager
         self.config_db = config_db
@@ -278,6 +384,16 @@ class ClusterManager:
 
     def add_cluster_tag(self, node_ids: List[str], cluster_id: str,
                         node_type: str) -> List[str]:
+        """ Given a list of node ids, a cluster id and a cluster's node type,
+            add the cluster tag to the nodes. Once the tag is added to a node,
+            the node belongs to a cluster. So, a cluster is a set of nodes with
+            tagged with an specified tag.
+
+        :param node_ids: List node ids to add the cluster tag.
+        :param cluster_id: ID of the cluster that this node will belong.
+        :param node_type: Cluster's node type.
+        :return: The node ids of nodes that the tag was added.
+        """
         cluster_tag = f"{self.cluster_tag_prefix}{cluster_id}"
         added_nodes = []
         for n in self.node_manager.get_nodes_by_id(node_ids):
@@ -294,11 +410,23 @@ class ClusterManager:
         return added_nodes
 
     def get_all_cluster_nodes(self, cluster_id: str) -> List[str]:
+        """ Get all nodes that belong to a cluster.
+
+        :param cluster_id: ID of the cluster to retrieve the nodes.
+        :return: A list of node ids of nodes that belongs to the cluster.
+        """
         cluster_tag = f"{self.cluster_tag_prefix}{cluster_id}"
         cluster_cond = lambda n: cluster_tag in n.tags
         return [n.node_id for n in self.node_manager.get_nodes(cluster_cond)]
 
     def get_cluster_nodes_types(self, cluster_id: str) -> Dict[str, List[str]]:
+        """ Get all nodes and the nodes' types from nodes that belong to a
+            cluster.
+
+        :param cluster_id: ID of the cluster to retrieve the nodes.
+        :return: A dictionary where keys are the cluster's node types and values
+            are lists of nodes ids from nodes of this cluster's node type.
+        """
         cluster_tag = f"{self.cluster_tag_prefix}{cluster_id}"
         cluster_cond = lambda n: cluster_tag in n.tags
         nodes_dict = defaultdict(set)
@@ -315,16 +443,39 @@ class ClusterManager:
         return nodes
 
     def get_cluster_by_id(self, cluster_id: str) -> ClusterDescriptor:
+        """ Get a cluster information :class:`.ClusterDescriptor` from the
+            cluster repository.
+
+        :param cluster_id: ID of the cluster to retrieve.
+        :return: A cluster information.
+        """
         try:
             return self.cluster_repository.get_cluster_by_id(cluster_id)
         except InvalidEntryError as e:
             raise InvalidClusterError(cluster_id) from e
 
     def get_all_clusters(self) -> List[ClusterDescriptor]:
+        """ Get all clusters information from the cluster repository.
+
+        :return: A list of clusters information.
+        """
         return self.cluster_repository.get_all_clusters()
 
     def grow(self, cluster_id: str, node_type: str, count: int = 1,
-             min_count: int = 0, start_timeout: int = 600):
+             min_count: int = 0, start_timeout: int = 600) -> List[str]:
+        """ Starts new nodes from a cluster, based on its cluster's node type.
+            The nodes will be started and tagged to belong to the cluster.
+
+        :param cluster_id: ID of the cluster to add more nodes.
+        :param node_type: Cluster's node type to start.
+        :param count: Number of nodes to start.
+        :param min_count: Minimum number of nodes that must be started. If this
+            number is not reached, all nodes are terminated.
+        :param start_timeout: Timeout to start nodes. If nodes are not started
+            within this timeout, it will be terminated.
+        :return: A list of node ids of the nodes that were started.
+        """
+
         if min_count < 0:
             raise ValueError("min_count value must be >= 0")
         if count <= 0:
@@ -369,6 +520,19 @@ class ClusterManager:
                       start_timeout: int = 600,
                       max_workers: int = 1,
                       destroy_on_min_count: bool = True) -> str:
+        """ Create a cluster, based on a :class:`.ClusterConfig`. It will start
+            the desired nodes and tag them to belong to the cluster. After, a
+            new cluster will be created at cluster's repository.
+
+        :param cluster_config: Cluster configuration used to start a cluster
+        :param start_timeout: Timeout to start nodes. If nodes are not started
+            within this timeout, it will be terminated.
+        :param max_workers: Number of threads to start nodes in parallel
+        :param destroy_on_min_count: If True, the cluster will be destroyed (all
+            nodes will be terminated and cluster is not created) if any cluster's
+            node type min_count is not reached.
+        :return: The cluster ID of the newly created cluster.
+        """
         node_types: Dict[str, Tuple[NodeConfig, InstanceInfo]] = {}
         for node_name, node_values in cluster_config.nodes.items():
             instance = self.config_db.instance_descriptors.get(node_values.type, None)
@@ -436,6 +600,15 @@ class ClusterManager:
     def add_existing_nodes_to_cluster(self, cluster_id: str,
                                       node_types: Dict[str, List[str]],
                                       max_workers: int = 1):
+        """ Add already created nodes to a cluster as a desired cluster's node
+            type. The cluster will be setup up after adding these nodes to the
+            cluster.
+
+        :param cluster_id: ID of the cluster to add the nodes.
+        :param node_types: Dictionary with cluster's node type as key and list
+            of node ids as values.
+        :param max_workers: Number of threads to perform setup actions.
+        """
         # Just to check if cluster exists...
         self.get_cluster_by_id(cluster_id)
         for node_type, node_list in node_types.items():
@@ -443,6 +616,12 @@ class ClusterManager:
         self.setup_cluster(cluster_id, node_types, max_workers)
 
     def run_action(self, action: ActionType, node_ids: List[str]) -> bool:
+        """ Run a cluster's action in a set of nodes.
+
+        :param action: Cluster's action to be performed
+        :param node_ids: ID of the nodes to perform this action
+        :return: True if action as sucessfully performed and false otherwise
+        """
         # TODO Check this function
         logger.info(f"Executing action: {action} at nodes: {node_ids}")
         try:
@@ -482,6 +661,12 @@ class ClusterManager:
             return False
 
     def run_role_add(self, role: RoleAdd, node_ids: List[str]) -> bool:
+        """ Add nodes to a role
+
+        :param role: Role to add to nodes
+        :param node_ids: ID of the nodes to add the role
+        :return: True if nodes were added to the role and false otherwise
+        """
         try:
             if '/' in role.name:
                 host_map = {role.name.split('/')[1]: node_ids}
@@ -497,6 +682,12 @@ class ClusterManager:
             return False
 
     def run_setup(self, setup: SetupConfig, node_ids: List[str]) -> bool:
+        """ Runs a cluster's setup configuration at a list of nodes
+
+        :param setup: Setup to perform in nodes
+        :param node_ids: ID of the nodes to perform this setup
+        :return: True if the setup was successfully executed and false otherwise
+        """
         logger.info(f"Running setup {setup} at nodes: {node_ids}")
         for role in setup.roles:
             if not self.run_role_add(role, node_ids):
@@ -514,6 +705,16 @@ class ClusterManager:
 
     def setup_cluster(self, cluster_id: str, nodes_being_added: Dict[str, List[str]] = None,
                       max_workers: int = 1, start_at_stage: str = 'before_all'):
+        """ Setups a cluster. It will run all setups in order.
+
+        :param cluster_id: ID of the cluster to perform setup
+        :param nodes_being_added: List of nodes that is being added now to the
+            cluster. It affects before, node and after stages. If None, it
+            supposes that all nodes are being added to the cluster now.
+        :param max_workers: NUmber of threads to run setup configs.
+        :param start_at_stage: Stage to start the configuration. It can be:
+            'before_all', 'before', 'node', 'after' or 'after_all'
+        """
         cluster = self.cluster_repository.get_cluster_by_id(cluster_id)
         cluster.is_setup = False
         self.cluster_repository.upsert_cluster(cluster)
@@ -577,18 +778,41 @@ class ClusterManager:
 
     def pause_cluster(self, cluster_id: str, timeout: int = 180,
                       max_workers: int = 1) -> List[str]:
+        """ Pause the cluster, pausing all nodes that belongs to it.
+
+        :param cluster_id: ID of the cluster to pause nodes
+        :param timeout: Pause timeout
+        :param max_workers: Number of threads to perform pause process.
+        :return: ID of the nodes that were sucessfuly paused
+        """
         nodes = self.get_all_cluster_nodes(cluster_id)
         return self.node_manager.pause_nodes(
             nodes, timeout=timeout, max_workers=max_workers)
 
     def resume_cluster(self, cluster_id: str, timeout: int = 180,
                        max_workers: int = 1) -> List[str]:
+        """ Resumes a cluster, resuming all nodes that belongs to it
+
+        :param cluster_id: ID of the cluster to resume.
+        :param timeout: Timeout to resume nodes.
+        :param max_workers: Number of threads in the resume process.
+        :return: ID of the nodes that were successfully resumed.
+        """
         nodes = self.get_all_cluster_nodes(cluster_id)
         return self.node_manager.resume_nodes(
             nodes, timeout=timeout, max_workers=max_workers)
 
     def stop_cluster(self, cluster_id: str, timeout: int = 180,
                      max_workers: int = 1, remove_cluster: bool = True) -> List[str]:
+        """ Stop a cluster, stopping all nodes that belongs to it.
+
+        :param cluster_id: ID of the cluster to stop;
+        :param timeout: Timeout to stop nodes.
+        :param max_workers: Number of threads in the stop process.
+        :param remove_cluster: If True, also removes the cluster from the
+            repository.
+        :return: ID of the nodes that were successfully stopped.
+        """
         nodes = self.get_all_cluster_nodes(cluster_id)
         nodes = self.node_manager.stop_nodes(
             nodes, timeout=timeout, max_workers=max_workers)
@@ -600,6 +824,18 @@ class ClusterManager:
                  wait_timeout: int = 30, update_timeout: int = 30,
                  max_workers: int = 1, test_command: str = 'echo "OK"') -> \
             Dict[str, bool]:
+        """ Check if a cluster is alive, checking the aliveness of all nodes
+            that belongs the cluster.
+
+        :param cluster_id: ID of the cluster to check for aliveness.
+        :param retries: Number of check retries.
+        :param wait_timeout: Timeout to perform another check if previous fails.
+        :param update_timeout: Timeout to update node information.
+        :param max_workers: Number of threads to check for aliveness.
+        :param test_command: Command to be executed in nodes to test for aliveness.
+        :return: A dictionary where keys are the IDs of nodes and values are
+            booleans indicating if node is alive or not.
+        """
         nodes = self.get_all_cluster_nodes(cluster_id)
         return self.node_manager.is_alive(
             nodes, retries=retries, wait_timeout=wait_timeout,
@@ -607,4 +843,8 @@ class ClusterManager:
             test_command=test_command)
 
     def upsert_cluster(self, cluster: ClusterDescriptor):
+        """ Create or update a cluster in cluster's repository.
+
+        :param cluster: Cluster to upsert.
+        """
         self.cluster_repository.upsert_cluster(cluster)

@@ -1,0 +1,588 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>clap.role_manager &mdash; CLoud Application Platform 0.2.2
+ documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../shared_roles.html">Roles shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Programming Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>clap.role_manager</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for clap.role_manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">import</span> <span class="nn">dacite</span>
+
+<span class="kn">from</span> <span class="nn">clap.executor</span> <span class="kn">import</span> <span class="n">AnsiblePlaybookExecutor</span>
+<span class="kn">from</span> <span class="nn">clap.node</span> <span class="kn">import</span> <span class="n">NodeDescriptor</span>
+<span class="kn">from</span> <span class="nn">clap.node_manager</span> <span class="kn">import</span> <span class="n">NodeRepositoryController</span>
+<span class="kn">from</span> <span class="nn">clap.utils</span> <span class="kn">import</span> <span class="n">yaml_load</span><span class="p">,</span> <span class="n">path_extend</span><span class="p">,</span> <span class="n">get_logger</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="RoleError"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleError">[docs]</a><span class="k">class</span> <span class="nc">RoleError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="InvalidRoleError"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.InvalidRoleError">[docs]</a><span class="k">class</span> <span class="nc">InvalidRoleError</span><span class="p">(</span><span class="n">RoleError</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role_name</span> <span class="o">=</span> <span class="n">role_name</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid role named: </span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="InvalidActionError"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.InvalidActionError">[docs]</a><span class="k">class</span> <span class="nc">InvalidActionError</span><span class="p">(</span><span class="n">RoleError</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role_name</span> <span class="o">=</span> <span class="n">role_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_name</span> <span class="o">=</span> <span class="n">action_name</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid action &#39;</span><span class="si">{</span><span class="n">action_name</span><span class="si">}</span><span class="s2">&#39; for role </span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="InvalidHostError"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.InvalidHostError">[docs]</a><span class="k">class</span> <span class="nc">InvalidHostError</span><span class="p">(</span><span class="n">RoleError</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">host_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role_name</span> <span class="o">=</span> <span class="n">role_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host_name</span> <span class="o">=</span> <span class="n">host_name</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid host &#39;</span><span class="si">{</span><span class="n">host_name</span><span class="si">}</span><span class="s2">&#39; for role &#39;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RoleAssignmentError"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleAssignmentError">[docs]</a><span class="k">class</span> <span class="nc">RoleAssignmentError</span><span class="p">(</span><span class="n">RoleError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="NodeRoleError"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.NodeRoleError">[docs]</a><span class="k">class</span> <span class="nc">NodeRoleError</span><span class="p">(</span><span class="n">RoleError</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">host_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_id</span> <span class="o">=</span> <span class="n">node_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role_name</span> <span class="o">=</span> <span class="n">role_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host_name</span> <span class="o">=</span> <span class="n">host_name</span>
+        <span class="n">rname</span> <span class="o">=</span> <span class="n">role_name</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">host_name</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">host_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">node_id</span><span class="si">}</span><span class="s2"> does not belong to </span><span class="si">{</span><span class="n">rname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MissingActionVariableError"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.MissingActionVariableError">[docs]</a><span class="k">class</span> <span class="nc">MissingActionVariableError</span><span class="p">(</span><span class="n">RoleError</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">var</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role_name</span> <span class="o">=</span> <span class="n">role_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_name</span> <span class="o">=</span> <span class="n">action_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">=</span> <span class="n">var</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing the required variable &#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39; for action &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">action_name</span><span class="si">}</span><span class="s2">&#39; of role &#39;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RoleVariableInfo"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleVariableInfo">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RoleVariableInfo</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">optional</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="RoleActionInfo"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleActionInfo">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RoleActionInfo</span><span class="p">:</span>
+    <span class="n">playbook</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="nb">vars</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">RoleVariableInfo</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Role"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.Role">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Role</span><span class="p">:</span>
+    <span class="n">actions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RoleActionInfo</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="n">hosts</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RoleManager"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleManager">[docs]</a><span class="k">class</span> <span class="nc">RoleManager</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_repository_controller</span><span class="p">:</span> <span class="n">NodeRepositoryController</span><span class="p">,</span>
+                 <span class="n">role_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">actions_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">private_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">discard_invalids</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">load</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span> <span class="o">=</span> <span class="n">node_repository_controller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roles_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">role_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">actions_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">private_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Role</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_discard_invalids</span> <span class="o">=</span> <span class="n">discard_invalids</span>
+        <span class="k">if</span> <span class="n">load</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_roles</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RoleManager.get_all_role_nodes"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleManager.get_all_role_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_role_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_nodes_filter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">role_name</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">roles</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">/&quot;</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">roles</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RoleManager.get_role_node_hosts"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleManager.get_role_node_hosts">[docs]</a>    <span class="k">def</span> <span class="nf">get_role_node_hosts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">role</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">[</span><span class="n">role_name</span><span class="p">]</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">([</span><span class="n">node_id</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">hosts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hname</span> <span class="ow">in</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+                <span class="n">search_for</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">hname</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">if</span> <span class="n">search_for</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span>
+                    <span class="n">hosts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hname</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">role_name</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span>
+                <span class="n">hosts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">hosts</span></div>
+
+<div class="viewcode-block" id="RoleManager.get_all_role_nodes_hosts"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleManager.get_all_role_nodes_hosts">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_role_nodes_hosts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+        <span class="n">role</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">[</span><span class="n">role_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+            <span class="n">search_for</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">search_for</span> <span class="o">=</span> <span class="p">[</span><span class="n">role_name</span><span class="p">]</span>
+
+        <span class="n">host_nodes_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">rname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span> <span class="p">[</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">node_id</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_nodes_filter</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">rname</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">roles</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">rname</span> <span class="ow">in</span> <span class="n">search_for</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+            <span class="n">host_nodes_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="n">host_nodes_map</span><span class="p">[</span><span class="n">role_name</span><span class="p">]}</span>
+
+        <span class="k">return</span> <span class="n">host_nodes_map</span></div>
+
+<div class="viewcode-block" id="RoleManager.get_role_nodes"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleManager.get_role_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_role_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">from_node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+        <span class="n">role</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">[</span><span class="n">role_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+            <span class="n">search_for</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">search_for</span> <span class="o">=</span> <span class="p">[</span><span class="n">role_name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">from_node_ids</span><span class="p">:</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">rname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="p">[</span>
+                    <span class="n">node</span><span class="o">.</span><span class="n">node_id</span>
+                    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_nodes_filter</span><span class="p">(</span>
+                        <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">rname</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">roles</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="k">for</span> <span class="n">rname</span> <span class="ow">in</span> <span class="n">search_for</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">rname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="p">[</span>
+                    <span class="n">node</span><span class="o">.</span><span class="n">node_id</span>
+                    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_nodes_filter</span><span class="p">(</span>
+                        <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="ow">in</span> <span class="n">from_node_ids</span> <span class="ow">and</span> <span class="n">rname</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">roles</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="k">for</span> <span class="n">rname</span> <span class="ow">in</span> <span class="n">search_for</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="n">nodes</span></div>
+
+<div class="viewcode-block" id="RoleManager.load_roles"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleManager.load_roles">[docs]</a>    <span class="k">def</span> <span class="nf">load_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">role_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actions_dir</span><span class="p">):</span>
+            <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">role_file</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">role_values</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">yaml_load</span><span class="p">(</span><span class="n">path_extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actions_dir</span><span class="p">,</span> <span class="n">role_file</span><span class="p">))</span>
+                <span class="n">role</span> <span class="o">=</span> <span class="n">dacite</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">Role</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">role_values</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">[</span><span class="n">role_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">role</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discard_invalids</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Discarding role &#39;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">&#39;. </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">e</span></div>
+
+<div class="viewcode-block" id="RoleManager.add_role"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleManager.add_role">[docs]</a>    <span class="k">def</span> <span class="nf">add_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">hosts_node_map</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
+                 <span class="n">host_vars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">node_vars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">quiet</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">role_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidRoleError</span><span class="p">(</span><span class="n">role_name</span><span class="p">)</span>
+        <span class="n">role</span><span class="p">:</span> <span class="n">Role</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">[</span><span class="n">role_name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">inventory</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> \
+                    <span class="p">{</span><span class="n">h</span><span class="p">:</span> <span class="n">hosts_node_map</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">host_name</span> <span class="ow">in</span> <span class="n">hosts_node_map</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">host_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">InvalidHostError</span><span class="p">(</span><span class="n">role_name</span><span class="p">,</span> <span class="n">host_name</span><span class="p">)</span>
+                <span class="n">inventory</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">hosts_node_map</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">inventory</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="n">hosts_node_map</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">role_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hosts_node_map</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid hosts </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2"> &quot;</span>
+                                     <span class="sa">f</span><span class="s2">&quot;for role </span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">inventory</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="n">hosts_node_map</span><span class="p">[</span><span class="n">role_name</span><span class="p">]}</span>
+
+        <span class="k">if</span> <span class="s1">&#39;setup&#39;</span> <span class="ow">in</span> <span class="n">role</span><span class="o">.</span><span class="n">actions</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">perform_action</span><span class="p">(</span>
+                <span class="n">role_name</span><span class="p">,</span> <span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="n">inventory</span><span class="p">,</span> <span class="n">host_vars</span><span class="p">,</span> <span class="n">node_vars</span><span class="p">,</span> <span class="n">extra_args</span><span class="p">,</span>
+                <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span> <span class="n">validate_nodes_in_role</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">RoleAssignmentError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error executing setup action&#39;s playbook for role &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">. Nodes were not assigned to role.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">ret_code</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">RoleAssignmentError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error executing setup action&#39;s playbook for role &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">. Playbook finished with non-zero return code &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">ret_code</span><span class="si">}</span><span class="s2">). Nodes were not assigned to role.&quot;</span>
+                <span class="p">)</span>
+            <span class="c1"># TODO check if, for each node, playbook was ok (checking result.hosts status)</span>
+
+        <span class="n">added_nodes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">host</span><span class="p">,</span> <span class="n">list_node_ids</span> <span class="ow">in</span> <span class="n">inventory</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">role_name</span> <span class="k">if</span> <span class="n">host</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">list_node_ids</span><span class="p">):</span>
+                <span class="n">added_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span>
+                    <span class="n">node</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">added_nodes</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RoleManager._check_nodes_role"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleManager._check_nodes_role">[docs]</a>    <span class="k">def</span> <span class="nf">_check_nodes_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">host_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]]):</span>
+        <span class="k">if</span> <span class="n">role_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidRoleError</span><span class="p">(</span><span class="n">role_name</span><span class="p">)</span>
+        <span class="n">role</span><span class="p">:</span> <span class="n">Role</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">[</span><span class="n">role_name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hname</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">host_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">search_for</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">hname</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">search_for</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">NodeRoleError</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">role_name</span><span class="p">,</span> <span class="n">hname</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">host_map</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;host_map variable must define key empty string key&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">host_map</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">role_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">NodeRoleError</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">role_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RoleManager.perform_action"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleManager.perform_action">[docs]</a>    <span class="k">def</span> <span class="nf">perform_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">hosts_node_map</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
+                       <span class="n">host_vars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">node_vars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">extra_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">quiet</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                       <span class="n">validate_nodes_in_role</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="n">AnsiblePlaybookExecutor</span><span class="o">.</span><span class="n">PlaybookResult</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param role_name:</span>
+<span class="sd">        :param action_name:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">host_vars</span> <span class="o">=</span> <span class="n">host_vars</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">node_vars</span> <span class="o">=</span> <span class="n">node_vars</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">extra_args</span> <span class="o">=</span> <span class="n">extra_args</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">role_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidRoleError</span><span class="p">(</span><span class="n">role_name</span><span class="p">)</span>
+        <span class="n">role</span><span class="p">:</span> <span class="n">Role</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">[</span><span class="n">role_name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">action_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">role</span><span class="o">.</span><span class="n">actions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidActionError</span><span class="p">(</span><span class="n">role_name</span><span class="p">,</span> <span class="n">action_name</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">role</span><span class="o">.</span><span class="n">actions</span><span class="p">[</span><span class="n">action_name</span><span class="p">]</span>
+
+        <span class="c1"># Check hosts_node_map variable</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">_inventory</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="n">hosts_node_map</span><span class="p">}</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hosts_node_map</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;hosts_node_map variable must contain &quot;</span>
+                                     <span class="s2">&quot;&#39;None&#39; key.&quot;</span><span class="p">)</span>
+                <span class="n">_inventory</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="n">hosts_node_map</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;hosts_node_map variable expects a list or a dict, &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;not a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;As role </span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2"> defines hosts, hosts_node_map &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;variable expects a dict, not a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">_inventory</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">hname</span><span class="p">,</span> <span class="n">node_list</span> <span class="ow">in</span> <span class="n">hosts_node_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">hname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidHostError</span><span class="p">(</span><span class="n">role_name</span><span class="p">,</span> <span class="n">hname</span><span class="p">)</span>
+                <span class="n">_inventory</span><span class="p">[</span><span class="n">hname</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_list</span>
+
+        <span class="c1"># Expand node_ids to NodeDescriptors</span>
+        <span class="n">inventory</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">host_name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">list_nodes</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">host_name</span><span class="p">,</span> <span class="n">list_nodes</span> <span class="ow">in</span> <span class="n">_inventory</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">validate_nodes_in_role</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_nodes_role</span><span class="p">(</span><span class="n">role_name</span><span class="p">,</span> <span class="n">inventory</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+            <span class="n">inventory</span> <span class="o">=</span> <span class="p">{</span><span class="n">role_name</span><span class="p">:</span> <span class="n">inventory</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]}</span>
+
+        <span class="c1"># Check if every required role&#39;s action variable is informed via extra_args</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">vars</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">var</span><span class="o">.</span><span class="n">optional</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">extra_args</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MissingActionVariableError</span><span class="p">(</span>
+                        <span class="n">role_name</span><span class="p">,</span> <span class="n">action_name</span><span class="p">,</span> <span class="n">var</span><span class="o">.</span><span class="n">name</span>
+                    <span class="p">)</span>
+
+        <span class="c1"># Expand playbook path</span>
+        <span class="n">playbook_file</span> <span class="o">=</span> <span class="n">path_extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roles_dir</span><span class="p">,</span> <span class="n">action</span><span class="o">.</span><span class="n">playbook</span><span class="p">)</span>
+        <span class="c1"># Create ansible-like inventory</span>
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">AnsiblePlaybookExecutor</span><span class="o">.</span><span class="n">create_inventory</span><span class="p">(</span>
+            <span class="n">inventory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_dir</span><span class="p">,</span> <span class="n">host_vars</span><span class="p">,</span> <span class="n">node_vars</span><span class="p">)</span>
+
+        <span class="c1"># Crate playbook executor and run</span>
+        <span class="n">playbook</span> <span class="o">=</span> <span class="n">AnsiblePlaybookExecutor</span><span class="p">(</span>
+            <span class="n">playbook_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_dir</span><span class="p">,</span> <span class="n">inventory</span><span class="p">,</span> <span class="n">extra_args</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Executing playbook </span><span class="si">{</span><span class="n">playbook_file</span><span class="si">}</span><span class="s1"> with inventory: &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">inventory</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">playbook</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="RoleManager.remove_role"><a class="viewcode-back" href="../../autoapi/clap/role_manager/index.html#clap.role_manager.RoleManager.remove_role">[docs]</a>    <span class="k">def</span> <span class="nf">remove_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">hosts_node_map</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]])</span> <span class="o">-&gt;</span> \
+            <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">role</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roles</span><span class="p">[</span><span class="n">role_name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">role</span><span class="o">.</span><span class="n">hosts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">_inventory</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="n">hosts_node_map</span><span class="p">}</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hosts_node_map</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;hosts_node_map variable must contain &quot;</span>
+                                     <span class="s2">&quot;&#39;None&#39; key.&quot;</span><span class="p">)</span>
+                <span class="n">_inventory</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="n">hosts_node_map</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;hosts_node_map variable expects a list or a dict, &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;not a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hosts_node_map</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_inventory</span> <span class="o">=</span> <span class="n">hosts_node_map</span>
+
+        <span class="c1"># Expand node_ids to NodeDescriptors</span>
+        <span class="n">inventory</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeDescriptor</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">host_name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">list_nodes</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">host_name</span><span class="p">,</span> <span class="n">list_nodes</span> <span class="ow">in</span> <span class="n">_inventory</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_nodes_role</span><span class="p">(</span><span class="n">role_name</span><span class="p">,</span> <span class="n">inventory</span><span class="p">)</span>
+        <span class="n">node_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">h</span><span class="p">,</span> <span class="n">node_list</span> <span class="ow">in</span> <span class="n">hosts_node_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">h</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="n">role_name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">node_list</span><span class="p">):</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node_repository</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="n">node_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">node_set</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Otávio Napoli.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

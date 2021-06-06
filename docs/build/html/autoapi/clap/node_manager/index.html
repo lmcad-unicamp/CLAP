@@ -1,0 +1,684 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>clap.node_manager &mdash; CLoud Application Platform 0.2.2
+ documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="clap.repository" href="../repository/index.html" />
+    <link rel="prev" title="clap.node" href="../node/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../shared_roles.html">Roles shared with CLAP</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">Programming Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../abstract_provider/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.abstract_provider</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cluster_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.cluster_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../configs/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.configs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../executor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.executor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../node/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../repository/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.repository</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../role_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.role_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../api.html">Programming Reference</a> &raquo;</li>
+        
+          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap</span></code></a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node_manager</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../../_sources/autoapi/clap/node_manager/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-clap.node_manager">
+<span id="clap-node-manager"></span><h1><a class="reference internal" href="#module-clap.node_manager" title="clap.node_manager"><code class="xref py py-mod docutils literal notranslate"><span class="pre">clap.node_manager</span></code></a><a class="headerlink" href="#module-clap.node_manager" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.node_manager.NodeManager" title="clap.node_manager.NodeManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NodeManager</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clap.node_manager.NodeRepositoryController" title="clap.node_manager.NodeRepositoryController"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NodeRepositoryController</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clap.node_manager.logger" title="clap.node_manager.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py exception">
+<dt id="clap.node_manager.DeploymentError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.node_manager.</span></code><code class="sig-name descname"><span class="pre">DeploymentError</span></code><a class="reference internal" href="../../../_modules/clap/node_manager.html#DeploymentError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.DeploymentError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.node_manager.InvalidNodeError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.node_manager.</span></code><code class="sig-name descname"><span class="pre">InvalidNodeError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#InvalidNodeError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.InvalidNodeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.node_manager.InvalidProvider">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.node_manager.</span></code><code class="sig-name descname"><span class="pre">InvalidProvider</span></code><a class="reference internal" href="../../../_modules/clap/node_manager.html#InvalidProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.InvalidProvider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.node_manager.NodeManager">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.node_manager.</span></code><code class="sig-name descname"><span class="pre">NodeManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_repository_controller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">providers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">private_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="clap.node_manager.NodeManager._group_instances_by_provider">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">_group_instances_by_provider</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instances</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager._group_instances_by_provider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager._group_instances_by_provider" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>instances</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><a class="reference internal" href="../configs/index.html#clap.configs.InstanceInfo" title="clap.configs.InstanceInfo"><em>clap.configs.InstanceInfo</em></a><em>, </em><em>int</em><em>]</em><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, List[Tuple[<a class="reference internal" href="../configs/index.html#clap.configs.InstanceInfo" title="clap.configs.InstanceInfo">clap.configs.InstanceInfo</a>, int]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.add_tags">
+<code class="sig-name descname"><span class="pre">add_tags</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.add_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.add_tags" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.get_all_nodes">
+<code class="sig-name descname"><span class="pre">get_all_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.get_all_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.get_all_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.get_nodes">
+<code class="sig-name descname"><span class="pre">get_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.get_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.get_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filter_func</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor"><em>clap.node.NodeDescriptor</em></a><em>]</em><em>, </em><em>bool</em><em>]</em>) – </p></li>
+<li><p><strong>from_node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.get_nodes_by_id">
+<code class="sig-name descname"><span class="pre">get_nodes_by_id</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.get_nodes_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.get_nodes_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.get_nodes_with_tag">
+<code class="sig-name descname"><span class="pre">get_nodes_with_tag</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.get_nodes_with_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.get_nodes_with_tag" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – </p></li>
+<li><p><strong>from_node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.get_nodes_with_tag_value">
+<code class="sig-name descname"><span class="pre">get_nodes_with_tag_value</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.get_nodes_with_tag_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.get_nodes_with_tag_value" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – </p></li>
+<li><p><strong>value</strong> (<em>str</em>) – </p></li>
+<li><p><strong>from_node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.get_not_running_nodes">
+<code class="sig-name descname"><span class="pre">get_not_running_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.get_not_running_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.get_not_running_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>from_node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.get_reachable_nodes">
+<code class="sig-name descname"><span class="pre">get_reachable_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.get_reachable_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.get_reachable_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>from_node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.get_up_nodes">
+<code class="sig-name descname"><span class="pre">get_up_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.get_up_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.get_up_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>from_node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.group_nodes_by_provider">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">group_nodes_by_provider</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.group_nodes_by_provider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.group_nodes_by_provider" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>List</em><em>[</em><a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor"><em>clap.node.NodeDescriptor</em></a><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.is_alive">
+<code class="sig-name descname"><span class="pre">is_alive</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'echo</span> <span class="pre">&quot;OK&quot;'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.is_alive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.is_alive" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>retries</strong> (<em>int</em>) – </p></li>
+<li><p><strong>wait_timeout</strong> (<em>int</em>) – </p></li>
+<li><p><strong>update_timeout</strong> (<em>int</em>) – </p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – </p></li>
+<li><p><strong>test_command</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.pause_nodes">
+<code class="sig-name descname"><span class="pre">pause_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.pause_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.pause_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – </p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.remove_node">
+<code class="sig-name descname"><span class="pre">remove_node</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.remove_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_id</strong> (<em>str</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.remove_tags">
+<code class="sig-name descname"><span class="pre">remove_tags</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.remove_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.remove_tags" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>tags</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.resume_nodes">
+<code class="sig-name descname"><span class="pre">resume_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.resume_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.resume_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – </p></li>
+<li><p><strong>connection_retries</strong> (<em>int</em>) – </p></li>
+<li><p><strong>retry_timeout</strong> (<em>int</em>) – </p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.start_node">
+<code class="sig-name descname"><span class="pre">start_node</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.start_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.start_node" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference internal" href="../configs/index.html#clap.configs.InstanceInfo" title="clap.configs.InstanceInfo"><em>clap.configs.InstanceInfo</em></a>) – </p></li>
+<li><p><strong>count</strong> (<em>int</em>) – </p></li>
+<li><p><strong>start_timeout</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.start_nodes">
+<code class="sig-name descname"><span class="pre">start_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.start_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.start_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance_counts</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><a class="reference internal" href="../configs/index.html#clap.configs.InstanceInfo" title="clap.configs.InstanceInfo"><em>clap.configs.InstanceInfo</em></a><em>, </em><em>int</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>start_timeout</strong> (<em>int</em>) – </p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.stop_nodes">
+<code class="sig-name descname"><span class="pre">stop_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.stop_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.stop_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – </p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – </p></li>
+<li><p><strong>remove_nodes</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeManager.upsert_node">
+<code class="sig-name descname"><span class="pre">upsert_node</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeManager.upsert_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeManager.upsert_node" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> (<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor"><em>clap.node.NodeDescriptor</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clap.node_manager.NodeRepositoryController">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clap.node_manager.</span></code><code class="sig-name descname"><span class="pre">NodeRepositoryController</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeRepositoryController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeRepositoryController" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="clap.node_manager.NodeRepositoryController.get_all_nodes">
+<code class="sig-name descname"><span class="pre">get_all_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeRepositoryController.get_all_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeRepositoryController.get_all_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeRepositoryController.get_nodes_by_id">
+<code class="sig-name descname"><span class="pre">get_nodes_by_id</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeRepositoryController.get_nodes_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeRepositoryController.get_nodes_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeRepositoryController.get_nodes_filter">
+<code class="sig-name descname"><span class="pre">get_nodes_filter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeRepositoryController.get_nodes_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeRepositoryController.get_nodes_filter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filter_func</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor"><em>clap.node.NodeDescriptor</em></a><em>]</em><em>, </em><em>bool</em><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor">clap.node.NodeDescriptor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeRepositoryController.remove_node">
+<code class="sig-name descname"><span class="pre">remove_node</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeRepositoryController.remove_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeRepositoryController.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_id</strong> (<em>str</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeRepositoryController.remove_nodes">
+<code class="sig-name descname"><span class="pre">remove_nodes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeRepositoryController.remove_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeRepositoryController.remove_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clap.node_manager.NodeRepositoryController.upsert_node">
+<code class="sig-name descname"><span class="pre">upsert_node</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#NodeRepositoryController.upsert_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.NodeRepositoryController.upsert_node" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> (<a class="reference internal" href="../node/index.html#clap.node.NodeDescriptor" title="clap.node.NodeDescriptor"><em>clap.node.NodeDescriptor</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="clap.node_manager.UnhandledProviderError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">clap.node_manager.</span></code><code class="sig-name descname"><span class="pre">UnhandledProviderError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/clap/node_manager.html#UnhandledProviderError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#clap.node_manager.UnhandledProviderError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Common base class for all non-exit exceptions.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="clap.node_manager.logger">
+<code class="sig-prename descclassname"><span class="pre">clap.node_manager.</span></code><code class="sig-name descname"><span class="pre">logger</span></code><a class="headerlink" href="#clap.node_manager.logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../repository/index.html" class="btn btn-neutral float-right" title="clap.repository" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../node/index.html" class="btn btn-neutral float-left" title="clap.node" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Otávio Napoli.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

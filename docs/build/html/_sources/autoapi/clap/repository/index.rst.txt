@@ -1,0 +1,186 @@
+:mod:`clap.repository`
+======================
+
+.. py:module:: clap.repository
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   clap.repository.Repository
+   clap.repository.RepositoryFactory
+   clap.repository.SQLiteRepository
+
+
+
+
+.. exception:: InvalidEntryError(entry)
+
+
+   Bases: :py:obj:`RepositoryError`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: Repository(repository_path, commit_on_close = True, verbosity = 0)
+
+
+   Bases: :py:obj:`abc.ABC`
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+   .. attribute:: extension
+      :annotation: :str = 
+
+      
+
+   .. attribute:: repository_name
+      :annotation: :str = AbstractRepository
+
+      
+
+   .. method:: clear(self)
+      :abstractmethod:
+
+
+   .. method:: close(self)
+      :abstractmethod:
+
+
+   .. method:: commit(self)
+      :abstractmethod:
+
+
+   .. method:: connect(self, table_name)
+      :abstractmethod:
+
+
+   .. method:: get(self, key)
+      :abstractmethod:
+
+
+   .. method:: get_all(self)
+      :abstractmethod:
+
+
+   .. method:: get_multiple(self, key)
+      :abstractmethod:
+
+
+   .. method:: keys(self)
+      :abstractmethod:
+
+
+   .. method:: open(self, table_name)
+      :abstractmethod:
+
+
+   .. method:: remove(self, key)
+      :abstractmethod:
+
+
+   .. method:: remove_multiple(self, keys)
+      :abstractmethod:
+
+
+   .. method:: update(self, key, update_obj)
+      :abstractmethod:
+
+
+   .. method:: upsert(self, key, obj)
+      :abstractmethod:
+
+
+
+.. exception:: RepositoryError
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: RepositoryFactory
+
+   .. attribute:: repositories
+      
+
+      
+
+   .. method:: get_repository(self, name, repository_path, commit_on_close = True, verbosity = 0)
+
+
+
+.. class:: SQLiteRepository(repository_path, commit_on_close = True, verbosity = 0)
+
+
+   Bases: :py:obj:`Repository`
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+   .. attribute:: extension
+      :annotation: :str = .db
+
+      
+
+   .. attribute:: repository_name
+      :annotation: :str = sqlite
+
+      
+
+   .. method:: __repr__(self)
+
+      Return repr(self).
+
+
+   .. method:: clear(self)
+
+
+   .. method:: close(self)
+
+
+   .. method:: commit(self)
+
+
+   .. method:: connect(self, table_name)
+
+
+   .. method:: get(self, key)
+
+
+   .. method:: get_all(self)
+
+
+   .. method:: get_multiple(self, keys)
+
+
+   .. method:: keys(self)
+
+
+   .. method:: open(self, table_name)
+
+
+   .. method:: remove(self, key)
+
+
+   .. method:: remove_multiple(self, keys)
+
+
+   .. method:: update(self, key, update_obj)
+
+
+   .. method:: upsert(self, key, obj)
+
+
+

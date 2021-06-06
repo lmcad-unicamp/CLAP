@@ -1,0 +1,70 @@
+:mod:`clap.abstract_provider`
+=============================
+
+.. py:module:: clap.abstract_provider
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   clap.abstract_provider.AbstractInstanceProvider
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   clap.abstract_provider.logger
+
+
+.. class:: AbstractInstanceProvider
+
+   Bases: :py:obj:`abc.ABC`
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+   .. method:: pause_instances(self, nodes_to_pause, timeout = 600)
+      :abstractmethod:
+
+
+   .. method:: resume_instances(self, nodes_to_resume, timeout = 600)
+      :abstractmethod:
+
+
+   .. method:: start_instances(self, instance, count, timeout = 600)
+      :abstractmethod:
+
+
+   .. method:: stop_instances(self, nodes_to_stop, timeout = 600)
+      :abstractmethod:
+
+
+   .. method:: update_instance_info(self, nodes_to_check, timeout = 600)
+      :abstractmethod:
+
+
+
+.. exception:: InstanceDeploymentError
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. data:: logger
+   
+
+   
+

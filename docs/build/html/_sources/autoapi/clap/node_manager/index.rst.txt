@@ -1,0 +1,161 @@
+:mod:`clap.node_manager`
+========================
+
+.. py:module:: clap.node_manager
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   clap.node_manager.NodeManager
+   clap.node_manager.NodeRepositoryController
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   clap.node_manager.logger
+
+
+.. exception:: DeploymentError
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. exception:: InvalidNodeError(node_id)
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. exception:: InvalidProvider
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: NodeManager(node_repository_controller, providers, private_dir)
+
+
+   .. method:: _group_instances_by_provider(instances)
+      :staticmethod:
+
+
+   .. method:: add_tags(self, node_ids, tags)
+
+
+   .. method:: get_all_nodes(self)
+
+
+   .. method:: get_nodes(self, filter_func, from_node_ids = None)
+
+
+   .. method:: get_nodes_by_id(self, node_ids)
+
+
+   .. method:: get_nodes_with_tag(self, key, from_node_ids = None)
+
+
+   .. method:: get_nodes_with_tag_value(self, key, value, from_node_ids = None)
+
+
+   .. method:: get_not_running_nodes(self, from_node_ids = None)
+
+
+   .. method:: get_reachable_nodes(self, from_node_ids = None)
+
+
+   .. method:: get_up_nodes(self, from_node_ids = None)
+
+
+   .. method:: group_nodes_by_provider(nodes)
+      :staticmethod:
+
+
+   .. method:: is_alive(self, node_ids, retries = 5, wait_timeout = 30, update_timeout = 30, max_workers = 1, test_command = 'echo "OK"')
+
+
+   .. method:: pause_nodes(self, node_ids, timeout = 180, max_workers = 1)
+
+
+   .. method:: remove_node(self, node_id)
+
+
+   .. method:: remove_tags(self, node_ids, tags)
+
+
+   .. method:: resume_nodes(self, node_ids, timeout = 600, connection_retries = 10, retry_timeout = 30, max_workers = 1)
+
+
+   .. method:: start_node(self, instance, count = 1, start_timeout = 600)
+
+
+   .. method:: start_nodes(self, instance_counts, start_timeout = 600, max_workers = 1)
+
+
+   .. method:: stop_nodes(self, node_ids, timeout = 180, max_workers = 1, remove_nodes = True)
+
+
+   .. method:: upsert_node(self, node)
+
+
+
+.. class:: NodeRepositoryController(repository)
+
+
+   .. method:: get_all_nodes(self)
+
+
+   .. method:: get_nodes_by_id(self, node_ids)
+
+
+   .. method:: get_nodes_filter(self, filter_func)
+
+
+   .. method:: remove_node(self, node_id)
+
+
+   .. method:: remove_nodes(self, node_ids)
+
+
+   .. method:: upsert_node(self, node)
+
+
+
+.. exception:: UnhandledProviderError(provider)
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. data:: logger
+   
+
+   
+

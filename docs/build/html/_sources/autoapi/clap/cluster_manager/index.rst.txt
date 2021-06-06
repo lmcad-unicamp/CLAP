@@ -1,0 +1,689 @@
+:mod:`clap.cluster_manager`
+===========================
+
+.. py:module:: clap.cluster_manager
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   clap.cluster_manager.ClusterConfig
+   clap.cluster_manager.ClusterConfigDatabase
+   clap.cluster_manager.ClusterConfigFile
+   clap.cluster_manager.ClusterDescriptor
+   clap.cluster_manager.ClusterManager
+   clap.cluster_manager.ClusterOptions
+   clap.cluster_manager.ClusterRepositoryController
+   clap.cluster_manager.CommandActionType
+   clap.cluster_manager.NodeConfig
+   clap.cluster_manager.PlaybookActionType
+   clap.cluster_manager.RoleActionType
+   clap.cluster_manager.RoleAdd
+   clap.cluster_manager.SetupConfig
+   clap.cluster_manager._ClusterConfig
+   clap.cluster_manager._NodeConfig
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   clap.cluster_manager.ActionType
+   clap.cluster_manager.logger
+
+
+.. data:: ActionType
+   
+
+   An setup action can be a role action, a command or a playbook
+
+
+.. class:: ClusterConfig
+
+   A full cluster configuration
+
+   .. attribute:: after
+      :annotation: :Optional[List[SetupConfig]]
+
+      List of :class:`.SetupConfig` to perform in after phase
+
+
+   .. attribute:: after_all
+      :annotation: :Optional[List[SetupConfig]]
+
+      List of :class:`.SetupConfig` to perform in after_all phase
+
+
+   .. attribute:: before
+      :annotation: :Optional[List[SetupConfig]]
+
+      List of :class:`.SetupConfig` to perform in before phase
+
+
+   .. attribute:: before_all
+      :annotation: :Optional[List[SetupConfig]]
+
+      List of :class:`.SetupConfig` to perform in before_all phase
+
+
+   .. attribute:: cluster_config_id
+      :annotation: :str
+
+      Name of the cluster configuration
+
+
+   .. attribute:: nodes
+      :annotation: :Optional[Dict[str, NodeConfig]]
+
+      Dictionary with cluster's node type as name and :class:`.NodeConfig` as 
+      value
+
+
+   .. attribute:: options
+      :annotation: :Optional[ClusterOptions]
+
+      Optional cluster options (:class:`.ClusterOptions`)
+
+
+
+.. class:: ClusterConfigDatabase(cluster_files, discard_invalids = True, load = True)
+
+
+   This class stores information about clusters configurations in CLAP system.
+
+   :param cluster_files: List of cluster files to parse.
+   :param discard_invalids: If true, discard invalid configurations without
+       raising any exception. Otherwise, raises a :class:`.ClusterError`
+       exception.
+   :param load: If true, load all files when this class is created.
+       Otherwise, use :func:`~.ClusterConfigDatabase.load` method.
+
+   .. attribute:: clusters
+      :annotation: :Dict[str, ClusterConfig]
+
+      Dictionary with cluster configurations
+
+
+   .. method:: _load_cluster_and_setups(self)
+
+
+   .. method:: load(self)
+
+      Load all cluster configurations from cluster files. Configurations
+      will be stored in `cluster` attribute.
+
+
+
+.. class:: ClusterConfigFile
+
+   A dataclass that represents a cluster configuration file 
+
+   .. attribute:: clusters
+      :annotation: :Optional[Dict[str, _ClusterConfig]]
+
+      Dictionary with cluster name as key and :class:`._ClusterConfig` as value
+
+
+   .. attribute:: setups
+      :annotation: :Optional[Dict[str, SetupConfig]]
+
+      Dictionary with setup name as key and :class:`.SetupConfig` as value
+
+
+
+.. exception:: ClusterConfigurationError
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: ClusterDescriptor
+
+   Dataclass that describes an created CLAP cluster
+       
+
+   .. attribute:: cluster_config
+      :annotation: :ClusterConfig
+
+      Cluster configuration used
+
+
+   .. attribute:: cluster_id
+      :annotation: :str
+
+      ID of the cluster
+
+
+   .. attribute:: cluster_name
+      :annotation: :str
+
+      Name of the cluster configuration used
+
+
+   .. attribute:: creation_time
+      :annotation: :float
+
+      Date that this cluster was created
+
+
+   .. attribute:: is_setup
+      :annotation: :bool = False
+
+      Boolean indicating if cluster was already setup
+
+
+   .. attribute:: update_time
+      :annotation: :float
+
+      Last time of information of this cluster was updated
+
+
+
+.. exception:: ClusterError
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: ClusterManager(node_manager, role_manager, config_db, cluster_repository_controller, private_dir, cluster_tag_prefix = '.cluster:')
+
+
+   This class is used to start, stop, pause, resume and perform actions
+       in clusters. It is responsible to manage clusters (creating and
+       removing them from the repository).
+
+   :param node_manager: Class used to manage nodes.
+   :param role_manager: Class used to manage roles.
+   :param config_db: Class used to obtain cluster configurations.
+   :param cluster_repository_controller: Class used to manage clusters at
+       a repository.
+   :param private_dir: Path to the private directory (where private keys
+       are stored).
+   :param cluster_tag_prefix: Optional prefix to tag nodes that belongs to
+       a cluster.
+
+   .. method:: _run_setup_list(self, setups, node_ids)
+
+
+   .. method:: add_cluster_tag(self, node_ids, cluster_id, node_type)
+
+      Given a list of node ids, a cluster id and a cluster's node type,
+          add the cluster tag to the nodes. Once the tag is added to a node,
+          the node belongs to a cluster. So, a cluster is a set of nodes with
+          tagged with an specified tag.
+
+      :param node_ids: List node ids to add the cluster tag.
+      :param cluster_id: ID of the cluster that this node will belong.
+      :param node_type: Cluster's node type.
+      :return: The node ids of nodes that the tag was added.
+
+
+   .. method:: add_existing_nodes_to_cluster(self, cluster_id, node_types, max_workers = 1)
+
+      Add already created nodes to a cluster as a desired cluster's node
+          type. The cluster will be setup up after adding these nodes to the
+          cluster.
+
+      :param cluster_id: ID of the cluster to add the nodes.
+      :param node_types: Dictionary with cluster's node type as key and list
+          of node ids as values.
+      :param max_workers: Number of threads to perform setup actions.
+
+
+   .. method:: get_all_cluster_nodes(self, cluster_id)
+
+      Get all nodes that belong to a cluster.
+
+      :param cluster_id: ID of the cluster to retrieve the nodes.
+      :return: A list of node ids of nodes that belongs to the cluster.
+
+
+   .. method:: get_all_clusters(self)
+
+      Get all clusters information from the cluster repository.
+
+      :return: A list of clusters information.
+
+
+   .. method:: get_cluster_by_id(self, cluster_id)
+
+      Get a cluster information :class:`.ClusterDescriptor` from the
+          cluster repository.
+
+      :param cluster_id: ID of the cluster to retrieve.
+      :return: A cluster information.
+
+
+   .. method:: get_cluster_nodes_types(self, cluster_id)
+
+      Get all nodes and the nodes' types from nodes that belong to a
+          cluster.
+
+      :param cluster_id: ID of the cluster to retrieve the nodes.
+      :return: A dictionary where keys are the cluster's node types and values
+          are lists of nodes ids from nodes of this cluster's node type.
+
+
+   .. method:: grow(self, cluster_id, node_type, count = 1, min_count = 0, start_timeout = 600)
+
+      Starts new nodes from a cluster, based on its cluster's node type.
+          The nodes will be started and tagged to belong to the cluster.
+
+      :param cluster_id: ID of the cluster to add more nodes.
+      :param node_type: Cluster's node type to start.
+      :param count: Number of nodes to start.
+      :param min_count: Minimum number of nodes that must be started. If this
+          number is not reached, all nodes are terminated.
+      :param start_timeout: Timeout to start nodes. If nodes are not started
+          within this timeout, it will be terminated.
+      :return: A list of node ids of the nodes that were started.
+
+
+   .. method:: is_alive(self, cluster_id, retries = 5, wait_timeout = 30, update_timeout = 30, max_workers = 1, test_command = 'echo "OK"')
+
+      Check if a cluster is alive, checking the aliveness of all nodes
+          that belongs the cluster.
+
+      :param cluster_id: ID of the cluster to check for aliveness.
+      :param retries: Number of check retries.
+      :param wait_timeout: Timeout to perform another check if previous fails.
+      :param update_timeout: Timeout to update node information.
+      :param max_workers: Number of threads to check for aliveness.
+      :param test_command: Command to be executed in nodes to test for aliveness.
+      :return: A dictionary where keys are the IDs of nodes and values are
+          booleans indicating if node is alive or not.
+
+
+   .. method:: pause_cluster(self, cluster_id, timeout = 180, max_workers = 1)
+
+      Pause the cluster, pausing all nodes that belongs to it.
+
+      :param cluster_id: ID of the cluster to pause nodes
+      :param timeout: Pause timeout
+      :param max_workers: Number of threads to perform pause process.
+      :return: ID of the nodes that were sucessfuly paused
+
+
+   .. method:: resume_cluster(self, cluster_id, timeout = 180, max_workers = 1)
+
+      Resumes a cluster, resuming all nodes that belongs to it
+
+      :param cluster_id: ID of the cluster to resume.
+      :param timeout: Timeout to resume nodes.
+      :param max_workers: Number of threads in the resume process.
+      :return: ID of the nodes that were successfully resumed.
+
+
+   .. method:: run_action(self, action, node_ids)
+
+      Run a cluster's action in a set of nodes.
+
+      :param action: Cluster's action to be performed
+      :param node_ids: ID of the nodes to perform this action
+      :return: True if action as sucessfully performed and false otherwise
+
+
+   .. method:: run_role_add(self, role, node_ids)
+
+      Add nodes to a role
+
+      :param role: Role to add to nodes
+      :param node_ids: ID of the nodes to add the role
+      :return: True if nodes were added to the role and false otherwise
+
+
+   .. method:: run_setup(self, setup, node_ids)
+
+      Runs a cluster's setup configuration at a list of nodes
+
+      :param setup: Setup to perform in nodes
+      :param node_ids: ID of the nodes to perform this setup
+      :return: True if the setup was successfully executed and false otherwise
+
+
+   .. method:: setup_cluster(self, cluster_id, nodes_being_added = None, max_workers = 1, start_at_stage = 'before_all')
+
+      Setups a cluster. It will run all setups in order.
+
+      :param cluster_id: ID of the cluster to perform setup
+      :param nodes_being_added: List of nodes that is being added now to the
+          cluster. It affects before, node and after stages. If None, it
+          supposes that all nodes are being added to the cluster now.
+      :param max_workers: NUmber of threads to run setup configs.
+      :param start_at_stage: Stage to start the configuration. It can be:
+          'before_all', 'before', 'node', 'after' or 'after_all'
+
+
+   .. method:: start_cluster(self, cluster_config, start_timeout = 600, max_workers = 1, destroy_on_min_count = True)
+
+      Create a cluster, based on a :class:`.ClusterConfig`. It will start
+          the desired nodes and tag them to belong to the cluster. After, a
+          new cluster will be created at cluster's repository.
+
+      :param cluster_config: Cluster configuration used to start a cluster
+      :param start_timeout: Timeout to start nodes. If nodes are not started
+          within this timeout, it will be terminated.
+      :param max_workers: Number of threads to start nodes in parallel
+      :param destroy_on_min_count: If True, the cluster will be destroyed (all
+          nodes will be terminated and cluster is not created) if any cluster's
+          node type min_count is not reached.
+      :return: The cluster ID of the newly created cluster.
+
+
+   .. method:: start_cluster_node(self, cluster_id, node_type, instance_info, count, start_timeout = 600)
+
+
+   .. method:: stop_cluster(self, cluster_id, timeout = 180, max_workers = 1, remove_cluster = True)
+
+      Stop a cluster, stopping all nodes that belongs to it.
+
+      :param cluster_id: ID of the cluster to stop;
+      :param timeout: Timeout to stop nodes.
+      :param max_workers: Number of threads in the stop process.
+      :param remove_cluster: If True, also removes the cluster from the
+          repository.
+      :return: ID of the nodes that were successfully stopped.
+
+
+   .. method:: upsert_cluster(self, cluster)
+
+      Create or update a cluster in cluster's repository.
+
+      :param cluster: Cluster to upsert.
+
+
+
+.. class:: ClusterOptions
+
+   Dataclass that stores information about optional cluster options in a
+   cluster configuration file
+
+   .. attribute:: ssh_to
+      :annotation: :Optional[str]
+
+      Name od the node type to perform ssh
+
+
+
+.. class:: ClusterRepositoryController(repository)
+
+
+   This class is used manipulate clusters in a repository. It performs
+   all loads and stores of :class:`.ClusterDescriptor` in a repository.
+
+   :param repository: Cluster repository used to store :class:`.ClusterDescriptor`.
+
+   .. method:: get_all_clusters(self)
+
+      Retrieve all clusters from the repository.
+
+      :return: A list of clusters in the repository.
+
+
+   .. method:: get_cluster_by_id(self, cluster_id)
+
+      Retrieve a cluster from the repository.
+
+      :param cluster_id: ID of the cluster to retrieve.
+      :return: The cluster.
+
+
+   .. method:: remove_cluster(self, cluster_id)
+
+      Remove a cluster from the repository based on its cluster ID.
+
+      :param cluster_id: ID of the cluster to remove.
+
+
+   .. method:: upsert_cluster(self, cluster)
+
+      Upsert (create or update) a cluster in repository.
+
+      :param cluster: A cluster to be stored. The cluster ID will be used
+          to identify the cluster in the repository.
+
+
+
+.. exception:: ClusterSetupError
+
+
+   Bases: :py:obj:`ClusterError`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: CommandActionType
+
+   Dataclass that stores information about a command to perform from a
+   cluster setup
+
+   .. attribute:: command
+      :annotation: :str
+
+      The command to execute
+
+
+
+.. exception:: InvalidClusterError(cluster_id)
+
+
+   Bases: :py:obj:`Exception`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. exception:: InvalidSetupError(cluster_name, setup_name)
+
+
+   Bases: :py:obj:`ClusterConfigurationError`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: NodeConfig
+
+   Dataclass that stores information about a cluster's node at cluster
+   configuration
+
+   .. attribute:: count
+      :annotation: :int
+
+      Number of nodes to start
+
+
+   .. attribute:: min_count
+      :annotation: :Optional[int]
+
+      Minimum number of nodes that must sucessfully start
+
+
+   .. attribute:: setups
+      :annotation: :List[SetupConfig]
+
+      List of :class:`.SetupConfig` that must be performed in this node
+
+
+   .. attribute:: type
+      :annotation: :str
+
+      Type of the instance used (refers to instances.yaml file names)
+
+
+
+.. exception:: NodeSizeError
+
+
+   Bases: :py:obj:`ClusterConfigurationError`
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. class:: PlaybookActionType
+
+   Dataclass that stores information about a playboook to execute from a
+   cluster setup
+
+   .. attribute:: extra
+      :annotation: :Optional[Dict[str, str]]
+
+      Optional extra arguments
+
+
+   .. attribute:: playbook
+      :annotation: :str
+
+      Playbook to execute
+
+
+
+.. class:: RoleActionType
+
+   Dataclass that stores information about a role's action from a cluster
+   setup
+
+   .. attribute:: action
+      :annotation: :str
+
+      Role's action name
+
+
+   .. attribute:: extra
+      :annotation: :Optional[Dict[str, str]]
+
+      Optional extra arguments
+
+
+   .. attribute:: role
+      :annotation: :str
+
+      Name of the role
+
+
+
+.. class:: RoleAdd
+
+   Dataclass that stores information about a role that mst be added to
+   nodes from a cluster setup
+
+   .. attribute:: extra
+      :annotation: :Optional[Dict[str, str]]
+
+      Optional extra arguments from role's setup action (if any)
+
+
+   .. attribute:: name
+      :annotation: :str
+
+      Name of the role to be added
+
+
+
+.. class:: SetupConfig
+
+   Dataclass that stores information about a Setup configuration in a
+   cluster configuration file
+
+   .. attribute:: actions
+      :annotation: :Optional[List[ActionType]]
+
+      Optional list of actions to perform
+
+
+   .. attribute:: roles
+      :annotation: :Optional[List[RoleAdd]]
+
+      Optional list of roles to add
+
+
+
+.. class:: _ClusterConfig
+
+   Temporary class about cluster config (used to parse cluster configuration
+   file only)
+
+   .. attribute:: after
+      :annotation: :Optional[List[str]]
+
+      
+
+   .. attribute:: after_all
+      :annotation: :Optional[List[str]]
+
+      
+
+   .. attribute:: before
+      :annotation: :Optional[List[str]]
+
+      
+
+   .. attribute:: before_all
+      :annotation: :Optional[List[str]]
+
+      
+
+   .. attribute:: nodes
+      :annotation: :Optional[Dict[str, _NodeConfig]]
+
+      
+
+   .. attribute:: options
+      :annotation: :Optional[ClusterOptions]
+
+      
+
+
+.. class:: _NodeConfig
+
+   Temporary class about node config (used to parse cluster configuration
+   file only)
+
+   .. attribute:: count
+      :annotation: :int
+
+      
+
+   .. attribute:: min_count
+      :annotation: :Optional[int]
+
+      
+
+   .. attribute:: setups
+      :annotation: :List[str]
+
+      
+
+   .. attribute:: type
+      :annotation: :str
+
+      
+
+
+.. data:: logger
+   
+
+   
+

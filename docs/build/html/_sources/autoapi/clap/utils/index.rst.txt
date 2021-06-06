@@ -1,0 +1,131 @@
+:mod:`clap.utils`
+=================
+
+.. py:module:: clap.utils
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   clap.utils.CLAPFilter
+   clap.utils.Singleton
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   clap.utils.defaultdict_to_dict
+   clap.utils.float_time_to_string
+   clap.utils.get_logger
+   clap.utils.get_random_name
+   clap.utils.get_random_object
+   clap.utils.path_extend
+   clap.utils.setup_log
+   clap.utils.sorted_groupby
+   clap.utils.str_at_middle
+   clap.utils.tmpdir
+   clap.utils.yaml_load
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   clap.utils.APP_NAME
+
+
+.. data:: APP_NAME
+   :annotation: = clap
+
+   
+
+.. class:: CLAPFilter(name='')
+
+
+   Bases: :py:obj:`logging.Filter`
+
+   Filter instances are used to perform arbitrary filtering of LogRecords.
+
+   Loggers and Handlers can optionally use Filter instances to filter
+   records as desired. The base filter class only allows events which are
+   below a certain point in the logger hierarchy. For example, a filter
+   initialized with "A.B" will allow events logged by loggers "A.B",
+   "A.B.C", "A.B.C.D", "A.B.D" etc. but not "A.BB", "B.A.B" etc. If
+   initialized with the empty string, all events are passed.
+
+   Initialize a filter.
+
+   Initialize with the name of the logger which, together with its
+   children, will have its events allowed through the filter. If no
+   name is specified, allow every event.
+
+   .. method:: filter(self, record)
+
+      Determine if the specified record is to be logged.
+
+      Is the specified record to be logged? Returns 0 for no, nonzero for
+      yes. If deemed appropriate, the record may be modified in-place.
+
+
+
+.. class:: Singleton
+
+   Bases: :py:obj:`type`
+
+   Creates a single instance class
+       
+
+   .. attribute:: _instances
+      
+
+      
+
+   .. method:: __call__(cls, *args, **kwargs)
+
+      Call self as a function.
+
+
+
+.. function:: defaultdict_to_dict(d)
+
+
+.. function:: float_time_to_string(timespec)
+
+
+.. function:: get_logger(name)
+
+
+.. function:: get_random_name(in_use_names = None, retries = 10)
+
+
+.. function:: get_random_object()
+
+
+.. function:: path_extend(*args)
+
+
+.. function:: setup_log(name = 'clap', verbosity_level = 0, filename = None)
+
+
+.. function:: sorted_groupby(iterable, key=None)
+
+
+.. function:: str_at_middle(text, maximum, delimiter = '-')
+
+
+.. function:: tmpdir(suffix=None, prefix='clap.', dir = None, remove = True)
+
+
+.. function:: yaml_load(filename)
+
+

@@ -1,0 +1,1059 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>clap.cluster_manager &mdash; CLoud Application Platform 0.2.2
+ documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CLoud Application Platform
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Basic Configuration Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../shared_roles.html">Roles shared with CLAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Programming Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CLoud Application Platform</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>clap.cluster_manager</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for clap.cluster_manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">asdict</span>
+<span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">dacite</span>
+
+<span class="kn">from</span> <span class="nn">clap.configs</span> <span class="kn">import</span> <span class="n">ConfigurationDatabase</span><span class="p">,</span> <span class="n">InstanceInfo</span>
+<span class="kn">from</span> <span class="nn">clap.executor</span> <span class="kn">import</span> <span class="n">SSHCommandExecutor</span><span class="p">,</span> <span class="n">AnsiblePlaybookExecutor</span>
+<span class="kn">from</span> <span class="nn">clap.node_manager</span> <span class="kn">import</span> <span class="n">NodeManager</span>
+<span class="kn">from</span> <span class="nn">clap.repository</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">InvalidEntryError</span>
+<span class="kn">from</span> <span class="nn">clap.role_manager</span> <span class="kn">import</span> <span class="n">RoleManager</span><span class="p">,</span> <span class="n">NodeRoleError</span>
+<span class="kn">from</span> <span class="nn">clap.utils</span> <span class="kn">import</span> <span class="n">yaml_load</span><span class="p">,</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">get_random_object</span><span class="p">,</span> \
+    <span class="n">defaultdict_to_dict</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="c1"># --------------------------------- Exceptions ---------------------------------</span>
+<div class="viewcode-block" id="ClusterConfigurationError"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterConfigurationError">[docs]</a><span class="k">class</span> <span class="nc">ClusterConfigurationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="ClusterError"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterError">[docs]</a><span class="k">class</span> <span class="nc">ClusterError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="ClusterSetupError"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterSetupError">[docs]</a><span class="k">class</span> <span class="nc">ClusterSetupError</span><span class="p">(</span><span class="n">ClusterError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="InvalidClusterError"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.InvalidClusterError">[docs]</a><span class="k">class</span> <span class="nc">InvalidClusterError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_id</span> <span class="o">=</span> <span class="n">cluster_id</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid cluster: </span><span class="si">{</span><span class="n">cluster_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="InvalidSetupError"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.InvalidSetupError">[docs]</a><span class="k">class</span> <span class="nc">InvalidSetupError</span><span class="p">(</span><span class="n">ClusterConfigurationError</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">setup_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_name</span> <span class="o">=</span> <span class="n">cluster_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_name</span> <span class="o">=</span> <span class="n">setup_name</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid setup named </span><span class="si">{</span><span class="n">setup_name</span><span class="si">}</span><span class="s2"> in cluster &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cluster_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NodeSizeError"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.NodeSizeError">[docs]</a><span class="k">class</span> <span class="nc">NodeSizeError</span><span class="p">(</span><span class="n">ClusterConfigurationError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<span class="c1"># -------------------------------- Dataclasses ---------------------------------</span>
+<div class="viewcode-block" id="RoleActionType"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.RoleActionType">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RoleActionType</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Dataclass that stores information about a role&#39;s action from a cluster</span>
+<span class="sd">    setup</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">role</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="sd">&quot;&quot;&quot;Name of the role&quot;&quot;&quot;</span>
+    <span class="n">action</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="sd">&quot;&quot;&quot;Role&#39;s action name&quot;&quot;&quot;</span>
+    <span class="n">extra</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Optional extra arguments&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="CommandActionType"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.CommandActionType">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CommandActionType</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Dataclass that stores information about a command to perform from a</span>
+<span class="sd">    cluster setup</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">command</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="sd">&quot;&quot;&quot;The command to execute&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="PlaybookActionType"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.PlaybookActionType">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">PlaybookActionType</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Dataclass that stores information about a playboook to execute from a</span>
+<span class="sd">    cluster setup</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">playbook</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="sd">&quot;&quot;&quot;Playbook to execute&quot;&quot;&quot;</span>
+    <span class="n">extra</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Optional extra arguments&quot;&quot;&quot;</span></div>
+
+
+<span class="n">ActionType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">RoleActionType</span><span class="p">,</span> <span class="n">CommandActionType</span><span class="p">,</span> <span class="n">PlaybookActionType</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot; An setup action can be a role action, a command or a playbook</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="RoleAdd"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.RoleAdd">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RoleAdd</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Dataclass that stores information about a role that mst be added to</span>
+<span class="sd">    nodes from a cluster setup</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="sd">&quot;&quot;&quot;Name of the role to be added&quot;&quot;&quot;</span>
+    <span class="n">extra</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Optional extra arguments from role&#39;s setup action (if any)&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="SetupConfig"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.SetupConfig">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SetupConfig</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Dataclass that stores information about a Setup configuration in a</span>
+<span class="sd">    cluster configuration file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">roles</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">RoleAdd</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Optional list of roles to add&quot;&quot;&quot;</span>
+    <span class="n">actions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ActionType</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Optional list of actions to perform&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ClusterOptions"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterOptions">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ClusterOptions</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Dataclass that stores information about optional cluster options in a</span>
+<span class="sd">    cluster configuration file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ssh_to</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Name od the node type to perform ssh&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="_NodeConfig"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager._NodeConfig">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">_NodeConfig</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Temporary class about node config (used to parse cluster configuration</span>
+<span class="sd">    file only)&quot;&quot;&quot;</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">min_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">setups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_ClusterConfig"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager._ClusterConfig">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">_ClusterConfig</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Temporary class about cluster config (used to parse cluster configuration</span>
+<span class="sd">    file only)&quot;&quot;&quot;</span>
+    <span class="n">options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClusterOptions</span><span class="p">]</span>
+    <span class="n">before_all</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">after_all</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_NodeConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ClusterConfigFile"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterConfigFile">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ClusterConfigFile</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; A dataclass that represents a cluster configuration file &quot;&quot;&quot;</span>
+    <span class="n">setups</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SetupConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot; Dictionary with setup name as key and :class:`.SetupConfig` as value&quot;&quot;&quot;</span>
+    <span class="n">clusters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_ClusterConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Dictionary with cluster name as key and :class:`._ClusterConfig` as value&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="NodeConfig"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.NodeConfig">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">NodeConfig</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Dataclass that stores information about a cluster&#39;s node at cluster</span>
+<span class="sd">    configuration&quot;&quot;&quot;</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="sd">&quot;&quot;&quot;Type of the instance used (refers to instances.yaml file names)&quot;&quot;&quot;</span>
+    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="sd">&quot;&quot;&quot;Number of nodes to start&quot;&quot;&quot;</span>
+    <span class="n">min_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Minimum number of nodes that must sucessfully start&quot;&quot;&quot;</span>
+    <span class="n">setups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SetupConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;List of :class:`.SetupConfig` that must be performed in this node&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ClusterConfig"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterConfig">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ClusterConfig</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A full cluster configuration&quot;&quot;&quot;</span>
+    <span class="n">cluster_config_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="sd">&quot;&quot;&quot;Name of the cluster configuration&quot;&quot;&quot;</span>
+    <span class="n">options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClusterOptions</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;Optional cluster options (:class:`.ClusterOptions`)&quot;&quot;&quot;</span>
+    <span class="n">before_all</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">SetupConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;List of :class:`.SetupConfig` to perform in before_all phase&quot;&quot;&quot;</span>
+    <span class="n">before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">SetupConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;List of :class:`.SetupConfig` to perform in before phase&quot;&quot;&quot;</span>
+    <span class="n">after_all</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">SetupConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;List of :class:`.SetupConfig` to perform in after_all phase&quot;&quot;&quot;</span>
+    <span class="n">after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">SetupConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;List of :class:`.SetupConfig` to perform in after phase&quot;&quot;&quot;</span>
+    <span class="n">nodes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Dictionary with cluster&#39;s node type as name and :class:`.NodeConfig` as </span>
+<span class="sd">    value&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ClusterConfigDatabase"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterConfigDatabase">[docs]</a><span class="k">class</span> <span class="nc">ClusterConfigDatabase</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">discard_invalids</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">load</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This class stores information about clusters configurations in CLAP system.</span>
+
+<span class="sd">        :param cluster_files: List of cluster files to parse.</span>
+<span class="sd">        :param discard_invalids: If true, discard invalid configurations without</span>
+<span class="sd">            raising any exception. Otherwise, raises a :class:`.ClusterError`</span>
+<span class="sd">            exception.</span>
+<span class="sd">        :param load: If true, load all files when this class is created.</span>
+<span class="sd">            Otherwise, use :func:`~.ClusterConfigDatabase.load` method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_files</span> <span class="o">=</span> <span class="n">cluster_files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClusterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="sd">&quot;&quot;&quot;Dictionary with cluster configurations&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setups</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SetupConfig</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_discard_invalids</span> <span class="o">=</span> <span class="n">discard_invalids</span>
+        <span class="k">if</span> <span class="n">load</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ClusterConfigDatabase._load_cluster_and_setups"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterConfigDatabase._load_cluster_and_setups">[docs]</a>    <span class="k">def</span> <span class="nf">_load_cluster_and_setups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">clusters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">setups</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Collect all cluster and setup configurations</span>
+        <span class="k">for</span> <span class="n">cfile</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_files</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cdata</span> <span class="o">=</span> <span class="n">yaml_load</span><span class="p">(</span><span class="n">cfile</span><span class="p">)</span>
+                <span class="n">cdata</span> <span class="o">=</span> <span class="n">dacite</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">ClusterConfigFile</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">cdata</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">cname</span><span class="p">,</span> <span class="n">cconfig</span> <span class="ow">in</span> <span class="n">cdata</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">cname</span> <span class="ow">in</span> <span class="n">clusters</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Redefinition of cluster </span><span class="si">{</span><span class="n">cname</span><span class="si">}</span><span class="s2">. Skipping&quot;</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">clusters</span><span class="p">[</span><span class="n">cname</span><span class="p">]</span> <span class="o">=</span> <span class="n">cconfig</span>
+                <span class="k">for</span> <span class="n">sname</span><span class="p">,</span> <span class="n">sconfig</span> <span class="ow">in</span> <span class="n">cdata</span><span class="o">.</span><span class="n">setups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">sname</span> <span class="ow">in</span> <span class="n">setups</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Redefinition of setup </span><span class="si">{</span><span class="n">sname</span><span class="si">}</span><span class="s2">. Skipping&quot;</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">setups</span><span class="p">[</span><span class="n">sname</span><span class="p">]</span> <span class="o">=</span> <span class="n">sconfig</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discard_invalids</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;When parsing file </span><span class="si">{</span><span class="n">cfile</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span>
+
+        <span class="k">return</span> <span class="n">setups</span><span class="p">,</span> <span class="n">clusters</span></div>
+
+<div class="viewcode-block" id="ClusterConfigDatabase.load"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterConfigDatabase.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Load all cluster configurations from cluster files. Configurations</span>
+<span class="sd">        will be stored in `cluster` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">setups</span><span class="p">,</span> <span class="n">clusters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_cluster_and_setups</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setups</span> <span class="o">=</span> <span class="n">setups</span>
+
+        <span class="k">def</span> <span class="nf">_validate_setup_names</span><span class="p">(</span><span class="n">cname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">setup_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> \
+                <span class="n">List</span><span class="p">[</span><span class="n">SetupConfig</span><span class="p">]:</span>
+            <span class="n">_setups</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">sname</span> <span class="ow">in</span> <span class="n">setup_names</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">setups</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidSetupError</span><span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="n">sname</span><span class="p">)</span>
+                <span class="n">_setups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setups</span><span class="p">[</span><span class="n">sname</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">_setups</span>
+
+        <span class="c1"># Perform validations</span>
+        <span class="k">for</span> <span class="n">cname</span><span class="p">,</span> <span class="n">cconfig</span> <span class="ow">in</span> <span class="n">clusters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># validate setups</span>
+            <span class="n">clusters</span><span class="p">[</span><span class="n">cname</span><span class="p">]</span><span class="o">.</span><span class="n">before_all</span> <span class="o">=</span> <span class="n">_validate_setup_names</span><span class="p">(</span>
+                <span class="n">cname</span><span class="p">,</span> <span class="n">cconfig</span><span class="o">.</span><span class="n">before_all</span><span class="p">)</span>
+            <span class="n">clusters</span><span class="p">[</span><span class="n">cname</span><span class="p">]</span><span class="o">.</span><span class="n">before</span> <span class="o">=</span> <span class="n">_validate_setup_names</span><span class="p">(</span>
+                <span class="n">cname</span><span class="p">,</span> <span class="n">cconfig</span><span class="o">.</span><span class="n">before</span><span class="p">)</span>
+            <span class="n">clusters</span><span class="p">[</span><span class="n">cname</span><span class="p">]</span><span class="o">.</span><span class="n">after</span> <span class="o">=</span> <span class="n">_validate_setup_names</span><span class="p">(</span>
+                <span class="n">cname</span><span class="p">,</span> <span class="n">cconfig</span><span class="o">.</span><span class="n">after</span><span class="p">)</span>
+            <span class="n">clusters</span><span class="p">[</span><span class="n">cname</span><span class="p">]</span><span class="o">.</span><span class="n">after_all</span> <span class="o">=</span> <span class="n">_validate_setup_names</span><span class="p">(</span>
+                <span class="n">cname</span><span class="p">,</span> <span class="n">cconfig</span><span class="o">.</span><span class="n">after_all</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">nname</span><span class="p">,</span> <span class="n">nconfig</span> <span class="ow">in</span> <span class="n">cconfig</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">clusters</span><span class="p">[</span><span class="n">cname</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">nname</span><span class="p">]</span><span class="o">.</span><span class="n">setups</span> <span class="o">=</span> \
+                    <span class="n">_validate_setup_names</span><span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="n">nconfig</span><span class="o">.</span><span class="n">setups</span><span class="p">)</span>
+
+            <span class="c1"># validate count and min_count</span>
+            <span class="k">for</span> <span class="n">nname</span><span class="p">,</span> <span class="n">nconfig</span> <span class="ow">in</span> <span class="n">cconfig</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">nconfig</span><span class="o">.</span><span class="n">count</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">NodeSizeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;In cluster </span><span class="si">{</span><span class="n">cname</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">nname</span><span class="si">}</span><span class="s2">.count &lt; 0&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">nconfig</span><span class="o">.</span><span class="n">min_count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">nconfig</span><span class="o">.</span><span class="n">min_count</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">NodeSizeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;In cluster </span><span class="si">{</span><span class="n">cname</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">nname</span><span class="si">}</span><span class="s2">.min_count &lt; 0&quot;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">nconfig</span><span class="o">.</span><span class="n">min_count</span> <span class="o">&gt;</span> <span class="n">nconfig</span><span class="o">.</span><span class="n">count</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">NodeSizeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;In cluster </span><span class="si">{</span><span class="n">cname</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">nname</span><span class="si">}</span><span class="s2">.min_count &gt; &quot;</span>
+                                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nname</span><span class="si">}</span><span class="s2">.count&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">nconfig</span><span class="o">.</span><span class="n">min_count</span> <span class="o">=</span> <span class="n">nconfig</span><span class="o">.</span><span class="n">count</span>
+
+            <span class="c1"># Validate cluster options</span>
+            <span class="k">if</span> <span class="n">cconfig</span><span class="o">.</span><span class="n">options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cconfig</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">ssh_to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">cconfig</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">ssh_to</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cconfig</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;In cluster </span><span class="si">{</span><span class="n">cname</span><span class="si">}</span><span class="s2">: invalid ssh_to &quot;</span>
+                                         <span class="sa">f</span><span class="s2">&quot;option&#39;s value: </span><span class="si">{</span><span class="n">cconfig</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">ssh_to</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">asdict</span><span class="p">(</span><span class="n">cconfig</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;cluster_config_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cname</span>
+            <span class="n">cluster</span> <span class="o">=</span> <span class="n">dacite</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">ClusterConfig</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">cname</span><span class="p">]</span> <span class="o">=</span> <span class="n">cluster</span></div></div>
+
+
+<div class="viewcode-block" id="ClusterDescriptor"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterDescriptor">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ClusterDescriptor</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Dataclass that describes an created CLAP cluster</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="sd">&quot;&quot;&quot;ID of the cluster&quot;&quot;&quot;</span>
+    <span class="n">cluster_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="sd">&quot;&quot;&quot;Name of the cluster configuration used&quot;&quot;&quot;</span>
+    <span class="n">cluster_config</span><span class="p">:</span> <span class="n">ClusterConfig</span>
+    <span class="sd">&quot;&quot;&quot;Cluster configuration used&quot;&quot;&quot;</span>
+    <span class="n">creation_time</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="sd">&quot;&quot;&quot;Date that this cluster was created&quot;&quot;&quot;</span>
+    <span class="n">update_time</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="sd">&quot;&quot;&quot;Last time of information of this cluster was updated&quot;&quot;&quot;</span>
+    <span class="n">is_setup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="sd">&quot;&quot;&quot;Boolean indicating if cluster was already setup&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ClusterRepositoryController"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterRepositoryController">[docs]</a><span class="k">class</span> <span class="nc">ClusterRepositoryController</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">:</span> <span class="n">Repository</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; This class is used manipulate clusters in a repository. It performs</span>
+<span class="sd">        all loads and stores of :class:`.ClusterDescriptor` in a repository.</span>
+
+<span class="sd">        :param repository: Cluster repository used to store :class:`.ClusterDescriptor`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repository</span> <span class="o">=</span> <span class="n">repository</span>
+
+<div class="viewcode-block" id="ClusterRepositoryController.upsert_cluster"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterRepositoryController.upsert_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">upsert_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster</span><span class="p">:</span> <span class="n">ClusterDescriptor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Upsert (create or update) a cluster in repository.</span>
+
+<span class="sd">        :param cluster: A cluster to be stored. The cluster ID will be used</span>
+<span class="sd">            to identify the cluster in the repository.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cluster</span><span class="o">.</span><span class="n">update_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;clusters&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>
+            <span class="n">cluster_dict</span> <span class="o">=</span> <span class="n">asdict</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">upsert</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">cluster_dict</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ClusterRepositoryController.remove_cluster"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterRepositoryController.remove_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">remove_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Remove a cluster from the repository based on its cluster ID.</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to remove.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;clusters&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ClusterRepositoryController.get_cluster_by_id"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterRepositoryController.get_cluster_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_cluster_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClusterDescriptor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve a cluster from the repository.</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to retrieve.</span>
+<span class="sd">        :return: The cluster.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;clusters&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>
+            <span class="n">cdata</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dacite</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">ClusterDescriptor</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">cdata</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ClusterRepositoryController.get_all_clusters"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterRepositoryController.get_all_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClusterDescriptor</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve all clusters from the repository.</span>
+
+<span class="sd">        :return: A list of clusters in the repository.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;clusters&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">dacite</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">ClusterDescriptor</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">cdata</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">cid</span><span class="p">,</span> <span class="n">cdata</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="ClusterManager"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager">[docs]</a><span class="k">class</span> <span class="nc">ClusterManager</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_manager</span><span class="p">:</span> <span class="n">NodeManager</span><span class="p">,</span> <span class="n">role_manager</span><span class="p">:</span> <span class="n">RoleManager</span><span class="p">,</span>
+                 <span class="n">config_db</span><span class="p">:</span> <span class="n">ConfigurationDatabase</span><span class="p">,</span>
+                 <span class="n">cluster_repository_controller</span><span class="p">:</span> <span class="n">ClusterRepositoryController</span><span class="p">,</span>
+                 <span class="n">private_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cluster_tag_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;.cluster:&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; This class is used to start, stop, pause, resume and perform actions</span>
+<span class="sd">            in clusters. It is responsible to manage clusters (creating and</span>
+<span class="sd">            removing them from the repository).</span>
+
+<span class="sd">        :param node_manager: Class used to manage nodes.</span>
+<span class="sd">        :param role_manager: Class used to manage roles.</span>
+<span class="sd">        :param config_db: Class used to obtain cluster configurations.</span>
+<span class="sd">        :param cluster_repository_controller: Class used to manage clusters at</span>
+<span class="sd">            a repository.</span>
+<span class="sd">        :param private_dir: Path to the private directory (where private keys</span>
+<span class="sd">            are stored).</span>
+<span class="sd">        :param cluster_tag_prefix: Optional prefix to tag nodes that belongs to</span>
+<span class="sd">            a cluster.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span> <span class="o">=</span> <span class="n">node_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role_manager</span> <span class="o">=</span> <span class="n">role_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_db</span> <span class="o">=</span> <span class="n">config_db</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_repository</span> <span class="o">=</span> <span class="n">cluster_repository_controller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_dir</span> <span class="o">=</span> <span class="n">private_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_tag_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">cluster_tag_prefix</span>
+
+<div class="viewcode-block" id="ClusterManager.add_cluster_tag"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.add_cluster_tag">[docs]</a>    <span class="k">def</span> <span class="nf">add_cluster_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                        <span class="n">node_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; Given a list of node ids, a cluster id and a cluster&#39;s node type,</span>
+<span class="sd">            add the cluster tag to the nodes. Once the tag is added to a node,</span>
+<span class="sd">            the node belongs to a cluster. So, a cluster is a set of nodes with</span>
+<span class="sd">            tagged with an specified tag.</span>
+
+<span class="sd">        :param node_ids: List node ids to add the cluster tag.</span>
+<span class="sd">        :param cluster_id: ID of the cluster that this node will belong.</span>
+<span class="sd">        :param node_type: Cluster&#39;s node type.</span>
+<span class="sd">        :return: The node ids of nodes that the tag was added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cluster_tag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cluster_tag_prefix</span><span class="si">}{</span><span class="n">cluster_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">added_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">node_ids</span><span class="p">):</span>
+            <span class="n">tags</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cluster_tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
+                <span class="n">node_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tags</span><span class="p">[</span><span class="n">cluster_tag</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">))</span>
+                <span class="n">node_types</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_type</span><span class="p">)</span>
+                <span class="n">tags</span><span class="p">[</span><span class="n">cluster_tag</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">node_types</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tags</span><span class="p">[</span><span class="n">cluster_tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_type</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="n">tags</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">upsert_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">added_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">added_nodes</span></div>
+
+<div class="viewcode-block" id="ClusterManager.get_all_cluster_nodes"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.get_all_cluster_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_cluster_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; Get all nodes that belong to a cluster.</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to retrieve the nodes.</span>
+<span class="sd">        :return: A list of node ids of nodes that belongs to the cluster.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cluster_tag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cluster_tag_prefix</span><span class="si">}{</span><span class="n">cluster_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">cluster_cond</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">cluster_tag</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">tags</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="n">cluster_cond</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="ClusterManager.get_cluster_nodes_types"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.get_cluster_nodes_types">[docs]</a>    <span class="k">def</span> <span class="nf">get_cluster_nodes_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot; Get all nodes and the nodes&#39; types from nodes that belong to a</span>
+<span class="sd">            cluster.</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to retrieve the nodes.</span>
+<span class="sd">        :return: A dictionary where keys are the cluster&#39;s node types and values</span>
+<span class="sd">            are lists of nodes ids from nodes of this cluster&#39;s node type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cluster_tag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cluster_tag_prefix</span><span class="si">}{</span><span class="n">cluster_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">cluster_cond</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">cluster_tag</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">tags</span>
+        <span class="n">nodes_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="n">cluster_cond</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">node_type</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="n">cluster_tag</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
+                <span class="n">nodes_dict</span><span class="p">[</span><span class="n">node_type</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+
+        <span class="c1"># Set to list</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">node_type</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">node_set</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node_type</span><span class="p">,</span> <span class="n">node_set</span> <span class="ow">in</span> <span class="n">nodes_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">nodes</span></div>
+
+<div class="viewcode-block" id="ClusterManager.get_cluster_by_id"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.get_cluster_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_cluster_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClusterDescriptor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Get a cluster information :class:`.ClusterDescriptor` from the</span>
+<span class="sd">            cluster repository.</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to retrieve.</span>
+<span class="sd">        :return: A cluster information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_repository</span><span class="o">.</span><span class="n">get_cluster_by_id</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">InvalidEntryError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidClusterError</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span></div>
+
+<div class="viewcode-block" id="ClusterManager.get_all_clusters"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.get_all_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClusterDescriptor</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; Get all clusters information from the cluster repository.</span>
+
+<span class="sd">        :return: A list of clusters information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_repository</span><span class="o">.</span><span class="n">get_all_clusters</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ClusterManager.grow"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.grow">[docs]</a>    <span class="k">def</span> <span class="nf">grow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">node_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+             <span class="n">min_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">start_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">600</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; Starts new nodes from a cluster, based on its cluster&#39;s node type.</span>
+<span class="sd">            The nodes will be started and tagged to belong to the cluster.</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to add more nodes.</span>
+<span class="sd">        :param node_type: Cluster&#39;s node type to start.</span>
+<span class="sd">        :param count: Number of nodes to start.</span>
+<span class="sd">        :param min_count: Minimum number of nodes that must be started. If this</span>
+<span class="sd">            number is not reached, all nodes are terminated.</span>
+<span class="sd">        :param start_timeout: Timeout to start nodes. If nodes are not started</span>
+<span class="sd">            within this timeout, it will be terminated.</span>
+<span class="sd">        :return: A list of node ids of the nodes that were started.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">min_count</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;min_count value must be &gt;= 0&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;count value must be higher than 0&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">min_count</span> <span class="o">&gt;</span> <span class="n">count</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;min_count must be smaller then count&quot;</span><span class="p">)</span>
+        <span class="n">cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cluster_by_id</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">node_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">cluster_config</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid node of type &#39;</span><span class="si">{</span><span class="n">node_type</span><span class="si">}</span><span class="s2">&#39; from cluster &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;with config: </span><span class="si">{</span><span class="n">cluster</span><span class="o">.</span><span class="n">cluster_config</span><span class="o">.</span><span class="n">cluster_config_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">node_config_name</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">cluster_config</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_type</span><span class="p">]</span><span class="o">.</span><span class="n">type</span>
+        <span class="n">instance_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_db</span><span class="o">.</span><span class="n">instance_descriptors</span><span class="p">[</span><span class="n">node_config_name</span><span class="p">]</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_cluster_node</span><span class="p">(</span>
+            <span class="n">cluster_id</span><span class="p">,</span> <span class="n">node_type</span><span class="p">,</span> <span class="n">instance_info</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">start_timeout</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_count</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Minimum count of nodes to start (</span><span class="si">{</span><span class="n">min_count</span><span class="si">}</span><span class="s2">) was not &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;reached. Terminating started nodes.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">stop_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ClusterError</span><span class="p">(</span><span class="s2">&quot;Minimum number of nodes not reached&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check aliveness</span>
+        <span class="n">alive_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">is_alive</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+        <span class="n">reachable_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">nid</span> <span class="k">for</span> <span class="n">nid</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">alive_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">status</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reachable_nodes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_count</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Minimum count of nodes to start (</span><span class="si">{</span><span class="n">min_count</span><span class="si">}</span><span class="s2">) was not &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;reached (some of them are unreachable). &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;Terminating started nodes.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">stop_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ClusterError</span><span class="p">(</span><span class="s2">&quot;Minimum number of nodes not reached&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">nodes</span></div>
+
+<div class="viewcode-block" id="ClusterManager.start_cluster_node"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.start_cluster_node">[docs]</a>    <span class="k">def</span> <span class="nf">start_cluster_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">node_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                           <span class="n">instance_info</span><span class="p">:</span> <span class="n">InstanceInfo</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                           <span class="n">start_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">600</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">start_node</span><span class="p">(</span><span class="n">instance_info</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">start_timeout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_cluster_tag</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">,</span> <span class="n">node_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nodes</span></div>
+
+<div class="viewcode-block" id="ClusterManager.start_cluster"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.start_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">start_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_config</span><span class="p">:</span> <span class="n">ClusterConfig</span><span class="p">,</span>
+                      <span class="n">start_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">600</span><span class="p">,</span>
+                      <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                      <span class="n">destroy_on_min_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Create a cluster, based on a :class:`.ClusterConfig`. It will start</span>
+<span class="sd">            the desired nodes and tag them to belong to the cluster. After, a</span>
+<span class="sd">            new cluster will be created at cluster&#39;s repository.</span>
+
+<span class="sd">        :param cluster_config: Cluster configuration used to start a cluster</span>
+<span class="sd">        :param start_timeout: Timeout to start nodes. If nodes are not started</span>
+<span class="sd">            within this timeout, it will be terminated.</span>
+<span class="sd">        :param max_workers: Number of threads to start nodes in parallel</span>
+<span class="sd">        :param destroy_on_min_count: If True, the cluster will be destroyed (all</span>
+<span class="sd">            nodes will be terminated and cluster is not created) if any cluster&#39;s</span>
+<span class="sd">            node type min_count is not reached.</span>
+<span class="sd">        :return: The cluster ID of the newly created cluster.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_types</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NodeConfig</span><span class="p">,</span> <span class="n">InstanceInfo</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">node_values</span> <span class="ow">in</span> <span class="n">cluster_config</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_db</span><span class="o">.</span><span class="n">instance_descriptors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node_values</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid instance config: </span><span class="si">{</span><span class="n">node_values</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">node_types</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">node_values</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+
+        <span class="n">creation_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">random_obj</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">get_random_object</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)])</span>
+        <span class="n">cluster</span> <span class="o">=</span> <span class="n">ClusterDescriptor</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;cluster-</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">random_obj</span><span class="p">,</span>
+            <span class="n">cluster_config</span><span class="p">,</span> <span class="n">creation_time</span><span class="p">,</span> <span class="n">creation_time</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_start_cluster_node</span><span class="p">(</span><span class="n">node_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">nconfig</span><span class="p">,</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">node_types</span><span class="p">[</span><span class="n">node_type</span><span class="p">]</span>
+                <span class="n">started_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_cluster_node</span><span class="p">(</span>
+                    <span class="n">cluster</span><span class="o">.</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">node_type</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">nconfig</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
+                    <span class="n">start_timeout</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">node_type</span><span class="p">,</span> <span class="n">started_nodes</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error starting cluster node </span><span class="si">{</span><span class="n">node_type</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">node_type</span><span class="p">,</span> <span class="p">[]</span>
+
+        <span class="k">with</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="n">instances</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_start_cluster_node</span><span class="p">,</span> <span class="n">node_types</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">started_nodes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">node_type</span><span class="p">:</span> <span class="n">nodes</span>
+                <span class="k">for</span> <span class="n">node_type</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">instances</span>
+            <span class="p">}</span>
+
+        <span class="n">all_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">n</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">node_list</span> <span class="ow">in</span> <span class="n">started_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">node_list</span><span class="p">})</span>
+        <span class="n">alive_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">is_alive</span><span class="p">(</span><span class="n">all_nodes</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+        <span class="n">not_alives</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">alive_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">status</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">not_alives</span><span class="p">:</span>
+            <span class="n">stopped_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">stop_nodes</span><span class="p">(</span><span class="n">not_alives</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stopped nodes: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">stopped_nodes</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">started_nodes</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">node_type</span><span class="p">:</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">node_list</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">not_alives</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">node_type</span><span class="p">,</span> <span class="n">node_list</span> <span class="ow">in</span> <span class="n">started_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+
+        <span class="n">not_reached_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Check if min_counts is reached, else destroy cluster</span>
+        <span class="k">for</span> <span class="n">node_type</span><span class="p">,</span> <span class="p">(</span><span class="n">nconfig</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="n">node_types</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="n">started_nodes</span><span class="p">[</span><span class="n">node_type</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nconfig</span><span class="o">.</span><span class="n">min_count</span><span class="p">:</span>
+                <span class="n">not_reached_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_type</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Could not start the minimum nodes of type </span><span class="si">{</span><span class="n">node_type</span><span class="si">}</span><span class="s2"> of &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;cluster </span><span class="si">{</span><span class="n">cluster_config</span><span class="o">.</span><span class="n">cluster_config_id</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Started nodes: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span><span class="si">}</span><span class="s2">; minimum: </span><span class="si">{</span><span class="n">nconfig</span><span class="o">.</span><span class="n">min_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">destroy_on_min_count</span> <span class="ow">and</span> <span class="n">not_reached_nodes</span><span class="p">:</span>
+            <span class="n">nodes_to_stop</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">started_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Destroying cluster... Stopping all nodes: &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nodes_to_stop</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">stop_nodes</span><span class="p">(</span><span class="n">nodes_to_stop</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ClusterError</span><span class="p">(</span><span class="s2">&quot;Minimum number of nodes not reached&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_repository</span><span class="o">.</span><span class="n">upsert_cluster</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cluster</span><span class="o">.</span><span class="n">cluster_id</span></div>
+
+<div class="viewcode-block" id="ClusterManager.add_existing_nodes_to_cluster"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.add_existing_nodes_to_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">add_existing_nodes_to_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                      <span class="n">node_types</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+                                      <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add already created nodes to a cluster as a desired cluster&#39;s node</span>
+<span class="sd">            type. The cluster will be setup up after adding these nodes to the</span>
+<span class="sd">            cluster.</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to add the nodes.</span>
+<span class="sd">        :param node_types: Dictionary with cluster&#39;s node type as key and list</span>
+<span class="sd">            of node ids as values.</span>
+<span class="sd">        :param max_workers: Number of threads to perform setup actions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Just to check if cluster exists...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_cluster_by_id</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">node_type</span><span class="p">,</span> <span class="n">node_list</span> <span class="ow">in</span> <span class="n">node_types</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_cluster_tag</span><span class="p">(</span><span class="n">node_list</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">,</span> <span class="n">node_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_cluster</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">node_types</span><span class="p">,</span> <span class="n">max_workers</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ClusterManager.run_action"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.run_action">[docs]</a>    <span class="k">def</span> <span class="nf">run_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n">ActionType</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Run a cluster&#39;s action in a set of nodes.</span>
+
+<span class="sd">        :param action: Cluster&#39;s action to be performed</span>
+<span class="sd">        :param node_ids: ID of the nodes to perform this action</span>
+<span class="sd">        :return: True if action as sucessfully performed and false otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO Check this function</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Executing action: </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> at nodes: </span><span class="si">{</span><span class="n">node_ids</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">get_nodes_by_id</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">action</span><span class="p">)</span> <span class="ow">is</span> <span class="n">CommandActionType</span><span class="p">:</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="n">SSHCommandExecutor</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">command</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_dir</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+                <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">ok</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">action</span><span class="p">)</span> <span class="ow">is</span> <span class="n">RoleActionType</span><span class="p">:</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">node_ids</span><span class="p">:</span>
+                    <span class="n">hosts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">role_manager</span><span class="o">.</span><span class="n">get_role_node_hosts</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">hosts</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">NodeRoleError</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">action</span><span class="o">.</span><span class="n">role</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">hname</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">:</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">hname</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                <span class="n">_nodes_ids</span> <span class="o">=</span> <span class="n">defaultdict_to_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">role_manager</span><span class="o">.</span><span class="n">perform_action</span><span class="p">(</span>
+                    <span class="n">action</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="n">action</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">_nodes_ids</span><span class="p">,</span> <span class="n">extra_args</span><span class="o">=</span><span class="n">action</span><span class="o">.</span><span class="n">extra</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">ok</span>
+
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">action</span><span class="p">)</span> <span class="ow">is</span> <span class="n">PlaybookActionType</span><span class="p">:</span>
+                <span class="n">inventory</span> <span class="o">=</span> <span class="n">AnsiblePlaybookExecutor</span><span class="o">.</span><span class="n">create_inventory</span><span class="p">(</span>
+                    <span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_dir</span><span class="p">)</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="n">AnsiblePlaybookExecutor</span><span class="p">(</span>
+                    <span class="n">action</span><span class="o">.</span><span class="n">playbook</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_dir</span><span class="p">,</span> <span class="n">inventory</span><span class="p">,</span> <span class="n">action</span><span class="o">.</span><span class="n">extra</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">ok</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid action type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="ClusterManager.run_role_add"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.run_role_add">[docs]</a>    <span class="k">def</span> <span class="nf">run_role_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">:</span> <span class="n">RoleAdd</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Add nodes to a role</span>
+
+<span class="sd">        :param role: Role to add to nodes</span>
+<span class="sd">        :param node_ids: ID of the nodes to add the role</span>
+<span class="sd">        :return: True if nodes were added to the role and false otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;/&#39;</span> <span class="ow">in</span> <span class="n">role</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="n">host_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">role</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">node_ids</span><span class="p">}</span>
+                <span class="n">role_name</span> <span class="o">=</span> <span class="n">role</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">host_map</span> <span class="o">=</span> <span class="n">node_ids</span>
+                <span class="n">role_name</span> <span class="o">=</span> <span class="n">role</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">added_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">role_manager</span><span class="o">.</span><span class="n">add_role</span><span class="p">(</span>
+                <span class="n">role_name</span><span class="p">,</span> <span class="n">host_map</span><span class="p">,</span> <span class="n">extra_args</span><span class="o">=</span><span class="n">role</span><span class="o">.</span><span class="n">extra</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">n</span> <span class="ow">in</span> <span class="n">added_nodes</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">node_ids</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="ClusterManager.run_setup"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.run_setup">[docs]</a>    <span class="k">def</span> <span class="nf">run_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setup</span><span class="p">:</span> <span class="n">SetupConfig</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Runs a cluster&#39;s setup configuration at a list of nodes</span>
+
+<span class="sd">        :param setup: Setup to perform in nodes</span>
+<span class="sd">        :param node_ids: ID of the nodes to perform this setup</span>
+<span class="sd">        :return: True if the setup was successfully executed and false otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running setup </span><span class="si">{</span><span class="n">setup</span><span class="si">}</span><span class="s2"> at nodes: </span><span class="si">{</span><span class="n">node_ids</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="n">setup</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_role_add</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">setup</span><span class="o">.</span><span class="n">actions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_action</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ClusterManager._run_setup_list"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager._run_setup_list">[docs]</a>    <span class="k">def</span> <span class="nf">_run_setup_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SetupConfig</span><span class="p">],</span> <span class="n">node_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">setup</span> <span class="ow">in</span> <span class="n">setups</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_setup</span><span class="p">(</span><span class="n">setup</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ClusterManager.setup_cluster"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.setup_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">setup_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nodes_being_added</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">start_at_stage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;before_all&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Setups a cluster. It will run all setups in order.</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to perform setup</span>
+<span class="sd">        :param nodes_being_added: List of nodes that is being added now to the</span>
+<span class="sd">            cluster. It affects before, node and after stages. If None, it</span>
+<span class="sd">            supposes that all nodes are being added to the cluster now.</span>
+<span class="sd">        :param max_workers: NUmber of threads to run setup configs.</span>
+<span class="sd">        :param start_at_stage: Stage to start the configuration. It can be:</span>
+<span class="sd">            &#39;before_all&#39;, &#39;before&#39;, &#39;node&#39;, &#39;after&#39; or &#39;after_all&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_repository</span><span class="o">.</span><span class="n">get_cluster_by_id</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+        <span class="n">cluster</span><span class="o">.</span><span class="n">is_setup</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_repository</span><span class="o">.</span><span class="n">upsert_cluster</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nodes_being_added</span><span class="p">:</span>
+            <span class="n">nodes_being_added</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cluster_nodes_types</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+
+        <span class="n">all_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_cluster_nodes</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+        <span class="n">all_being_added</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">n</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">list_nodes</span> <span class="ow">in</span> <span class="n">nodes_being_added</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">list_nodes</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">stages</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;before_all&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;before&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s1">&#39;node&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s1">&#39;after&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="s1">&#39;after_all&#39;</span><span class="p">:</span> <span class="mi">5</span>
+        <span class="p">}</span>
+
+        <span class="n">start_at_stage</span> <span class="o">=</span> <span class="n">stages</span><span class="p">[</span><span class="n">start_at_stage</span><span class="p">]</span>
+
+        <span class="c1"># Before all Stage</span>
+        <span class="k">if</span> <span class="n">start_at_stage</span> <span class="o">&lt;=</span> <span class="n">stages</span><span class="p">[</span><span class="s1">&#39;before_all&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_setup_list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">cluster_config</span><span class="o">.</span><span class="n">before_all</span><span class="p">,</span> <span class="n">all_nodes</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ClusterSetupError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error setting up cluster </span><span class="si">{</span><span class="n">cluster_id</span><span class="si">}</span><span class="s2"> at &#39;before_all&#39; stage&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Before Stage</span>
+        <span class="k">if</span> <span class="n">start_at_stage</span> <span class="o">&lt;=</span> <span class="n">stages</span><span class="p">[</span><span class="s1">&#39;before&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_setup_list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">cluster_config</span><span class="o">.</span><span class="n">before</span><span class="p">,</span> <span class="n">all_being_added</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ClusterSetupError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error setting up cluster </span><span class="si">{</span><span class="n">cluster_id</span><span class="si">}</span><span class="s2"> at &#39;before&#39; stage&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Node Stage</span>
+        <span class="k">if</span> <span class="n">start_at_stage</span> <span class="o">&lt;=</span> <span class="n">stages</span><span class="p">[</span><span class="s1">&#39;node&#39;</span><span class="p">]:</span>
+            <span class="k">with</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+                <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">SetupConfig</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">cluster_config</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_type</span><span class="p">]</span><span class="o">.</span><span class="n">setups</span><span class="p">,</span> <span class="n">node_list</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">node_type</span><span class="p">,</span> <span class="n">node_list</span> <span class="ow">in</span> <span class="n">nodes_being_added</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">]</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_setup_list</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ClusterSetupError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error setting up cluster </span><span class="si">{</span><span class="n">cluster_id</span><span class="si">}</span><span class="s2"> at &#39;node&#39; stage&quot;</span><span class="p">)</span>
+
+        <span class="c1"># After Stage</span>
+        <span class="k">if</span> <span class="n">start_at_stage</span> <span class="o">&lt;=</span> <span class="n">stages</span><span class="p">[</span><span class="s1">&#39;after&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_setup_list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">cluster_config</span><span class="o">.</span><span class="n">after</span><span class="p">,</span> <span class="n">all_being_added</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ClusterSetupError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error setting up cluster </span><span class="si">{</span><span class="n">cluster_id</span><span class="si">}</span><span class="s2"> at &#39;after&#39; stage&quot;</span><span class="p">)</span>
+
+        <span class="c1"># After all Stage</span>
+        <span class="k">if</span> <span class="n">start_at_stage</span> <span class="o">&lt;=</span> <span class="n">stages</span><span class="p">[</span><span class="s1">&#39;after_all&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_setup_list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">cluster_config</span><span class="o">.</span><span class="n">after_all</span><span class="p">,</span> <span class="n">all_nodes</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ClusterSetupError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error setting up cluster </span><span class="si">{</span><span class="n">cluster_id</span><span class="si">}</span><span class="s2"> at &#39;after all&#39; stage&quot;</span><span class="p">)</span>
+
+        <span class="n">cluster</span><span class="o">.</span><span class="n">is_setup</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_repository</span><span class="o">.</span><span class="n">upsert_cluster</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ClusterManager.pause_cluster"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.pause_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">pause_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">180</span><span class="p">,</span>
+                      <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; Pause the cluster, pausing all nodes that belongs to it.</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to pause nodes</span>
+<span class="sd">        :param timeout: Pause timeout</span>
+<span class="sd">        :param max_workers: Number of threads to perform pause process.</span>
+<span class="sd">        :return: ID of the nodes that were sucessfuly paused</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_cluster_nodes</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">pause_nodes</span><span class="p">(</span>
+            <span class="n">nodes</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ClusterManager.resume_cluster"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.resume_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">resume_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">180</span><span class="p">,</span>
+                       <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; Resumes a cluster, resuming all nodes that belongs to it</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to resume.</span>
+<span class="sd">        :param timeout: Timeout to resume nodes.</span>
+<span class="sd">        :param max_workers: Number of threads in the resume process.</span>
+<span class="sd">        :return: ID of the nodes that were successfully resumed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_cluster_nodes</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">resume_nodes</span><span class="p">(</span>
+            <span class="n">nodes</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ClusterManager.stop_cluster"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.stop_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">stop_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">180</span><span class="p">,</span>
+                     <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">remove_cluster</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; Stop a cluster, stopping all nodes that belongs to it.</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to stop;</span>
+<span class="sd">        :param timeout: Timeout to stop nodes.</span>
+<span class="sd">        :param max_workers: Number of threads in the stop process.</span>
+<span class="sd">        :param remove_cluster: If True, also removes the cluster from the</span>
+<span class="sd">            repository.</span>
+<span class="sd">        :return: ID of the nodes that were successfully stopped.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_cluster_nodes</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">stop_nodes</span><span class="p">(</span>
+            <span class="n">nodes</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">remove_cluster</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cluster_repository</span><span class="o">.</span><span class="n">remove_cluster</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nodes</span></div>
+
+<div class="viewcode-block" id="ClusterManager.is_alive"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.is_alive">[docs]</a>    <span class="k">def</span> <span class="nf">is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                 <span class="n">wait_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span> <span class="n">update_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+                 <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">test_command</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;echo &quot;OK&quot;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; Check if a cluster is alive, checking the aliveness of all nodes</span>
+<span class="sd">            that belongs the cluster.</span>
+
+<span class="sd">        :param cluster_id: ID of the cluster to check for aliveness.</span>
+<span class="sd">        :param retries: Number of check retries.</span>
+<span class="sd">        :param wait_timeout: Timeout to perform another check if previous fails.</span>
+<span class="sd">        :param update_timeout: Timeout to update node information.</span>
+<span class="sd">        :param max_workers: Number of threads to check for aliveness.</span>
+<span class="sd">        :param test_command: Command to be executed in nodes to test for aliveness.</span>
+<span class="sd">        :return: A dictionary where keys are the IDs of nodes and values are</span>
+<span class="sd">            booleans indicating if node is alive or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_cluster_nodes</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_manager</span><span class="o">.</span><span class="n">is_alive</span><span class="p">(</span>
+            <span class="n">nodes</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span> <span class="n">wait_timeout</span><span class="o">=</span><span class="n">wait_timeout</span><span class="p">,</span>
+            <span class="n">update_timeout</span><span class="o">=</span><span class="n">update_timeout</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
+            <span class="n">test_command</span><span class="o">=</span><span class="n">test_command</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ClusterManager.upsert_cluster"><a class="viewcode-back" href="../../autoapi/clap/cluster_manager/index.html#clap.cluster_manager.ClusterManager.upsert_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">upsert_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster</span><span class="p">:</span> <span class="n">ClusterDescriptor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create or update a cluster in cluster&#39;s repository.</span>
+
+<span class="sd">        :param cluster: Cluster to upsert.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_repository</span><span class="o">.</span><span class="n">upsert_cluster</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Otávio Napoli.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

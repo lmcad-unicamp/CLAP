@@ -7,7 +7,7 @@ SPHINXOPTS    ?=
 # SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = build
-SPHINXBUILD   = python3 -msphinx
+SPHINXBUILD   = python3 -m sphinx
 
 # Put it first so that "make" without argument is like "make help".
 help:

@@ -267,20 +267,7 @@ class RoleManager:
 
         :param role_name:
         :param action_name:
-        :param hosts_node_map:  If the role does not defines hosts, this value can be:
-                                - A list of node_ids, e.g.: [id1, id2]
-                                - A dictionary with a empty string key and the value is
-                                  a list of node_ids, e.g.: {'': [id1, id2]}
-                                If the role defines hosts, this value can be:
-                                - A dictionary, where key is the host name and the
-                                  values are lists of node_ids, e.g.
-                                  { hostA: [id1, id2], hostB: [id2, id3] }
-        :param host_vars:
-        :param node_vars:
-        :param extra_args:
-        :param quiet:
-        :param validate_nodes_in_role:
-        :return:
+
         """
         host_vars = host_vars or dict()
         node_vars = node_vars or dict()
