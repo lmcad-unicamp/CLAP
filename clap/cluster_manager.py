@@ -2,7 +2,7 @@ import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field, asdict
-from multiprocessing.pool import ThreadPool
+from multiprocessing.pool import ThreadPool as Pool
 from typing import Optional, Dict, Union, List, Tuple
 
 import dacite
@@ -558,7 +558,7 @@ class ClusterManager:
                 logger.error(f'Error starting cluster node {node_type}: {e}')
                 return node_type, []
 
-        with ThreadPool(processes=max_workers) as pool:
+        with Pool(processes=max_workers) as pool:
             instances = pool.map(_start_cluster_node, node_types.keys())
             started_nodes: Dict[str, List[str]] = {
                 node_type: nodes
@@ -566,7 +566,7 @@ class ClusterManager:
             }
 
         all_nodes = list({n for _, node_list in started_nodes.items() for n in node_list})
-        alive_nodes = self.node_manager.is_alive(all_nodes, retries=15)
+        alive_nodes = self.node_manager.is_alive(all_nodes, retries=20)
         not_alives = [n for n, status in alive_nodes.items() if not status]
         if not_alives:
             stopped_nodes = self.node_manager.stop_nodes(not_alives)
@@ -698,6 +698,9 @@ class ClusterManager:
         return True
 
     def _run_setup_list(self, setups: List[SetupConfig], node_ids: List[str]) -> bool:
+        if len(setups) == 0:
+            return True
+        logger.info(f"Running {len(setups)} setups at nodes: {node_ids}")
         for setup in setups:
             if not self.run_setup(setup, node_ids):
                 return False
@@ -750,16 +753,16 @@ class ClusterManager:
 
         # Node Stage
         if start_at_stage <= stages['node']:
-            with ThreadPool(processes=max_workers) as pool:
-                values: List[Tuple[List[SetupConfig], List[str]]] = [
-                    (cluster.cluster_config.nodes[node_type].setups, node_list)
-                    for node_type, node_list in nodes_being_added.items()
-                ]
-                results = pool.starmap(self._run_setup_list, values)
-
-            if not all(results):
-                raise ClusterSetupError(
-                    f"Error setting up cluster {cluster_id} at 'node' stage")
+            logger.info(f"Performing node setup")
+            values: List[Tuple[List[SetupConfig], List[str]]] = [
+                (cluster.cluster_config.nodes[node_type].setups, node_list)
+                for node_type, node_list in nodes_being_added.items()
+            ]
+            for v in values:
+                logger.info(f"Running setup list with values: {v}")
+                if not self._run_setup_list(*v):
+                    raise ClusterSetupError(
+                        f"Error setting up cluster {cluster_id} at 'node' stage")
 
         # After Stage
         if start_at_stage <= stages['after']:

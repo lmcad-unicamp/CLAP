@@ -13,7 +13,7 @@ paramiko>=2.7
 # subprocess32
 ipykernel
 jinja2>=2.7
-# sqlitedict
+sqlitedict
 # marshmallow
 # marshmallow_dataclass
 pytest

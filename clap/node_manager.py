@@ -208,7 +208,7 @@ class NodeManager:
         return started_instances
 
     def is_alive(self, node_ids: List[str], retries: int = 5,
-                 wait_timeout: int = 30, update_timeout: int = 30,
+                 wait_timeout: int = 10, update_timeout: int = 10,
                  max_workers: int = 1, test_command: str = 'echo "OK"') -> \
             Dict[str, bool]:
         if not node_ids:

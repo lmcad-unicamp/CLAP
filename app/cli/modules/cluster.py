@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import glob
 import yaml
@@ -92,7 +93,8 @@ def cluster_start(cluster_template, no_setup):
         raise ValueError(f"Invalid cluster templated: {cluster_template}")
 
     print(f"Starting cluster: {cluster_template} (perform setup: {not no_setup})")
-    cluster_id = cluster_manager.start_cluster(cluster_config)
+    cluster_id = cluster_manager.start_cluster(
+        cluster_config, max_workers=multiprocessing.cpu_count())
     print(f"Cluster {cluster_id} successfully created")
 
     nodes = cluster_manager.get_cluster_nodes_types(cluster_id)
@@ -106,7 +108,8 @@ def cluster_start(cluster_template, no_setup):
 
     print(f"Performing setup operation in cluster {cluster_id}")
     try:
-        cluster_manager.setup_cluster(cluster_id)
+        cluster_manager.setup_cluster(
+            cluster_id, max_workers=multiprocessing.cpu_count())
     except Exception as e:
         logger.error(e)
         print(f"Cluster not properly setup... You may wish perform the setup "
@@ -247,7 +250,9 @@ def cluster_setup(cluster_id, at):
 
     print(f"Performing setup operation in cluster {cluster_id}")
     try:
-        cluster_manager.setup_cluster(cluster_id, start_at_stage=at)
+        cluster_manager.setup_cluster(
+            cluster_id, start_at_stage=at,
+            max_workers=1)
     except Exception as e:
         logger.error(e)
         print(f"Cluster not properly setup... You may wish perform the setup "
