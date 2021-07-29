@@ -250,6 +250,7 @@ Will be appended as (one for each metric PID/worker):
         return result.ok
 
 
+# For Batch Replacement algorithm set cut_num and replace_num to 0
 class CutBatchReplacementPolicy:
     def __init__(self, cluster_id: str, jobid: str, desired_num: int,
                  cut_num: int, replace_num: int):
@@ -463,11 +464,13 @@ def optimize_it(jobid: str, vm_price_file: str, cluster_id: str,
 # Command-line interface
 @clap_command
 @click.group(help='Control and manage cluster of nodes using optimizer')
-def optimizer():
+def bot():
     pass
 
 
-@optimizer.command('run')
+@bot.command('run')
+@click.option('--policy', default='cut', show_default=True,
+              type=str, required=False, help='In use policy (cut)')
 @click.option('-j', '--jobid', default=None, show_default=False,
               type=str, required=True, help="Job ID")
 @click.option('-v', '--vm-price', default=None, show_default=False,
@@ -485,7 +488,9 @@ def optimizer():
 @click.option('-pt', '--policy-time', default=60, show_default=True,
               type=int, required=False,
               help='Time to wait before calling policy')
-def optimizer_run(jobid: str, vm_price: str, cluster_id: str,
-                  root_dir: str, report_time: int, policy_time: int):
-    return optimize_it(jobid, vm_price, cluster_id, root_dir, report_time, policy_time)
-
+def bot_run(policy: str, jobid: str, vm_price: str, cluster_id: str,
+            root_dir: str, report_time: int, policy_time: int):
+    if policy == 'cut':
+        return optimize_it(jobid, vm_price, cluster_id, root_dir, report_time, policy_time)
+    else:
+        raise ValueError(f"Invalid policy {policy}")
