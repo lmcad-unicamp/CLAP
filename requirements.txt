@@ -9,13 +9,13 @@ click>=4.0
 coloredlogs
 netaddr
 paramiko>=2.7
-# schema
-# subprocess32
+schema
+subprocess32
 ipykernel
 jinja2>=2.7
 sqlitedict
-# marshmallow
-# marshmallow_dataclass
+marshmallow
+marshmallow_dataclass
 pytest
 # numpy
 typeguard
