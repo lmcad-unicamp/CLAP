@@ -468,7 +468,7 @@ def bot():
     pass
 
 
-@bot.command('run')
+@bot.command('optimizer-recipe')
 @click.option('--policy', default='cut', show_default=True,
               type=str, required=False, help='In use policy (cut)')
 @click.option('-j', '--jobid', default=None, show_default=False,
