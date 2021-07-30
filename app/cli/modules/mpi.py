@@ -6,16 +6,52 @@ from typing import List, Dict
 from collections import defaultdict
 from paramiko import SSHException
 
-from clap.utils import path_extend, float_time_to_string, get_logger
-from clap.mpi import MPIModule, MPIDefaults
-from app.cli.cliapp import clap_command
+from clap.executor import ShellInvoker, SSHCommandExecutor, AnsiblePlaybookExecutor
+from clap.repository import RepositoryFactory
+from clap.utils import path_extend, float_time_to_string, get_logger, Singleton
+from clap.mpi import MPIModule, ParamountClusterRepositoryOperator, JobRepositoryOperator
+from app.cli.cliapp import clap_command, Defaults, ArgumentError
+from app.cli.modules.cluster import ClusterDefaults, get_cluster_manager, get_cluster_config_db
+from app.cli.modules.node import NodeDefaults, get_node_manager, get_config_db
+from app.cli.modules.role import RoleDefaults, get_role_manager
 
 logger = get_logger(__name__)
 
+class MPIDefaults(metaclass=Singleton):
+    def __init__(self):
+        self.base_defaults = Defaults()
+        self.job_repository_path = path_extend(
+            self.base_defaults.storage_path, 'mpi-jobs.db')
+        self.paramount_repository_path = path_extend(
+            self.base_defaults.storage_path, 'mpi-paramounts.db')
+
 mpi_defaults = MPIDefaults()
 
+
 def get_mpi_module() -> MPIModule:
-    return MPIModule.get_module()
+    config_db = get_config_db()
+    node_manager = get_node_manager()
+    role_manager = get_role_manager()
+    cluster_db = get_cluster_config_db()
+    cluster_manager = get_cluster_manager()
+    
+    jobs_repo = RepositoryFactory().get_repository(
+        'sqlite', mpi_defaults.job_repository_path)
+    jobs_operator = JobRepositoryOperator(jobs_repo)
+
+    paramount_repo = RepositoryFactory().get_repository(
+        'sqlite', mpi_defaults.paramount_repository_path)
+    paramount_operator = ParamountClusterRepositoryOperator(paramount_repo)
+    
+    mpi_module = MPIModule(
+          job_repository_operator=jobs_operator,
+          paramount_repository_operator=paramount_operator,
+          node_module=node_manager,
+          role_module=role_manager,
+          cluster_module=cluster_manager
+    )
+
+    return mpi_module
 
 @clap_command
 @click.group(help='Control and manage MPI Clusters')
@@ -23,7 +59,7 @@ def mpi():
     pass
 
 @mpi.command('create-mcluster')
-@click.argument('node_types', nargs=-1, type=str)
+@click.argument('node_types', nargs=-1, required=True, type=str)
 @click.option('-c', '--coordinator', default=None, help='A string containing the type of the coordinator', show_default=False)
 @click.option('-d', '--desc', default=None, help='Nickname for this cluster', show_default=False)
 def create_mcluster(node_types, coordinator, desc):
@@ -59,7 +95,6 @@ def setup_mcluster(mpi_cluster_id, mount_ip, skip_mpi, no_instance_key):
     mpi_module = get_mpi_module()
     mpi_module.setup_mpi_cluster(mpi_cluster_id, mount_ip=mount_ip, skip_mpi=skip_mpi, no_instance_key=no_instance_key)
     print(f'Cluster `{mpi_cluster_id}` successfully setup')
-
     mpi_cluster = mpi_module.get_cluster(mpi_cluster_id)
     print(f'New mount_point_partition (After updating) is: {mpi_cluster.mount_point_partition}')
 

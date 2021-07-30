@@ -26,10 +26,6 @@ class Info:
     LAST_PARAMOUNT='last-mcluster'
     LAST_JOB='last-job'
 
-class MPIDefaults(metaclass=Singleton):
-    def __init__(self):
-        pass
-
 
 class Mcluster_states:
     MCLUSTER_RUNNING = 'running'
@@ -170,6 +166,9 @@ class MPIModule:
         self.job_repository_operator = job_repository_operator
         self.paramount_repository_operator = paramount_repository_operator
         self.templates_path = path_extend(os.path.dirname(os.path.abspath(__file__)), 'templates')
+        self.node_module = node_module
+        self.role_module = role_module
+        self.cluster_module = cluster_module
 
     def get_all_clusters(self) -> List[ParamountClusterData]:
         return self.paramount_repository_operator.get_all_paramount_clusters()
@@ -209,12 +208,12 @@ class MPIModule:
 
         self.role_module.add_role('ec2-efs', all_nodes)
         self.role_module.add_role('mpi', group_hosts_map, extra_args=extra)
-
+        
         if cluster.mount_point_partition is None:
             with tmpdir() as temp_dir:
                 filename = path_extend(temp_dir, 'mpi-paramount-cluster.yml')
                 extra = {'dest': filename}
-                self.role_module.perform_action('mpi', 'get-infos', [cluster.coordinator], extra_args=extra)
+                self.role_module.perform_action('mpi', 'get-infos', {'coordinator': [cluster.coordinator]}, extra_args=extra)
 
                 with open(filename, 'r') as f:
                     # TODO not reading home part
@@ -252,13 +251,14 @@ class MPIModule:
             with open(filename, 'w') as f:
                 f.write(rendered_template)
 
+
             configs = ClusterConfigDatabase([filename])
             cluster_to_start = configs.clusters['mpi-paramount-cluster']
-            cluster_id = self.cluster_module.start_cluster(cluster_to_startr)
+            cluster_id = self.cluster_module.start_cluster(cluster_to_start)
             node_types = self.cluster_module.get_cluster_nodes_types(cluster_id)
-            mpi_cluster = self.paramount_repository_operator.new_paramount_cluster(cluster_id=cluster_id, 
-                        slaves=node_types[Info.SLAVES], coordinator=node_types[Info.COORDINATOR][0], description=description,
-                        status=Mcluster_states.MCLUSTER_RUNNING)
+            if Info.SLAVES not in node_types:
+                node_types[Info.SLAVES] = node_types[Info.COORDINATOR]
+            mpi_cluster = self.paramount_repository_operator.new_paramount_cluster(cluster_id=cluster_id, slaves=node_types[Info.SLAVES], coordinator=node_types[Info.COORDINATOR][0], description=description, status=Mcluster_states.MCLUSTER_RUNNING)
             return mpi_cluster         
 
     def create_job(self, paramount_id: str, job_name: str = None) -> str:
@@ -279,7 +279,7 @@ class MPIModule:
             extra['cluster_descr'] = mpi_cluster.description
         if job_name:
             extra['job_name'] = job_name
-        self.role_module.perform_action('mpi', 'start-job', [mpi_cluster.coordinator], extra_args=extra)
+        self.role_module.perform_action('mpi', 'start-job', {'coordinator': [mpi_cluster.coordinator]}, extra_args=extra)
 
         return job_id
 
@@ -295,7 +295,7 @@ class MPIModule:
             'src_dir': src
         }
 
-        self.role_module.module.perform_action('mpi', 'sync' if not from_coord else 'sync-remote', [mpi_cluster.coordinator], extra_args=extra)
+        self.role_module.perform_action('mpi', 'sync' if not from_coord else 'sync-remote', {'coordinator': [mpi_cluster.coordinator]}, extra_args=extra)
 
     def terminate_cluster(self, mpi_cluster_id: str, remove_data_from_sfs: bool = False, force: bool = False):
         mpi_cluster = self.get_cluster(mpi_cluster_id)
@@ -305,7 +305,7 @@ class MPIModule:
         if remove_data_from_sfs:
             extra['remove_data_from_sfs'] = 'True'
         try:
-            self.role_module.perform_action('mpi', 'mpi-terminate', [mpi_cluster.coordinator], extra_args=extra)
+            self.role_module.perform_action('mpi', 'mpi-terminate', {'coordinator': [mpi_cluster.coordinator]}, extra_args=extra)
         except Exception as e:
             if not force:
                 raise e
@@ -363,7 +363,7 @@ class MPIModule:
         if run_on_taskdir:
             extra['run_on_taskdir'] = 'True'
 
-        self.role_module.perform_action('mpi', 'run-script', [mpi_cluster.coordinator], extra_args=extra)
+        self.role_module.perform_action('mpi', 'run-script', {'coordinator': [mpi_cluster.coordinator]}, extra_args=extra)
 
     def generate_hosts(self, job_id: str, filename: str = None, subpath: str = None, mpich_style: bool = False):
         job = self.get_job(job_id)
@@ -383,6 +383,10 @@ class MPIModule:
             extra['mpich_style'] = 'True'
             
         nodes_to_execute = self.cluster_module.get_all_cluster_nodes(mpi_cluster.cluster_id)
+        nodes_to_execute = {
+            host: [nid for nid in node_ids if nid in nodes_to_execute] 
+            for host, node_ids in self.role_module.get_all_role_nodes_hosts('mpi').items()
+        }
         self.role_module.perform_action('mpi', 'generate-hosts', nodes_to_execute, extra_args=extra)
 
     def fetch_job(self, job_id: str, destination: str):
@@ -395,6 +399,10 @@ class MPIModule:
             'job_name': job.job_id
         }
         nodes_to_execute = self.cluster_module.get_all_cluster_nodes(mpi_cluster.cluster_id)
+        nodes_to_execute = {
+            host: [nid for nid in node_ids if nid in nodes_to_execute] 
+            for host, node_ids in self.role_module.get_all_role_nodes_hosts('mpi').items()
+        }
         self.role_module.perform_action('mpi', 'fetch-job-info', nodes_to_execute, extra_args=extra)
 
     def fetch_data_coord(self, mpi_cluster_id: str, src: str, destination: str):
@@ -404,6 +412,10 @@ class MPIModule:
             'dest': destination
         }
         nodes_to_execute = self.cluster_module.get_all_cluster_nodes(mpi_cluster.cluster_id)
+        nodes_to_execute = {
+            host: [nid for nid in node_ids if nid in nodes_to_execute] 
+            for host, node_ids in self.role_module.get_all_role_nodes_hosts('mpi').items()
+        }
         self.role_module.perform_action('mpi', 'fetch-data-coord', nodes_to_execute, extra_args=extra)
 
     def install_script(self, mpi_cluster_id: str, script: str, only_coord: bool = False, additional_file: str = None, path: str = None):
@@ -415,9 +427,17 @@ class MPIModule:
             extra['execution_dir'] = path
         if additional_file is not None:
             extra['src_dir'] = additional_file
+            
+        if only_coord:
+            nodes_to_execute = {'coordinator': [mpi_cluster.coordinator]}
+        else:
+            nodes_to_execute = self.cluster_module.get_all_cluster_nodes(mpi_cluster.cluster_id)
+            nodes_to_execute = {
+                host: [nid for nid in node_ids if nid in nodes_to_execute] 
+                for host, node_ids in self.role_module.get_all_role_nodes_hosts('mpi').items()
+            }
 
-        node_ids = [mpi_cluster.coordinator] + mpi_cluster.slaves if not only_coord else [mpi_cluster.coordinator]
-        self.role_module.perform_action(mpi_cluster_id, 'install', node_ids, extra_args=extra)
+        self.role_module.perform_action(mpi_cluster_id, 'install', nodes_to_execute, extra_args=extra)
     
     def run_command(self, mpi_cluster_id: str, command: str, private_path: str) -> dict:
         mpi_cluster = self.get_cluster(mpi_cluster_id)
