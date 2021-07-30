@@ -1,0 +1,24 @@
+setups:
+  npb-install:
+    roles:
+    - name: npb
+      extra:
+        pubkey: ~/.ssh/id_rsa.pub
+        privkey: ~/.ssh/id_rsa
+
+  launch-mpi-npb:
+    actions:
+    - role: npb
+      action: run
+
+clusters:
+  npb-cluster:
+    nodes:
+      npb-type-b:
+        type: type-b
+        count: 2
+        setups:
+        - npb-install
+
+    after_all:
+    - launch-mpi-npb

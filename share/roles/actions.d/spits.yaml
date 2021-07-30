@@ -1,0 +1,54 @@
+actions:
+  setup:
+    playbook: roles/spits/setup.yaml
+    vars:
+    - name: spits_dir
+      description: Default SPITS repository
+    - name: pubkey
+      description: Path to the SSH public key to distribute to all nodes
+    - name: privkey
+      description: Path to the SSH private key to distribute to all nodes
+
+  job-create:
+    playbook: roles/spits/job-create.yaml
+    vars:
+    - name: jobid
+      description: Job ID to create
+    - name: binary
+      description: SPITS executable
+    - name: args
+      description: Arguments to SPITS executable
+
+  start-jm:
+    playbook: roles/spits/start-jm.yaml
+    vars:
+    - name: jobid
+      description: Job ID to create
+    - name: jmargs
+      description: Arguments to SPITS executable
+
+  start-tm:
+    playbook: roles/spits/start-tm.yaml
+    vars:
+    - name: jobid
+      description: Job ID to create
+    - name: tmargs
+      description: Arguments to SPITS executable
+
+  add-nodes:
+    playbook: roles/spits/add-nodes.yaml
+    vars:
+    - name: jobid
+      description: Job ID to create
+
+  fetch:
+    playbook: roles/spits/fetch.yaml
+    vars:
+    - name: jobid
+      description: Job ID to create
+    - name: output_dir
+      description: Output directory
+
+hosts:
+- jobmanager
+- taskmanager

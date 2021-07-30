@@ -1,0 +1,15 @@
+---
+- hosts: all
+  gather_facts: yes
+  tasks:
+  # Remove old ~.../nodes from jobmanager before...
+  - name: "Clean nodes folder"
+    shell: "cd {{ ansible_env.HOME }}/spits-jobs/{{ jobid }}/nodes/ && find -mindepth 1 -maxdepth 1 -print0 | xargs -0 rm -rf --"
+    when: inventory_hostname in groups['jobmanager']
+
+  - name: "Adding nodes to jobmanager {{ jobid }}"
+    synchronize:
+      src: "{{ ansible_env.HOME }}/spits-jobs/{{ jobid }}/nodes/"
+      dest: "{{ ansible_env.HOME }}/spits-jobs/{{ jobid }}/nodes/"
+      mode: pull
+    delegate_to: "{{ groups['jobmanager'][0] }}"

@@ -1,0 +1,58 @@
+---
+- hosts: all
+  gather_facts: yes
+  gather_subset: min
+  tasks:
+  - name: Changing hostname
+    become: yes
+    hostname:
+      name: "{{ inventory_hostname }}"
+
+  - name: Installing required packages
+    become: yes
+    apt:
+      pkg:
+        - gcc
+        - python3
+        - python3-pip
+        - python3-virtualenv
+      update_cache: yes
+      cache_valid_time: 3600
+
+  - name: Copying SPITS Files
+    synchronize:
+      src: "{{ spits_dir }}"
+      dest: "{{ ansible_env.HOME }}/"
+
+  - name: Installing pip dependencies
+    pip:
+      requirements: "{{ ansible_env.HOME }}/spits-2.0/runtime/pypits/requirements.txt"
+
+  # Copying public key
+  - name: Copy a public key to hosts
+    copy:
+      src: "{{ pubkey }}"
+      dest: "{{ ansible_env.HOME }}/.ssh/id_rsa.pub"
+      mode: "0400"
+
+  # Copying private key
+  - name: Copy a private key to hosts
+    copy:
+      src: "{{ privkey }}"
+      dest: "{{ ansible_env.HOME }}/.ssh/id_rsa"
+      mode: "0400"
+
+  # Authorize login without asking password
+  - name: Put key in authorized keys
+    lineinfile:
+      path: "{{ ansible_env.HOME }}/.ssh/authorized_keys"
+      line: "{{ lookup('file', pubkey) }}"
+
+  # Relax SSH's host checking condition. Allows anyone to try to connect
+  - name: Remove strict host checking
+    copy:
+      dest: "{{ ansible_env.HOME }}/.ssh/config"
+      mode: "0644"
+      content: |
+        Host *
+          StrictHostKeyChecking no 

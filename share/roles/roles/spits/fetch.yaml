@@ -1,0 +1,9 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: "Fetch files from job {{ jobid }}"
+    synchronize:
+      src: "~/spits-jobs/{{ jobid }}/logs/"
+      dest: "{{ output_dir }}"
+      mode: pull

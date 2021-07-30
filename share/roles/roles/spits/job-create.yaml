@@ -1,0 +1,8 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: "Creating job {{ jobid }}"
+    command:
+      cmd: "~/spits-2.0/runtime/pypits/spits-create-job.py --force {{ jobid }} {{ binary }} {{ args }}"
+      executable: python3

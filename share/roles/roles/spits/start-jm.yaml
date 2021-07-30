@@ -1,0 +1,6 @@
+---
+- hosts: jobmanager
+  gather_facts: no
+  tasks:
+  - name: "Job manager for {{ jobid }}"
+    shell: "setsid python3 ~/spits-2.0/runtime/pypits/spits-job-manager.py {{ jobid }} {{ jmargs }} >~/jm.output 2>&1 < /dev/null &"

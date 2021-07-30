@@ -1,0 +1,6 @@
+---
+- hosts: taskmanager
+  gather_facts: no
+  tasks:
+  - name: "Task manager for {{ jobid }}"
+    shell: "setsid python3 ~/spits-2.0/runtime/pypits/spits-task-manager.py {{ jobid }} --hostname={{ ansible_host }} {{ tmargs }} >~/jm.output 2>&1 < /dev/null &"
