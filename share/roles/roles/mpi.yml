@@ -1,0 +1,52 @@
+
+
+
+- name: Install python interpreter
+  hosts: all
+  become: yes
+  pre_tasks:
+    - name: install python
+      raw: test -e /usr/bin/python || (apt -qqy update && apt install -y python)
+      register: output
+      changed_when: output.stdout != ""
+
+
+- name: MPI  Playbook for all
+  hosts: all
+  become: yes
+  gather_facts: yes
+  tasks:
+     - include_role:
+          name: 'mpi'
+          tasks_from: "setup"
+     - include_role:
+            name: 'zabbix'
+            tasks_from: setup
+
+
+
+
+#Arguments: app_name -> Name of the app (HelloWorld.c -> HelloWorld)
+
+
+
+
+#
+# - name: MPI  Playbook for master
+#   hosts: master
+#   gather_facts: yes
+#   vars:
+#       exec_dir:   "{{ ansible_user }}/efs/{{ app_name}}"
+#   tasks:
+#      - include_role:
+#           name: 'mpi'
+#           tasks_from: "{{ action }}"
+#        when: action in ['compile']
+#
+# - name: MPI  Playbook for slave
+#   hosts: slave
+#   gather_facts: no
+#   tasks:
+#       - include_role:
+#           name: 'mpi'
+#           tasks_from: slave

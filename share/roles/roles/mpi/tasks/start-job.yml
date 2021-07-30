@@ -1,0 +1,57 @@
+---
+- hosts: coordinator
+  gather_facts: yes
+  become: no
+  tasks:
+
+  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
+  - name: Creates directory
+    file:
+      path: "{{ directory }}"
+      state: directory
+
+
+#  - name: Creates directory which will contain meta infos
+#    file:
+#      path: "{{ directory }}/.job-infos"
+#      state: directory
+#    register: folder_created
+#    ignore_errors: yes
+
+  - name: Create meta info file
+    file:
+      path: "{{ directory }}/info.txt"
+      state: touch
+
+  - name: Creates directory which will contain tasks infos
+    file:
+      path: "{{ directory }}/tasks"
+      state: directory
+    register: folder_created
+    ignore_errors: yes
+
+  - name: "Save job and cluster info in the info file (for data processing purposes)"
+    blockinfile:
+      marker: ""
+      path: "{{ directory }}/info.txt"
+      block: |
+        ClusterName: {{ cluster_name }}{% if  cluster_descr  is defined %}({{ cluster_descr }} ) {% endif %}
+
+        {% if  job_name  is defined  %}
+        (Job-alias: {{ job_name }} )
+         {% endif %}
+
+
+
+########## Error handling
+
+  - name: Remove job folder if it failed
+    file:
+      path: "{{ directory }}"
+      state: absent
+    when: folder_created.failed
+
+  - name: Fail job creation if creation not successful
+    fail:
+      msg: "job creation failed"
+    when: folder_created.failed

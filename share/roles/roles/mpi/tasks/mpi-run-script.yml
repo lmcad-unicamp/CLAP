@@ -1,0 +1,131 @@
+
+
+---
+- hosts: coordinator
+  gather_facts: yes  
+  become: no
+  tasks:
+  
+  
+
+
+  - name: passing file
+    synchronize:
+      src: "{{ run_script }}"
+      dest: "{{ execution_dir }}/TASK-RUN.sh"
+
+
+
+#Besides executing the script, it will properly create the paramount(both .log and .err files) and the meta
+# info file which contains the semantics/categorization of this execution (for data analysis purposes)
+
+  - name: Generating the files for output and runnign script
+
+
+    block:
+
+    - name: Make time permanent (simply setting as variable will make the time to be reevaluated every time)
+      set_fact:
+        start_time:  "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+
+
+    - name: Setting CLAPP_MPI_CLUSTER, CLAPP_MPI_JOB CLAPP_MPI_TASK
+      set_fact:
+          CLAPP_MPI_TASK_DIR: "{{ job_full_path }}/tasks/task@{{ start_time }}"
+          CLAPP_MPI_JOB_DIR:  "{{ job_full_path }}"
+          CLAPP_MPI_CLUSTER_DIR: "{{ mcluster_dir }}"     #Enviroment var set up at cluster setup time
+
+
+#    - debug: msg={{ CLAPP_MPI_TASK_DIR }}
+#    - debug: msg={{ CLAPP_MPI_JOB_DIR }}
+#
+#    - debug: msg={{ CLAPP_MPI_CLUSTER_DIR }}
+
+
+    - name: Generate output files
+      shell:    "cd {{ job_full_path }}/tasks/ &&
+         mkdir  task@{{ start_time}} &&
+         cp {{ job_full_path }}/info.txt  task@{{ start_time }}/meta.info
+         "
+
+
+    - name: Set execution_dir as   CLAPP_MPI_JOB_DIR if run_on_taskdir is set to true
+      set_fact:
+        execution_dir: "{{ CLAPP_MPI_TASK_DIR }}"
+
+    - name: Append execution specific info
+      blockinfile:
+        marker: ""
+        path: "{{ CLAPP_MPI_TASK_DIR }}/meta.info"
+        block: |
+
+           exec_descr={{ exec_descr }}
+      when: exec_descr is defined
+
+
+
+#    - name: Run application
+#      async: 3600
+#      poll: 0
+#
+#      shell:    "cd {{ execution_dir  }} &&
+#       chmod +x PARAMOUNT-RUN.sh &&
+#       ./PARAMOUNT-RUN.sh > {{ CLAPP_MPI_TASK }}/result.out
+#       2> {{ CLAPP_MPI_TASK }}/result.err | tee "
+#      register: application_execution
+#
+#    - debug: msg={{ application_execution.stdout }}
+
+    - name: Run application
+      async: 3600
+      poll: 0
+
+      shell:  "export CLAPP_MPI_TASK_DIR={{ CLAPP_MPI_TASK_DIR }} &&
+              export CLAPP_MPI_JOB_DIR={{ CLAPP_MPI_JOB_DIR }} &&
+              export CLAPP_MPI_CLUSTER_DIR={{ CLAPP_MPI_CLUSTER_DIR }} &&
+              cd {{ execution_dir  }} &&
+              chmod +x TASK-RUN.sh &&
+              ./TASK-RUN.sh > {{ CLAPP_MPI_TASK_DIR }}/result.out
+              2> {{ CLAPP_MPI_TASK_DIR }}/result.err &&
+              mv TASK-RUN.sh {{ CLAPP_MPI_TASK_DIR }}/task-run-script.sh "
+      register: application_execution
+
+
+#
+#    async: 3600
+#    poll: 0
+#    vars:
+#      start_time: "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+#
+#    shell:     "cd {{ execution_dir  }} &&
+#     chmod +x PARAMOUNT-RUN.sh &&
+#     mkdir  {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }} &&
+#     cp {{ job_full_path }}/.paramount-logs/info.meta  {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/meta.info &&
+#      ./PARAMOUNT-RUN.sh > {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/task.log
+#      2> {{ job_full_path }}/.paramount-logs/paramount@{{ start_time }}/paramount.err"
+#    register: application_execution
+
+
+#  - name: Wait for asynchronous job to end
+#    async_status:
+#      jid: '{{ application_execution.ansible_job_id }}'
+#    register: job_result
+#    until: job_result.finished
+#    retries: 30
+#
+
+
+#  - name: Save output
+#    copy:
+#      content: "{{ script_execution.stdout }}"
+#      dest: "{{ execution_dir }}{{ job_name }}.out"
+#
+#  - name: Save error
+#    copy:
+#      content: "{{ script_execution.stderr }}"
+#      dest: "{{ execution_dir }}{{ job_name }}.err"
+#
+
+#   - name: Generate output files
+#     shell: "cd {{ execution_dir  }} && echo \"{{ script_execution.stdout_lines }}\" > job_full_path}.out &&
+#     \"{{ script_execution.stderr_lines }}\" >  {{ job_name }}.err"

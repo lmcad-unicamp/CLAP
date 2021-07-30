@@ -1,0 +1,48 @@
+- hosts: coordinator
+  gather_facts: yes
+
+  tasks:
+  - name: Get home path
+    debug: var=ansible_env.HOME
+    register: homePath
+
+  - name: Make vars persistant
+    set_fact:
+      homePath: "{{ homePath }}"
+
+
+
+- hosts: localhost
+  gather_facts: no
+  vars:
+    node_id: "{{ groups['coordinator'].0 }}"
+  tasks:
+#  - debug:
+#      msg: "{{ node_id }}"
+
+  #################Importante (perdi um dia inteiro nisso) a VARIAVEL esta em hostvars['node-xx'][VARIAVEL],
+  ### EXEMPLO: {{ hostvars['node-104']['homePath'] }}
+  - debug:
+      msg: "{{ hostvars[ node_id ]['homePath'] | to_nice_yaml }}"
+
+#  - name: "Clean file"
+#    blockinfile:
+#      create: yes
+#      marker: False
+#      path: "{{ dest }} "
+#      block: |
+#        ""
+
+
+#  - name: Writing on the file
+#    blockinfile:
+#      create: yes
+#      marker: ""
+#      path: "{{ dest }}"
+#      block: |
+#        "{{ hostvars[ node_id ]['homePath'] | to_nice_json  }}"
+
+  - name: Write my_variables to
+    copy:
+      content: "{{ hostvars[ node_id ]['homePath'] | to_nice_json  }}"
+      dest: "{{ dest }}"

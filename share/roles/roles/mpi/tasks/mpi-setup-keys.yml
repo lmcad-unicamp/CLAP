@@ -1,0 +1,33 @@
+---
+- hosts: all
+  gather_facts: yes
+  become: no
+  vars:
+    keyName: "{{ key_name | default('clusterKey') }}"
+  tasks:
+  - name: Generate an ID rsa if does not exists    
+    openssh_keypair:
+      path: "~/.clap/private/{{ keyName }}"
+    run_once: true
+    delegate_to: localhost
+  
+  - name: Copy private SSH KEY
+    copy:
+      src: ~/.clap/private/{{ keyName }}
+      dest: "{{ansible_env.HOME}}/.ssh/id_rsa"
+
+  - name: Copy public SSH KEY
+    copy:
+      src: ~/.clap/private/{{ keyName }}.pub
+      dest: "{{ansible_env.HOME}}/.ssh/id_rsa.pub"
+
+  - name: Add rsa-key in authorized_keys
+    shell: "cat {{ansible_env.HOME}}/.ssh/id_rsa.pub >> {{ansible_env.HOME}}/.ssh/authorized_keys"
+
+  - name: Execute chmod 600
+    become: true
+    shell: "chmod 600 {{ansible_env.HOME}}/.ssh/id_rsa && chmod 600 {{ansible_env.HOME}}/.ssh/id_rsa.pub"
+
+  - name: StrictHostKeyChecking not necessary
+    shell: "touch {{ansible_env.HOME}}/.ssh/config && echo 'Host * \n    StrictHostKeyChecking no' >> {{ansible_env.HOME}}/.ssh/config"
+

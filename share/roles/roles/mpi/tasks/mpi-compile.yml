@@ -1,0 +1,76 @@
+#Arguments:
+# file_path= absolute path ( on localhost) of the folder containing all *.c files
+
+# To create a directory or pass file the path must be absolute ~exec_dir where
+#  exec_dir= (user)/efs/app_name/
+# however, in a shell command, the current directory is ~(user)/ so cd exec_dir yields
+# ~(user)/(user)/efs/app_name/, which does not exist
+# There are two options:
+# 1- Hardcode the directory
+# 2- change to home director and re-use the exec_dir <- Option used
+
+
+
+
+
+---
+- hosts: all
+  gather_facts: yes
+  tasks:
+  - name: create the execution path recursively if the same does not exist
+    file:
+      path: "{{ execution_dir }}"
+      state: directory
+
+
+
+
+
+    #  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
+#  - name: Execute compile script
+#    poll: 15
+#    script:
+#      cmd: "{{ compile_script }}"
+#      chdir: "{{ execution_dir  }}"
+#    register: script_execution
+#
+#
+#  - debug: var=script_execution.stderr
+#
+#  - debug: var=script_execution.stdout
+
+  - name: Executing the install script as a shell command (to enable polling) some precautions were made to accommodate long running installation times
+    block:
+
+    - name: Make time permanent (simply setting as variable will make the time to be reevaluated every time)
+      set_fact:
+       start_time:  "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+
+    - name: passing file #Rsync bugs here (parallel rsync is faulty...)
+      copy:
+        src: "{{ compile_script }}"
+        dest: "{{ execution_dir }}/script@{{ start_time}}"
+    - name: Compile script (up to two hours)
+      async: 7200
+      poll: 0
+
+      shell:    "cd {{ execution_dir  }} &&
+         chmod +x script@{{ start_time}} &&
+         ./script@{{ start_time}}
+        "
+      register: application_execution
+
+    - name: 'Keep probing compiling progression'
+      async_status:
+        jid: "{{ application_execution.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 65
+      delay: 60
+
+
+    always:
+      - name: Remove file (delete file)
+        file:
+          path: "{{ execution_dir }}/script@{{ start_time}}"
+          state: absent

@@ -1,0 +1,26 @@
+# # ---
+# - name: SPITS Playbook
+#   hosts: master
+#   vars:
+#    exec_dir:   "{{ ansible_user }}/efs/{{ app_name}}"
+   
+#   gather_facts: yes
+#   tasks:
+#   - include_role:
+#       name: mpi
+#       tasks_from: sync
+
+
+---
+- hosts: all
+  gather_facts: yes
+  tasks:
+  - name: create the execution path recursively if the same does not exist
+    file:
+      path: "{{ execution_dir }}"
+      state: directory
+
+  - name: passing file
+    synchronize:
+      src: "{{ src_dir }}"
+      dest: "{{ execution_dir }}"

@@ -1,0 +1,14 @@
+- hosts: all
+  gather_facts: yes  
+  become: no
+  vars:
+    _flags: "{{ flags | default('') }}" 
+    _files: "{{ files | default('*.c') }}"
+    _output_file: "{{ output_file | default('a.out') }}"
+  tasks:   
+   - name: compiling
+     shell: |
+      cd {{ execution_dir }} && pwd && mpicc {{ _flags }} {{ _files }} -o {{ _output_file }}
+     register: a
+    
+   - debug: var=a.stdout

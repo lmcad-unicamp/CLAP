@@ -1,0 +1,71 @@
+---
+- hosts: all
+  gather_facts: yes  
+  become: no
+  vars:
+    execution_dir_: "{{ execution_dir | default(ansible_env.HOME)}}"
+  tasks:
+  - name: create the execution path recursively if the same does not exist
+    file:
+      path: "{{ execution_dir_ }}"
+      state: directory
+
+  - name: Pass relevant files to  execution_dir
+    synchronize:
+      src: "{{ src_dir  }}"
+      dest: "{{ execution_dir_ }}"
+    when: src_dir is defined
+
+
+  - name: Executing the install script as a shell command (to enable polling) some precautions were made to accommodate long running installation times
+    block:
+    - name: Make time permanent (simply setting as variable will make the time to be reevaluated every time)
+      set_fact:
+        start_time:  "{{ lookup('pipe','date +%Y-%m-%d-%H') }}"
+        #There was a problem if start_time has second precision, because nodes may not agree. Hours is a small fix
+        # but there can be the case where a node has time 10:59 and another has 11:00. Not sure if it is better to simply ignore
+        # it and therefore when the problem happens just try to run again instead of making the time consistent...
+
+    - name: passing file #Rsync bugs here (parallel rsync is faulty...)
+      copy:
+        src: "{{ install_script }}"
+        dest: "{{ execution_dir_ }}/script@{{ start_time}}"
+        unsafe_writes: yes
+
+
+    - name: Install script (up to an hour)
+      async: 3600
+      poll: 0
+
+
+      shell:    "cd {{ execution_dir_  }} &&
+         chmod +x script@{{ start_time}} &&
+         sudo ./script@{{ start_time}}
+        "
+      register: application_execution
+
+    - name: 'Keep probing install progression'
+      async_status:
+        jid: "{{ application_execution.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 65
+      delay: 60
+
+
+    always:
+      - name: Remove file (delete file)
+        file:
+          path: "{{ execution_dir_ }}/script@{{ start_time}}"
+          state: absent
+
+#  #O path aqui e absoluto. TODO no modulo converter para ansible_env.HOME+execution_dir
+#  - name: Execute install script
+#    poll: 25
+#    become: yes
+#    script:
+#      cmd: "{{ install_script }}"
+#      chdir: "{{ execution_dir  }}/"
+#    register: script_execution
+#
+#  - debug: msg={{ script_execution.stdout }}
