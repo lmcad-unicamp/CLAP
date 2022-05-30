@@ -3,8 +3,8 @@ setups:
     roles:
     - name: npb
       extra:
-        pubkey: ~/.ssh/id_rsa.pub
-        privkey: ~/.ssh/id_rsa
+        pubkey: ~/clap_config/private/key.pub
+        privkey: ~/clap_config/private/key.pem
 
   launch-mpi-npb:
     actions:
@@ -14,11 +14,12 @@ setups:
 clusters:
   npb-cluster:
     nodes:
-      npb-type-b:
-        type: type-b
+      npb-type-t2.medium:
+        type: type-t2.medium
         count: 2
         setups:
         - npb-install
 
     after_all:
     - launch-mpi-npb
+
