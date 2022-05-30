@@ -3,8 +3,8 @@ setups:
     roles:
     - name: npb
       extra:
-        pubkey: ~/clap_config/private/key.pub
-        privkey: ~/clap_config/private/key.pem
+        pubkey: ~/.ssh/id_rsa.pub
+        privkey: ~/.ssh/id_rsa
 
   launch-mpi-npb:
     actions:
