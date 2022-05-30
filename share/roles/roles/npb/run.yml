@@ -1,0 +1,26 @@
+---
+- hosts: all
+  # Gather facts can be used to extract all information of remote system (network, disk, cpus, etc)
+  # It will be stored in host_vars
+  gather_facts: yes
+  tasks:
+  - name: Remove hostfile
+    file:
+      path: "{{ ansible_env.HOME }}/hostfile"
+      state: absent
+
+  - name: Generating hostfile
+    lineinfile:
+      path: "{{ ansible_env.HOME }}/hostfile"
+      line: "{{ hostvars[item].ansible_host }} slots={{ hostvars[item].ansible_processor_cores }} # node: {{ item }}"
+      state: present
+      create: yes
+    with_items: "{{ ansible_play_hosts }}"
+    when: ansible_hostname == ansible_play_hosts[0]     # only host 0
+
+
+  - name: Running MPI
+    shell:
+      cmd: "mpirun --hostfile ~/hostfile --output-filename execution --tag-output --report-bindings --rank-by slot ~/is.C.x > {{ inventory_hostname }}.output 2>&1"
+      chdir: "{{ ansible_env.HOME }}"
+    when: ansible_hostname == ansible_play_hosts[0]     # only host 0

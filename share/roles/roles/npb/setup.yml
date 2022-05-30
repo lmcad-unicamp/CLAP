@@ -1,0 +1,117 @@
+---
+- hosts: all
+  # Gather facts can be used to extract all information of remote system (network, disk, cpus, etc)
+  # It will be stored in host_vars
+  gather_facts: yes
+  tasks:
+
+  # Using Ansible's set_fact module to register variables
+  # Variables set with set_fact module are visible to CLAP
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/set_fact_module.html
+  - name: Set some variables
+    set_fact:
+      home_dir: "{{ ansible_env.HOME }}"        # User's home directory"
+
+  # Let's set the name of the host as the same as CLAP's node id to easy debug
+  - name: Changing hostname
+    become: yes
+    hostname:
+      name: "{{ inventory_hostname }}"
+
+  # Using Ansible's apt module to update repository cache and install packages
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+  - name: Perform necessary package installation for NPB
+    become: yes
+    apt:
+      update_cache: yes
+      state: present
+      pkg:
+        - gcc
+        - g++
+        - gfortran
+        - openmpi-bin
+        - openmpi-common
+        - libopenmpi-dev
+        - wget
+        - tar
+        - unzip
+        - cmake
+        - make
+        - daemon
+
+  # Using Ansible's get_url module to download files (similar to wget)
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/get_url_module.html
+  - name: Get NPB (wget)
+    get_url:
+      url: https://www.nas.nasa.gov/assets/npb/NPB3.4.2.tar.gz
+      dest: "{{ home_dir }}/NPB.tar.gz"
+      mode: '0755'
+
+  # Using Ansible's unarchive module to perform untar
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/unarchive_module.html
+  - name: Untar NPB file
+    unarchive:
+      src: "{{ home_dir }}/NPB.tar.gz"
+      dest: "{{ home_dir }}"
+      remote_src: yes
+
+  # Using Ansible's copy module to perform copy
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+  - name: Defining make template
+    copy:
+      src: "{{ home_dir }}/NPB3.4.2/NPB3.4-MPI/config/make.def.template"
+      dest: "{{ home_dir }}/NPB3.4.2/NPB3.4-MPI/config/make.def"
+      remote_src: yes
+
+  # Using Ansible's make module to run make targets in a Makefile
+  # https://docs.ansible.com/ansible/latest/collections/community/general/make_module.html
+  - name: Compiling some binaries
+    make:
+      target: is
+      chdir: "{{ home_dir }}/NPB3.4.2/NPB3.4-MPI/"
+      params:
+        CLASS: C
+
+  # Copying binary to user's directory, just for convenience
+  - name: Copy binary file to user's home directory
+    copy:
+      src: "{{ home_dir }}/NPB3.4.2/NPB3.4-MPI/bin/is.C.x"
+      dest: "{{ home_dir }}/is.C.x"
+      remote_src: yes
+      mode: "0777"
+
+  - name: Define binary variable
+    set_fact:
+      nas_executable: "{{ home_dir }}/is.C.x"
+
+  # ---- Configure SSH to login without asking password ----
+  # We will distribute the same public/private keys to all nodes
+
+  # Copying public key
+  - name: Copy a public key to hosts
+    copy:
+      src: "{{ pubkey }}"
+      dest: "{{ ansible_env.HOME }}/.ssh/id_rsa.pub"
+      mode: "0400"
+
+  # Copying private key
+  - name: Copy a private key to hosts
+    copy:
+      src: "{{ privkey }}"
+      dest: "{{ ansible_env.HOME }}/.ssh/id_rsa"
+      mode: "0400"
+
+  # Authorize login without asking password
+  - name: Put key in authorized keys
+    lineinfile:
+      path: "{{ ansible_env.HOME }}/.ssh/authorized_keys"
+      line: "{{ lookup('file', pubkey) }}"
+
+  # Relax SSH's host checking condition. Allows anyone to try to connect
+  - name: Remove strict host checking
+    copy:
+      dest: "{{ ansible_env.HOME }}/.ssh/config"
+      mode: "0644"
+      content: |
+        Host *
+          StrictHostKeyChecking no

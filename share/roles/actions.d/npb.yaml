@@ -1,0 +1,20 @@
+actions:
+  setup:
+    playbook: roles/npb/setup.yml
+    description: Install all necessary packages, download and compile NPB MPI benchmarks
+    vars:
+    - name: pubkey
+      description: Path to the SSH public key to distribute to all nodes
+    - name: privkey
+      description: Path to the SSH private key to distribute to all nodes
+
+  run:
+    playbook: roles/npb/run.yml
+    description: Run MPI NAS benchmark at all nodes
+
+  result:
+    playbook: roles/npb/result.yml
+    description: Fetch results from execution to an local directory
+    vars:
+    - name: output
+      description: Path where resuts will be placed

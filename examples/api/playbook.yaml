@@ -1,0 +1,39 @@
+---
+- hosts: all
+  gather_facts: True    # Query a set of variables in remote hosts
+  gather_subset: min
+  tasks:
+  - name: Perform package list update
+    become: yes         # Execute as root user
+    apt:
+      pkg: 
+        - gcc
+        - git
+        - g++
+        - libc6-dev 
+        - libffi-dev 
+        - libssl-dev 
+        - virtualenv 
+        - python3 
+        - python3-pip
+        - python3-venv
+      update_cache: yes
+
+  - name: Clone CLAP's repository
+    git:
+      repo: https://github.com/lmcad-unicamp/CLAP.git
+      dest: "{{ ansible_env.HOME }}/clap-from-ansible"
+
+  - name: Set chmod for install.sh CLAP's file
+    file:
+      path: "{{ ansible_env.HOME }}/clap-from-ansible/install.sh"
+      mode: '0777'
+
+  - name: Run CLAP's install.sh and install CLAP
+    shell:
+      cmd: "{{ ansible_env.HOME }}/clap-from-ansible/install.sh"
+      chdir: "{{ ansible_env.HOME }}/clap-from-ansible/"
+
+  - name: Set directory where CLAP where installed as a fact
+    set_fact:
+      clap_dir: "{{ ansible_env.HOME }}/clap-from-ansible/"

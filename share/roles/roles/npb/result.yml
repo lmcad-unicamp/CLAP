@@ -1,0 +1,20 @@
+---
+- hosts: all
+  gather_facts: yes
+  tasks:
+  - name: Find files to copy
+    find:
+      paths: "{{ ansible_env.HOME }}"
+      recurse: no
+      patterns:
+      - "execution.*"
+      - "hostfile"
+      - "*.output"
+    register: files_to_fetch
+
+  - name: "Copy output files to {{ output }}"
+    fetch:
+      src: "{{ item.path }}"
+      dest: "{{ output }}"
+      flat: yes
+    with_items: "{{ files_to_fetch.files }}"
