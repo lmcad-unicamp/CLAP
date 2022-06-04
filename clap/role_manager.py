@@ -171,6 +171,7 @@ class RoleManager:
             try:
                 role_values: dict = yaml_load(path_extend(self.actions_dir, role_file))
                 role = dacite.from_dict(data_class=Role, data=role_values)
+                if role.actions is None: role.actions = dict()
                 self.roles[role_name] = role
             except Exception as e:
                 if self._discard_invalids:
